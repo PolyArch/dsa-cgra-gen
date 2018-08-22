@@ -17,6 +17,8 @@ trait HasFabricModuleParams extends HasFabricParams
   val outputModuleDirection : Array[Double]
   val numDecomp             : Int
 
+  require(numModuleInput==inputMoudleDirection.length)
+  require(numModuleOutput==outputModuleDirection.length)
   require(isPow2(CGRAdataWidth/numDecomp))
 }
 
@@ -28,6 +30,9 @@ abstract class FabricModule  extends Module
     val output_ports = Vec(numModuleOutput,DecoupledIO(UInt(datawidthModule.W)))
   })
 }
+
+
+
 
 /*
 trait HasFabricModuleIO extends FabricModuleBundle
