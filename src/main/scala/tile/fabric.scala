@@ -5,7 +5,7 @@ import chisel3._
 import chisel3.util._
 
 trait HasFabricParams {
-  val CGRAdataWidth = 64
+  val fabricDataWidth = 64
 }
 
 trait HasFabricModuleParams extends HasFabricParams
@@ -19,15 +19,16 @@ trait HasFabricModuleParams extends HasFabricParams
 
   require(numModuleInput==inputMoudleDirection.length)
   require(numModuleOutput==outputModuleDirection.length)
-  require(isPow2(CGRAdataWidth/numDecomp))
+  require(isPow2(fabricDataWidth/numDecomp))
 }
 
 
 abstract class FabricModule  extends Module
   with HasFabricModuleParams{
   lazy val io = IO(new Bundle{
-    val input_ports = Vec(numModuleInput,Flipped(DecoupledIO(UInt(datawidthModule.W))))
-    val output_ports = Vec(numModuleOutput,DecoupledIO(UInt(datawidthModule.W)))
+    val input_ports = Vec(numModuleInput * numDecomp,Flipped(DecoupledIO(UInt(datawidthModule.W))))
+    val output_ports = Vec(numModuleOutput * numDecomp,DecoupledIO(UInt(datawidthModule.W)))
+    val cfg_mode = Input(Bool())
   })
 }
 
