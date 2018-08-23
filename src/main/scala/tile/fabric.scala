@@ -16,6 +16,7 @@ trait HasFabricModuleParams extends HasFabricParams
   val inputMoudleDirection  : Array[Double]
   val outputModuleDirection : Array[Double]
   val numDecomp             : Int
+  lazy val decompDataWidth       : Int = datawidthModule / numDecomp
 
   require(numModuleInput==inputMoudleDirection.length)
   require(numModuleOutput==outputModuleDirection.length)

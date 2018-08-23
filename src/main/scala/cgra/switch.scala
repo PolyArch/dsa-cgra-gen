@@ -1,16 +1,16 @@
 package cgraexplorationframework.simplechip.cgra
 
 import chisel3._
-import cgraexplorationframework.simplechip.tile._
 import chisel3.util._
+import cgraexplorationframework.simplechip.tile._
 
 class Switch(
               numInput        : Int,
               numOutput       : Int,
               inputDirection  : Array[Double],
               outputDirection : Array[Double],
-              decomp          : Int,
-              muxDirMatrix    : Array[Array[Array[Boolean]]]
+              deComp          : Int,
+              muxDirMatrix    : Array[Array[Array[Boolean]]] //muxDirMatrix(outPort)(decompSec)(inPut)
             ) extends FabricModule
 {
   //Override value
@@ -19,7 +19,7 @@ class Switch(
   override lazy val numModuleOutput: Int = numOutput
   override lazy val inputMoudleDirection: Array[Double] = inputDirection
   override lazy val outputModuleDirection: Array[Double] = outputDirection
-  override lazy val numDecomp: Int = decomp
+  override lazy val numDecomp: Int = deComp
 
   // Requirement check
   require(numModuleOutput==muxDirMatrix.length)
@@ -34,14 +34,12 @@ class Switch(
     }
   }
 
-  // Value definition
-  val decompDataWidth:Int = datawidthModule / numDecomp
-
   // Select Register definition
   val SelReg = new Array[UInt](numModuleOutput * numDecomp)
   for(outPort <- 0 until numModuleOutput;decomp <- 0 until numDecomp){
     SelReg(numModuleOutput * decomp + outPort) = RegInit(0.U(log2Ceil(numModuleOutput).W))
     when(io.cfg_mode){SelReg(numModuleOutput * decomp + outPort) := io.input_ports(1).bits(log2Ceil(numModuleOutput)-1,0)}
+    //TODO: How to update the select register is not defined yet (Instructions related)
   }
 
 
@@ -98,17 +96,18 @@ class Switch(
         OutputValidReg(numModuleOutput * decomp + outPort) :=
           MuxLookup(SelReg(numModuleOutput * decomp + outPort),false.B,MuxNValidMatrix(outPort))
       }
+    }
+  }
 
-      for (inPort <- 0 until numModuleInput){
-        io.input_ports(numModuleInput * decomp + inPort).ready := {
-          if (muxDirMatrix(outPort)(decomp)(inPort)){
-            io.output_ports(numModuleOutput * decomp + outPort).ready
-          }else{
-            true.B
-          }
-        }
+
+  for (inPort <- 0 until numModuleInput;decomp <- 0 until numDecomp){
+    var readySum = true.B
+    for(outPort <- 0 until numModuleOutput) {
+      if (muxDirMatrix(outPort)(decomp)(inPort)){
+        readySum = readySum & io.output_ports(numModuleOutput * decomp + outPort).ready
       }
     }
+    io.input_ports(numModuleInput * decomp + inPort).ready := readySum
   }
 }
 
