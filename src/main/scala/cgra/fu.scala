@@ -159,6 +159,13 @@ class FU(
 
       ALUes(numModuleOutput * decomp + outPort).io.opcode := opcodeReg(numModuleOutput * decomp + outPort)
 
+      if(operand == 0){
+        ALUes(numModuleOutput * decomp + outPort).io.operand1 <>
+          delayPipes(numModuleOutput * numDecomp * operand + numModuleOutput * decomp + outPort).io.output_ports
+      }else if(operand == 1){
+        ALUes(numModuleOutput * decomp + outPort).io.operand2 <>
+          delayPipes(numModuleOutput * numDecomp * operand + numModuleOutput * decomp + outPort).io.output_ports
+      }
 
       ALUes(numModuleOutput * decomp + outPort).io.output_ports.ready :=
         io.output_ports(numModuleOutput * decomp + outPort).ready
@@ -169,24 +176,7 @@ class FU(
         OutputValidReg(numModuleOutput * decomp + outPort) :=
           ALUes(numModuleOutput * decomp + outPort).io.output_ports.valid
       }
-
     }
-  }
-
-  for (outPort <- 0 until numModuleOutput;decomp <- 0 until numDecomp){
-    ALUes(numModuleOutput * decomp + outPort).io.operand1.bits :=
-      delayPipes(numModuleOutput * numDecomp * 0 + numModuleOutput * decomp + outPort).io.output_ports.bits
-    ALUes(numModuleOutput * decomp + outPort).io.operand1.valid :=
-      delayPipes(numModuleOutput * numDecomp * 0 + numModuleOutput * decomp + outPort).io.output_ports.valid
-    delayPipes(numModuleOutput * numDecomp * 0 + numModuleOutput * decomp + outPort).io.output_ports.ready :=
-      ALUes(numModuleOutput * decomp + outPort).io.operand1.ready
-
-    ALUes(numModuleOutput * decomp + outPort).io.operand2.bits :=
-      delayPipes(numModuleOutput * numDecomp * 1 + numModuleOutput * decomp + outPort).io.output_ports.bits
-    ALUes(numModuleOutput * decomp + outPort).io.operand2.valid :=
-      delayPipes(numModuleOutput * numDecomp * 1 + numModuleOutput * decomp + outPort).io.output_ports.valid
-    delayPipes(numModuleOutput * numDecomp * 1 + numModuleOutput * decomp + outPort).io.output_ports.ready :=
-      ALUes(numModuleOutput * decomp + outPort).io.operand2.ready
   }
 
   for (inPort <- 0 until numModuleInput;decomp <- 0 until numDecomp){
@@ -255,7 +245,6 @@ class DelayPipe (maxLength:Int,pipeDataWidth:Int) extends Module {
   else leastWidth = maxLength
   val delay = RegInit(0.U(log2Ceil(leastWidth).W))
 
-
   when(io.cfg_mode) {
     // Reconfiguration
     // reconfig delay
@@ -278,17 +267,8 @@ class DelayPipe (maxLength:Int,pipeDataWidth:Int) extends Module {
       }
     }
   }
-
   io.output_ports.bits := FIFO(0)
   io.output_ports.valid := FIFO_Valid(0)
-
-  // Debug
-  /*
-  printf(p" ------- FIFO start --------\n")
-  printf(p"FIFO input = ${io.in_ports} \n")
-  printf(p"FIFO output = ${io.out_ports} \n")
-  printf(p"--------  FIFO end -------\n")
-  */
 }
 
 object DelayPipeDriver extends App {chisel3.Driver.execute(args, () => new DelayPipe(6,32))}
