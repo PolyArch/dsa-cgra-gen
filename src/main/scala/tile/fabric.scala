@@ -35,7 +35,7 @@ abstract class FabricModule  extends Module
 }
 
 abstract class Fabric extends Module
-with HasFabricParams{
+  with HasFabricParams{
   lazy val io = IO(
     new Bundle{
       val input_ports = Vec(numFabricInput,Flipped(DecoupledIO(UInt(fabricDataWidth.W))))
@@ -45,26 +45,107 @@ with HasFabricParams{
   )
 }
 
-class RouterChannel(numInput        : Int,
-                    numOutput       : Int,
-                    inputDirection  : Array[Double],
-                    outputDirection : Array[Double],
-                    deComp          : Int,
-                    FIFOdepth       : Array[Int]) extends FabricModule with HasFabricModuleParams{
-  override val datawidthModule: Int = fabricDataWidth
-  override lazy val numModuleInput:Int = numInput
-  override lazy val numModuleOutput: Int = numOutput
-  override lazy val inputMoudleDirection: Array[Double] = inputDirection
-  override lazy val outputModuleDirection: Array[Double] = outputDirection
-  override lazy val numDecomp: Int = deComp
+class ModuleChannel(deCompInput     : Int,
+                    deCompOutput    : Int,
+                    FIFOdepth       : Array[Int]) extends Module
+  with HasFabricParams{
 
-  require(FIFOdepth.length == numDecomp)
+  require(FIFOdepth.length == (deCompInput max deCompOutput))
+  require(FIFOdepth.forall(fifo => fifo >= 0 ),"FIFO depth need to be non-negative")
+  require(isPow2(fabricDataWidth/deCompInput))
+  require(isPow2(fabricDataWidth/deCompOutput))
 
-  val FIFO_queue = new Array[QueueIO[UInt]](numDecomp)
+  val io = IO(new Bundle{
+    val input_ports = Vec(deCompInput,Flipped(DecoupledIO(UInt((fabricDataWidth/deCompInput).W))))
+    val output_ports = Vec(deCompOutput,DecoupledIO(UInt((fabricDataWidth/deCompOutput).W)))
+  })
 
-  for (decomp <- 0 until numDecomp){
-    FIFO_queue(decomp) = Module(new Queue(UInt(decompDataWidth.W),FIFOdepth(0))).io
-    FIFO_queue(decomp).enq <> io.input_ports(decomp)
-    io.output_ports(decomp) <> FIFO_queue(decomp).deq
+  val decompDataWidth : Int = fabricDataWidth / (deCompInput max deCompOutput)
+  val decompIndataWidth : Int = fabricDataWidth / deCompInput
+  val decompOutdataWidth : Int = fabricDataWidth / deCompOutput
+
+  val maxSubNet : Int = FIFOdepth.length
+
+  if(deCompInput == deCompOutput){
+    val FIFO_queue = new Array[QueueIO[UInt]](FIFOdepth.length)
+    for (subNet <- 0 until maxSubNet){
+      if(FIFOdepth(subNet) > 0){
+        FIFO_queue(subNet) = Module(new Queue(UInt(decompDataWidth.W),FIFOdepth(0))).io
+        FIFO_queue(subNet).enq <> io.input_ports(subNet)
+        io.output_ports(subNet) <> FIFO_queue(subNet).deq
+      }else{
+        io.output_ports(subNet) <> io.input_ports(subNet)
+      }
+    }
+  }else if(deCompInput > deCompOutput){
+
+    val IOratio : Int = deCompInput / deCompOutput
+
+    val FIFO_queue = new Array[QueueIO[UInt]](FIFOdepth.length)
+    for (subNet <- 0 until maxSubNet){
+      if(FIFOdepth(subNet) > 0){
+        FIFO_queue(subNet) = Module(new Queue(UInt(decompDataWidth.W),FIFOdepth(subNet))).io
+        FIFO_queue(subNet).enq <> io.input_ports(subNet)
+      }
+    }
+
+    val combineOut = new Array[DecoupledIO[UInt]](maxSubNet)
+
+    for (subNet <- 0 until maxSubNet){
+      if (FIFOdepth(subNet) > 0)
+        combineOut(subNet) = FIFO_queue(subNet).deq
+      else
+        combineOut(subNet) = io.input_ports(subNet)
+    }
+
+    for(subOutNet <- 0 until deCompOutput){
+      io.output_ports(subOutNet).bits := combineOut.zipWithIndex.filter(_._2 / IOratio == subOutNet).map(_._1.bits).reduceLeft(Cat(_,_))
+    }
+
+    for(subInNet <- 0 until deCompInput){
+      var subOutNet = subInNet / IOratio
+      combineOut(subInNet).ready := io.output_ports(subOutNet).ready
+    }
+    for(subOutNet <- 0 until deCompOutput){
+      io.output_ports(subOutNet).valid := combineOut.zipWithIndex.filter(_._2/IOratio == subOutNet).map(_._1.valid).reduceLeft(_ & _)
+    }
+
+  }else {
+
+    val IOratio : Int = deCompOutput / deCompInput
+
+    val FIFO_queue = new Array[QueueIO[UInt]](FIFOdepth.length)
+    for (subNet <- 0 until maxSubNet){
+      var subInNet = subNet / IOratio
+      var subOutIndex = subNet - subInNet * IOratio
+      if(FIFOdepth(subNet) > 0){
+        FIFO_queue(subNet) = Module(new Queue(UInt(decompDataWidth.W),FIFOdepth(subNet))).io
+        FIFO_queue(subNet).enq.bits <> io.input_ports(subInNet).bits((subOutIndex + 1) * decompOutdataWidth - 1,subOutIndex * decompOutdataWidth)
+        FIFO_queue(subNet).enq.valid <> io.input_ports(subInNet).valid
+      }
+    }
+
+    val combineIn = new Array[DecoupledIO[UInt]](maxSubNet)
+
+    for (subNet <- 0 until maxSubNet){
+      var subInNet = subNet / IOratio
+      var subOutIndex = subNet - subInNet * IOratio
+      if (FIFOdepth(subNet) > 0){
+        combineIn(subNet) = FIFO_queue(subNet).enq
+        io.output_ports(subNet) <> FIFO_queue(subNet).deq
+      }
+      else{
+        combineIn(subNet) = io.output_ports(subNet)
+        io.output_ports(subNet).bits := io.input_ports(subInNet).bits((subOutIndex + 1) * decompOutdataWidth - 1,subOutIndex * decompOutdataWidth)
+        io.output_ports(subNet).valid := io.input_ports(subInNet).valid
+      }
+    }
+
+    for (subNet <- 0 until maxSubNet) {
+      var subInNet = subNet / IOratio
+      io.input_ports(subInNet).ready := combineIn.zipWithIndex.filter(_._2 / IOratio == subInNet).map(_._1.ready).reduceLeft(_ & _)
+    }
+
   }
 }
+object ModuleChannelDriver extends App {chisel3.Driver.execute(args, () => new ModuleChannel(1,8,Array(6,0,0,1,5,3,4,7)))}

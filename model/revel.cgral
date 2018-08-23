@@ -1,0 +1,84 @@
+FU ADD {
+    Opcodes = Add64:0 Add32x2:1 Add16x4:2 Sub64:3 Sub32x2:4 Sub16x4:5
+    Output_Routing = [1,1]:0 [1,-1]:1 [-1,-1]:2 [-1,1]:3 #(NE:0 SE:1 SW:2 NW:3)
+    Mapping = Dedicated #(Single Instruction Only)
+    Firing = InputArrival #(Fire on input arrival – no backpressure)
+}
+
+FU MUL {
+    Opcodes = Mul64:0 Mul32x2:1 Mul16x4:2
+    Output_Routing = [1,1]:0 [1,-1]:1 [-1,-1]:2 [-1,1]:3 #(NE:0 SE:1 SW:2 NW:3)
+    Mapping = Dedicated
+    Firing = InputArrival
+}
+
+FU SPC {
+    Opcodes = Add64:0 Add32x2:1 Add16x4:2 Sub64:3 Sub32x2:4 Sub16x4:5 Mul64:6
+    Mul32x2:7 Mul16x4:8 Div64:9 Div32x2:10 Div16x4:11
+    Output_Routing = [1,1]:0 [1,-1]:1 [-1,-1]:2 [-1,1]:3 #(NE:0 SE:1 SW:2 NW:3)
+    Mapping = Shared(8,…) #8 instructions in instruction buffer
+    Firing = TriggeredInstructions #(Triggered-instructions dataflow execution)
+    Size = [1,2]
+}
+
+Router router {
+    Output_Routing = [1,1]:0 [1,-1]:1 [-1,-1]:2 [-1,1]:3
+    [0,1]:4 [1,0]:5 [0,-1]:6 [0,-2]:7#(NE:0 SE:1 SW:2 NW:3 N:4 E:5 S:6 W:7)
+    Routing = CircuitSwitched
+}
+
+CGRA simple_cgra {
+
+Router = R # None means no intermediate routers
+
+# Topology defines FU and I/O locations, and connectivity
+
+Topology = grid2d(
+
+I5 I6 I7 I8 I9 I10
+
+MUL ADD MUL ADD ADD
+
+I4 I12
+
+MUL ADD MUL ADD SPC
+
+I3 I13
+
+MUL ADD MUL ADD SPC
+
+I2 I14
+
+MUL ADD MUL ADD SPC
+
+I1 I15
+
+MUL ADD MUL ADD SPC
+
+I0 I20 I19 I18 I17 I16
+
+)
+
+#potentially modify properties after instantiation
+
+#eg. add extra link
+
+fus[0][1].Output_Routing=[1,1]:0 [1,-1]:1 [-1,-1]:2 [-1,1]:3 [3,3]:4
+
+#describes the logical inputs and outputs that come from scratchpad/memory/etc...
+
+inputs = (
+
+0: I1 I2 I3 I4,
+
+1: I7 I8 I9 I10
+
+)
+
+outputs = (
+
+0: I1 I2 I3 I4
+
+)
+
+}

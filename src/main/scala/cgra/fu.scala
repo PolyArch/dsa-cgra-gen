@@ -10,9 +10,9 @@ class FU(
           inputDirection  : Array[Double],
           outputDirection : Array[Double],
           deComp          : Int,
-          Instructions    : Array[Array[Array[Int]]], //Instructions(outPort)(decomp) : Array of Instructions Set
-          maxDelayPipeLen : Array[Array[Array[Int]]], //maxDelayPipeLen(outPort)(decomp)(operand)
-          muxDirMatrix    : Array[Array[Array[Array[Boolean]]]] //muxDirMatrix(outPort)(decomp)(operand)(inPut)
+          Instructions    : Array[Array[Array[Int]]], //Instructions(outPort)(subNet) : Array of Instructions Set
+          maxDelayPipeLen : Array[Array[Array[Int]]], //maxDelayPipeLen(outPort)(subNet)(operand)
+          muxDirMatrix    : Array[Array[Array[Array[Boolean]]]] //muxDirMatrix(outPort)(subNet)(operand)(inPut)
         ) extends FabricModule {
   //Override value
   override val datawidthModule: Int = fabricDataWidth
@@ -30,20 +30,20 @@ class FU(
 
   // Requirement check
   require(numModuleOutput == muxDirMatrix.length)
-  for (decomp <- 0 until numDecomp) {
+  for (subNet <- 0 until numDecomp) {
     for (outPort <- 0 until this.numModuleOutput; operand <- 0 until 2) {
-      require(numModuleInput == muxDirMatrix(outPort)(decomp)(operand).length, "Mux select Matrix size mismatch")
-      require(muxDirMatrix(outPort)(decomp)(operand).exists(p => p), s"each output direction need to have one input,Output ${outPort + 1} Sec ${decomp + 1}")
+      require(numModuleInput == muxDirMatrix(outPort)(subNet)(operand).length, "Mux select Matrix size mismatch")
+      require(muxDirMatrix(outPort)(subNet)(operand).exists(p => p), s"each output direction need to have one input,Output ${outPort + 1} Sec ${subNet + 1}")
     }
     for (inPort <- 0 until this.numModuleInput; operand <- 0 until 2) {
       require(numModuleOutput == muxDirMatrix.map {
-        _ (decomp)(operand)(inPort)
+        _ (subNet)(operand)(inPort)
       }.length, "Mux select Matrix size mismatch")
       require(muxDirMatrix.flatMap {
-        _ (decomp)
+        _ (subNet)
       }.map {
         _ (inPort)
-      }.exists(p => p), s"each input direction need to have one output,Input ${inPort + 1} Sec ${decomp + 1}")
+      }.exists(p => p), s"each input direction need to have one output,Input ${inPort + 1} Sec ${subNet + 1}")
     }
   }
 
@@ -51,11 +51,11 @@ class FU(
   val SelReg = new Array[UInt](numModuleOutput * numDecomp * 2)
   val selInsHigh: Int = log2Ceil(numModuleOutput) - 1;
   val selInsLow = 0
-  for (outPort <- 0 until numModuleOutput; decomp <- 0 until numDecomp; operand <- 0 until 2) {
-    SelReg(numModuleOutput * numDecomp * operand + numModuleOutput * decomp + outPort) =
+  for (outPort <- 0 until numModuleOutput; subNet <- 0 until numDecomp; operand <- 0 until 2) {
+    SelReg(numModuleOutput * numDecomp * operand + numModuleOutput * subNet + outPort) =
       RegInit(0.U(log2Ceil(numModuleOutput).W))
     when(io.cfg_mode) {
-      SelReg(numModuleOutput * numDecomp * operand + numModuleOutput * decomp + outPort) :=
+      SelReg(numModuleOutput * numDecomp * operand + numModuleOutput * subNet + outPort) :=
         io.input_ports(1).bits(selInsHigh, selInsLow)
     } //TODO: Currently from inport(1)
     //TODO: How to update the register is not defined yet (Instructions related)
@@ -65,15 +65,15 @@ class FU(
   val pipeLenReg = new Array[UInt](numModuleOutput * numDecomp * 2)
   val pipeInsLow: Int = selInsHigh + 1;
   val pipeInsHigh: Int = log2Ceil(maxDelay) - 1 + pipeInsLow
-  for (outPort <- 0 until numModuleOutput; decomp <- 0 until numDecomp; operand <- 0 until 2) {
+  for (outPort <- 0 until numModuleOutput; subNet <- 0 until numDecomp; operand <- 0 until 2) {
     var leastWidth = {
-      if (maxDelayPipeLen(outPort)(decomp)(operand) < 2) 1
-      else log2Ceil(maxDelayPipeLen(outPort)(decomp)(operand))
+      if (maxDelayPipeLen(outPort)(subNet)(operand) < 2) 1
+      else log2Ceil(maxDelayPipeLen(outPort)(subNet)(operand))
     }
-    pipeLenReg(numModuleOutput * numDecomp * operand + numModuleOutput * decomp + outPort) =
+    pipeLenReg(numModuleOutput * numDecomp * operand + numModuleOutput * subNet + outPort) =
       RegInit(0.U(leastWidth.W))
     when(io.cfg_mode) {
-      pipeLenReg(numModuleOutput * numDecomp * operand + numModuleOutput * decomp + outPort) :=
+      pipeLenReg(numModuleOutput * numDecomp * operand + numModuleOutput * subNet + outPort) :=
         io.input_ports(1).bits(pipeInsHigh, pipeInsLow)
     } //TODO: Currently from inport(1)
     //TODO: How to update the register is not defined yet (Instructions related)
@@ -83,11 +83,11 @@ class FU(
   val opcodeReg = new Array[UInt](numModuleOutput * numDecomp)
   val opcodeRegInsLow: Int = pipeInsHigh + 1;
   val opcodeRegInsHigh: Int = log2Ceil(isa.maxNumISA) - 1 + opcodeRegInsLow
-  for (outPort <- 0 until numModuleOutput; decomp <- 0 until numDecomp) {
-    opcodeReg(numModuleOutput * decomp + outPort) =
+  for (outPort <- 0 until numModuleOutput; subNet <- 0 until numDecomp) {
+    opcodeReg(numModuleOutput * subNet + outPort) =
       RegInit(0.U(log2Ceil(isa.maxNumISA).W))
     when(io.cfg_mode) {
-      opcodeReg(numModuleOutput * decomp + outPort) :=
+      opcodeReg(numModuleOutput * subNet + outPort) :=
         io.input_ports(1).bits(pipeInsHigh, pipeInsLow)
     } //TODO: Currently from inport(1)
     //TODO: How to update the register is not defined yet (Instructions related)
@@ -99,11 +99,11 @@ class FU(
   val OutputValidReg = RegInit(VecInit(Seq.fill(numModuleOutput * numDecomp)(false.B)))
 
   // Output Register <-> output_port
-  for (decomp <- 0 until numDecomp; outPort <- 0 until numModuleOutput) {
-    io.output_ports(numModuleOutput * decomp + outPort).valid <>
-      OutputValidReg(numModuleOutput * decomp + outPort)
-    io.output_ports(numModuleOutput * decomp + outPort).bits <>
-      OutputBitsReg(numModuleOutput * decomp + outPort)
+  for (subNet <- 0 until numDecomp; outPort <- 0 until numModuleOutput) {
+    io.output_ports(numModuleOutput * subNet + outPort).valid <>
+      OutputValidReg(numModuleOutput * subNet + outPort)
+    io.output_ports(numModuleOutput * subNet + outPort).bits <>
+      OutputBitsReg(numModuleOutput * subNet + outPort)
   }
 
   //Delay Pipe Definition
@@ -111,83 +111,83 @@ class FU(
 
   //ALU Definition
   val ALUes = new Array[ALU](numModuleOutput * numDecomp)
-  for(decomp <- 0 until numDecomp;outPort <- 0 until numModuleOutput){
-    ALUes(numModuleOutput * decomp + outPort) = Module(new ALU(Instructions(outPort)(decomp), decompDataWidth))
+  for(subNet <- 0 until numDecomp;outPort <- 0 until numModuleOutput){
+    ALUes(numModuleOutput * subNet + outPort) = Module(new ALU(Instructions(outPort)(subNet), decompDataWidth))
   }
 
-  for (decomp <- 0 until numDecomp; operand <- 0 until 2) {
+  for (subNet <- 0 until numDecomp; operand <- 0 until 2) {
 
     var MuxNBitsMatrix = new Array[Array[(chisel3.core.UInt, chisel3.core.UInt)]](numModuleOutput)
     var MuxNValidMatrix = new Array[Array[(chisel3.core.UInt, chisel3.core.Bool)]](numModuleOutput)
 
     for (outPort <- 0 until numModuleOutput) {
-      var numMuxIn: Int = muxDirMatrix(outPort)(decomp)(operand).count(p => p)
+      var numMuxIn: Int = muxDirMatrix(outPort)(subNet)(operand).count(p => p)
 
       MuxNBitsMatrix(outPort) = new Array[(UInt, UInt)](numMuxIn)
       MuxNValidMatrix(outPort) = new Array[(UInt, Bool)](numMuxIn)
 
       var leastWidth = {
-        if (maxDelayPipeLen(outPort)(decomp)(operand) < 2) 1
-        else log2Ceil(maxDelayPipeLen(outPort)(decomp)(operand))
+        if (maxDelayPipeLen(outPort)(subNet)(operand) < 2) 1
+        else log2Ceil(maxDelayPipeLen(outPort)(subNet)(operand))
       }
       require(leastWidth > 0)
-      delayPipes(numModuleOutput * numDecomp * operand + numModuleOutput * decomp + outPort) =
+      delayPipes(numModuleOutput * numDecomp * operand + numModuleOutput * subNet + outPort) =
         Module(new DelayPipe(leastWidth, decompDataWidth))
 
-      delayPipes(numModuleOutput * numDecomp * operand + numModuleOutput * decomp + outPort).io.delayLen :=
-        pipeLenReg(numModuleOutput * numDecomp * operand + numModuleOutput * decomp + outPort)
-      delayPipes(numModuleOutput * numDecomp * operand + numModuleOutput * decomp + outPort).io.cfg_mode := io.cfg_mode
+      delayPipes(numModuleOutput * numDecomp * operand + numModuleOutput * subNet + outPort).io.delayLen :=
+        pipeLenReg(numModuleOutput * numDecomp * operand + numModuleOutput * subNet + outPort)
+      delayPipes(numModuleOutput * numDecomp * operand + numModuleOutput * subNet + outPort).io.cfg_mode := io.cfg_mode
 
 
-      var currInDir = muxDirMatrix(outPort)(decomp)(operand).zipWithIndex.filter(_._1 == true).map(_._2)
+      var currInDir = muxDirMatrix(outPort)(subNet)(operand).zipWithIndex.filter(_._1 == true).map(_._2)
 
       for (selSig <- 0 until numMuxIn) {
         require(MuxNBitsMatrix(outPort).length == numMuxIn)
 
         MuxNBitsMatrix(outPort)(selSig) = selSig.U ->
-          io.input_ports(numModuleInput * decomp + currInDir(selSig)).bits(decompDataWidth * (decomp + 1) - 1, decompDataWidth * decomp)
+          io.input_ports(numModuleInput * subNet + currInDir(selSig)).bits(decompDataWidth * (subNet + 1) - 1, decompDataWidth * subNet)
         MuxNValidMatrix(outPort)(selSig) = selSig.U ->
-          io.input_ports(numModuleInput * decomp + currInDir(selSig)).valid
+          io.input_ports(numModuleInput * subNet + currInDir(selSig)).valid
 
       }
 
-      delayPipes(numModuleOutput * numDecomp * operand + numModuleOutput * decomp + outPort).io.input_ports.bits :=
-        MuxLookup(SelReg(numModuleOutput * decomp + outPort), 0.U, MuxNBitsMatrix(outPort))
-      delayPipes(numModuleOutput * numDecomp * operand + numModuleOutput * decomp + outPort).io.input_ports.valid :=
-        MuxLookup(SelReg(numModuleOutput * decomp + outPort), false.B, MuxNValidMatrix(outPort))
+      delayPipes(numModuleOutput * numDecomp * operand + numModuleOutput * subNet + outPort).io.input_ports.bits :=
+        MuxLookup(SelReg(numModuleOutput * subNet + outPort), 0.U, MuxNBitsMatrix(outPort))
+      delayPipes(numModuleOutput * numDecomp * operand + numModuleOutput * subNet + outPort).io.input_ports.valid :=
+        MuxLookup(SelReg(numModuleOutput * subNet + outPort), false.B, MuxNValidMatrix(outPort))
 
 
-      ALUes(numModuleOutput * decomp + outPort).io.opcode := opcodeReg(numModuleOutput * decomp + outPort)
+      ALUes(numModuleOutput * subNet + outPort).io.opcode := opcodeReg(numModuleOutput * subNet + outPort)
 
       if(operand == 0){
-        ALUes(numModuleOutput * decomp + outPort).io.operand1 <>
-          delayPipes(numModuleOutput * numDecomp * operand + numModuleOutput * decomp + outPort).io.output_ports
+        ALUes(numModuleOutput * subNet + outPort).io.operand1 <>
+          delayPipes(numModuleOutput * numDecomp * operand + numModuleOutput * subNet + outPort).io.output_ports
       }else if(operand == 1){
-        ALUes(numModuleOutput * decomp + outPort).io.operand2 <>
-          delayPipes(numModuleOutput * numDecomp * operand + numModuleOutput * decomp + outPort).io.output_ports
+        ALUes(numModuleOutput * subNet + outPort).io.operand2 <>
+          delayPipes(numModuleOutput * numDecomp * operand + numModuleOutput * subNet + outPort).io.output_ports
       }
 
-      ALUes(numModuleOutput * decomp + outPort).io.output_ports.ready :=
-        io.output_ports(numModuleOutput * decomp + outPort).ready
+      ALUes(numModuleOutput * subNet + outPort).io.output_ports.ready :=
+        io.output_ports(numModuleOutput * subNet + outPort).ready
 
-      when(io.output_ports(numModuleOutput * decomp + outPort).ready) {
-        OutputBitsReg(numModuleOutput * decomp + outPort) :=
-          ALUes(numModuleOutput * decomp + outPort).io.output_ports.bits
-        OutputValidReg(numModuleOutput * decomp + outPort) :=
-          ALUes(numModuleOutput * decomp + outPort).io.output_ports.valid
+      when(io.output_ports(numModuleOutput * subNet + outPort).ready) {
+        OutputBitsReg(numModuleOutput * subNet + outPort) :=
+          ALUes(numModuleOutput * subNet + outPort).io.output_ports.bits
+        OutputValidReg(numModuleOutput * subNet + outPort) :=
+          ALUes(numModuleOutput * subNet + outPort).io.output_ports.valid
       }
     }
   }
 
-  for (inPort <- 0 until numModuleInput;decomp <- 0 until numDecomp){
+  for (inPort <- 0 until numModuleInput;subNet <- 0 until numDecomp){
     var readySum = true.B
     for(outPort <- 0 until numModuleOutput;operand <- 0 until 2) {
-      if (muxDirMatrix(outPort)(decomp)(operand)(inPort)){
+      if (muxDirMatrix(outPort)(subNet)(operand)(inPort)){
         readySum =
-          readySum & delayPipes(numModuleOutput * numDecomp * operand + numModuleOutput * decomp + outPort).io.input_ports.ready
+          readySum & delayPipes(numModuleOutput * numDecomp * operand + numModuleOutput * subNet + outPort).io.input_ports.ready
       }
     }
-    io.input_ports(numModuleInput * decomp + inPort).ready := readySum
+    io.input_ports(numModuleInput * subNet + inPort).ready := readySum
   }
 }
 

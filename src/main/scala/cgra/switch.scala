@@ -23,22 +23,22 @@ class Switch(
 
   // Requirement check
   require(numModuleOutput==muxDirMatrix.length)
-  for(decomp <- 0 until numDecomp){
+  for(subNet <- 0 until numDecomp){
     for (outPort <-0 until this.numModuleOutput){
-      require(numModuleInput==muxDirMatrix(outPort)(decomp).length,"Mux select Matrix size mismatch")
-      require(muxDirMatrix(outPort)(decomp).exists(p=>p),s"each output direction need to have one input,Output ${outPort} Sec ${decomp}")
+      require(numModuleInput==muxDirMatrix(outPort)(subNet).length,"Mux select Matrix size mismatch")
+      require(muxDirMatrix(outPort)(subNet).exists(p=>p),s"each output direction need to have one input,Output ${outPort} Sec ${subNet}")
     }
     for (inPort <- 0 until this.numModuleInput){
-      require(numModuleOutput==muxDirMatrix.map{_(decomp)(inPort)}.length,"Mux select Matrix size mismatch")
-      require(muxDirMatrix.map{_(decomp)(inPort)}.exists(p=>p),s"each input direction need to have one output,Input ${inPort} Sec ${decomp}")
+      require(numModuleOutput==muxDirMatrix.map{_(subNet)(inPort)}.length,"Mux select Matrix size mismatch")
+      require(muxDirMatrix.map{_(subNet)(inPort)}.exists(p=>p),s"each input direction need to have one output,Input ${inPort} Sec ${subNet}")
     }
   }
 
   // Select Register definition
   val SelReg = new Array[UInt](numModuleOutput * numDecomp)
-  for(outPort <- 0 until numModuleOutput;decomp <- 0 until numDecomp){
-    SelReg(numModuleOutput * decomp + outPort) = RegInit(0.U(log2Ceil(numModuleOutput).W))
-    when(io.cfg_mode){SelReg(numModuleOutput * decomp + outPort) := io.input_ports(1).bits(log2Ceil(numModuleOutput)-1,0)}
+  for(outPort <- 0 until numModuleOutput;subNet <- 0 until numDecomp){
+    SelReg(numModuleOutput * subNet + outPort) = RegInit(0.U(log2Ceil(numModuleOutput).W))
+    when(io.cfg_mode){SelReg(numModuleOutput * subNet + outPort) := io.input_ports(1).bits(log2Ceil(numModuleOutput)-1,0)}
     //TODO: How to update the select register is not defined yet (Instructions related)
   }
 
@@ -48,66 +48,66 @@ class Switch(
   val OutputValidReg = RegInit(VecInit(Seq.fill(numModuleOutput * numDecomp)(false.B)))
 
   // Output Register <-> output_port
-  for (decomp <- 0 until numDecomp;outPort <- 0 until numModuleOutput){
-    io.output_ports(numModuleOutput * decomp + outPort).valid <>
-      OutputValidReg(numModuleOutput * decomp + outPort)
-    io.output_ports(numModuleOutput * decomp + outPort).bits <>
-      OutputBitsReg(numModuleOutput * decomp + outPort)
+  for (subNet <- 0 until numDecomp;outPort <- 0 until numModuleOutput){
+    io.output_ports(numModuleOutput * subNet + outPort).valid <>
+      OutputValidReg(numModuleOutput * subNet + outPort)
+    io.output_ports(numModuleOutput * subNet + outPort).bits <>
+      OutputBitsReg(numModuleOutput * subNet + outPort)
   }
 
-  for (decomp <- 0 until numDecomp)
+  for (subNet <- 0 until numDecomp)
   {
     var MuxNBitsMatrix = new Array[Array[(chisel3.core.UInt, chisel3.core.UInt)]](numModuleOutput)
     var MuxNValidMatrix = new Array[Array[(chisel3.core.UInt, chisel3.core.Bool)]](numModuleOutput)
 
     for(outPort <- 0 until numModuleOutput){
       var numMuxIn:Int = {
-        if (numDecomp == 1){muxDirMatrix(outPort)(decomp).count(p=>p)}
-        else{muxDirMatrix(outPort)(decomp).count(p=>p) + 1}
+        if (numDecomp == 1){muxDirMatrix(outPort)(subNet).count(p=>p)}
+        else{muxDirMatrix(outPort)(subNet).count(p=>p) + 1}
       }
 
       MuxNBitsMatrix(outPort) = new Array[(UInt, UInt)](numMuxIn)
       MuxNValidMatrix(outPort) = new Array[(UInt, Bool)](numMuxIn)
 
-      var currInDir = muxDirMatrix(outPort)(decomp).zipWithIndex.filter(_._1 == true).map(_._2)
+      var currInDir = muxDirMatrix(outPort)(subNet).zipWithIndex.filter(_._1 == true).map(_._2)
 
-      for (selSig <- 0 until muxDirMatrix(outPort)(decomp).count(p=>p)){
+      for (selSig <- 0 until muxDirMatrix(outPort)(subNet).count(p=>p)){
         require(MuxNBitsMatrix(outPort).length == numMuxIn)
         MuxNBitsMatrix(outPort)(selSig) =  selSig.U ->
-          io.input_ports(numModuleInput * decomp + currInDir(selSig)).bits(decompDataWidth*(decomp + 1)-1,decompDataWidth*decomp)
+          io.input_ports(numModuleInput * subNet + currInDir(selSig)).bits(decompDataWidth*(subNet + 1)-1,decompDataWidth*subNet)
         MuxNValidMatrix(outPort)(selSig) = selSig.U ->
-          io.input_ports(numModuleInput * decomp + currInDir(selSig)).valid
+          io.input_ports(numModuleInput * subNet + currInDir(selSig)).valid
       }
 
       if(numDecomp > 1){
-        var selSig = muxDirMatrix(outPort)(decomp).count(p=>p)
-        if (decomp != 0){
-          MuxNBitsMatrix(outPort)(selSig) =  selSig.U -> OutputBitsReg(numModuleOutput * (decomp - 1) + outPort)
-          MuxNValidMatrix(outPort)(selSig) = selSig.U -> OutputValidReg(numModuleOutput * (decomp - 1) + outPort)
+        var selSig = muxDirMatrix(outPort)(subNet).count(p=>p)
+        if (subNet != 0){
+          MuxNBitsMatrix(outPort)(selSig) =  selSig.U -> OutputBitsReg(numModuleOutput * (subNet - 1) + outPort)
+          MuxNValidMatrix(outPort)(selSig) = selSig.U -> OutputValidReg(numModuleOutput * (subNet - 1) + outPort)
         }else{
           MuxNBitsMatrix(outPort)(selSig) =  selSig.U -> OutputBitsReg(numModuleOutput * (numDecomp - 1) + outPort)
           MuxNValidMatrix(outPort)(selSig) = selSig.U -> OutputValidReg(numModuleOutput * (numDecomp - 1) + outPort)
         }
       }
 
-      when(io.output_ports(numModuleOutput * decomp + outPort).ready){
-        OutputBitsReg(numModuleOutput * decomp + outPort) :=
-          MuxLookup(SelReg(numModuleOutput * decomp + outPort),0.U,MuxNBitsMatrix(outPort))
-        OutputValidReg(numModuleOutput * decomp + outPort) :=
-          MuxLookup(SelReg(numModuleOutput * decomp + outPort),false.B,MuxNValidMatrix(outPort))
+      when(io.output_ports(numModuleOutput * subNet + outPort).ready){
+        OutputBitsReg(numModuleOutput * subNet + outPort) :=
+          MuxLookup(SelReg(numModuleOutput * subNet + outPort),0.U,MuxNBitsMatrix(outPort))
+        OutputValidReg(numModuleOutput * subNet + outPort) :=
+          MuxLookup(SelReg(numModuleOutput * subNet + outPort),false.B,MuxNValidMatrix(outPort))
       }
     }
   }
 
 
-  for (inPort <- 0 until numModuleInput;decomp <- 0 until numDecomp){
+  for (inPort <- 0 until numModuleInput;subNet <- 0 until numDecomp){
     var readySum = true.B
     for(outPort <- 0 until numModuleOutput) {
-      if (muxDirMatrix(outPort)(decomp)(inPort)){
-        readySum = readySum & io.output_ports(numModuleOutput * decomp + outPort).ready
+      if (muxDirMatrix(outPort)(subNet)(inPort)){
+        readySum = readySum & io.output_ports(numModuleOutput * subNet + outPort).ready
       }
     }
-    io.input_ports(numModuleInput * decomp + inPort).ready := readySum
+    io.input_ports(numModuleInput * subNet + inPort).ready := readySum
   }
 }
 
