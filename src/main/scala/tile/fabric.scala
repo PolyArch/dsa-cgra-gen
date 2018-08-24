@@ -6,8 +6,10 @@ import chisel3.util._
 
 trait HasFabricParams {
   val fabricDataWidth = 64
-  val numFabricInput = 15
-  val numFabricOutput = 14
+  lazy val numFabricInput : Int = 0
+  lazy val numFabricOutput : Int = 0
+  lazy val numRows : Int = 0
+  lazy val numCols : Int = 0
 }
 
 trait HasFabricModuleParams extends HasFabricParams
@@ -15,8 +17,8 @@ trait HasFabricModuleParams extends HasFabricParams
   val datawidthModule       : Int
   val numModuleInput        : Int
   val numModuleOutput       : Int
-  val inputMoudleDirection  : Array[Double]
-  val outputModuleDirection : Array[Double]
+  val inputMoudleDirection  : Array[(Int,Int)]
+  val outputModuleDirection : Array[(Int,Int)]
   val numDecomp             : Int
   lazy val decompDataWidth       : Int = datawidthModule / numDecomp
 
@@ -34,21 +36,13 @@ abstract class FabricModule  extends Module
   })
 }
 
-abstract class Fabric extends Module
-  with HasFabricParams{
-  lazy val io = IO(
-    new Bundle{
-      val input_ports = Vec(numFabricInput,Flipped(DecoupledIO(UInt(fabricDataWidth.W))))
-      val output_ports = Vec(numFabricOutput,DecoupledIO(UInt(fabricDataWidth.W)))
-      val cfg_mode = Input(Bool())
-    }
-  )
-}
-
 class ModuleChannel(deCompInput     : Int,
                     deCompOutput    : Int,
-                    FIFOdepth       : Array[Int]) extends Module
-  with HasFabricParams{
+                    FIFOdepth       : Array[Int],
+                    channelDataWidth: Int) extends Module
+{
+
+  val fabricDataWidth = channelDataWidth
 
   require(FIFOdepth.length == (deCompInput max deCompOutput))
   require(FIFOdepth.forall(fifo => fifo >= 0 ),"FIFO depth need to be non-negative")
@@ -148,4 +142,30 @@ class ModuleChannel(deCompInput     : Int,
 
   }
 }
-object ModuleChannelDriver extends App {chisel3.Driver.execute(args, () => new ModuleChannel(1,8,Array(6,0,0,1,5,3,4,7)))}
+
+abstract class Fabric(modelFile: String) extends Module
+  with HasFabricParams{
+  lazy val io = IO(
+    new Bundle{
+      val input_ports = Vec(numFabricInput,Flipped(DecoupledIO(UInt(fabricDataWidth.W))))
+      val output_ports = Vec(numFabricOutput,DecoupledIO(UInt(fabricDataWidth.W)))
+      val cfg_mode = Input(Bool())
+    }
+  )
+  val model : cgraModel = new cgraModel(modelFile)
+  override lazy val numRows:Int = model.numRows
+  override lazy val numCols:Int = model.numCols
+  override lazy val numFabricInput:Int = model.numFabricInput
+  override lazy val numFabricOutput:Int = model.numFabricOutput
+
+  // Initialize Fabric Grid
+  lazy val FabricGrid = new Array[Array[FabricModule]](numRows)
+  FabricGrid.foreach(row =>{
+    new Array[FabricModule](numCols)
+  })
+
+
+}
+
+
+object ModuleChannelDriver extends App {chisel3.Driver.execute(args, () => new ModuleChannel(1,8,Array(6,0,0,1,5,3,4,7),64))}

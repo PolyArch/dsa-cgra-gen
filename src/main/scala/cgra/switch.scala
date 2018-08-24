@@ -7,8 +7,8 @@ import cgraexplorationframework.simplechip.tile._
 class Switch(
               numInput        : Int,
               numOutput       : Int,
-              inputDirection  : Array[Double],
-              outputDirection : Array[Double],
+              inputDirection  : Array[(Int,Int)],
+              outputDirection : Array[(Int,Int)],
               deComp          : Int,
               muxDirMatrix    : Array[Array[Array[Boolean]]] //muxDirMatrix(outPort)(decompSec)(inPut)
             ) extends FabricModule
@@ -17,8 +17,8 @@ class Switch(
   override val datawidthModule: Int = fabricDataWidth
   override lazy val numModuleInput:Int = numInput
   override lazy val numModuleOutput: Int = numOutput
-  override lazy val inputMoudleDirection: Array[Double] = inputDirection
-  override lazy val outputModuleDirection: Array[Double] = outputDirection
+  override lazy val inputMoudleDirection: Array[(Int,Int)] = inputDirection
+  override lazy val outputModuleDirection: Array[(Int,Int)] = outputDirection
   override lazy val numDecomp: Int = deComp
 
   // Requirement check
@@ -113,7 +113,10 @@ class Switch(
 
 object SwitchDriver extends App {
   chisel3.Driver.execute(args, () =>
-    new Switch(4,4,Array(0.0,90.0,180.0,270.0),Array(0.0,90.0,180.0,270.0),4,
+    new Switch(4,4,
+      Array((1,0),(0,1),(-1,0),(0,-1)),
+      Array((1,0),(0,1),(-1,0),(0,-1)),
+      4,
       /*
       Array(
         Array(Array(false,true,false,true)),

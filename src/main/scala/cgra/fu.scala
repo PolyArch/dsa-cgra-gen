@@ -7,8 +7,8 @@ import cgraexplorationframework.simplechip.tile._
 class FU(
           numInput        : Int,
           numOutput       : Int,
-          inputDirection  : Array[Double],
-          outputDirection : Array[Double],
+          inputDirection  : Array[(Int,Int)],
+          outputDirection : Array[(Int,Int)],
           deComp          : Int,
           Instructions    : Array[Array[Array[Int]]], //Instructions(outPort)(subNet) : Array of Instructions Set
           maxDelayPipeLen : Array[Array[Array[Int]]], //maxDelayPipeLen(outPort)(subNet)(operand)
@@ -18,8 +18,8 @@ class FU(
   override val datawidthModule: Int = fabricDataWidth
   override lazy val numModuleInput: Int = numInput
   override lazy val numModuleOutput: Int = numOutput
-  override lazy val inputMoudleDirection: Array[Double] = inputDirection
-  override lazy val outputModuleDirection: Array[Double] = outputDirection
+  override lazy val inputMoudleDirection: Array[(Int,Int)] = inputDirection
+  override lazy val outputModuleDirection: Array[(Int,Int)] = outputDirection
   override lazy val numDecomp: Int = deComp
 
   val maxDelay: Int = maxDelayPipeLen.map {
@@ -271,11 +271,15 @@ class DelayPipe (maxLength:Int,pipeDataWidth:Int) extends Module {
   io.output_ports.valid := FIFO_Valid(0)
 }
 
+//Debug
 object DelayPipeDriver extends App {chisel3.Driver.execute(args, () => new DelayPipe(6,32))}
 object AluDriver extends App {chisel3.Driver.execute(args, () => new ALU(Array(0,1,2),32))}
 
 object FuDriver extends App {chisel3.Driver.execute(args, () =>
-  new FU(4,4,Array(0.0,90.0,180.0,270.0),Array(0.0,90.0,180.0,270.0),4,
+  new FU(4,4,
+    Array((1,0),(0,1),(-1,0),(0,-1)),
+    Array((1,0),(0,1),(-1,0),(0,-1)),
+    4,
     Array(
       Array(Array(0,1,2),Array(0,1,2),Array(0,1,2),Array(0,1,2)),
       Array(Array(1,2),Array(0,1,2),Array(0,1,2),Array(0)),
