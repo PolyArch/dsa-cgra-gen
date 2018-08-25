@@ -1,6 +1,6 @@
-package cgraexplorationframework.dsl.cgral
+package dsl
 
-import scala.util.parsing.combinator._
+import scala.util.parsing.combinator.{JavaTokenParsers, RegexParsers}
 
 trait CgraLanDir extends JavaTokenParsers with RegexParsers {
 

@@ -1,4 +1,4 @@
-package cgraexplorationframework.dsl.cgral
+package dsl
 
 import java.io.FileReader
 import scala.util.parsing.combinator._
@@ -66,7 +66,7 @@ class GridRouterInfo extends GridModule {
 
 object CgraParseExpr extends CgraLan {
   def main(args: Array[String]) {
-    val cgral_lines = new FileReader("/home/sihao/IdeaProjects/CgraEF/model/revelTest.cgral")
+    val cgral_lines = new FileReader("F:\\Study Abroad\\2018 Summer Research Program\\UCLA CSST\\CSST Project\\CGRA\\CgraEF\\model\\revelTest.cgral")
     val cgraModel = parseAll(document,cgral_lines)
     println(cgraModel)
   }

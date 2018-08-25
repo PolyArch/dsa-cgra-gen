@@ -1,4 +1,4 @@
-package cgraexplorationframework.dsl.cgral
+package dsl
 
 import scala.util.parsing.combinator.JavaTokenParsers
 

@@ -1,6 +1,6 @@
-package cgraexplorationframework.simplechip.cgra
+package cgra
 
-import cgraexplorationframework.simplechip.tile._
+import tile._
 
 class CgraFabric(modelFile:String) extends Fabric(modelFile)
   with HasFabricParams {

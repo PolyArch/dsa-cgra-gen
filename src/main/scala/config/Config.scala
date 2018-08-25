@@ -1,6 +1,6 @@
 // See LICENSE.SiFive for license details.
 
-package cgraexplorationframework.simplechip.config
+package config
 
 abstract class Field[T] private (val default: Option[T])
 {

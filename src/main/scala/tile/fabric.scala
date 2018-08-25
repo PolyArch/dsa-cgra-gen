@@ -1,6 +1,6 @@
-package cgraexplorationframework.simplechip.tile
+package tile
 
-import cgraexplorationframework.dsl.cgral._
+import dsl._
 import chisel3._
 import chisel3.util._
 

@@ -1,8 +1,8 @@
-package cgraexplorationframework.simplechip.cgra
+package cgra
 
 import chisel3._
 import chisel3.util._
-import cgraexplorationframework.simplechip.tile._
+import tile._
 
 class FU(
           numInput        : Int,
