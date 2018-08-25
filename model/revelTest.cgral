@@ -1,0 +1,17 @@
+Adas4-1 <-db- Adas4;
+
+Adas4-1 <-db- Adas4;
+
+
+{Adas4-1 <-db- Adas4,
+ Adas4-1 <-db- Adas4};
+
+Adas4-1 = {Adas4-1 <-db- Adas4,
+            Adas4-1 <-db- Adas4};
+
+{Adas4-1:2,
+  Adas4};
+
+Adas4-1 = {[1,1]:0,[1,-1]:1,
+ "SW":[-1,-1]:2,[1,-1]:1
+ [1,-1]:1 [1,-1]:1}
