@@ -3,6 +3,7 @@ package dsl
 import scala.util.parsing.combinator.JavaTokenParsers
 
 class CgraLan extends JavaTokenParsers
+  with CgraLanClassDefine
   with CgraLanAssignment
   with CgraLanCollection
   with CgraLanConnection
@@ -10,16 +11,20 @@ class CgraLan extends JavaTokenParsers
   {
 
   def LangModule : Parser[Any] =(
-    {println("Assign in LangModule");Assign}
-      | {println("Collection in LangModule");Collection}
+    {println("ClassDefine in LangModule");ClassDefine}
+    | {println("Assign in LangModule");Assign}
+      | {println("Collection in LangModule");collectable}
       | {println("Connection in LangModule");Connection}
       | {println("Item in LangModule");Item}
     )
-
+  def seperater : Parser[Any] = (
+    ";"
+      |(";"~whiteSpace)
+  )
   def comment : Parser[Any] = "\\/\\/.+".r
 
   def document: Parser[List[Any]] =
-    repsep({println("langModule in document ------- ");LangModule},";")
+    repsep({println("langModule in document ------- ");LangModule},seperater)
 
 
 }

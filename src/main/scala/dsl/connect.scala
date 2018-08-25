@@ -13,21 +13,27 @@ trait CgraLanConnection extends JavaTokenParsers
     )
 
   def connectToLeft : Parser[Any] =
-    variable  ~ "\\<\\-".r~ConnectionFeature~"\\-".r ~ variable
+    variable  ~ "\\<\\-".r~opt(ConnectionFeature)~"\\-".r ~ variable
 
   def connectToRight : Parser[Any] =
-    variable  ~ "\\-".r ~ConnectionFeature~"\\-\\>".r ~ variable
+    variable  ~ "\\-".r ~opt(ConnectionFeature)~"\\-\\>".r ~ variable
 
   def connectBothWay : Parser[Any] =
-    variable  ~ "\\<\\-".r ~ConnectionFeature~"\\-\\>".r ~ variable
+    variable  ~ "\\<\\-".r ~opt(ConnectionFeature)~"\\-\\>".r ~ variable
 
   def ConnectionFeature :  Parser[Any] =
-    "(\\w+)?".r
+    "(\\w+)".r
 }
 
 trait CgraLanAssignment extends JavaTokenParsers
+  with CgraLanFunction
+  with CgraLanCollection
   with CgraLanItems
-  with CgraLanCollection {
+  {
   def Assign : Parser[Any] =
-    {println("select Item before Assign");Item}~ "=" ~ ({println("select Collection after Assign");Collection} | {println("select Item after Assign");Item})
+    {println("select Item before Assign");Item}~ "=" ~
+      ({println("select function after Assign");function}
+        |{println("select collectable after Assign");collectable}
+        |{println("select direction after Assign");direction}
+        | {println("select Item after Assign");Item})
 }

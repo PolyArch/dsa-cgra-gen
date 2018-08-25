@@ -66,8 +66,35 @@ class GridRouterInfo extends GridModule {
 
 object CgraParseExpr extends CgraLan {
   def main(args: Array[String]) {
-    val cgral_lines = new FileReader("F:\\Study Abroad\\2018 Summer Research Program\\UCLA CSST\\CSST Project\\CGRA\\CgraEF\\model\\revelTest.cgral")
-    val cgraModel = parseAll(document,cgral_lines)
+
+    def commentDelete(undeleted:String) : String ={
+      def paraCommentDelete (paraUnDelete: String): String ={
+        val sta:Int = paraUnDelete.indexOf("/*")
+        val end:Int = paraUnDelete.indexOf("*/") + 2
+        val length :Int=paraUnDelete.length
+        if((end<sta)|(sta<0)|(end<0))
+          paraUnDelete
+        else
+          paraCommentDelete(paraUnDelete.substring(0,sta)+paraUnDelete.substring(end,length))
+      }
+      def lineCommentDelete (lineUnDelete:String) : String ={
+        val sta:Int = lineUnDelete.indexOf("//")
+        val end:Int = lineUnDelete.indexOf("\r\n",sta)
+        val length : Int = lineUnDelete.length
+        if((end<sta)|(sta<0)|(end<0))
+          lineUnDelete
+        else
+          lineCommentDelete(lineUnDelete.substring(0,sta)+lineUnDelete.substring(end,length))
+      }
+
+      lineCommentDelete(paraCommentDelete(undeleted))
+    }
+
+    val cgral_lines = scala.io.Source.fromFile("F:\\Study Abroad\\2018 Summer Research Program\\UCLA CSST\\CSST Project\\CGRA\\CgraEF\\model\\revelTest.cgral").mkString
+
+    val commentFreeLines = commentDelete(cgral_lines)
+
+    val cgraModel = parseAll(document,commentFreeLines)
     println(cgraModel)
   }
 }

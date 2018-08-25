@@ -46,20 +46,20 @@ MUL = FU {
 }
 
 SPC = FU{
-    Opcodes = [
+    Opcodes = {
         Add64 Add32x2 Add16x4 Sub64 Sub32x2 Sub16x4 Mul64 Mul32x2 Mul16x4
-    ]
+    }
     Output_Routing = {
         NE:[1,1]    SE:[1,-1]
         SW:[-1,-1]  NW:[-1,1]
     }
-    Mapping = Shared(8,…) #8 instructions in instruction buffer
-    Firing = TriggeredInstructions #(Triggered-instructions dataflow execution)
+    Mapping = Shared(8) //8 instructions in instruction buffer
+    Firing = TriggeredInstructions //(Triggered-instructions dataflow execution)
     Size = [1,2]
 }
 
 SW = Router{
-     #(NE:0 SE:1 SW:2 NW:3 N:4 E:5 S:6 W:7)
+     //(NE:0 SE:1 SW:2 NW:3 N:4 E:5 S:6 W:7)
      Output_Routing = {
         NE:[1,1]    SE:[1,-1]
         SW:[-1,-1]  NW:[-1,1]
@@ -73,7 +73,7 @@ simple_cgra = CGRA{
 
     Router = SW
 
-    # Topology defines FU and I/O locations, and connectivity
+    // Topology defines FU and I/O locations, and connectivity
 
     Topology = grid2d(
 
@@ -91,15 +91,15 @@ simple_cgra = CGRA{
 
     Inputs = {
 
-        0:[I1->*db_0
-           I2->*db_1]
+        In0={I1->*db_0
+           I2->*db_1}
 
-        1:[I3-b->ADD_1
-           I4->*db_2]
+        In1:{I3-b->ADD_1
+           I4->*db_2}
     }
 
     Outputs = [
-        [*d_5->I1
+        Out0:[*d_5->I1
          SPC_1->I2]
     ]
 
