@@ -10,14 +10,16 @@ class CgraLan extends JavaTokenParsers
   {
 
   def LangModule : Parser[Any] =(
-    Collection
-      | Connection
-      | Item
+    {println("Assign in LangModule");Assign}
+      | {println("Collection in LangModule");Collection}
+      | {println("Connection in LangModule");Connection}
+      | {println("Item in LangModule");Item}
     )
+
   def comment : Parser[Any] = "\\/\\/.+".r
 
   def document: Parser[List[Any]] =
-    repsep(LangModule,opt(",")|whiteSpace)
+    repsep({println("langModule in document ------- ");LangModule},";")
 
 
 }

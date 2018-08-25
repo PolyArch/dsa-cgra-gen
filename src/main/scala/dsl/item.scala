@@ -3,29 +3,49 @@ package cgraexplorationframework.dsl.cgral
 import scala.util.parsing.combinator._
 
 trait CgraLanDir extends JavaTokenParsers with RegexParsers {
+
+  def direction : Parser[Any] =(
+    (dirAlias~":"~dir2d~":"~dirEncode)
+    |(dir2d~":"~dirEncode)
+    | dir2d
+  )
+
+
+
+  def aliasDir : Parser[Any] =
+    dirAlias ~ ":" ~ dir2d
+
+  def dirAlias : Parser[Any] =
+    stringLiteral
+
+
   def dir2d : Parser[Any] =
-    "(r|a)?\\[-?(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9]),-?(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])]".r
+    "\\[-?(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9]),-?(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])](r|a)?".r
+
+  def dirEncode : Parser[Any] =
+    "(3)?".r ~ wholeNumber
 }
 
 trait CgraLanItems extends JavaTokenParsers
-  with CgraLanDir
-
   with RegexParsers {
 
-  def Item : Parser[Any] =
-    fullItem | aliasItem | encodeItem | singleItem
-  def fullItem : Parser[Any] =
-    aliasItem ~":"~wholeNumber
-  def encodeItem : Parser[Any] =
-    singleItem~":"~wholeNumber
-  def aliasItem : Parser[Any] =
-    singleItem ~ ":"~ singleItem
+  def Item : Parser[Any] =(
+      {println("select encode item in Item");encodeVir }
+        | {println("select variable in Item");variable }
+    )
 
-  def singleItem : Parser[Any] =
-   variable | dir2d
+
+  def encodeVir : Parser[Any] =
+    variable~encode
 
   def variable : Parser[Any] =
-    "[a-zA-Z](\\w+)?".r
+    "[a-zA-Z](\\w+)?".r ~ opt("-"~index)
+
+  def index : Parser[Any] =
+    wholeNumber
+
+  def encode : Parser[Any] =
+    ":" ~ wholeNumber
 
 }
 
