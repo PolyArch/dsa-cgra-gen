@@ -1,5 +1,6 @@
-package cgraexplorationframework.simplechip.config
+package cgraexplorationframework.dsl.cgral
 
+import java.io.FileReader
 import scala.util.parsing.combinator._
 
 class cgraModel(modelFileName :String){
@@ -61,4 +62,12 @@ class GridRouterInfo extends GridModule {
         Array(false),Array(false),Array(false),Array(false)
       )
     )
+}
+
+object CgraParseExpr extends CgraLan {
+  def main(args: Array[String]) {
+    val cgral_lines = new FileReader("/home/sihao/IdeaProjects/CgraEF/model/revelTest.cgral")
+    val cgraModel = parseAll(document,cgral_lines)
+    println(cgraModel)
+  }
 }

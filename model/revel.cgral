@@ -1,11 +1,34 @@
+//Comment style : // or /**/
+/*
+Value
+    definition:
+        <alias:> name <:encode>
+        A64 :   Add64   :   0
+        M32x:   Mul32x2 :   1
+    parser:
+        opt(stringLiteral~":")~stringLiteral~opt(":"~"(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9]|)".r)
+    description:
+        alias is always optional. it is just for easy to call
+        encode is necessary when it will actually be encode in compiler
+        name is always necessary
+
+Set :
+
+        "{"~> repsep(value, ",|"+whiteSpace) <~"}"
+
+Assignment:
+        name = value | Set
+*/
+
+
 ADD = FU{
     Opcodes = [
         Add64 Add32x2 Add16x4 Sub64 Sub32x2 Sub16x4
     ]
-    Output_Routing = {
+    Output_Routing = [
         NE:[1,1]    SE:[1,-1]
         SW:[-1,-1]  NW:[-1,1]
-    }
+    ]
     Mapping = Dedicated #(Single Instruction Only)
     Firing = InputArrival #(Fire on input arrival – no backpressure)
 }
