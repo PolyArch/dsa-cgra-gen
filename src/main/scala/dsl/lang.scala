@@ -2,7 +2,7 @@ package dsl
 
 import scala.util.parsing.combinator.JavaTokenParsers
 
-class CgraLan extends JavaTokenParsers
+trait CgraLan extends JavaTokenParsers
   with CgraLanClassDefine
   with CgraLanAssignment
   with CgraLanCollection

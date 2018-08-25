@@ -2,7 +2,7 @@ package dsl
 
 import java.io.FileReader
 import scala.util.parsing.combinator._
-
+import util.Properties
 class cgraModel(modelFileName :String){
 
   // TODO: Need to add parsering function
@@ -79,7 +79,7 @@ object CgraParseExpr extends CgraLan {
       }
       def lineCommentDelete (lineUnDelete:String) : String ={
         val sta:Int = lineUnDelete.indexOf("//")
-        val end:Int = lineUnDelete.indexOf("\r\n",sta)
+        val end:Int = lineUnDelete.indexOf(Properties.lineSeparator,sta)
         val length : Int = lineUnDelete.length
         if((end<sta)|(sta<0)|(end<0))
           lineUnDelete
@@ -90,7 +90,7 @@ object CgraParseExpr extends CgraLan {
       lineCommentDelete(paraCommentDelete(undeleted))
     }
 
-    val cgral_lines = scala.io.Source.fromFile("F:\\Study Abroad\\2018 Summer Research Program\\UCLA CSST\\CSST Project\\CGRA\\CgraEF\\model\\revelTest.cgral").mkString
+    val cgral_lines = scala.io.Source.fromFile("/home/sihao/IdeaProjects/CgraEF/model/template.cgral").mkString
 
     val commentFreeLines = commentDelete(cgral_lines)
 

@@ -67,12 +67,12 @@ SW = Router{
      Routing = CircuitSwitched
 };
 
+/*
 Adas4(1) <-db- Adas4;
 
 {Adas4(1) <-db- Adas4,
-/*
 some comment
-*/
+
  Adas4(1) <-db- Adas4};
 
 Adas4(1) = {Adas4(1) <-db- Adas4,
@@ -80,6 +80,7 @@ Adas4(1) = {Adas4(1) <-db- Adas4,
 
 {Adas4(1):2,
   Adas4};
+
 
 Adas4(1) = {[1,1]:0,[1,-1]:1,
  "SW":[-1,-1]:2,[1,-1]:1
@@ -89,6 +90,8 @@ Adas4(1) = {[1,1]:0,[1,-1]:1,
          "NE":[1,1]    "SE":[1,-1]
          "SW":[-1,-1]  "NW":[-1,1]
      };
+*/
+
 
 simple_cgra = CGRA{
 
