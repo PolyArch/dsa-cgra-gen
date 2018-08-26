@@ -1,4 +1,4 @@
-package dsl
+package dsl.lex
 
 import scala.util.parsing.combinator._
 

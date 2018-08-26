@@ -31,6 +31,8 @@ ADD = new FU{
     Mapping = Dedicated //(Single Instruction Only)
     Firing = InputArrival //(Fire on input arrival – no backpressure)
 };
+
+
 MUL = new FU {
     Opcodes = {
         Mul64 Mul32x2 Mul16x4
@@ -69,26 +71,20 @@ SW = new Router{
 
 Adas4(1) <-db- Adas4;
 
-{Adas4(1) <-db- Adas4,
-/*
-some comment
-*/
- Adas4(1) <-db- Adas4};
 
 Adas4(1) = {Adas4(1) <-db- Adas4,
             Adas4(1) <-db- Adas4};
 
-{Adas4(1):2,
-  Adas4};
 
 Adas4(1) = {[1,1]:0,[1,-1]:1,
  "SW":[-1,-1]:2,[1,-1]:1
  [1,-1]:1 [1,-1]:1};
 
-     Output_Routing = {
-         "NE":[1,1]    "SE":[1,-1]
-         "SW":[-1,-1]  "NW":[-1,1]
+Output_Routing = {
+     "NE":[1,1]    "SE":[1,-1]
+     "SW":[-1,-1]  "NW":[-1,1]
      };
+
 
 simple_cgra = new CGRA{
 
@@ -126,4 +122,4 @@ simple_cgra = new CGRA{
 
     //describes the logical inputs and outputs that come from scratchpad/memory/etc...
 
-}
+};

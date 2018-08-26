@@ -1,4 +1,4 @@
-package dsl
+package dsl.lex
 
 import scala.util.parsing.combinator.{JavaTokenParsers, RegexParsers}
 
@@ -69,7 +69,7 @@ trait CgraLanItems extends JavaTokenParsers
   def encoded : Parser[Int] =
     ":" ~ wholeNumber ^^ {case ":"~ iE => iE.toInt}
 
-  def  showOption[T](x:Option[T])= x match{
+  def  showOption[T](x:Any)= x match{
     case Some(i) => i
     case _ => null
   }

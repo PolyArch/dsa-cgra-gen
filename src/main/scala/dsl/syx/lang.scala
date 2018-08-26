@@ -1,5 +1,6 @@
-package dsl
+package dsl.syx
 
+import dsl.lex._
 import scala.util.parsing.combinator.JavaTokenParsers
 
 trait CgraLan extends JavaTokenParsers
@@ -12,10 +13,8 @@ trait CgraLan extends JavaTokenParsers
 
   def LangModule : Parser[Any] =(
     {println("ClassDefine in LangModule");classDefine}
-    | {println("Assign in LangModule");assign}
-      | {println("Collection in LangModule");collectable}
+      | {println("Assign in LangModule");assign}
       | {println("Connection in LangModule");connection}
-      | {println("Item in LangModule");item}
     )
   def seperater : Parser[Any] = (
     ";"

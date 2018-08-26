@@ -1,8 +1,9 @@
 package dsl
 
-import java.io.FileReader
-import scala.util.parsing.combinator._
+import dsl.syx.CgraLan
 import util.Properties
+
+
 class cgraModel(modelFileName :String){
 
   // TODO: Need to add parsering function
@@ -67,34 +68,49 @@ class GridRouterInfo extends GridModule {
 object CgraParseExpr extends CgraLan {
   def main(args: Array[String]) {
 
-    def commentDelete(undeleted:String) : String ={
-      def paraCommentDelete (paraUnDelete: String): String ={
-        val sta:Int = paraUnDelete.indexOf("/*")
-        val end:Int = paraUnDelete.indexOf("*/") + 2
-        val length :Int=paraUnDelete.length
-        if((end<sta)|(sta<0)|(end<0))
-          paraUnDelete
-        else
-          paraCommentDelete(paraUnDelete.substring(0,sta)+paraUnDelete.substring(end,length))
-      }
-      def lineCommentDelete (lineUnDelete:String) : String ={
-        val sta:Int = lineUnDelete.indexOf("//")
-        val end:Int = lineUnDelete.indexOf(Properties.lineSeparator,sta)
-        val length : Int = lineUnDelete.length
-        if((end<sta)|(sta<0)|(end<0))
-          lineUnDelete
-        else
-          lineCommentDelete(lineUnDelete.substring(0,sta)+lineUnDelete.substring(end,length))
-      }
+    val original_lines = scala.io.Source.fromFile("/home/sihao/IdeaProjects/CgraEF/model/template.cgral").mkString
 
-      lineCommentDelete(paraCommentDelete(undeleted))
+    val commentFreeLines = commentDelete(deleteLastSep(original_lines))
+
+
+    val cgraModel:ParseResult[List[Any]] = parseAll(document,commentFreeLines)
+
+    if(cgraModel.successful){
+      println("Successfully parsed")
+      println(cgraModel)
+    }else{
+      println("Parsing fail")
+    }
+  }
+
+  def commentDelete(undeleted:String) : String ={
+    def paraCommentDelete (paraUnDelete: String): String ={
+      val sta:Int = paraUnDelete.indexOf("/*")
+      val end:Int = paraUnDelete.indexOf("*/") + 2
+      val length :Int=paraUnDelete.length
+      if((end<sta)|(sta<0)|(end<0))
+        paraUnDelete
+      else
+        paraCommentDelete(paraUnDelete.substring(0,sta)+
+          paraUnDelete.substring(sta,end).replaceAll(".+","")
+          +paraUnDelete.substring(end,length))
+    }
+    def lineCommentDelete (lineUnDelete:String) : String ={
+      val sta:Int = lineUnDelete.indexOf("//")
+      val end:Int = lineUnDelete.indexOf(Properties.lineSeparator,sta)
+      val length : Int = lineUnDelete.length
+      if((end<sta)|(sta<0)|(end<0))
+        lineUnDelete
+      else
+        lineCommentDelete(lineUnDelete.substring(0,sta)+lineUnDelete.substring(end,length))
     }
 
-    val cgral_lines = scala.io.Source.fromFile("/home/sihao/IdeaProjects/CgraEF/model/template.cgral").mkString
-
-    val commentFreeLines = commentDelete(cgral_lines)
-
-    val cgraModel = parseAll(document,commentFreeLines)
-    println(cgraModel)
+    lineCommentDelete(paraCommentDelete(undeleted))
   }
+
+  def deleteLastSep(undeleted:String) : String =
+    undeleted.reverse.replaceFirst(";","").reverse
+
+
 }
+
