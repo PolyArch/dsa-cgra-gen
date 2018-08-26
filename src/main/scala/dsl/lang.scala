@@ -11,11 +11,11 @@ trait CgraLan extends JavaTokenParsers
   {
 
   def LangModule : Parser[Any] =(
-    {println("ClassDefine in LangModule");ClassDefine}
-    | {println("Assign in LangModule");Assign}
+    {println("ClassDefine in LangModule");classDefine}
+    | {println("Assign in LangModule");assign}
       | {println("Collection in LangModule");collectable}
-      | {println("Connection in LangModule");Connection}
-      | {println("Item in LangModule");Item}
+      | {println("Connection in LangModule");connection}
+      | {println("Item in LangModule");item}
     )
   def seperater : Parser[Any] = (
     ";"

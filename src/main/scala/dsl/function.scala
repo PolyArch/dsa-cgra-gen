@@ -8,13 +8,13 @@ trait CgraLanFunction extends JavaTokenParsers
     functionName ~ "(" ~> opt(FunctionMultiArgs|FunctionSingleArg) <~ ")"
 
   def functionName: Parser[Any] =
-    Item
+    item
 
   def FunctionMultiArgs : Parser[Any] =
     repsep(FunctionSingleArg,","|(","~whiteSpace))
 
   def FunctionSingleArg : Parser[Any] =
-    Item | stringLiteral | floatingPointNumber
+    item | stringLiteral | floatingPointNumber
 
   //   (.)?+
 

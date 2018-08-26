@@ -7,13 +7,27 @@ trait CgraLanCollection extends JavaTokenParsers
   with CgraLanDir
   with CgraLanItems{
 
-  def collectable : Parser[Any] =
-    opt(collectAlias ~":")~"{"~> repsep(
-      {println("select connection in Collection");collectable}
-        |{println("select connection in Collection");Connection}
-        |{println ("select direction in collection");direction}
-        |{println("select variable in collection");Item},","|opt(whiteSpace)) <~"}"
+  def collectable : Parser[Collection] =
+    opt(collectAlias) ~opt(":")~collectSet ^^
+      {
+        case None~None~collec => new Collection{ aliasCollection = null;CollectionSet = collec}
+        case aC~ _ ~collec => new Collection{ aliasCollection = showOption(aC).asInstanceOf[Item];CollectionSet = collec}
+      }
 
-  def collectAlias : Parser[Any] =
-    Item
+  def collectSet : Parser[List[Any]] =
+    "{"~> repsep(
+      {println("select connection in Collection");collectable}
+        |{println("select connection in Collection");connection}
+        |{println ("select direction in collection");direction}
+        |{println("select variable in collection");item},","|opt(whiteSpace)) <~"}" ^^ (List() ++ _)
+
+  def collectAlias : Parser[Item] =
+    item
+
+  class Collection {
+    var aliasCollection : Item = null
+    var CollectionSet : List[Any] = null
+  }
+
 }
+

@@ -20,7 +20,7 @@ Assignment:
         name = value | Set
 */
 
-ADD = FU{
+ADD = new FU{
     Opcodes = {
         Add64 Add32x2 Add16x4 Sub64 Sub32x2 Sub16x4
     }
@@ -31,7 +31,7 @@ ADD = FU{
     Mapping = Dedicated //(Single Instruction Only)
     Firing = InputArrival //(Fire on input arrival – no backpressure)
 };
-MUL = FU {
+MUL = new FU {
     Opcodes = {
         Mul64 Mul32x2 Mul16x4
     }
@@ -43,7 +43,7 @@ MUL = FU {
     Firing = InputArrival
 };
 
-SPC = FU{
+SPC = new FU{
     Opcodes = {
         Add64 Add32x2 Add16x4 Sub64 Sub32x2 Sub16x4 Mul64 Mul32x2 Mul16x4
     }
@@ -56,7 +56,7 @@ SPC = FU{
     Size = [1,2]
 };
 
-SW = Router{
+SW = new Router{
      //(NE:0 SE:1 SW:2 NW:3 N:4 E:5 S:6 W:7)
      Output_Routing = {
         "NE":[1,1]    "SE":[1,-1]
@@ -90,7 +90,7 @@ Adas4(1) = {[1,1]:0,[1,-1]:1,
          "SW":[-1,-1]  "NW":[-1,1]
      };
 
-simple_cgra = CGRA{
+simple_cgra = new CGRA{
 
     Router = SW
 
