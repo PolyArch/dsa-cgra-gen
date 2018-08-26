@@ -1,6 +1,6 @@
 package tile
 
-import dsl._
+import dsl.IR._
 import chisel3._
 import chisel3.util._
 
@@ -143,6 +143,9 @@ class ModuleChannel(deCompInput     : Int,
   }
 }
 
+
+
+/*
 abstract class Fabric(modelFile: String) extends Module
   with HasFabricParams{
   lazy val io = IO(
@@ -152,7 +155,8 @@ abstract class Fabric(modelFile: String) extends Module
       val cfg_mode = Input(Bool())
     }
   )
-  val model : cgraModel = new cgraModel(modelFile)
+
+  val model : CgraModel = new CgraModel(modelFile)
   override lazy val numRows:Int = model.numRows
   override lazy val numCols:Int = model.numCols
   override lazy val numFabricInput:Int = model.numFabricInput
@@ -166,6 +170,9 @@ abstract class Fabric(modelFile: String) extends Module
 
 
 }
+*/
 
-
+// Instantiate
+/*
 object ModuleChannelDriver extends App {chisel3.Driver.execute(args, () => new ModuleChannel(1,8,Array(6,0,0,1,5,3,4,7),64))}
+*/

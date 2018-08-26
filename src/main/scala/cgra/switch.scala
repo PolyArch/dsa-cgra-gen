@@ -111,6 +111,8 @@ class Switch(
   }
 }
 
+// Instantiate
+/*
 object SwitchDriver extends App {
   chisel3.Driver.execute(args, () =>
     new Switch(4,4,
@@ -132,3 +134,4 @@ object SwitchDriver extends App {
     )
   )
 }
+*/

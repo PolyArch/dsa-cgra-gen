@@ -271,10 +271,10 @@ class DelayPipe (maxLength:Int,pipeDataWidth:Int) extends Module {
   io.output_ports.valid := FIFO_Valid(0)
 }
 
-//Debug
+// Instantiate
+/*
 object DelayPipeDriver extends App {chisel3.Driver.execute(args, () => new DelayPipe(6,32))}
 object AluDriver extends App {chisel3.Driver.execute(args, () => new ALU(Array(0,1,2),32))}
-
 object FuDriver extends App {chisel3.Driver.execute(args, () =>
   new FU(4,4,
     Array((1,0),(0,1),(-1,0),(0,-1)),
@@ -316,3 +316,4 @@ object FuDriver extends App {chisel3.Driver.execute(args, () =>
     )
   )
 )}
+*/
