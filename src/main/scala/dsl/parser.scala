@@ -1,7 +1,9 @@
 package dsl
 
 import dsl.syx.CgraLan
+
 import util.Properties
+import java.io.File
 
 
 class cgraModel(modelFileName :String){
@@ -68,10 +70,8 @@ class GridRouterInfo extends GridModule {
 object CgraParseExpr extends CgraLan {
   def main(args: Array[String]) {
 
-    val original_lines = scala.io.Source.fromFile("/home/sihao/IdeaProjects/CgraEF/model/template.cgral").mkString
-
+    val original_lines = fileRead(args(0))
     val commentFreeLines = commentDelete(deleteLastSep(original_lines))
-
 
     val cgraModel:ParseResult[List[Any]] = parseAll(document,commentFreeLines)
 
@@ -81,6 +81,35 @@ object CgraParseExpr extends CgraLan {
     }else{
       println("Parsing fail")
     }
+  }
+
+  def fileRead(fileInfo:String): String = {
+
+    var fileName:String = new String(fileInfo.getBytes(),"Unicode")
+    println(fileName)
+
+    if(!fileInfo.endsWith(".cgral")){
+      fileName  = fileName + ".cgral"
+    }
+    println(fileName)
+
+    try{
+      // relative path
+      scala.io.Source.fromFile("model/" + fileName,"GBK") mkString
+    }catch{
+      // absolute path
+      case _:Throwable => try{
+        val ProjectAbsPath = new File(".").getAbsolutePath().reverse.substring(1).reverse
+        val modelDirPath : String = ProjectAbsPath + "model\\"
+        println(modelDirPath + fileName)
+        scala.io.Source.fromFile(modelDirPath + fileName,"GBK") mkString
+      }catch{
+        case x :Throwable => {
+          println(x)
+          throw new Exception(fileName + " : No such file or directory")}
+      }
+    }
+
   }
 
   def commentDelete(undeleted:String) : String ={
@@ -110,7 +139,4 @@ object CgraParseExpr extends CgraLan {
 
   def deleteLastSep(undeleted:String) : String =
     undeleted.reverse.replaceFirst(";","").reverse
-
-
 }
-
