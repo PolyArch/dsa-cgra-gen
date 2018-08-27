@@ -25,8 +25,8 @@ trait CgraLanFunction extends JavaTokenParsers
     item | stringLiteral | floatingPointNumber
 
   class Function {
-    var FunctionName:Item = null
-    var FunctionArgs:List[Any] = null
+    var FunctionName:Item = _
+    var FunctionArgs:List[Any] = _
   }
 
   //   (.)?+

@@ -1,3 +1,5 @@
+// See README.md for license details.
+
 package tile
 
 import dsl.IR._
@@ -97,7 +99,7 @@ class ModuleChannel(deCompInput     : Int,
     }
 
     for(subInNet <- 0 until deCompInput){
-      var subOutNet = subInNet / IOratio
+      val subOutNet = subInNet / IOratio
       combineOut(subInNet).ready := io.output_ports(subOutNet).ready
     }
     for(subOutNet <- 0 until deCompOutput){
@@ -110,8 +112,8 @@ class ModuleChannel(deCompInput     : Int,
 
     val FIFO_queue = new Array[QueueIO[UInt]](FIFOdepth.length)
     for (subNet <- 0 until maxSubNet){
-      var subInNet = subNet / IOratio
-      var subOutIndex = subNet - subInNet * IOratio
+      val subInNet = subNet / IOratio
+      val subOutIndex = subNet - subInNet * IOratio
       if(FIFOdepth(subNet) > 0){
         FIFO_queue(subNet) = Module(new Queue(UInt(decompDataWidth.W),FIFOdepth(subNet))).io
         FIFO_queue(subNet).enq.bits <> io.input_ports(subInNet).bits((subOutIndex + 1) * decompOutdataWidth - 1,subOutIndex * decompOutdataWidth)
@@ -122,8 +124,8 @@ class ModuleChannel(deCompInput     : Int,
     val combineIn = new Array[DecoupledIO[UInt]](maxSubNet)
 
     for (subNet <- 0 until maxSubNet){
-      var subInNet = subNet / IOratio
-      var subOutIndex = subNet - subInNet * IOratio
+      val subInNet = subNet / IOratio
+      val subOutIndex = subNet - subInNet * IOratio
       if (FIFOdepth(subNet) > 0){
         combineIn(subNet) = FIFO_queue(subNet).enq
         io.output_ports(subNet) <> FIFO_queue(subNet).deq
@@ -136,7 +138,7 @@ class ModuleChannel(deCompInput     : Int,
     }
 
     for (subNet <- 0 until maxSubNet) {
-      var subInNet = subNet / IOratio
+      val subInNet = subNet / IOratio
       io.input_ports(subInNet).ready := combineIn.zipWithIndex.filter(_._2 / IOratio == subInNet).map(_._1.ready).reduceLeft(_ & _)
     }
 

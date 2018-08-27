@@ -17,7 +17,7 @@ trait CgraLanClass  extends JavaTokenParsers
       |{println("select Assign in Class");assign},","|opt(whiteSpace)) <~"}" ^^ (List() ++ _)
 
   class CgraClass {
-    var ClassType:Item = null
+    var ClassType:Item = _
     var ClassMembers:List[Any] = List()
   }
 
@@ -35,7 +35,7 @@ trait CgraLanClassDefine extends JavaTokenParsers
   }
 
   class ClassDefine {
-    var ClassDefineTarget : Item = null
-    var ClassDefineFrom : CgraClass = null
+    var ClassDefineTarget : Item = _
+    var ClassDefineFrom : CgraClass = _
   }
 }

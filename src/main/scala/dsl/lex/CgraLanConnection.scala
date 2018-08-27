@@ -5,7 +5,6 @@ package dsl.lex
 import scala.util.parsing.combinator._
 
 trait CgraLanConnection extends JavaTokenParsers
-  with CgraLanDir
   with CgraLanItems{
 
   def connection : Parser[Connection] =(
@@ -49,8 +48,8 @@ trait CgraLanConnection extends JavaTokenParsers
     "(\\w+)".r ^^ (x => x.toString)
 
   class Connection {
-    var ConnectionDirection : String = null
-    var ConnectionFeature : String = null
+    var ConnectionDirection : String = _
+    var ConnectionFeature : String = _
     var fromPort : List[Item] = List()
     var toPort : List[Item] = List()
   }

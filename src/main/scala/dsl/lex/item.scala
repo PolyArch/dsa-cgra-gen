@@ -9,7 +9,7 @@ trait CgraLanDir extends JavaTokenParsers
 
   def direction : Parser[Direction] =(
 
-    (aliasDir~":"~dirEncode) ^^ {case aD~":"~dE => {aD.encode = dE;aD}}
+    (aliasDir~":"~dirEncode) ^^ {case aD~":"~dE => aD.encode = dE; aD }
       | aliasDir
       |(dir2d~":"~dirEncode) ^^ {case d2d~":"~dE => {d2d.encode = dE;d2d}}
       | dir2d
@@ -36,7 +36,7 @@ trait CgraLanDir extends JavaTokenParsers
     "a|r".r ^^ (_.toString)
 
   class Direction {
-    var alias: String =null
+    var alias: String =_
     var x : Int = 0
     var y: Int = 0
     var offset_type : String = "r"
@@ -78,7 +78,7 @@ trait CgraLanItems extends JavaTokenParsers
 
   class Item {
 
-    var itemName : String = null
+    var itemName : String = _
     var itemEncode : Int = -1
     var itemIndex  : Int = -1
   }

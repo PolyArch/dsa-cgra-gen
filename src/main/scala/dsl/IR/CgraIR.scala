@@ -42,13 +42,13 @@ class GridFUIR extends GridModule {
   var muxDirMatrix    : Array[Array[Array[Array[Boolean]]]]=
     Array(
       Array(
-        Array(Array(false))),
+        Array(Array(x = false))),
       Array(
         Array(Array(false))),
       Array(
         Array(Array(false))),
       Array(
-        Array(Array(false)))
+        Array(Array(x = false)))
     )
 }
 class GridRouterIR extends GridModule {

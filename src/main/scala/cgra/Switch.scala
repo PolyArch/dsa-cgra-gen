@@ -61,19 +61,23 @@ class Switch(
 
   for (subNet <- 0 until numDecomp)
   {
-    var MuxNBitsMatrix = new Array[Array[(chisel3.core.UInt, chisel3.core.UInt)]](numModuleOutput)
-    var MuxNValidMatrix = new Array[Array[(chisel3.core.UInt, chisel3.core.Bool)]](numModuleOutput)
+    val MuxNBitsMatrix = new Array[Array[(chisel3.core.UInt, chisel3.core.UInt)]](numModuleOutput)
+    val MuxNValidMatrix = new Array[Array[(chisel3.core.UInt, chisel3.core.Bool)]](numModuleOutput)
 
     for(outPort <- 0 until numModuleOutput){
-      var numMuxIn:Int = {
-        if (numDecomp == 1){muxDirMatrix(outPort)(subNet).count(p=>p)}
-        else{muxDirMatrix(outPort)(subNet).count(p=>p) + 1}
+      val numMuxIn: Int = {
+        if (numDecomp == 1) {
+          muxDirMatrix(outPort)(subNet).count(p => p)
+        }
+        else {
+          muxDirMatrix(outPort)(subNet).count(p => p) + 1
+        }
       }
 
       MuxNBitsMatrix(outPort) = new Array[(UInt, UInt)](numMuxIn)
       MuxNValidMatrix(outPort) = new Array[(UInt, Bool)](numMuxIn)
 
-      var currInDir = muxDirMatrix(outPort)(subNet).zipWithIndex.filter(_._1 == true).map(_._2)
+      val currInDir = muxDirMatrix(outPort)(subNet).zipWithIndex.filter(_._1 == true).map(_._2)
 
       for (selSig <- 0 until muxDirMatrix(outPort)(subNet).count(p=>p)){
         require(MuxNBitsMatrix(outPort).length == numMuxIn)
@@ -84,7 +88,7 @@ class Switch(
       }
 
       if(numDecomp > 1){
-        var selSig = muxDirMatrix(outPort)(subNet).count(p=>p)
+        val selSig = muxDirMatrix(outPort)(subNet).count(p => p)
         if (subNet != 0){
           MuxNBitsMatrix(outPort)(selSig) =  selSig.U -> OutputBitsReg(numModuleOutput * (subNet - 1) + outPort)
           MuxNValidMatrix(outPort)(selSig) = selSig.U -> OutputValidReg(numModuleOutput * (subNet - 1) + outPort)
@@ -116,7 +120,7 @@ class Switch(
 }
 
 // Instantiate
-/*
+
 object SwitchDriver extends App {
   chisel3.Driver.execute(args, () =>
     new Switch(4,4,
@@ -138,4 +142,3 @@ object SwitchDriver extends App {
     )
   )
 }
-*/

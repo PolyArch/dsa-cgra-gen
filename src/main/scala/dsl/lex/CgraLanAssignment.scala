@@ -20,8 +20,8 @@ trait CgraLanAssignment extends JavaTokenParsers
   }
 
   class Assign {
-    var AssignTarget : Item = null
-    var AssignFrom : Any = null
+    var AssignTarget : Item = _
+    var AssignFrom : Any = _
   }
 
 }

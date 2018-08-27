@@ -27,8 +27,8 @@ trait CgraLanCollection extends JavaTokenParsers
     item
 
   class Collection {
-    var aliasCollection : Item = null
-    var CollectionSet : List[Any] = null
+    var aliasCollection : Item = _
+    var CollectionSet : List[Any] = _
   }
 
 }

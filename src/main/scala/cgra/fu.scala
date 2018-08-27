@@ -68,7 +68,7 @@ class FU(
   val pipeInsLow: Int = selInsHigh + 1
   val pipeInsHigh: Int = log2Ceil(maxDelay) - 1 + pipeInsLow
   for (outPort <- 0 until numModuleOutput; subNet <- 0 until numDecomp; operand <- 0 until 2) {
-    var leastWidth = {
+    val leastWidth = {
       if (maxDelayPipeLen(outPort)(subNet)(operand) < 2) 1
       else log2Ceil(maxDelayPipeLen(outPort)(subNet)(operand))
     }
@@ -119,16 +119,16 @@ class FU(
 
   for (subNet <- 0 until numDecomp; operand <- 0 until 2) {
 
-    var MuxNBitsMatrix = new Array[Array[(chisel3.core.UInt, chisel3.core.UInt)]](numModuleOutput)
-    var MuxNValidMatrix = new Array[Array[(chisel3.core.UInt, chisel3.core.Bool)]](numModuleOutput)
+    val MuxNBitsMatrix = new Array[Array[(chisel3.core.UInt, chisel3.core.UInt)]](numModuleOutput)
+    val MuxNValidMatrix = new Array[Array[(chisel3.core.UInt, chisel3.core.Bool)]](numModuleOutput)
 
     for (outPort <- 0 until numModuleOutput) {
-      var numMuxIn: Int = muxDirMatrix(outPort)(subNet)(operand).count(p => p)
+      val numMuxIn: Int = muxDirMatrix(outPort)(subNet)(operand).count(p => p)
 
       MuxNBitsMatrix(outPort) = new Array[(UInt, UInt)](numMuxIn)
       MuxNValidMatrix(outPort) = new Array[(UInt, Bool)](numMuxIn)
 
-      var leastWidth = {
+      val leastWidth = {
         if (maxDelayPipeLen(outPort)(subNet)(operand) < 2) 1
         else log2Ceil(maxDelayPipeLen(outPort)(subNet)(operand))
       }
@@ -141,7 +141,7 @@ class FU(
       delayPipes(numModuleOutput * numDecomp * operand + numModuleOutput * subNet + outPort).io.cfg_mode := io.cfg_mode
 
 
-      var currInDir = muxDirMatrix(outPort)(subNet)(operand).zipWithIndex.filter(_._1 == true).map(_._2)
+      val currInDir = muxDirMatrix(outPort)(subNet)(operand).zipWithIndex.filter(_._1 == true).map(_._2)
 
       for (selSig <- 0 until numMuxIn) {
         require(MuxNBitsMatrix(outPort).length == numMuxIn)
