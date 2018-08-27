@@ -4,14 +4,14 @@ package dsl.IR
 
 class CgraModel{
 
-  val numCols : Int = 5
-  val numRows : Int = 6
+  var numCols : Int = 0
+  var numRows : Int = 0
 
-  val GridIR = new Array[Array[GridModule]](numCols * numRows)
+  var GridIR = new Array[Array[GridModule]](numCols * numRows)
 
-  val ConnectModuleIR:List[ConnectIR] = List[ConnectIR]()
+  var ConnectModuleIR:List[ConnectIR] = List[ConnectIR]()
 
-  val InterfacePort:List[InterfacePortIR] = List[InterfacePortIR]()
+  var InterfacePort:List[InterfacePortIR] = List[InterfacePortIR]()
 
 }
 
@@ -24,6 +24,7 @@ class GridModule {
   var outputDirection : Array[(Int,Int)] = Array((-1,-1))
   var deComp          : Int = -1
 }
+
 class GridFUIR extends GridModule {
   var Instructions    : Array[Array[Array[Int]]] =
     Array(
@@ -51,6 +52,7 @@ class GridFUIR extends GridModule {
         Array(Array(x = false)))
     )
 }
+
 class GridRouterIR extends GridModule {
   var muxDirMatrix    : Array[Array[Array[Boolean]]] =
     Array(

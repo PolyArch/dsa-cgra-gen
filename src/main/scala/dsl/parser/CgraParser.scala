@@ -9,12 +9,18 @@ import dsl.prePar._
 trait CgraParser extends CgraLan
   with fileReadClean{
 
-  def cgraLanParse(fileName:String):ParseResult[List[Any]]= {
+  def cgraLanParse(fileName:String):List[Any]= {
 
     val original_lines = cgraFileRead(fileName)
     val commentFreeLines = commentDelete(deleteLastSep(original_lines))
 
-    try{parseAll(document,commentFreeLines)}
-    catch{ case _ : Throwable=> throw new Exception}
+    val ParsedRes = parseAll(document,commentFreeLines)
+
+    if(ParsedRes.successful){
+      ParsedRes.get
+    }else{
+      println(ParsedRes.toString)
+      throw new Exception
+    }
   }
 }

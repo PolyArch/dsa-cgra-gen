@@ -9,16 +9,17 @@ import dsl.parser._
 
 object CgraLanguageFullStack {
   def main (cgraLanFiles:Array[String]):Unit = {
-    cgraLanFiles.foreach(_ => new CgraFullStack(_))
+    cgraLanFiles.foreach(x => {new CgraFullStack(x)})
     println("Finished ! ")
   }
 
   class CgraFullStack(fileName:String)
-    extends CgraGenerator
-    with CgraLanCompiler
-    with CgraParser
+    extends Env
+      with CgraGenerator
+      with CgraLanCompiler
+      with CgraParser
   {
-    val parsedCodes:ParseResult[List[Any]] = cgraLanParse(fileName)
+    val parsedCodes:List[Any] = cgraLanParse(fileName)
     val model:CgraModel = cgraCompile(parsedCodes)
     val cgra:CgraInstance = cgraGenerate(model)
   }

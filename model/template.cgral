@@ -32,7 +32,6 @@ ADD = new FU{
     Firing = InputArrival //(Fire on input arrival – no backpressure)
 };
 
-
 MUL = new FU {
     Opcodes = {
         Mul64 Mul32x2 Mul16x4
