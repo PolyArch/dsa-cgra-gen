@@ -1,3 +1,5 @@
+// See README.md for license details.
+
 package cgra
 
 import chisel3._

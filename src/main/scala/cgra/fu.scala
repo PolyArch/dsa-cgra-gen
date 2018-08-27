@@ -1,3 +1,5 @@
+// See README.md for license details.
+
 package cgra
 
 import chisel3._
@@ -49,7 +51,7 @@ class FU(
 
   // Select Register definition
   val SelReg = new Array[UInt](numModuleOutput * numDecomp * 2)
-  val selInsHigh: Int = log2Ceil(numModuleOutput) - 1;
+  val selInsHigh: Int = log2Ceil(numModuleOutput) - 1
   val selInsLow = 0
   for (outPort <- 0 until numModuleOutput; subNet <- 0 until numDecomp; operand <- 0 until 2) {
     SelReg(numModuleOutput * numDecomp * operand + numModuleOutput * subNet + outPort) =
@@ -63,7 +65,7 @@ class FU(
 
   // Delay Pipe Len Register definition
   val pipeLenReg = new Array[UInt](numModuleOutput * numDecomp * 2)
-  val pipeInsLow: Int = selInsHigh + 1;
+  val pipeInsLow: Int = selInsHigh + 1
   val pipeInsHigh: Int = log2Ceil(maxDelay) - 1 + pipeInsLow
   for (outPort <- 0 until numModuleOutput; subNet <- 0 until numDecomp; operand <- 0 until 2) {
     var leastWidth = {
@@ -81,7 +83,7 @@ class FU(
 
   // Opcode Register definition
   val opcodeReg = new Array[UInt](numModuleOutput * numDecomp)
-  val opcodeRegInsLow: Int = pipeInsHigh + 1;
+  val opcodeRegInsLow: Int = pipeInsHigh + 1
   val opcodeRegInsHigh: Int = log2Ceil(isa.maxNumISA) - 1 + opcodeRegInsLow
   for (outPort <- 0 until numModuleOutput; subNet <- 0 until numDecomp) {
     opcodeReg(numModuleOutput * subNet + outPort) =
@@ -257,7 +259,7 @@ class DelayPipe (maxLength:Int,pipeDataWidth:Int) extends Module {
   }.otherwise {
     for (i <- 0 until maxLength) {
       when(io.output_ports.ready){
-        when((i.U(maxLength.W) === delay)) {
+        when(i.U(maxLength.W) === delay) {
           FIFO(i) := io.input_ports.bits
           FIFO_Valid(i) := io.input_ports.valid
         }.otherwise {

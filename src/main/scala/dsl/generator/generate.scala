@@ -1,29 +1,27 @@
+// See README.md for license details.
+
 package dsl.generator
 
-import dsl.compiler._
 import dsl.IR._
 import cgra._
+import tile.ModuleChannel
 
-object CGRA {
-  def main (cgraLanFiles:Array[String]) = {
-    cgraLanFiles.foreach(_ => new CgraFullStack(_))
-    println("Finished ! ")
-  }
 
-  class CgraFullStack(modelName:String) extends cgraLanCompiler {
-    val model:CgraModel = cgraCompile(modelName)
-    val cgra:CgraInstance = cgraGenerate(model)
-  }
+
+trait CgraGenerator {
 
   def cgraGenerate(model:CgraModel):CgraInstance = {
-    new CgraInstance
+      new CgraInstance
   }
 
   class CgraInstance {
 
-    var SwitchList : List[Switch] = List()
-    var FuList : List[FU] = List()
-    var InterfacePortList : List[InterfacePort] = List()
-
+      var SwitchList: List[Switch] = List()
+      var FuList: List[FU] = List()
+      var ConnectionList: List[ModuleChannel] = List()
+      var InterfacePortList: List[InterfacePort] = List()
   }
 }
+
+
+

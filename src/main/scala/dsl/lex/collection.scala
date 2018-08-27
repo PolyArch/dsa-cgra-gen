@@ -1,3 +1,5 @@
+// See README.md for license details.
+
 package dsl.lex
 
 import scala.util.parsing.combinator._
@@ -16,10 +18,10 @@ trait CgraLanCollection extends JavaTokenParsers
 
   def collectSet : Parser[List[Any]] =
     "{"~> repsep(
-      {println("select connection in Collection");collectable}
-        |{println("select connection in Collection");connection}
-        |{println ("select direction in collection");direction}
-        |{println("select variable in collection");item},","|opt(whiteSpace)) <~"}" ^^ (List() ++ _)
+      collectable
+        |connection
+        |direction
+        |item,","|opt(whiteSpace)) <~"}" ^^ (List() ++ _)
 
   def collectAlias : Parser[Item] =
     item

@@ -1,19 +1,21 @@
+// See README.md for license details.
+
 package dsl.lex
 
-import scala.util.parsing.combinator.{JavaTokenParsers, RegexParsers}
+import scala.util.parsing.combinator._
 
 trait CgraLanConnection extends JavaTokenParsers
   with CgraLanDir
   with CgraLanItems{
 
   def connection : Parser[Connection] =(
-     {println("select bothWay in Connection");connectBothWay}
-       | {println("select to Left in Connection");connectToLeft}
-       | {println("select to Right in Connection");connectToRight}
+     connectBothWay
+       | connectToLeft
+       | connectToRight
     )
 
   def connectToLeft : Parser[Connection] =
-    variable  ~ "\\<\\-".r~opt(ConnectionFeature)~"\\-".r ~ variable ^^
+    variable  ~ "\\<\\-".r~opt(connectionFeature)~"\\-".r ~ variable ^^
   {
     case to~_~cF~_~from =>
       new Connection {
@@ -24,7 +26,7 @@ trait CgraLanConnection extends JavaTokenParsers
   }
 
   def connectToRight : Parser[Connection] =
-    variable  ~ "\\-".r ~opt(ConnectionFeature)~"\\-\\>".r ~ variable ^^
+    variable  ~ "\\-".r ~opt(connectionFeature)~"\\-\\>".r ~ variable ^^
       {
         case from~_~cF~_~to => new Connection {
           fromPort = fromPort :+ from
@@ -35,7 +37,7 @@ trait CgraLanConnection extends JavaTokenParsers
       }
 
   def connectBothWay : Parser[Connection] =
-    variable  ~ "\\<\\-".r ~opt(ConnectionFeature)~"\\-\\>".r ~ variable^^
+    variable  ~ "\\<\\-".r ~opt(connectionFeature)~"\\-\\>".r ~ variable^^
       {
         case to~_~cF~_~from => new Connection {
           fromPort = fromPort :+ from :+ to
@@ -43,7 +45,7 @@ trait CgraLanConnection extends JavaTokenParsers
           ConnectionFeature = showOption(cF).asInstanceOf[String];ConnectionDirection = "Both"}
       }
 
-  def ConnectionFeature :  Parser[String] =
+  def connectionFeature :  Parser[String] =
     "(\\w+)".r ^^ (x => x.toString)
 
   class Connection {

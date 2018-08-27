@@ -1,26 +1,20 @@
+// See README.md for license details.
+
 package dsl.parser
 
 import dsl.syx._
 import dsl.prePar._
 
 
-class CgraParseExpr extends CgraLan
-  with fileClean{
+trait CgraParser extends CgraLan
+  with fileReadClean{
+
   def cgraLanParse(fileName:String):ParseResult[List[Any]]= {
 
-    val original_lines = fileRead(fileName)
+    val original_lines = cgraFileRead(fileName)
     val commentFreeLines = commentDelete(deleteLastSep(original_lines))
 
-    try{
-      val cgraLangParsed:ParseResult[List[Any]] = parseAll(document,commentFreeLines)
-      println("Successfully parsed")
-      println(cgraLangParsed)
-      cgraLangParsed
-    }catch{
-      case _ : Throwable=> {
-        println("Parsing fail")
-        throw new Exception
-      }
-    }
+    try{parseAll(document,commentFreeLines)}
+    catch{ case _ : Throwable=> throw new Exception}
   }
 }

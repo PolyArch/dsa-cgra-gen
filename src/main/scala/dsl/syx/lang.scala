@@ -1,3 +1,5 @@
+// See README.md for license details.
+
 package dsl.syx
 
 import dsl.lex._
@@ -11,19 +13,14 @@ trait CgraLan extends JavaTokenParsers
   with CgraLanItems
   {
 
-  def LangModule : Parser[Any] =(
-    {println("ClassDefine in LangModule");classDefine}
-      | {println("Assign in LangModule");assign}
-      | {println("Connection in LangModule");connection}
-    )
-  def seperater : Parser[Any] = (
+  def parseCodeLines : Parser[Any] = classDefine |assign |connection
+
+  def separater : Parser[Any] = (
     ";"
       |(";"~whiteSpace)
   )
   def comment : Parser[Any] = "\\/\\/.+".r
 
-  def document: Parser[List[Any]] =
-    repsep({println("langModule in document ------- ");LangModule},seperater)
-
+  def document: Parser[List[Any]] = repsep(parseCodeLines,separater)
 
 }

@@ -1,3 +1,5 @@
+// See README.md for license details.
+
 package dsl.lex
 
 import scala.util.parsing.combinator.JavaTokenParsers
@@ -8,11 +10,11 @@ trait CgraLanAssignment extends JavaTokenParsers
   with CgraLanItems
 {
   def assign : Parser[Any] =
-    {println("select Item before Assign");item}~ "=" ~
-      ({println("select function after Assign");function}
-        |{println("select collectable after Assign");collectable}
-        |{println("select direction after Assign");direction}
-        | {println("select Item after Assign");item}) ^^
+    item~ "=" ~
+      (function
+        |collectable
+        |direction
+        | item) ^^
   {
     case aT~_~aF => new Assign {AssignTarget = aT;AssignFrom = aF}
   }

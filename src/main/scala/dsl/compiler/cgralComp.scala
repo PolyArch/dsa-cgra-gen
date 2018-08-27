@@ -1,16 +1,20 @@
+// See README.md for license details.
+
 package dsl.compiler
 
-import dsl.parser._
 import dsl.IR._
+import dsl.syx.CgraLan
 
-class cgraLanCompiler extends CgraParseExpr{
+trait CgraLanCompiler extends CgraLan{
 
 
-  def cgraCompile(fileName:String):CgraModel = {
+  def cgraCompile(codes:ParseResult[List[Any]]):CgraModel = {
 
-    val parsedSentences = cgraLanParse(fileName)
 
-    new CgraModel
+
+      new CgraModel
+
+
 
   }
 

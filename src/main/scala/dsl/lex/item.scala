@@ -1,3 +1,5 @@
+// See README.md for license details.
+
 package dsl.lex
 
 import scala.util.parsing.combinator.{JavaTokenParsers, RegexParsers}

@@ -1,3 +1,5 @@
+// See README.md for license details.
+
 package cgra
 
 import chisel3._
@@ -26,11 +28,13 @@ class Switch(
   for(subNet <- 0 until numDecomp){
     for (outPort <-0 until this.numModuleOutput){
       require(numModuleInput==muxDirMatrix(outPort)(subNet).length,"Mux select Matrix size mismatch")
-      require(muxDirMatrix(outPort)(subNet).exists(p=>p),s"each output direction need to have one input,Output ${outPort} Sec ${subNet}")
+      require(muxDirMatrix(outPort)(subNet).exists(p=>p),
+        s"each output direction need to have one input,Output $outPort Sec $subNet")
     }
     for (inPort <- 0 until this.numModuleInput){
       require(numModuleOutput==muxDirMatrix.map{_(subNet)(inPort)}.length,"Mux select Matrix size mismatch")
-      require(muxDirMatrix.map{_(subNet)(inPort)}.exists(p=>p),s"each input direction need to have one output,Input ${inPort} Sec ${subNet}")
+      require(muxDirMatrix.map{_(subNet)(inPort)}.exists(p=>p),
+        s"each input direction need to have one output,Input $inPort Sec $subNet")
     }
   }
 

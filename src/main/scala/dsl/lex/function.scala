@@ -1,6 +1,8 @@
+// See README.md for license details.
+
 package dsl.lex
 
-import scala.util.parsing.combinator.{JavaTokenParsers, RegexParsers}
+import scala.util.parsing.combinator._
 
 trait CgraLanFunction extends JavaTokenParsers
   with CgraLanItems {
@@ -14,12 +16,12 @@ trait CgraLanFunction extends JavaTokenParsers
     item ^^ (x=>x)
 
   def functionArgs : Parser[Any] =
-    "(" ~> opt(FunctionMultiArgs|FunctionSingleArg) <~ ")"
+    "(" ~> opt(functionMultiArgs|functionSingleArg) <~ ")"
 
-  def FunctionMultiArgs : Parser[List[Any]] =
-    repsep(FunctionSingleArg,","|(","~whiteSpace)) ^^ {List() ++ _}
+  def functionMultiArgs : Parser[List[Any]] =
+    repsep(functionSingleArg,","|(","~whiteSpace)) ^^ {List() ++ _}
 
-  def FunctionSingleArg : Parser[Any] =
+  def functionSingleArg : Parser[Any] =
     item | stringLiteral | floatingPointNumber
 
   class Function {

@@ -1,6 +1,8 @@
+// See README.md for license details.
+
 package dsl.lex
 
-import scala.util.parsing.combinator.{JavaTokenParsers, RegexParsers}
+import scala.util.parsing.combinator._
 
 trait CgraLanClass  extends JavaTokenParsers
   with CgraLanAssignment{
@@ -27,7 +29,7 @@ trait CgraLanClassDefine extends JavaTokenParsers
   with CgraLanItems
 {
   def classDefine : Parser[ClassDefine] =
-    {println("select Item before Assign");item}~ "=" ~ "new" ~ {println("select Class after Assign");cgraClass} ^^
+    item~ "=" ~ "new" ~ cgraClass ^^
   {
     case cDT ~ "=" ~"new"~cDF => new ClassDefine{ClassDefineTarget = cDT;ClassDefineFrom = cDF}
   }

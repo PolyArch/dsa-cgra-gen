@@ -1,5 +1,6 @@
-package dsl.IR
+// See README.md for license details.
 
+package dsl.IR
 
 class CgraModel{
 
@@ -54,22 +55,23 @@ class GridRouterIR extends GridModule {
   var muxDirMatrix    : Array[Array[Array[Boolean]]] =
     Array(
       Array(
-        Array(false),Array(false),Array(false),Array(false)
+        Array(false),Array(false),Array(false),Array(x = false)
       )
     )
 }
 
 class ConnectIR extends GridModule{
 
-  var fromList = List[GridModule]()
-  var toList = List[GridModule]()
-  var connectFeatureList = List[String]()
+  var fromList :List[GridModule]= List[GridModule]()
+  var toList :List[GridModule]= List[GridModule]()
+  var connectFeatureList :List[String]= List[String]()
 
-  require(fromList.length == toList.length == connectFeatureList.length)
+  require(fromList.length == toList.length)
+  require(fromList.length == connectFeatureList.length)
+  require(toList.length == connectFeatureList.length)
 
 }
 
 class InterfacePortIR{
 
 }
-
