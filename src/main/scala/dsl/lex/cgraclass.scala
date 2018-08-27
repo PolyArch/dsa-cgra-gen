@@ -13,8 +13,7 @@ trait CgraLanClass  extends JavaTokenParsers
     }
 
   def cgraClassMember : Parser[List[Any]] =
-    "{"~> repsep({println("select connection in Class");connection}
-      |{println("select Assign in Class");assign},","|opt(whiteSpace)) <~"}" ^^ (List() ++ _)
+    "{"~> repsep(connection|assign,","|opt(whiteSpace)) <~"}" ^^ (List() ++ _)
 
   class CgraClass {
     var ClassType:Item = _

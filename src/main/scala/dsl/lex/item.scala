@@ -11,12 +11,12 @@ trait CgraLanDir extends JavaTokenParsers
 
     (aliasDir~":"~dirEncode) ^^ {case aD~":"~dE => aD.encode = dE; aD }
       | aliasDir
-      |(dir2d~":"~dirEncode) ^^ {case d2d~":"~dE => {d2d.encode = dE;d2d}}
+      |(dir2d~":"~dirEncode) ^^ {case d2d~":"~dE => d2d.encode = dE;d2d}
       | dir2d
     )
 
   def aliasDir : Parser[Direction] =
-    dirAlias ~ ":" ~ dir2d ^^ {case dA~":"~d2d =>{d2d.alias = dA;d2d}}
+    dirAlias ~ ":" ~ dir2d ^^ {case dA~":"~d2d =>d2d.alias = dA;d2d}
 
   def dirAlias : Parser[String] =
     stringLiteral
@@ -48,18 +48,15 @@ trait CgraLanDir extends JavaTokenParsers
 trait CgraLanItems extends JavaTokenParsers
   with RegexParsers {
 
-  def item : Parser[Item] =(
-    {println("select encode item in Item");encodeVir }
-      | {println("select variable in Item");variable }
-    )
+  def item : Parser[Item] = encodeVir | variable
 
   def encodeVir : Parser[Item] =
-    variable~encoded ^^ {case v ~ vE => {v.itemEncode = vE;v}}
+    variable~encoded ^^ {case v ~ vE => v.itemEncode = vE;v}
 
   def variable : Parser[Item] =
     variableName ~ opt(index) ^^ {
-      case name ~ None =>{new Item{itemName = name;itemIndex = -1}}
-      case name ~ iI => {new Item{itemName = name;itemIndex = showOption(iI).asInstanceOf[Int]}}
+      case name ~ None =>new Item{itemName = name;itemIndex = -1}
+      case name ~ iI => new Item{itemName = name;itemIndex = showOption(iI).asInstanceOf[Int]}
 }
 
   def variableName : Parser[String] =
@@ -71,7 +68,7 @@ trait CgraLanItems extends JavaTokenParsers
   def encoded : Parser[Int] =
     ":" ~ wholeNumber ^^ {case ":"~ iE => iE.toInt}
 
-  def  showOption[T](x:Any)= x match{
+  def showOption[T](x:Any)= x match{
     case Some(i) => i
     case _ => null
   }

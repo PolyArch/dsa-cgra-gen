@@ -6,8 +6,6 @@ import dsl.IR._
 import cgra._
 import tile.ModuleChannel
 
-
-
 trait CgraGenerator {
 
   def cgraGenerate(model:CgraModel):CgraInstance = {
