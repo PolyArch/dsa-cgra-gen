@@ -19,13 +19,13 @@ trait HasFabricModuleParams extends HasFabricParams
   val datawidthModule       : Int
   val numModuleInput        : Int
   val numModuleOutput       : Int
-  val inputMoudleDirection  : Array[(Int,Int)]
-  val outputModuleDirection : Array[(Int,Int)]
+  val inputMoudleLocation  : Array[(Int,Int)]
+  val outputModuleLocation : Array[(Int,Int)]
   val numDecomp             : Int
   lazy val decompDataWidth       : Int = datawidthModule / numDecomp
 
-  require(numModuleInput==inputMoudleDirection.length)
-  require(numModuleOutput==outputModuleDirection.length)
+  require(numModuleInput==inputMoudleLocation.length)
+  require(numModuleOutput==outputModuleLocation.length)
   require(isPow2(fabricDataWidth/numDecomp))
 }
 

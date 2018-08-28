@@ -20,8 +20,8 @@ class GridModule {
   var existed         : Int = -1
   var numInput        : Int = -1
   var numOutput       : Int = -1
-  var inputDirection  : Array[(Int,Int)] = Array((-1,-1))
-  var outputDirection : Array[(Int,Int)] = Array((-1,-1))
+  var inputLocation  : Array[(Int,Int)] = Array((-1,-1))
+  var outputLocation : Array[(Int,Int)] = Array((-1,-1))
   var deComp          : Int = -1
 }
 

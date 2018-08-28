@@ -20,7 +20,7 @@ trait CgraLanCollection extends JavaTokenParsers
     "{"~> repsep(
       collectable
         |connection
-        |direction
+        |location
         |item,","|opt(whiteSpace)) <~"}" ^^ (List() ++ _)
 
   def collectAlias : Parser[Item] =

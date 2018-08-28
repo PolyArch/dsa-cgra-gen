@@ -4,7 +4,8 @@ package dsl.compiler
 
 import dsl.IR._
 
-trait CgraLanCompiler extends execute{
+trait CgraLanCompiler extends execute
+  with analyze{
 
   def cgraCompile(codes:List[Any]):CgraModel = {
 
@@ -14,27 +15,12 @@ trait CgraLanCompiler extends execute{
 
 
     codes.foreach( line => {
-      val lineType = line.getClass
-
-      if (lineType.getName.contains("ClassDefine")){
-        val (currEnviro:Env,currModel:CgraModel) = execClassDefine(Enviro,line.asInstanceOf[ClassDefine],model)
-        model = currModel
-        Enviro = currEnviro
-      }
-
-      if (lineType.getName.contains("Assign")){
-        val (currEnviro:Env,currModel:CgraModel) = execAssign(Enviro,line.asInstanceOf[Assign],model)
-        model = currModel
-        Enviro = currEnviro
-      }
-
-      if (lineType.getName.contains("Connection")){
-        val (currEnviro:Env,currModel:CgraModel) = execConnection(Enviro,line.asInstanceOf[Connection],model)
-        model = currModel
-        Enviro = currEnviro
-      }
-
-      val foo = lineType
+      val currEnv:Env = new Env
+      val currModel:CgraModel = new CgraModel
+      val curr = analyzeLine(Enviro,line,model)
+      Enviro = curr._1
+      model = curr._2
+      val foo = line
     })
 
     model

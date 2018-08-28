@@ -22,19 +22,19 @@ trait CgraLanClass  extends JavaTokenParsers
 
 }
 
-trait CgraLanClassDefine extends JavaTokenParsers
+trait CgraLanClassInstantiate extends JavaTokenParsers
   with CgraLanClass
   with CgraLanCollection
   with CgraLanItems
 {
-  def classDefine : Parser[ClassDefine] =
+  def classInstantiate : Parser[ClassInstantiate] =
     item~ "=" ~ "new" ~ cgraClass ^^
   {
-    case cDT ~ "=" ~"new"~cDF => new ClassDefine{ClassDefineTarget = cDT;ClassDefineFrom = cDF}
+    case cDT ~ "=" ~"new"~cDF => new ClassInstantiate{ClassInstantiateTarget = cDT;ClassInstantiateFrom = cDF}
   }
 
-  class ClassDefine {
-    var ClassDefineTarget : Item = _
-    var ClassDefineFrom : CgraClass = _
+  class ClassInstantiate {
+    var ClassInstantiateTarget : Item = _
+    var ClassInstantiateFrom : CgraClass = _
   }
 }

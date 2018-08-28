@@ -13,7 +13,7 @@ trait CgraLanAssignment extends JavaTokenParsers
     item~ "=" ~
       (function
         |collectable
-        |direction
+        |location
         | item) ^^
   {
     case aT~_~aF => new Assign {AssignTarget = aT;AssignFrom = aF}

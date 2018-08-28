@@ -6,14 +6,14 @@ import dsl.lex._
 import scala.util.parsing.combinator.JavaTokenParsers
 
 trait CgraLan extends JavaTokenParsers
-  with CgraLanClassDefine
+  with CgraLanClassInstantiate
   with CgraLanAssignment
   with CgraLanCollection
   with CgraLanConnection
   with CgraLanItems
   {
 
-  def parseCodeLines : Parser[Any] = classDefine |assign |connection
+  def parseCodeLines : Parser[Any] = classInstantiate |assign |connection
 
   def separater : Parser[Any] = (
     ";"

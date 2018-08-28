@@ -21,7 +21,7 @@ trait CgraLanConnection extends JavaTokenParsers
         fromPort = fromPort :+ from
         toPort = toPort :+ to
         ConnectionFeature = showOption(cF).asInstanceOf[String]
-        ConnectionDirection = "Left"}
+        ConnectionLocation = "Left"}
   }
 
   def connectToRight : Parser[Connection] =
@@ -31,7 +31,7 @@ trait CgraLanConnection extends JavaTokenParsers
           fromPort = fromPort :+ from
           toPort = toPort :+ to
           ConnectionFeature = showOption(cF).asInstanceOf[String]
-          ConnectionDirection = "Right"}
+          ConnectionLocation = "Right"}
 
       }
 
@@ -41,14 +41,14 @@ trait CgraLanConnection extends JavaTokenParsers
         case to~_~cF~_~from => new Connection {
           fromPort = fromPort :+ from :+ to
           toPort = toPort :+ to :+ from
-          ConnectionFeature = showOption(cF).asInstanceOf[String];ConnectionDirection = "Both"}
+          ConnectionFeature = showOption(cF).asInstanceOf[String];ConnectionLocation = "Both"}
       }
 
   def connectionFeature :  Parser[String] =
     "(\\w+)".r ^^ (x => x.toString)
 
   class Connection {
-    var ConnectionDirection : String = _
+    var ConnectionLocation : String = _
     var ConnectionFeature : String = _
     var fromPort : List[Item] = List()
     var toPort : List[Item] = List()

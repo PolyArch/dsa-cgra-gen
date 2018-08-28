@@ -5,9 +5,10 @@ package dsl.lex
 import scala.util.parsing.combinator.{JavaTokenParsers, RegexParsers}
 
 trait CgraLanDir extends JavaTokenParsers
+with CgraLanItems
   with RegexParsers {
 
-  def direction : Parser[Direction] =(
+  def location : Parser[Location] =(
 
     (aliasDir~":"~dirEncode) ^^ {case aD~":"~dE => aD.encode = dE; aD }
       | aliasDir
@@ -15,17 +16,17 @@ trait CgraLanDir extends JavaTokenParsers
       | dir2d
     )
 
-  def aliasDir : Parser[Direction] =
+  def aliasDir : Parser[Location] =
     dirAlias ~ ":" ~ dir2d ^^ {case dA~":"~d2d =>d2d.alias = dA;d2d}
 
-  def dirAlias : Parser[String] =
-    stringLiteral
+  def dirAlias : Parser[Item] =
+    item
 
-  def dir2d : Parser[Direction] =
+  def dir2d : Parser[Location] =
     "["~floatingPointNumber~","~floatingPointNumber~"]"~opt(offsetType) ^^
       {
-        case "["~xDir~","~yDir~"]"~None => new Direction{x=xDir.toInt;y=yDir.toInt}
-        case "["~xDir~","~yDir~"]"~ offset => new Direction {x=xDir.toInt;y=yDir.toInt
+        case "["~xDir~","~yDir~"]"~None => new Location{x=xDir.toInt;y=yDir.toInt}
+        case "["~xDir~","~yDir~"]"~ offset => new Location {x=xDir.toInt;y=yDir.toInt
             offset_type= offset.toString}
       }
 
@@ -35,14 +36,16 @@ trait CgraLanDir extends JavaTokenParsers
   def offsetType : Parser[String] =
     "a|r".r ^^ (_.toString)
 
-  class Direction {
-    var alias: String =_
-    var x : Int = 0
-    var y: Int = 0
-    var offset_type : String = "r"
-    var encode :Int  = -1
-  }
 
+
+}
+
+class Location {
+  var alias: Item =_
+  var x : Int = 0
+  var y: Int = 0
+  var offset_type : String = "r"
+  var encode :Int  = -1
 }
 
 trait CgraLanItems extends JavaTokenParsers
@@ -72,15 +75,11 @@ trait CgraLanItems extends JavaTokenParsers
     case Some(i) => i
     case _ => null
   }
-
-  class Item {
-
-    var itemName : String = _
-    var itemEncode : Int = -1
-    var itemIndex  : Int = -1
-  }
-
-
-
 }
 
+class Item {
+
+  var itemName : String = _
+  var itemEncode : Int = -1
+  var itemIndex  : Int = -1
+}

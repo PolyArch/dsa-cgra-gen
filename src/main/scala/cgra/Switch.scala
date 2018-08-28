@@ -9,8 +9,8 @@ import tile._
 class Switch(
               numInput        : Int,
               numOutput       : Int,
-              inputDirection  : Array[(Int,Int)],
-              outputDirection : Array[(Int,Int)],
+              inputLocation  : Array[(Int,Int)],
+              outputLocation : Array[(Int,Int)],
               deComp          : Int,
               muxDirMatrix    : Array[Array[Array[Boolean]]] //muxDirMatrix(outPort)(decompSec)(inPut)
             ) extends FabricModule
@@ -19,8 +19,8 @@ class Switch(
   override val datawidthModule: Int = fabricDataWidth
   override lazy val numModuleInput:Int = numInput
   override lazy val numModuleOutput: Int = numOutput
-  override lazy val inputMoudleDirection: Array[(Int,Int)] = inputDirection
-  override lazy val outputModuleDirection: Array[(Int,Int)] = outputDirection
+  override lazy val inputMoudleLocation: Array[(Int,Int)] = inputLocation
+  override lazy val outputModuleLocation: Array[(Int,Int)] = outputLocation
   override lazy val numDecomp: Int = deComp
 
   // Requirement check
@@ -29,12 +29,12 @@ class Switch(
     for (outPort <-0 until this.numModuleOutput){
       require(numModuleInput==muxDirMatrix(outPort)(subNet).length,"Mux select Matrix size mismatch")
       require(muxDirMatrix(outPort)(subNet).exists(p=>p),
-        s"each output direction need to have one input,Output $outPort Sec $subNet")
+        s"each output location need to have one input,Output $outPort Sec $subNet")
     }
     for (inPort <- 0 until this.numModuleInput){
       require(numModuleOutput==muxDirMatrix.map{_(subNet)(inPort)}.length,"Mux select Matrix size mismatch")
       require(muxDirMatrix.map{_(subNet)(inPort)}.exists(p=>p),
-        s"each input direction need to have one output,Input $inPort Sec $subNet")
+        s"each input location need to have one output,Input $inPort Sec $subNet")
     }
   }
 

@@ -9,8 +9,8 @@ import tile._
 class FU(
           numInput        : Int,
           numOutput       : Int,
-          inputDirection  : Array[(Int,Int)],
-          outputDirection : Array[(Int,Int)],
+          inputLocation  : Array[(Int,Int)],
+          outputLocation : Array[(Int,Int)],
           deComp          : Int,
           Instructions    : Array[Array[Array[Int]]], //Instructions(outPort)(subNet) : Array of Instructions Set
           maxDelayPipeLen : Array[Array[Array[Int]]], //maxDelayPipeLen(outPort)(subNet)(operand)
@@ -20,8 +20,8 @@ class FU(
   override val datawidthModule: Int = fabricDataWidth
   override lazy val numModuleInput: Int = numInput
   override lazy val numModuleOutput: Int = numOutput
-  override lazy val inputMoudleDirection: Array[(Int,Int)] = inputDirection
-  override lazy val outputModuleDirection: Array[(Int,Int)] = outputDirection
+  override lazy val inputMoudleLocation: Array[(Int,Int)] = inputLocation
+  override lazy val outputModuleLocation: Array[(Int,Int)] = outputLocation
   override lazy val numDecomp: Int = deComp
 
   val maxDelay: Int = maxDelayPipeLen.map {
@@ -35,7 +35,7 @@ class FU(
   for (subNet <- 0 until numDecomp) {
     for (outPort <- 0 until this.numModuleOutput; operand <- 0 until 2) {
       require(numModuleInput == muxDirMatrix(outPort)(subNet)(operand).length, "Mux select Matrix size mismatch")
-      require(muxDirMatrix(outPort)(subNet)(operand).exists(p => p), s"each output direction need to have one input,Output ${outPort + 1} Sec ${subNet + 1}")
+      require(muxDirMatrix(outPort)(subNet)(operand).exists(p => p), s"each output location need to have one input,Output ${outPort + 1} Sec ${subNet + 1}")
     }
     for (inPort <- 0 until this.numModuleInput; operand <- 0 until 2) {
       require(numModuleOutput == muxDirMatrix.map {
@@ -45,7 +45,7 @@ class FU(
         _ (subNet)
       }.map {
         _ (inPort)
-      }.exists(p => p), s"each input direction need to have one output,Input ${inPort + 1} Sec ${subNet + 1}")
+      }.exists(p => p), s"each input location need to have one output,Input ${inPort + 1} Sec ${subNet + 1}")
     }
   }
 
