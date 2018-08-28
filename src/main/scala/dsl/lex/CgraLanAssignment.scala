@@ -23,5 +23,5 @@ trait CgraLanAssignment extends JavaTokenParsers
     var AssignTarget : Item = _
     var AssignFrom : Any = _
   }
-
 }
+

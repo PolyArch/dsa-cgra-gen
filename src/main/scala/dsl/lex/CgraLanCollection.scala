@@ -26,10 +26,9 @@ trait CgraLanCollection extends JavaTokenParsers
   def collectAlias : Parser[Item] =
     item
 
-  class Collection {
-    var aliasCollection : Item = _
-    var CollectionSet : List[Any] = _
-  }
-
 }
 
+class Collection {
+  var aliasCollection : Item = _
+  var CollectionSet : List[Any] = _
+}

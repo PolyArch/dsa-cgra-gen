@@ -3,10 +3,11 @@
 package dsl.compiler
 
 import dsl.IR.CgraModel
+import dsl.lex._
 
 
 trait analyze extends Env
-with execute{
+  with execute{
 
   def analyzeLine(Enviro:Env,line: Any,model:CgraModel):(Env,CgraModel)={
     val lineType = line.getClass.toString.split(Array('.','$'))
@@ -14,24 +15,24 @@ with execute{
     var currEnviro:Env = null
     var currModel:CgraModel = null
 
-    if (lineType.contains("CgraLanClassInstantiate")){
-        val execResult = execClassInstantiate(Enviro,line.asInstanceOf[ClassInstantiate],model)
+    line match {
+      case line:ClassInstantiate =>
+        val execResult = execClassInstantiate(Enviro,line,model)
         currEnviro = execResult._1
         currModel = execResult._2
-    }
 
-    if (lineType.contains("CgraLanAssignment")){
-      val execResult = execAssign(Enviro,line.asInstanceOf[Assign],model)
-      currEnviro = execResult._1
-      currModel = execResult._2
-    }
+      case line:Assign =>
+        val execResult = execAssign(Enviro,line,model)
+        currEnviro = execResult._1
+        currModel = execResult._2
 
-    if (lineType.contains("CgraLanConnection")){
-      val execResult = execConnection(Enviro,line.asInstanceOf[Connection],model)
-      currEnviro = execResult._1
-      currModel = execResult._2
+      case line:Connection =>
+        val execResult = execConnection(Enviro,line,model)
+        currEnviro = execResult._1
+        currModel = execResult._2
+
+      case _ => throw new Exception("Current version do not support such operation")
     }
     (currEnviro,currModel)
   }
-
 }

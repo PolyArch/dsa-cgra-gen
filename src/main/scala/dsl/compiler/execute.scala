@@ -54,7 +54,7 @@ trait execute extends Env
 
   def execAssign(Enviro:Env,
                  line:Assign,
-                 model:CgraModel)={
+                 model:CgraModel):(Env,CgraModel)={
 
     val assignTarget = line.AssignTarget
     val assignTargetName = assignTarget.itemName
@@ -68,12 +68,10 @@ trait execute extends Env
       throw new Exception(assignTargetName + " is not existed")
     }
 
-    val foo = line
-
     (Enviro,model)
   }
 
-  def execConnection(Enviro:Env,line:Connection,model:CgraModel)={
+  def execConnection(Enviro:Env,line:Connection,model:CgraModel):(Env,CgraModel)={
 
     (Enviro,model)
   }

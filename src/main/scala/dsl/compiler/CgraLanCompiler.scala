@@ -13,7 +13,6 @@ trait CgraLanCompiler extends execute
     var model : CgraModel = new CgraModel
     var Enviro : Env = new Env
 
-
     codes.foreach( line => {
       val currEnv:Env = new Env
       val currModel:CgraModel = new CgraModel
