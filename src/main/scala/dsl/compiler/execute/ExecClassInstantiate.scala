@@ -3,7 +3,7 @@
 package dsl.compiler.execute
 
 import dsl.IR.CgraModel
-import dsl.compiler.{ClassInitializer, Env}
+import dsl.compiler._
 import dsl.lex.Item
 
 trait ExecClassInstantiate extends Env

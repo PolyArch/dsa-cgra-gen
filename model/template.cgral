@@ -85,9 +85,22 @@ SW = new Router{
   Routing = CircuitSwitched
 };
 
-SW1 = new Router{};
 
+ADD_2 = new FU{};
+ADD_1 = new FU{};
+ADD_1 = ADD;
+ADD_2 = ADD;
+
+ADD_1 -db-> ADD_2;
+
+Sw0 = new Router{};
+Sw1 = new Router{};
+Sw2 = new Router{};
+Sw3 = new Router{};
+Sw0 = SW;
 Sw1 = SW;
+Sw2 = SW;
+Sw3 = SW;
 
 /*
 Adas4(1) <-db- Adas4;
@@ -122,7 +135,7 @@ simple_cgra = new CGRA{
     " Sw2|     |     |      |    |   |   |     |   |     |Sw3  ",
     "    | MUL |     |ADD   |    |MUL|   |ADD  |   |ADD  |     ",
     "    |     |     |      |    |   |   |     |   |     |     ",
-    "    | MUL |     |ADD   |    |MUL|   |ADD  |   |SPC_1|     ",
+    "    | MUL |     |ADD_2 |    |MUL|   |ADD  |   |SPC_1|     ",
     "    |     |     |      |    |   |   |     |   |     |     "
 
   )

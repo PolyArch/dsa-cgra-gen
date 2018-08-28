@@ -1,16 +1,16 @@
 // See README.md for license details.
 
-package dsl.compiler
+package dsl.compiler.analyze
 
 import dsl.IR.CgraModel
+import dsl.compiler.{Env, Execute}
 import dsl.lex._
 
 
-trait analyze extends Env
-  with execute{
+trait Analyze extends Env
+  with Execute{
 
   def analyzeLine(Enviro:Env,line: Any,model:CgraModel):(Env,CgraModel)={
-    val lineType = line.getClass.toString.split(Array('.','$'))
 
     var currEnviro:Env = null
     var currModel:CgraModel = null

@@ -3,9 +3,10 @@
 package dsl.compiler
 
 import dsl.IR._
+import dsl.compiler.analyze.Analyze
 
-trait CgraLanCompiler extends execute
-  with analyze{
+trait CgraLanCompiler extends Execute
+  with Analyze{
 
   def cgraCompile(codes:List[Any]):CgraModel = {
 

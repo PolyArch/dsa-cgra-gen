@@ -7,7 +7,7 @@ import dsl.compiler.execute._
 import dsl.lex.Item
 
 
-trait execute extends Env
+trait Execute extends Env
   with ExecClassInstantiate
   with ExecAssign
   with ExecConnection

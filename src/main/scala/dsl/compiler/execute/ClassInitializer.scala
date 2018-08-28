@@ -1,6 +1,6 @@
 // See README.md for license details.
 
-package dsl.compiler
+package dsl.compiler.execute
 
 import dsl.IR.{GridFUIR, GridRouterIR}
 import dsl.library._
@@ -15,5 +15,4 @@ trait ClassInitializer{
       case _ => throw new Exception("Class is not defined")
     }
   }
-
 }
