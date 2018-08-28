@@ -14,7 +14,7 @@ class FUClass{
 }
 
 class FUClassInitializer extends Env{
-  def fuInitializer(Properties:List[Any]): FUClass ={
+  def initializer(Properties:List[Any]): FUClass ={
     var newFU = new FUClass
 
     val FUfieldName:List[String] = newFU.getClass.getDeclaredFields.map(_.getName).toList
@@ -29,12 +29,14 @@ class FUClassInitializer extends Env{
     if((propertiesName diff FUfieldName) nonEmpty){
       throw new Exception("FU Class do not have such field")
     }
+    fieldInitializer(newFU,Properties)
+  }
 
+  private def fieldInitializer(newFU:FUClass,Properties:List[Any]): FUClass ={
     Properties.foreach(p=>{
       val memberDefined:Assign = p.asInstanceOf[Assign]
       val memberName = memberDefined.AssignTarget.itemName
       val memberContent = memberDefined.AssignFrom
-
       memberName match {
         case "Opcodes" =>
           if (!memberContent.isInstanceOf[Collection]) {

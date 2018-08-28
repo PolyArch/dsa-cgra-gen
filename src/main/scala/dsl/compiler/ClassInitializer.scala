@@ -3,14 +3,15 @@
 package dsl.compiler
 
 import dsl.IR.{GridFUIR, GridRouterIR}
-import dsl.library.FUClassInitializer
+import dsl.library._
 
 trait ClassInitializer{
 
   def classInitializer(classType:String,Properties:List[Any]):Any={
     classType match {
-      case "Router" => new GridRouterIR
-      case "FU" => val i = new FUClassInitializer;i.fuInitializer(Properties)
+      case "Router" => var i = new SwitchClassInitializer;i.initializer(Properties)
+      case "FU" => var i = new FUClassInitializer;i.initializer(Properties)
+      case "CGRA" =>  var i = new CGRAClassInitializer;i.initializer(Properties)
       case _ => throw new Exception("Class is not defined")
     }
   }

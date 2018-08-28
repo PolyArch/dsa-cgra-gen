@@ -8,7 +8,7 @@ class Env extends CgraLan{
 
   var VariableList : List[EnvVariable] = List()
 
-  var OperationList : List[(String,String)] = List()
+  var ConnectionList : List[(String,String)] = List()
 
   class EnvVariable {
     var Name:String = ""

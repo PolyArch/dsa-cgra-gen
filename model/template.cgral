@@ -1,3 +1,4 @@
+
 //Comment style : // or /**/
 /*
 Value
@@ -35,53 +36,60 @@ Assignment:
 
 
 ADD = new FU{
-    Opcodes = {
-        Add64 Add32x2 Add16x4 Sub64 Sub32x2 Sub16x4
-    }
-    Output_Routing = {
+  Opcodes = {
+    Add64 Add32x2 Add16x4 Sub64 Sub32x2 Sub16x4
+  }
+  Output_Routing = {
     NE:[1,1]    SE:[1,-1]
     SW:[-1,-1]  NW:[-1,1]
-    }
-    Mapping = Dedicated //(Single Instruction Only)
-    Firing = InputArrival //(Fire on input arrival – no backpressure)
+  }
+  Mapping = Dedicated //(Single Instruction Only)
+  Firing = InputArrival //(Fire on input arrival – no backpressure)
 };
 
+
+
 MUL = new FU {
-    Opcodes = {
-        Mul64 Mul32x2 Mul16x4
-    }
-    Output_Routing = {
+  Opcodes = {
+    Mul64 Mul32x2 Mul16x4
+  }
+  Output_Routing = {
     NE:[1,1]    SE:[1,-1]
     SW:[-1,-1]  NW:[-1,1]
-    }
-    Mapping = Dedicated
-    Firing = InputArrival
+  }
+  Mapping = Dedicated
+  Firing = InputArrival
 };
 
 SPC = new FU{
-    Opcodes = {
-        Add64 Add32x2 Add16x4 Sub64 Sub32x2 Sub16x4 Mul64 Mul32x2 Mul16x4
-    }
-    Output_Routing = {
+  Opcodes = {
+    Add64 Add32x2 Add16x4 Sub64 Sub32x2 Sub16x4 Mul64 Mul32x2 Mul16x4
+  }
+  Output_Routing = {
     NE:[1,1]    SE:[1,-1]
     SW:[-1,-1]  NW:[-1,1]
-    }
-    Mapping = Shared(8) //8 instructions in instruction buffer
-    Firing = TriggeredInstructions //(Triggered-instructions dataflow execution)
-    Size = [1,2]
+  }
+  Mapping = Shared(8) //8 instructions in instruction buffer
+  Firing = TriggeredInstructions //(Triggered-instructions dataflow execution)
+  Size = [1,2]
 };
 
 SW = new Router{
-     //(NE:0 SE:1 SW:2 NW:3 N:4 E:5 S:6 W:7)
-     Output_Routing = {
+  //(NE:0 SE:1 SW:2 NW:3 N:4 E:5 S:6 W:7)
+  Output_Routing = {
     NE:[1,1]    SE:[1,-1]
     SW:1:[-1,-1]  NW:[-1,1]
     SW:[1,0]    W:[-1,0]
     SW:[0,-1]   N:[0,1]
-     }
-     Routing = CircuitSwitched
+  }
+  Routing = CircuitSwitched
 };
 
+SW1 = new Router{};
+
+Sw1 = SW;
+
+/*
 Adas4(1) <-db- Adas4;
 
 
@@ -97,42 +105,49 @@ Output_Routing = {
     NE:[1,1]    SE:[1,-1]
     SW:[-1,-1]  NW:[-1,1]
      };
-
+*/
 
 simple_cgra = new CGRA{
 
-    Router = SW
+  Router = SW
 
-    // Topology defines FU and I/O locations, and connectivity
+  // Topology defines FU and I/O locations, and connectivity
 
-    Topology = grid2d(
+  Topology = grid2d(
 
-        "    |     |     |    |    |   |   |     |   |     |     ",
-        "    | MUL |     |ADD |    |MUL|   |ADD  |   |ADD  |     ",
-        "    |     |     |    |    |   |   |     |   |     |     ",
-        "    | MUL |     |ADD |    |MUL|   |ADD  |   |ADD  |     ",
-        "    |     |     |    |    |   |   |     |   |     |     ",
-        "    | MUL |     |ADD |    |MUL|   |ADD  |   |ADD  |     ",
-        "    |     |     |    |    |   |   |     |   |     |     ",
-        "    | MUL |     |ADD |    |MUL|   |ADD  |   |SPC  |     ",
-        "    |     |     |    |    |   |   |     |   |     |     "
+    "    | Sw1 |     |      |    |   |Sw0|     |   |     |     ",
+    "    | MUL |     |ADD_1 |    |MUL|   |ADD  |   |ADD  |     ",
+    "    |     |     |      |    |   |   |     |   |     |     ",
+    "    | MUL |     |ADD   |    |MUL|   |ADD  |   |ADD  |     ",
+    " Sw2|     |     |      |    |   |   |     |   |     |Sw3  ",
+    "    | MUL |     |ADD   |    |MUL|   |ADD  |   |ADD  |     ",
+    "    |     |     |      |    |   |   |     |   |     |     ",
+    "    | MUL |     |ADD   |    |MUL|   |ADD  |   |SPC_1|     ",
+    "    |     |     |      |    |   |   |     |   |     |     "
 
-    )
+  )
 
-    Inputs = {
+  Inputs = {
+    {Sw1    Sw0}
+    {ADD1  Sw2}
+  }
 
-        In0:{I1 --> db_0
-           I2 --> db_1}
+  Outputs = {
+    {Sw3 SPC_1}
+  }
 
-        In1:{I3 -b-> ADD_1
-           I4 --> db_2}
-    }
+  /*
+  Inputs = {
+    In0:{I1 --> db_0
+      I2 --> db_1}
+    In1:{I3 -b-> ADD_1
+      I4 --> db_2}
+  }
 
-    Outputs = {
-        Out0:{d_5 --> I1
-         SPC_1 --> I2}
-    }
-
-    //describes the logical inputs and outputs that come from scratchpad/memory/etc...
-
+  Outputs = {
+    Out0:{d_5 --> I1
+      SPC_1 --> I2}
+  }
+  */
+  //describes the logical inputs and outputs that come from scratchpad/memory/etc...
 };
