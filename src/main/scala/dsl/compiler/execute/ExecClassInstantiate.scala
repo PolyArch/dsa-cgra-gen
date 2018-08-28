@@ -9,8 +9,7 @@ import dsl.lex.Item
 trait ExecClassInstantiate extends Env
 with ClassInitializer{
   def execClassInstantiate(Enviro:Env,
-                           line:ClassInstantiate,
-                           model:CgraModel):(Env,CgraModel)=
+                           line:ClassInstantiate):Env=
   {
 
 
@@ -48,6 +47,6 @@ with ClassInitializer{
 
     val foo = line
 
-    (Enviro,model)
+    Enviro
   }
 }

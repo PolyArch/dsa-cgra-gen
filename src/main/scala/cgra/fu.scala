@@ -218,6 +218,26 @@ class ALU (InstructionList : Array[Int],aluDataWidth : Int) extends Module {
       result := (io.operand1.bits & io.operand2.bits)
     }
   }
+  if (InstructionList.contains(isa.Add)){
+    when(io.opcode === isa.Add.U){
+      result := (io.operand1.bits + io.operand2.bits)
+    }
+  }
+  if (InstructionList.contains(isa.Sub)){
+    when(io.opcode === isa.Sub.U){
+      result := (io.operand1.bits - io.operand2.bits)
+    }
+  }
+  if (InstructionList.contains(isa.Mul)){
+    when(io.opcode === isa.Mul.U){
+      result := (io.operand1.bits - io.operand2.bits)
+    }
+  }
+  if (InstructionList.contains(isa.Div)){
+    when(io.opcode === isa.Div.U){
+      result := (io.operand1.bits - io.operand2.bits)
+    }
+  }
   if (InstructionList.contains(isa.XOR)){
     when(io.opcode === isa.XOR.U){
       result := (io.operand1.bits ^ io.operand2.bits)

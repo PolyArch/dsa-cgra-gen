@@ -7,7 +7,7 @@ import dsl.lex.Item
 
 trait ExecConnection extends Env {
 
-  def execConnection(Enviro:Env,line:Connection,model:CgraModel):(Env,CgraModel)={
+  def execConnection(Enviro:Env,line:Connection):Env={
     val connectTos :List[Item]= line.toPort
     val connectFroms :List[Item]= line.fromPort
     val connectFeature :String= line.ConnectionFeature
@@ -25,7 +25,7 @@ trait ExecConnection extends Env {
 
 
 
-    (Enviro,model)
+    Enviro
   }
 
 }

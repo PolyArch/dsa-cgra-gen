@@ -5,9 +5,14 @@ import chisel3._
 import chisel3.util._
 
 object isa {
-  def OR   = 0
-  def AND  = 1
-  def XOR  = 2
+  val OR   = 0
+  val AND  = 1
+  val XOR  = 2
 
-  def maxNumISA = 16
+  val Add = 3
+  val Sub = 4
+  val Mul = 5
+  val Div = 6
+
+  val maxNumISA = 16
 }

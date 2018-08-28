@@ -9,8 +9,7 @@ trait ExecAssign extends Env
   {
 
   def execAssign(Enviro:Env,
-                 line:Assign,
-                 model:CgraModel):(Env,CgraModel)={
+                 line:Assign):Env={
 
     val assignTarget = line.AssignTarget
     val assignTargetName = assignTarget.itemName
@@ -39,7 +38,7 @@ trait ExecAssign extends Env
     }else{
       throw new Exception(assignTargetName + " is not existed")
     }
-    (Enviro,model)
+    Enviro
   }
 
 }

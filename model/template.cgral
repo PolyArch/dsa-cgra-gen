@@ -37,7 +37,7 @@ Assignment:
 
 ADD = new FU{
   Opcodes = {
-    Add64 Add32x2 Add16x4 Sub64 Sub32x2 Sub16x4
+    Add_64 Add_32x2 Add_16x4 Sub_64 Sub_32x2 Sub_16x4
   }
   Output_Routing = {
     NE:[1,1]    SE:[1,-1]
@@ -51,7 +51,7 @@ ADD = new FU{
 
 MUL = new FU {
   Opcodes = {
-    Mul64 Mul32x2 Mul16x4
+    Mul_64 Mul_32x2 Mul_16x4
   }
   Output_Routing = {
     NE:[1,1]    SE:[1,-1]
@@ -63,7 +63,7 @@ MUL = new FU {
 
 SPC = new FU{
   Opcodes = {
-    Add64 Add32x2 Add16x4 Sub64 Sub32x2 Sub16x4 Mul64 Mul32x2 Mul16x4
+    Add_64 Add_32x2 Add_16x4 Sub_64 Sub_32x2 Sub_16x4 Mul_64 Mul_32x2 Mul_16x4
   }
   Output_Routing = {
     NE:[1,1]    SE:[1,-1]

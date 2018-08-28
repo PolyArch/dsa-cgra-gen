@@ -7,10 +7,12 @@ import dsl.lex._
 
 class FUClass{
   var Opcodes:List[String] = List()
+  var Input_Routing:List[Location] = List()
   var Output_Routing:List[Location] = List()
   var Mapping:String = ""// Shared(8) //8 instructions in instruction buffer
   var Firing:String = "" //TriggeredInstructions //(Triggered-instructions dataflow execution)
   var Size:List[Int] = List()
+  var Decomposability:Int = _
 }
 
 class FUClassInitializer extends Env{
@@ -37,7 +39,10 @@ class FUClassInitializer extends Env{
       val memberDefined:Assign = p.asInstanceOf[Assign]
       val memberName = memberDefined.AssignTarget.itemName
       val memberContent = memberDefined.AssignFrom
+
       memberName match {
+
+
         case "Opcodes" =>
           if (!memberContent.isInstanceOf[Collection]) {
             throw new Exception("Opcodes need to be collection")
@@ -49,6 +54,18 @@ class FUClassInitializer extends Env{
           else {
             throw new Exception("thing other than Item can not be assign to Opcodes")
           }
+
+        case "Input_Routing" =>
+          if (!memberContent.isInstanceOf[Collection]) {
+            throw new Exception("Output_Routing need to be collection")
+          }
+          val outRs = memberContent.asInstanceOf[Collection].CollectionSet
+          if(outRs.forall(oR=>oR.isInstanceOf[Location])){
+            newFU.Input_Routing = outRs.map(oR=>oR.asInstanceOf[Location])
+          }else{
+            throw new Exception("Output_Routing need to be collection of location")
+          }
+
         case "Output_Routing" =>
           if (!memberContent.isInstanceOf[Collection]) {
             throw new Exception("Output_Routing need to be collection")
@@ -59,18 +76,28 @@ class FUClassInitializer extends Env{
           }else{
             throw new Exception("Output_Routing need to be collection of location")
           }
+
         case "Mapping" =>
           if (!memberContent.isInstanceOf[Item]){
             throw new Exception("Mapping needs to be Item")
           }
           val mp = memberContent.asInstanceOf[Item].itemName
           newFU.Mapping = mp
+
         case "Firing" =>
           if (!memberContent.isInstanceOf[Item]){
             throw new Exception("Firing needs to be Item")
           }
           val fir = memberContent.asInstanceOf[Item].itemName
           newFU.Firing = fir
+
+        case "Decomposability" =>
+          if(!memberContent.isInstanceOf[String]){
+            throw new Exception("Decomposability need to be number")
+          }
+          val decomp = memberContent.asInstanceOf[String].toInt
+          newFU.Decomposability = decomp
+
         case "Size" =>
           if (!memberContent.isInstanceOf[Location]){
             throw new Exception("Size needs to be Location style")
