@@ -31,9 +31,15 @@ class FU(
   }.max
 
   // Requirement check
+
+
   require(numModuleOutput == muxDirMatrix.length)
   for (subNet <- 0 until numDecomp) {
     for (outPort <- 0 until this.numModuleOutput; operand <- 0 until 2) {
+      if(numModuleInput != muxDirMatrix(outPort)(subNet)(operand).length){
+        val foo = ""
+      }
+
       require(numModuleInput == muxDirMatrix(outPort)(subNet)(operand).length, "Mux select Matrix size mismatch")
       require(muxDirMatrix(outPort)(subNet)(operand).exists(p => p), s"each output location need to have one input,Output ${outPort + 1} Sec ${subNet + 1}")
     }
@@ -51,11 +57,21 @@ class FU(
 
   // Select Register definition
   val SelReg = new Array[UInt](numModuleOutput * numDecomp * 2)
-  val selInsHigh: Int = log2Ceil(numModuleOutput) - 1
+  val selInsHigh: Int = {
+    if(log2Ceil(numModuleOutput)==0)
+      0
+    else
+      log2Ceil(numModuleOutput) - 1
+  }
   val selInsLow = 0
   for (outPort <- 0 until numModuleOutput; subNet <- 0 until numDecomp; operand <- 0 until 2) {
     SelReg(numModuleOutput * numDecomp * operand + numModuleOutput * subNet + outPort) =
-      RegInit(0.U(log2Ceil(numModuleOutput).W))
+      RegInit(0.U({
+        if(log2Ceil(numModuleOutput)<1)
+          1
+        else
+          log2Ceil(numModuleOutput)
+      }.W))
     when(io.cfg_mode) {
       SelReg(numModuleOutput * numDecomp * operand + numModuleOutput * subNet + outPort) :=
         io.input_ports(1).bits(selInsHigh, selInsLow)
@@ -147,7 +163,7 @@ class FU(
         require(MuxNBitsMatrix(outPort).length == numMuxIn)
 
         MuxNBitsMatrix(outPort)(selSig) = selSig.U ->
-          io.input_ports(numModuleInput * subNet + currInDir(selSig)).bits(decompDataWidth * (subNet + 1) - 1, decompDataWidth * subNet)
+          io.input_ports(numModuleInput * subNet + currInDir(selSig)).bits(decompDataWidth  - 1, 0)
         MuxNValidMatrix(outPort)(selSig) = selSig.U ->
           io.input_ports(numModuleInput * subNet + currInDir(selSig)).valid
 

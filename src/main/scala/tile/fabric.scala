@@ -8,10 +8,6 @@ import chisel3.util._
 
 trait HasFabricParams {
   val fabricDataWidth = 64
-  lazy val numFabricInput : Int = 0
-  lazy val numFabricOutput : Int = 0
-  lazy val numRows : Int = 0
-  lazy val numCols : Int = 0
 }
 
 trait HasFabricModuleParams extends HasFabricParams
@@ -37,6 +33,8 @@ abstract class FabricModule  extends Module
     val cfg_mode = Input(Bool())
   })
 }
+
+
 
 class ModuleChannel(deCompInput     : Int,
                     deCompOutput    : Int,

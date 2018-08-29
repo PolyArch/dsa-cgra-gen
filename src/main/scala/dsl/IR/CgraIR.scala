@@ -105,4 +105,7 @@ class InterfacePortIR{
   var numSecIOPort :Int = _
   var portNames :List[String] = _
   var gridModules : List[GridModule] = _
+  var secFIFOes :List[Int]= List()
+  var secDecompes:List[Int] = List()
+  var connectIR:List[ConnectIR] = List()
 }

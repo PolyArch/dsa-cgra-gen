@@ -38,11 +38,22 @@ class Switch(
     }
   }
 
+
   // Select Register definition
   val SelReg = new Array[UInt](numModuleOutput * numDecomp)
   for(outPort <- 0 until numModuleOutput;subNet <- 0 until numDecomp){
-    SelReg(numModuleOutput * subNet + outPort) = RegInit(0.U(log2Ceil(numModuleOutput).W))
-    when(io.cfg_mode){SelReg(numModuleOutput * subNet + outPort) := io.input_ports(1).bits(log2Ceil(numModuleOutput)-1,0)}
+    SelReg(numModuleOutput * subNet + outPort) = RegInit(0.U({
+      if(log2Ceil(numModuleOutput)<1)
+        1
+      else
+        log2Ceil(numModuleOutput)
+    }.W))
+    when(io.cfg_mode){SelReg(numModuleOutput * subNet + outPort) := io.input_ports(1).bits({
+      if(log2Ceil(numModuleOutput)==0)
+        0
+      else
+        log2Ceil(numModuleOutput) - 1
+    },0)}
     //TODO: How to update the select register is not defined yet (Instructions related)
   }
 
@@ -82,7 +93,7 @@ class Switch(
       for (selSig <- 0 until muxDirMatrix(outPort)(subNet).count(p=>p)){
         require(MuxNBitsMatrix(outPort).length == numMuxIn)
         MuxNBitsMatrix(outPort)(selSig) =  selSig.U ->
-          io.input_ports(numModuleInput * subNet + currInDir(selSig)).bits(decompDataWidth*(subNet + 1)-1,decompDataWidth*subNet)
+          io.input_ports(numModuleInput * subNet + currInDir(selSig)).bits(decompDataWidth-1,0)
         MuxNValidMatrix(outPort)(selSig) = selSig.U ->
           io.input_ports(numModuleInput * subNet + currInDir(selSig)).valid
       }
@@ -120,7 +131,7 @@ class Switch(
 }
 
 // Instantiate
-
+/*
 object SwitchDriver extends App {
   chisel3.Driver.execute(args, () =>
     new Switch(4,4,
@@ -142,3 +153,4 @@ object SwitchDriver extends App {
     )
   )
 }
+*/

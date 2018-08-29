@@ -112,7 +112,7 @@ simple_cgra = new CGRA{
 
   Inputs = {
     {Sw1   Sw0}
-    {ADD1  Sw2}
+    {ADD_1  Sw2}
   }
 
   Outputs = {
