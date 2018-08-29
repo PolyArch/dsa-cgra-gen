@@ -18,14 +18,11 @@ trait Evaluate extends Env
       val varFields = varEntity.getClass.getDeclaredFields.toList
 
       varFields.foreach(varField=>{
-
         val fieldName = varField.getName
         val fieldType = varField.getType
-
         val entityField = varEntity.getClass.getDeclaredField(fieldName)
         entityField.setAccessible(true)
         val entityValue = entityField.get(varEntity)//.asInstanceOf[fieldType.type ]
-
         entityValue match {
           case enVal:Function => val reVal = functionCall(enVal,enviro)
             varField.setAccessible(true)
@@ -35,14 +32,12 @@ trait Evaluate extends Env
         val test2 = varField.getClass
         val foo = vari
       })
-
       vari.Type match {
         case "FU" => model = buildFUIRModule(currVari,model)
         case "Router" => model = buildRouterIRModule(currVari,model)
         case "CGRA" => model = buildCGRAIR(currVari,model,enviro)
         case _=>
       }
-
     })
     model
   }

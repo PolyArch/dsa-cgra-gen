@@ -40,11 +40,9 @@ abstract class FabricModule  extends Module
 
 class ModuleChannel(deCompInput     : Int,
                     deCompOutput    : Int,
-                    FIFOdepth       : Array[Int],
-                    channelDataWidth: Int) extends Module
+                    FIFOdepth       : Array[Int]) extends Module
+with HasFabricParams
 {
-
-  val fabricDataWidth = channelDataWidth
 
   require(FIFOdepth.length == (deCompInput max deCompOutput))
   require(FIFOdepth.forall(fifo => fifo >= 0 ),"FIFO depth need to be non-negative")
@@ -176,5 +174,5 @@ abstract class Fabric(modelFile: String) extends Module
 
 // Instantiate
 /*
-object ModuleChannelDriver extends App {chisel3.Driver.execute(args, () => new ModuleChannel(1,8,Array(6,0,0,1,5,3,4,7),64))}
+object ModuleChannelDriver extends App {chisel3.Driver.execute(args, () => new ModuleChannel(1,8,Array(6,0,0,1,5,3,4,7)))}
 */

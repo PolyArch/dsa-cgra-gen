@@ -13,7 +13,7 @@ class CgraModel{
 
   var ConnectModuleIR:List[ConnectIR] = List[ConnectIR]()
 
-  var InterfacePort:List[InterfacePortIR] = List[InterfacePortIR]()
+  var InterfacePorts:List[InterfacePortIR] = List[InterfacePortIR]()
 
 }
 
@@ -93,8 +93,16 @@ class ConnectIR {
   var toLocation : (Int,Int) = _
   var fromPort : Int =_
   var toPort : Int = _
+
+  var deCompInput     : Int = _
+  var deCompOutput    : Int = _
+  var FIFOdepth       : Array[Int] = _
+
 }
 
 class InterfacePortIR{
-
+  var InOrOut :String = ""
+  var numSecIOPort :Int = _
+  var portNames :List[String] = _
+  var gridModules : List[GridModule] = _
 }
