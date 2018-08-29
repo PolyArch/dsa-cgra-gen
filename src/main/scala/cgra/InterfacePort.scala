@@ -111,31 +111,7 @@ class InterfacePort(IOType:String,
 
 }
 
-object InterfacePortDriver extends App {chisel3.Driver.execute(args, () => new InterfacePort("InputPorts",2,List(4,4),List(4,4)))}
-
 
 /*
-class InterfacePortIO extends Bundle {
-
-    val input_ports = IOType match {
-      case "InputPorts" => List(Vec(1, Flipped(DecoupledIO(UInt(fabricDataWidth.W)))))
-      case "OutputPorts" =>secDecomp.map(x=>{
-        Vec(x,Flipped(DecoupledIO(UInt((fabricDataWidth/x).W))))
-      })
-    }
-    val output_ports = IOType match {
-      case "InputPorts" => secDecomp.map(x=>{
-        Vec(x,DecoupledIO(UInt((fabricDataWidth/x).W)))
-      })
-      case "OutputPorts" => List(Vec(1,DecoupledIO(UInt(fabricDataWidth.W))))
-    }
-    val sel_wire = Input(UInt({
-      if(log2Ceil(numSec)<1){
-        1
-      }else{
-        log2Ceil(numSec)
-      }
-    }.W))
-  override def cloneType = {new InterfacePortIO().asInstanceOf[this.type]}
-}
+object InterfacePortDriver extends App {chisel3.Driver.execute(args, () => new InterfacePort("InputPorts",2,List(4,4),List(4,4)))}
 */

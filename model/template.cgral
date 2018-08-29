@@ -33,7 +33,7 @@ MUL_1 = new FU {
     Mul_64 Mul_32x2 Mul_16x4
   }
   Input_Routing = {
-    N:[-1,0]     NE:[-1,1]    SE:[1,1]
+      NE:[-1,1]    SE:[1,1]
     SW:[1,-1]  NW:[-1,-1]
   }
   Output_Routing = {
@@ -72,9 +72,23 @@ SW = new Router{
 };
 
 ADD_2 = new FU{};
-ADD_1 = new FU{};
-ADD_1 = ADD;
+
 ADD_2 = ADD;
+
+ADD_1 = new FU{
+  Opcodes = {
+    Add_64 Add_32x2 Add_16x4 Sub_64 Sub_32x2 Sub_16x4
+  }
+  Input_Routing = {
+    N:[-1,0] NE:[-1,1]    SE:[1,1]
+    SW:[1,-1]  NW:[-1,-1]
+  }
+  Output_Routing = {
+      SE:[1,1]
+  }
+  Mapping = Dedicated //(Single Instruction Only)
+  Firing = InputArrival //(Fire on input arrival – no backpressure)
+};
 
 Sw0 = new Router{};
 Sw1 = new Router{
@@ -98,15 +112,15 @@ simple_cgra = new CGRA{
 
   Topology = grid2d(
 
-    "    | Sw1 |     |      |    |   |Sw0|     |   |     |     ",
+    "    |       |     |  Sw1  |    |   |Sw0|     |   |     |     ",
     "    | MUL_1 |     |ADD_1 |    |MUL|   |ADD  |   |ADD  |     ",
-    "    |     |     |      |    |   |   |     |   |     |     ",
-    "    | MUL |     |ADD   |    |MUL|   |ADD  |   |ADD  |     ",
-    " Sw2|     |     |      |    |   |   |     |   |     |Sw3  ",
-    "    | MUL |     |ADD   |    |MUL|   |ADD  |   |ADD  |     ",
-    "    |     |     |      |    |   |   |     |   |     |     ",
-    "    | MUL |     |ADD_2 |    |MUL|   |ADD  |   |SPC_1|     ",
-    "    |     |     |      |    |   |   |     |   |     |     "
+    "    |       |     |      |    |   |   |     |   |     |     ",
+    "    | MUL   |     |ADD   |    |MUL|   |ADD  |   |ADD  |     ",
+    " Sw2|       |     |      |    |   |   |     |   |     |Sw3  ",
+    "    | MUL   |     |ADD   |    |MUL|   |ADD  |   |ADD  |     ",
+    "    |       |     |      |    |   |   |     |   |     |     ",
+    "    | MUL   |     |ADD_2 |    |MUL|   |ADD  |   |SPC_1|     ",
+    "    |       |     |      |    |   |   |     |   |     |     "
 
   )
 
