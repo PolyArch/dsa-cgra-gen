@@ -9,7 +9,7 @@ class CgraModel{
 
   var GridModuleIR : List[GridModule] = List()
 
-  var GridIR = new Array[Array[GridModule]](numCols * numRows)
+  var GridIR = new Array[Array[GridModule]](numRows)
 
   var ConnectModuleIR:List[ConnectIR] = List[ConnectIR]()
 
@@ -19,12 +19,15 @@ class CgraModel{
 
 class GridModule {
   var name: String = ""
-  var existed         : Int = -1
+  var row:Int = -1
+  var col:Int = -1
+  var existed         : Boolean = false
   var numInput        : Int = -1
   var numOutput       : Int = -1
   var inputLocation  : List[(Int,Int)] = List()
   var outputLocation : List[(Int,Int)] = List()
-  var deComp          : Int = -1
+  var deComp          : Int = 1
+
 }
 
 class GridFUIR extends GridModule {
@@ -41,6 +44,22 @@ class GridFUIR extends GridModule {
       Array(
         Array(Array(x = false)))
     )
+  def copy(copyF:GridFUIR):GridFUIR={
+    new GridFUIR{
+      name= copyF.name
+      row = copyF.row
+      col= copyF.col
+      existed = copyF.existed
+      numInput = copyF.numInput
+      numOutput= copyF.numOutput
+      inputLocation= copyF.inputLocation
+      outputLocation = copyF.outputLocation
+      deComp  = copyF.deComp
+      Instructions = copyF.Instructions
+      maxDelayPipeLen  = copyF.maxDelayPipeLen
+      muxDirMatrix   = copyF.muxDirMatrix
+    }
+  }
 }
 
 class GridRouterIR extends GridModule {
@@ -50,18 +69,30 @@ class GridRouterIR extends GridModule {
         Array(x = false)
       )
     )
+  def copy(copyF:GridRouterIR):GridRouterIR={
+    new GridRouterIR{
+      name= copyF.name
+      row = copyF.row
+      col= copyF.col
+      existed = copyF.existed
+      numInput = copyF.numInput
+      numOutput= copyF.numOutput
+      inputLocation= copyF.inputLocation
+      outputLocation = copyF.outputLocation
+      deComp  = copyF.deComp
+      muxDirMatrix   = copyF.muxDirMatrix
+    }
+  }
 }
 
-class ConnectIR extends GridModule{
-
-  var fromList :List[GridModule]= List[GridModule]()
-  var toList :List[GridModule]= List[GridModule]()
-  var connectFeatureList :List[String]= List[String]()
-
-  require(fromList.length == toList.length)
-  require(fromList.length == connectFeatureList.length)
-  require(toList.length == connectFeatureList.length)
-
+class ConnectIR {
+  var fromModule :GridModule= _
+  var toModule :GridModule= _
+  var connectFeatureList :String= ""
+  var fromLocation : (Int,Int) = _
+  var toLocation : (Int,Int) = _
+  var fromPort : Int =_
+  var toPort : Int = _
 }
 
 class InterfacePortIR{

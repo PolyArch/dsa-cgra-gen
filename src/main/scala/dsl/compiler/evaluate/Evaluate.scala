@@ -3,10 +3,11 @@ package dsl.compiler.evaluate
 
 import dsl.IR._
 import dsl.compiler._
-import dsl.lex._
+import dsl.library.FunctionCall
 
 trait Evaluate extends Env
-  with IRBuilder{
+  with IRBuilder
+  with FunctionCall{
   def evaluateEnv(enviro:Env):CgraModel={
     var model = new CgraModel
     enviro.VariableList.foreach(vari=>{
@@ -17,14 +18,18 @@ trait Evaluate extends Env
       val varFields = varEntity.getClass.getDeclaredFields.toList
 
       varFields.foreach(varField=>{
+
         val fieldName = varField.getName
         val fieldType = varField.getType
+
         val entityField = varEntity.getClass.getDeclaredField(fieldName)
         entityField.setAccessible(true)
         val entityValue = entityField.get(varEntity)//.asInstanceOf[fieldType.type ]
 
         entityValue match {
-       //   case enVal:Function => functionCall(enVal)
+          case enVal:Function => val reVal = functionCall(enVal,enviro)
+            varField.setAccessible(true)
+            varField.set(varEntity,reVal)
           case _ =>
         }
         val test2 = varField.getClass
@@ -33,8 +38,8 @@ trait Evaluate extends Env
 
       vari.Type match {
         case "FU" => model = buildFUIRModule(currVari,model)
-       // case "Router" => model = buildRouterIRModule(vari,model)
-       // case "CGRA" => model = buildCGRAIRModule(vari,model)
+        case "Router" => model = buildRouterIRModule(currVari,model)
+        case "CGRA" => model = buildCGRAIR(currVari,model,enviro)
         case _=>
       }
 

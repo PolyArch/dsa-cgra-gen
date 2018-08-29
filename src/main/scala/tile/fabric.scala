@@ -32,8 +32,8 @@ trait HasFabricModuleParams extends HasFabricParams
 abstract class FabricModule  extends Module
   with HasFabricModuleParams{
   lazy val io = IO(new Bundle{
-    val input_ports = Vec(numModuleInput * numDecomp,Flipped(DecoupledIO(UInt(datawidthModule.W))))
-    val output_ports = Vec(numModuleOutput * numDecomp,DecoupledIO(UInt(datawidthModule.W)))
+    val input_ports = Vec(numModuleInput * numDecomp,Flipped(DecoupledIO(UInt(decompDataWidth.W))))
+    val output_ports = Vec(numModuleOutput * numDecomp,DecoupledIO(UInt(decompDataWidth.W)))
     val cfg_mode = Input(Bool())
   })
 }

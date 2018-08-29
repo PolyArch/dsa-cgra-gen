@@ -4,6 +4,7 @@ package dsl.compiler.execute
 
 import dsl.IR.{GridFUIR, GridRouterIR}
 import dsl.library._
+import dsl.library.builtinClass._
 
 trait ClassInitializer{
 

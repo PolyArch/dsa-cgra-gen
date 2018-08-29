@@ -1,3 +1,38 @@
+Cgra Exploration FrameWork
+
+
+//Comment style : // or /**/
+/*
+Value
+    definition:
+        <alias:> name <:encode>
+        A64 :   Add64   :   0
+        M32x:   Mul32x2 :   1
+    parser:
+        opt(stringLiteral~":")~stringLiteral~opt(":"~"(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9]|)".r)
+    description:
+        alias is always optional. it is just for easy to call
+        encode is necessary when it will actually be encode in compiler
+        name is always necessary
+
+Location
+
+    example:
+    NE:[-1,1]    SE:[1,1]
+    SW:[1,-1]  NW:[-1,-1]
+    E:[0,1]    W:[0,-1]
+    S:[1,0]   N:[-1,0]
+
+Set :
+
+        "{"~> repsep(value, ",|"+whiteSpace) <~"}"
+
+Assignment:
+        name = value | Set
+*/
+
+
+
 Chisel Project Template
 =======================
 

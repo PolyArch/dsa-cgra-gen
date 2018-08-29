@@ -1,6 +1,6 @@
 // See README.md for license details.
 
-package dsl.library
+package dsl.library.builtinClass
 
 import dsl.compiler.Env
 import dsl.lex._
