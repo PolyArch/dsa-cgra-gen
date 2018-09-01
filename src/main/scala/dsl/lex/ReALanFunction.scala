@@ -4,8 +4,8 @@ package dsl.lex
 
 import scala.util.parsing.combinator._
 
-trait CgraLanFunction extends JavaTokenParsers
-  with CgraLanItems {
+trait ReALanFunction extends JavaTokenParsers
+  with ReALanItems {
   def function: Parser[Any] =
     functionName ~ functionArgs ^^
       {

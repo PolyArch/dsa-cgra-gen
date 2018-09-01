@@ -5,12 +5,12 @@ package dsl.syx
 import dsl.lex._
 import scala.util.parsing.combinator.JavaTokenParsers
 
-trait CgraLan extends JavaTokenParsers
-  with CgraLanClassInstantiate
-  with CgraLanAssignment
-  with CgraLanCollection
-  with CgraLanConnection
-  with CgraLanItems
+trait ReALan extends JavaTokenParsers
+  with ReALanClassInstantiate
+  with ReALanAssignment
+  with ReALanCollection
+  with ReALanConnection
+  with ReALanItems
   {
 
   def parseCodeLines : Parser[Any] = classInstantiate |assign |connection

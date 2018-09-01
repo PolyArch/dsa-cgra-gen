@@ -6,10 +6,10 @@ import dsl.syx._
 import dsl.prePar._
 
 
-trait CgraParser extends CgraLan
+trait CgraParser extends ReALan
   with fileReadClean{
 
-  def cgraLanParse(fileName:String):List[Any]= {
+  def ReALanParse(fileName:String):List[Any]= {
 
     val original_lines = cgraFileRead(fileName)
     val commentFreeLines = commentDelete(deleteLastSep(original_lines))

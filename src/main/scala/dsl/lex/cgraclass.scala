@@ -4,8 +4,8 @@ package dsl.lex
 
 import scala.util.parsing.combinator._
 
-trait CgraLanClass  extends JavaTokenParsers
-  with CgraLanAssignment{
+trait ReALanClass  extends JavaTokenParsers
+  with ReALanAssignment{
 
   def cgraClass : Parser[CgraClass] =
     item ~ cgraClassMember ^^ {
@@ -22,10 +22,10 @@ trait CgraLanClass  extends JavaTokenParsers
 
 }
 
-trait CgraLanClassInstantiate extends JavaTokenParsers
-  with CgraLanClass
-  with CgraLanCollection
-  with CgraLanItems
+trait ReALanClassInstantiate extends JavaTokenParsers
+  with ReALanClass
+  with ReALanCollection
+  with ReALanItems
 {
   def classInstantiate : Parser[ClassInstantiate] =
     item~ "=" ~ "new" ~ cgraClass ^^

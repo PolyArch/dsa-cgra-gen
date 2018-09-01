@@ -20,7 +20,7 @@ trait CgraGenerator {
       val output_ports = Vec(model.InterfacePorts
         .count(ip=>{ip.InOrOut=="OutputPorts"}),DecoupledIO(UInt(fabricDataWidth.W)))
 
-      val interfaceChannel_Sel = Input(Vec(3,UInt({
+      val interfaceChannel_Sel = Input(Vec(model.InterfacePorts.length,UInt({
         model.InterfacePorts.map(x=>log2Ceil(x.numSecIOPort)).max
       }.W)))
       val cfg_mode = Input(Bool())
@@ -102,7 +102,7 @@ trait CgraGenerator {
       ))
       InterfacePortList = InterfacePortList :+ currInterface
       ifP.InOrOut match {
-        case "InputPorts" => {
+        case "InputPorts" =>
           ifP.connectIR.zipWithIndex.foreach(connI=>{
             val conn = connI._1
             val index = connI._2
@@ -126,8 +126,7 @@ trait CgraGenerator {
                 currConn.io.output_ports(subNet)
             }
           })
-        }
-        case "OutputPorts" => {
+        case "OutputPorts" =>
           ifP.connectIR.zipWithIndex.foreach(connI=>{
             val conn = connI._1
             val index = connI._2
@@ -150,7 +149,6 @@ trait CgraGenerator {
               oP.ready := currInterface.io.input_ports(index).ready
             })
           })
-        }
       }
     })
     var in = 0

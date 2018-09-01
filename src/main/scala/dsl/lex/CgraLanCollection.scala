@@ -4,10 +4,10 @@ package dsl.lex
 
 import scala.util.parsing.combinator._
 
-trait CgraLanCollection extends JavaTokenParsers
-  with CgraLanConnection
-  with CgraLanDir
-  with CgraLanItems{
+trait ReALanCollection extends JavaTokenParsers
+  with ReALanConnection
+  with ReALanDir
+  with ReALanItems{
 
   def collectable : Parser[Collection] =
     opt(collectAlias) ~opt(":")~collectSet ^^

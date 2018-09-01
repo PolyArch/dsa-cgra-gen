@@ -4,10 +4,10 @@ package dsl.lex
 
 import scala.util.parsing.combinator.JavaTokenParsers
 
-trait CgraLanAssignment extends JavaTokenParsers
-  with CgraLanFunction
-  with CgraLanCollection
-  with CgraLanItems
+trait ReALanAssignment extends JavaTokenParsers
+  with ReALanFunction
+  with ReALanCollection
+  with ReALanItems
 {
   def assign : Parser[Any] =
     item~ "=" ~

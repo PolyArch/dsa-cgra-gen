@@ -4,8 +4,8 @@ package dsl.lex
 
 import scala.util.parsing.combinator._
 
-trait CgraLanConnection extends JavaTokenParsers
-  with CgraLanItems{
+trait ReALanConnection extends JavaTokenParsers
+  with ReALanItems{
 
   def connection : Parser[Connection] =(
      connectBothWay

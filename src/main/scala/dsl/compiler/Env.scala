@@ -3,9 +3,9 @@
 package dsl.compiler
 
 import dsl.lex._
-import dsl.syx.CgraLan
+import dsl.syx.ReALan
 
-class Env extends CgraLan{
+class Env extends ReALan{
 
   var VariableList : List[EnvVariable] = List()
 

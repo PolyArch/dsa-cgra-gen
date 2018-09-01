@@ -4,8 +4,8 @@ package dsl.lex
 
 import scala.util.parsing.combinator.{JavaTokenParsers, RegexParsers}
 
-trait CgraLanDir extends JavaTokenParsers
-with CgraLanItems
+trait ReALanDir extends JavaTokenParsers
+with ReALanItems
   with RegexParsers {
 
   def location : Parser[Location] =(
@@ -48,7 +48,7 @@ class Location {
   var encode :Int  = -1
 }
 
-trait CgraLanItems extends JavaTokenParsers
+trait ReALanItems extends JavaTokenParsers
   with RegexParsers {
 
   def item : Parser[Item] = encodeVir | variable

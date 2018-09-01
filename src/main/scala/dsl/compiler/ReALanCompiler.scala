@@ -6,7 +6,7 @@ import dsl.IR._
 import dsl.compiler.analyze.Analyze
 import dsl.compiler.evaluate.Evaluate
 
-trait CgraLanCompiler extends Evaluate
+trait ReALanCompiler extends Evaluate
   with Execute
   with Analyze{
 

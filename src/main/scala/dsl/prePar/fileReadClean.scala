@@ -10,8 +10,8 @@ trait fileReadClean{
 
     var fileName:String = new String(fileInfo.getBytes(),"UTF-8")
 
-    if(!fileInfo.endsWith(".cgral")){
-      fileName  = fileName + ".cgral"
+    if(!fileInfo.endsWith(".rea")){
+      fileName  = fileName + ".rea"
     }
 
     try{
