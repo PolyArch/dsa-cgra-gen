@@ -11,7 +11,7 @@ trait irOutput {
     for(se <- Ses){
       se match {
         case se:Seq[_] => tar = tar + Seq2JSONString(se) + ","
-        case _ => tar = tar + se.toString +","
+        case x:Tuple2[Int,Int] => tar = tar + "["+x._1+","+x._2+"]" +","
       }
     }
     tar = tar.reverse.replaceFirst(",","").reverse
@@ -38,11 +38,20 @@ trait irOutput {
     for(basicField <- basicFields){
       basicField.setAccessible(true)
 
-      basicField.get(md) match {
-        case x:Seq[_] => emptyString = emptyString + Properties.lineSeparator +"\""+ basicField.getName +"\""+ ":"+ Seq2JSONString(basicField.get(md).asInstanceOf[Seq[_]]) + ","
-        case x:Array[_] => emptyString = emptyString + Properties.lineSeparator +"\""+ basicField.getName +"\""+ ":"+ Array2JSONString(basicField.get(md).asInstanceOf[Array[_]]) + ","
-        case _ =>  emptyString = emptyString + Properties.lineSeparator +"\""+ basicField.getName +"\""+ ":"+ basicField.get(md).toString + ","
+      val fieldJSONformat:String = basicField.get(md) match {
+        case x:GridModule => {
+          "{"+Module2JSON(x)+"}"
+        }
+        case x:Array[_] => {
+          Array2JSONString(x)
+        }
+        case x:Seq[_] => {
+          Seq2JSONString(x)
+        }
+        case x:String => "\""+x+"\""
+        case x=>x.toString
       }
+      emptyString = emptyString + Properties.lineSeparator +"\""+ basicField.getName +"\""+ ":"+ fieldJSONformat + ","
     }
 
     var fields = md.getClass.getDeclaredFields
@@ -61,12 +70,20 @@ trait irOutput {
     for(field <- fields){
       field.setAccessible(true)
 
-
-      field.get(md) match {
-        case x:Seq[_] => emptyString = emptyString + Properties.lineSeparator +"\""+ field.getName +"\""+ ":"+ Seq2JSONString(field.get(md).asInstanceOf[Seq[_]]) + ","
-        case x:Array[_] => emptyString = emptyString + Properties.lineSeparator +"\""+ field.getName +"\""+ ":"+ Array2JSONString(field.get(md).asInstanceOf[Array[_]]) + ","
-        case _ =>  emptyString = emptyString + Properties.lineSeparator +"\""+ field.getName +"\""+ ":"+ field.get(md).toString + ","
+      val fieldJSONformat:String = field.get(md) match {
+        case x:GridModule => {
+          "{"+Module2JSON(x)+"}"
+        }
+        case x:Array[_] => {
+          Array2JSONString(x)
+        }
+        case x:Seq[_] => {
+          Seq2JSONString(x)
+        }
+        case x:String => "\""+x+"\""
+        case x=>x.toString
       }
+      emptyString = emptyString + Properties.lineSeparator +"\""+ field.getName +"\""+ ":"+ fieldJSONformat + ","
     }
     emptyString = emptyString.reverse.replaceFirst(",","").reverse
     emptyString = emptyString + "}"+Properties.lineSeparator
@@ -74,7 +91,7 @@ trait irOutput {
   }
 
   def outputConnectionIR(model:CgraModel):String={
-    var emptyString = "\"ConnectionIR\":["
+    var emptyString = "\"ConnectionIR\":{"
     model.ConnectModuleIR.zipWithIndex.foreach(cI=>{
       val c = cI._1
       emptyString = emptyString+Properties.lineSeparator+"\"Connection"+cI._2+"\":" + "{"
@@ -92,21 +109,24 @@ trait irOutput {
           case x:Seq[_] => {
             Seq2JSONString(x)
           }
-          case x=>x.toString
+          case x:Tuple2[Int,Int]=> "[" + x._1+","+x._2+"]"
+          case x:String=>"\""+x+"\""
+          case x => x.toString
         }
+
         emptyString = emptyString + Properties.lineSeparator +"\""+ field.getName +"\""+ ":"+ fieldJSONformat + ","
       }
       emptyString = emptyString.reverse.replaceFirst(",","").reverse
       emptyString = emptyString + "},"
     })
     emptyString = emptyString.reverse.replaceFirst(",","").reverse
-    emptyString + "]"
+    emptyString + "}"
   }
 
 
   def outputGridIR(model:CgraModel):String={
 
-    var emptyString = "\"GridIR\":["
+    var emptyString = "\"GridIR\":{"
     model.GridIR.foreach(x => x.foreach(md=>{
 
       if(md != null){
@@ -116,7 +136,7 @@ trait irOutput {
     })
     )
     emptyString = emptyString.reverse.replaceFirst(",","").reverse
-    emptyString + "]"
+    emptyString + "}"
   }
 
 }
