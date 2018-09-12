@@ -44,7 +44,7 @@ MUL_1 = new FU {
 };
 
 
-SPC_1 = new FU{
+SPC = new FU{
   Opcodes = {
     Add_64 Add_32x2 Add_16x4 Sub_64 Sub_32x2 Sub_16x4 Mul_64 Mul_32x2 Mul_16x4
   }
@@ -55,10 +55,13 @@ SPC_1 = new FU{
   Output_Routing = {
       SE:[1,1]
   }
-  Mapping = Shared(8) //8 instructions in instruction buffer
+  Mapping = Shared_8 //8 instructions in instruction buffer
   Firing = TriggeredInstructions //(Triggered-instructions dataflow execution)
   Size = [1,2]
 };
+
+SPC_1 = new FU{};
+SPC_1 = SPC;
 
 SW = new Router{
   Output_Routing = {
@@ -117,9 +120,9 @@ simple_cgra = new CGRA{
     " Sw2|       |     |        |    |   |    |    |    |     |Sw7  ",
     "    | MUL   |     |ADD     |    |MUL|    |ADD |    |ADD  |     ",
     " Sw1|       |     |        |    |   |    |    |    |     |Sw8  ",
-    "    | MUL   |     |ADD     |    |MUL|    |ADD |    |ADD  |     ",
+    "    | MUL   |     |ADD     |    |MUL|    |SPC |    |SPC  |     ",
     " Sw0|       |     |        |    |   |    |    |    |     |Sw9  ",
-    "    | MUL   |     |ADD_2   |    |MUL|    |ADD |    |SPC_1|     ",
+    "    | MUL   |     |ADD_2   |    |MUL|    |SPC |    |SPC_1|     ",
     "    |       |Sw10 |        |Sw11|   |Sw12|    |Sw13|     |     "
   )
 

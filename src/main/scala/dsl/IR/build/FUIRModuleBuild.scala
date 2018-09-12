@@ -41,6 +41,8 @@ trait FUIRModuleBuild extends Env{
       fuIR.deComp = fuVarProper.Decomposability
     }
 
+    fuIR.Mapping = fuVarProper.Mapping
+    fuIR.Firing = fuVarProper.Firing
 
     var opcodeList :List[Int] = List()
     if(fuVarProper.Opcodes isEmpty){

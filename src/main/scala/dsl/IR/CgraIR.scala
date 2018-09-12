@@ -31,6 +31,8 @@ class GridModule {
 }
 
 class GridFUIR extends GridModule {
+  var Firing:String = ""
+  var Mapping:String = ""
   var Instructions    : Array[Array[Array[Int]]] =
     Array(
       Array(Array(-1))
@@ -46,6 +48,8 @@ class GridFUIR extends GridModule {
     ) // muxDirMatrix(outPort)(subNet)(operand)
   def copy(copyF:GridFUIR):GridFUIR={
     new GridFUIR{
+      Firing = copyF.Firing
+      Mapping = copyF.Mapping
       name= copyF.name
       row = copyF.row
       col= copyF.col

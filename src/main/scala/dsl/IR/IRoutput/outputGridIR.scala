@@ -53,7 +53,6 @@ trait outputGridIR extends formatValue{
     emptyString += locationList2Name("o",md.outputLocation,md,model)
     emptyString += ","+ Properties.lineSeparator
 
-
     for (field <- fields){
       field.setAccessible(true)
 
@@ -63,7 +62,9 @@ trait outputGridIR extends formatValue{
             emptyString += ("\""+field.getName + "\":" + OutputSubNetOperand2JSON(x))
             emptyString += "," + Properties.lineSeparator
           }
-        case _ =>
+        case x:String =>
+          emptyString += "\""+field.getName + "\":" + "\"" + x + "\""
+          emptyString += "," + Properties.lineSeparator
       }
     }
     emptyString = emptyString.reverse.replaceFirst(",","").reverse
@@ -129,14 +130,15 @@ trait outputGridIR extends formatValue{
 
       io match {
         case "o" =>{
-
           val tempC = model.ConnectModuleIR.filter(c=>{c.fromModule==md&&c.fromPort==Port})
-
+          /*
           if(tempC.length > 1){
             throw new Exception("One port have multiple connection")
           }
-
-
+          */
+          //TODO:one output can have multiple, but be attention
+          //Todo:in "extralink" means extra connection like bypass or connection to interface
+          //todo: we can use tempC.head it is because we think the "BYPASS" is always in front of "Internal Connection"
           if(tempC.nonEmpty){
             targetConnection = tempC.head
             targetName = targetConnection.toModule.name
@@ -177,7 +179,11 @@ trait outputGridIR extends formatValue{
     tuples.zipWithIndex.foreach(tpI=>{
       val tp = tpI._1
       if(tp._1>=model.numRows&&tp._2>=model.numCols){
-        emptyString += "\"" + (extraLink(io,tpI._2,md,model) + "\",")
+        var port = tpI._2
+        if(md.isInstanceOf[GridModule]&&io=="o"){
+          port = 0
+        }
+        emptyString += "\"" + (extraLink(io,port,md,model) + "\",")
       }else{
         emptyString += "\"" + model.GridIR(md.row+tp._1)(md.col+tp._2).name + "\","
       }

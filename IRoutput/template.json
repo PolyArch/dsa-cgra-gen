@@ -64,7 +64,9 @@
 "row":1,
 "deComp":"4",
 "input":["Sw3","SW_dup_2","Sw2","SW_dup_0"],
-"output":["SW_dup_2",""],
+"output":["SW_dup_2","ADD_2"],
+"Firing":"InputArrival",
+"Mapping":"Dedicated",
 "Instructions":{"outPut_0":
 {		"subNet_0":
 		[5],
@@ -83,7 +85,9 @@
 "row":1,
 "deComp":"4",
 "input":["Sw4","SW_dup_3","SW_dup_2","Sw3"],
-"output":["SW_dup_3",""],
+"output":["SW_dup_3","SPC_1"],
+"Firing":"InputArrival",
+"Mapping":"Dedicated",
 "Instructions":{"outPut_0":
 {		"subNet_0":
 		[3,4],
@@ -103,6 +107,8 @@
 "deComp":"4",
 "input":["Sw5","SW_dup_4","SW_dup_3","Sw4"],
 "output":["SW_dup_4"],
+"Firing":"InputArrival",
+"Mapping":"Dedicated",
 "Instructions":{"outPut_0":
 {		"subNet_0":
 		[5],
@@ -122,6 +128,8 @@
 "deComp":"4",
 "input":["Sw6","SW_dup_5","SW_dup_4","Sw5"],
 "output":["SW_dup_5"],
+"Firing":"InputArrival",
+"Mapping":"Dedicated",
 "Instructions":{"outPut_0":
 {		"subNet_0":
 		[3,4],
@@ -141,6 +149,8 @@
 "deComp":"4",
 "input":["SW_dup_1","Sw7","SW_dup_5","Sw6"],
 "output":["Sw7"],
+"Firing":"InputArrival",
+"Mapping":"Dedicated",
 "Instructions":{"outPut_0":
 {		"subNet_0":
 		[3,4],
@@ -199,7 +209,7 @@
 "row":2,
 "deComp":"4",
 "input":["ADD_dup_1","SW_dup_5","Sw8","SW_dup_1"],
-"output":["ADD_dup_4","ADD_dup_1","SW_dup_5","Sw8","SW_dup_1","OutputPorts_0"]
+"output":["ADD_dup_4","ADD_dup_1","SW_dup_5","Sw8","SW_dup_1","ADD_dup_4"]
 },
 "MUL_dup_1":{
 "type":"FU",
@@ -208,6 +218,8 @@
 "deComp":"4",
 "input":["SW_dup_2","SW_dup_6","Sw1","Sw2"],
 "output":["SW_dup_6"],
+"Firing":"InputArrival",
+"Mapping":"Dedicated",
 "Instructions":{"outPut_0":
 {		"subNet_0":
 		[5],
@@ -227,6 +239,8 @@
 "deComp":"4",
 "input":["SW_dup_3","SW_dup_7","SW_dup_6","SW_dup_2"],
 "output":["SW_dup_7"],
+"Firing":"InputArrival",
+"Mapping":"Dedicated",
 "Instructions":{"outPut_0":
 {		"subNet_0":
 		[3,4],
@@ -246,6 +260,8 @@
 "deComp":"4",
 "input":["SW_dup_4","SW_dup_8","SW_dup_7","SW_dup_3"],
 "output":["SW_dup_8"],
+"Firing":"InputArrival",
+"Mapping":"Dedicated",
 "Instructions":{"outPut_0":
 {		"subNet_0":
 		[5],
@@ -265,6 +281,8 @@
 "deComp":"4",
 "input":["SW_dup_5","SW_dup_9","SW_dup_8","SW_dup_4"],
 "output":["SW_dup_9"],
+"Firing":"InputArrival",
+"Mapping":"Dedicated",
 "Instructions":{"outPut_0":
 {		"subNet_0":
 		[3,4],
@@ -284,6 +302,8 @@
 "deComp":"4",
 "input":["Sw7","Sw8","SW_dup_9","SW_dup_5"],
 "output":["Sw8"],
+"Firing":"InputArrival",
+"Mapping":"Dedicated",
 "Instructions":{"outPut_0":
 {		"subNet_0":
 		[3,4],
@@ -326,7 +346,7 @@
 "row":4,
 "deComp":"4",
 "input":["MUL_dup_2","SW_dup_9","SW_dup_7","SW_dup_12","SW_dup_4"],
-"output":["ADD_dup_3","ADD_dup_6","MUL_dup_4","MUL_dup_2","SW_dup_9","SW_dup_7","SW_dup_12","SW_dup_4"]
+"output":["ADD_dup_3","SPC_dup_0","MUL_dup_4","MUL_dup_2","SW_dup_9","SW_dup_7","SW_dup_12","SW_dup_4"]
 },
 "SW_dup_9":{
 "type":"Switch",
@@ -334,7 +354,7 @@
 "row":4,
 "deComp":"4",
 "input":["ADD_dup_3","Sw8","SW_dup_8","SW_dup_13","SW_dup_5"],
-"output":["ADD_dup_4","ADD_dup_7","ADD_dup_6","ADD_dup_3","Sw8","SW_dup_8","SW_dup_13","SW_dup_5"]
+"output":["ADD_dup_4","SPC_dup_1","SPC_dup_0","ADD_dup_3","Sw8","SW_dup_8","SW_dup_13","SW_dup_5"]
 },
 "Sw8":{
 "type":"Switch",
@@ -342,7 +362,7 @@
 "row":4,
 "deComp":"4",
 "input":["ADD_dup_4","SW_dup_9","Sw9","Sw7"],
-"output":["ADD_dup_7","ADD_dup_4","SW_dup_9","Sw9","Sw7","OutputPorts_0"]
+"output":["SPC_dup_1","ADD_dup_4","SW_dup_9","Sw9","Sw7","SPC_dup_1"]
 },
 "MUL_dup_3":{
 "type":"FU",
@@ -351,6 +371,8 @@
 "deComp":"4",
 "input":["SW_dup_6","SW_dup_10","Sw0","Sw1"],
 "output":["SW_dup_10"],
+"Firing":"InputArrival",
+"Mapping":"Dedicated",
 "Instructions":{"outPut_0":
 {		"subNet_0":
 		[5],
@@ -370,6 +392,8 @@
 "deComp":"4",
 "input":["SW_dup_7","SW_dup_11","SW_dup_10","SW_dup_6"],
 "output":["SW_dup_11"],
+"Firing":"InputArrival",
+"Mapping":"Dedicated",
 "Instructions":{"outPut_0":
 {		"subNet_0":
 		[3,4],
@@ -389,6 +413,8 @@
 "deComp":"4",
 "input":["SW_dup_8","SW_dup_12","SW_dup_11","SW_dup_7"],
 "output":["SW_dup_12"],
+"Firing":"InputArrival",
+"Mapping":"Dedicated",
 "Instructions":{"outPut_0":
 {		"subNet_0":
 		[5],
@@ -401,41 +427,45 @@
 }
 }
 },
-"ADD_dup_6":{
+"SPC_dup_0":{
 "type":"FU",
 "col":7,
 "row":5,
 "deComp":"4",
 "input":["SW_dup_9","SW_dup_13","SW_dup_12","SW_dup_8"],
 "output":["SW_dup_13"],
+"Firing":"TriggeredInstructions",
+"Mapping":"Shared_8",
 "Instructions":{"outPut_0":
 {		"subNet_0":
-		[3,4],
+		[3,4,5],
 	"subNet_1":
-		[3,4],
+		[3,4,5],
 	"subNet_2":
-		[3,4],
+		[3,4,5],
 	"subNet_3":
-		[3,4]
+		[3,4,5]
 }
 }
 },
-"ADD_dup_7":{
+"SPC_dup_1":{
 "type":"FU",
 "col":9,
 "row":5,
 "deComp":"4",
 "input":["Sw8","Sw9","SW_dup_13","SW_dup_9"],
 "output":["Sw9"],
+"Firing":"TriggeredInstructions",
+"Mapping":"Shared_8",
 "Instructions":{"outPut_0":
 {		"subNet_0":
-		[3,4],
+		[3,4,5],
 	"subNet_1":
-		[3,4],
+		[3,4,5],
 	"subNet_2":
-		[3,4],
+		[3,4,5],
 	"subNet_3":
-		[3,4]
+		[3,4,5]
 }
 }
 },
@@ -469,23 +499,23 @@
 "row":6,
 "deComp":"4",
 "input":["MUL_dup_4","SW_dup_13","SW_dup_11","Sw12","SW_dup_8"],
-"output":["ADD_dup_6","ADD_dup_8","MUL_dup_6","MUL_dup_4","SW_dup_13","SW_dup_11","Sw12","SW_dup_8"]
+"output":["SPC_dup_0","SPC_dup_2","MUL_dup_6","MUL_dup_4","SW_dup_13","SW_dup_11","Sw12","SW_dup_8"]
 },
 "SW_dup_13":{
 "type":"Switch",
 "col":8,
 "row":6,
 "deComp":"4",
-"input":["ADD_dup_6","Sw9","SW_dup_12","Sw13","SW_dup_9"],
-"output":["ADD_dup_7","SPC_1","ADD_dup_8","ADD_dup_6","Sw9","SW_dup_12","Sw13","SW_dup_9"]
+"input":["SPC_dup_0","Sw9","SW_dup_12","Sw13","SW_dup_9"],
+"output":["SPC_dup_1","SPC_1","SPC_dup_2","SPC_dup_0","Sw9","SW_dup_12","Sw13","SW_dup_9"]
 },
 "Sw9":{
 "type":"Switch",
 "col":10,
 "row":6,
 "deComp":"4",
-"input":["ADD_dup_7","SW_dup_13","SW_dup_15","Sw8"],
-"output":["SPC_1","ADD_dup_7","SW_dup_13","SW_dup_15","Sw8","OutputPorts_0"]
+"input":["SPC_dup_1","SW_dup_13","SW_dup_15","Sw8"],
+"output":["SPC_1","SPC_dup_1","SW_dup_13","SW_dup_15","Sw8","SPC_1"]
 },
 "MUL_dup_5":{
 "type":"FU",
@@ -494,6 +524,8 @@
 "deComp":"4",
 "input":["SW_dup_10","Sw10","SW_dup_14","Sw0"],
 "output":["Sw10"],
+"Firing":"InputArrival",
+"Mapping":"Dedicated",
 "Instructions":{"outPut_0":
 {		"subNet_0":
 		[5],
@@ -513,6 +545,8 @@
 "deComp":"4",
 "input":["SW_dup_11","Sw11","Sw10","SW_dup_10","MUL_1"],
 "output":["Sw11"],
+"Firing":"InputArrival",
+"Mapping":"Dedicated",
 "Instructions":{"outPut_0":
 {		"subNet_0":
 		[3,4],
@@ -532,6 +566,8 @@
 "deComp":"4",
 "input":["SW_dup_12","Sw12","Sw11","SW_dup_11"],
 "output":["Sw12"],
+"Firing":"InputArrival",
+"Mapping":"Dedicated",
 "Instructions":{"outPut_0":
 {		"subNet_0":
 		[5],
@@ -544,22 +580,24 @@
 }
 }
 },
-"ADD_dup_8":{
+"SPC_dup_2":{
 "type":"FU",
 "col":7,
 "row":7,
 "deComp":"4",
 "input":["SW_dup_13","Sw13","Sw12","SW_dup_12"],
 "output":["Sw13"],
+"Firing":"TriggeredInstructions",
+"Mapping":"Shared_8",
 "Instructions":{"outPut_0":
 {		"subNet_0":
-		[3,4],
+		[3,4,5],
 	"subNet_1":
-		[3,4],
+		[3,4,5],
 	"subNet_2":
-		[3,4],
+		[3,4,5],
 	"subNet_3":
-		[3,4]
+		[3,4,5]
 }
 }
 },
@@ -570,6 +608,8 @@
 "deComp":"4",
 "input":["Sw9","SW_dup_15","Sw13","SW_dup_13","ADD_1"],
 "output":["SW_dup_15"],
+"Firing":"TriggeredInstructions",
+"Mapping":"Shared_8",
 "Instructions":{"outPut_0":
 {		"subNet_0":
 		[3,4,5],
@@ -596,7 +636,7 @@
 "row":8,
 "deComp":"4",
 "input":["MUL_dup_5","Sw11","SW_dup_14","SW_dup_10"],
-"output":["ADD_2","MUL_dup_5","Sw11","SW_dup_14","SW_dup_10","OutputPorts_1"]
+"output":["ADD_2","MUL_dup_5","Sw11","SW_dup_14","SW_dup_10","ADD_2"]
 },
 "Sw11":{
 "type":"Switch",
@@ -604,7 +644,7 @@
 "row":8,
 "deComp":"4",
 "input":["ADD_2","Sw12","Sw10","SW_dup_11"],
-"output":["MUL_dup_6","ADD_2","Sw12","Sw10","SW_dup_11","OutputPorts_1"]
+"output":["MUL_dup_6","ADD_2","Sw12","Sw10","SW_dup_11","MUL_dup_6"]
 },
 "Sw12":{
 "type":"Switch",
@@ -612,15 +652,15 @@
 "row":8,
 "deComp":"4",
 "input":["MUL_dup_6","Sw13","Sw11","SW_dup_12"],
-"output":["ADD_dup_8","MUL_dup_6","Sw13","Sw11","SW_dup_12","OutputPorts_1"]
+"output":["SPC_dup_2","MUL_dup_6","Sw13","Sw11","SW_dup_12","SPC_dup_2"]
 },
 "Sw13":{
 "type":"Switch",
 "col":8,
 "row":8,
 "deComp":"4",
-"input":["ADD_dup_8","SW_dup_15","Sw12","SW_dup_13"],
-"output":["SPC_1","ADD_dup_8","SW_dup_15","Sw12","SW_dup_13","OutputPorts_1"]
+"input":["SPC_dup_2","SW_dup_15","Sw12","SW_dup_13"],
+"output":["SPC_1","SPC_dup_2","SW_dup_15","Sw12","SW_dup_13","SPC_1"]
 },
 "SW_dup_15":{
 "type":"Switch",
@@ -1756,7 +1796,7 @@
 "FIFOdepth":[4,4,4,4]},
 "Connection102":{
 "fromModule":"SW_dup_8",
-"toModule":"ADD_dup_6",
+"toModule":"SPC_dup_0",
 "connectFeatureList":"d",
 "fromLocation":[4,6],
 "toLocation":[5,7],
@@ -1844,7 +1884,7 @@
 "FIFOdepth":[4,4,4,4]},
 "Connection110":{
 "fromModule":"SW_dup_9",
-"toModule":"ADD_dup_7",
+"toModule":"SPC_dup_1",
 "connectFeatureList":"d",
 "fromLocation":[4,8],
 "toLocation":[5,9],
@@ -1855,7 +1895,7 @@
 "FIFOdepth":[4,4,4,4]},
 "Connection111":{
 "fromModule":"SW_dup_9",
-"toModule":"ADD_dup_6",
+"toModule":"SPC_dup_0",
 "connectFeatureList":"d",
 "fromLocation":[4,8],
 "toLocation":[5,7],
@@ -1921,7 +1961,7 @@
 "FIFOdepth":[4,4,4,4]},
 "Connection117":{
 "fromModule":"Sw8",
-"toModule":"ADD_dup_7",
+"toModule":"SPC_dup_1",
 "connectFeatureList":"d",
 "fromLocation":[4,10],
 "toLocation":[5,9],
@@ -2008,7 +2048,7 @@
 "deCompOutput":4,
 "FIFOdepth":[4,4,4,4]},
 "Connection125":{
-"fromModule":"ADD_dup_6",
+"fromModule":"SPC_dup_0",
 "toModule":"SW_dup_13",
 "connectFeatureList":"d",
 "fromLocation":[5,7],
@@ -2019,7 +2059,7 @@
 "deCompOutput":4,
 "FIFOdepth":[4,4,4,4]},
 "Connection126":{
-"fromModule":"ADD_dup_7",
+"fromModule":"SPC_dup_1",
 "toModule":"Sw9",
 "connectFeatureList":"d",
 "fromLocation":[5,9],
@@ -2262,7 +2302,7 @@
 "FIFOdepth":[4,4,4,4]},
 "Connection148":{
 "fromModule":"SW_dup_12",
-"toModule":"ADD_dup_6",
+"toModule":"SPC_dup_0",
 "connectFeatureList":"d",
 "fromLocation":[6,6],
 "toLocation":[5,7],
@@ -2273,7 +2313,7 @@
 "FIFOdepth":[4,4,4,4]},
 "Connection149":{
 "fromModule":"SW_dup_12",
-"toModule":"ADD_dup_8",
+"toModule":"SPC_dup_2",
 "connectFeatureList":"d",
 "fromLocation":[6,6],
 "toLocation":[7,7],
@@ -2350,7 +2390,7 @@
 "FIFOdepth":[4,4,4,4]},
 "Connection156":{
 "fromModule":"SW_dup_13",
-"toModule":"ADD_dup_7",
+"toModule":"SPC_dup_1",
 "connectFeatureList":"d",
 "fromLocation":[6,8],
 "toLocation":[5,9],
@@ -2372,7 +2412,7 @@
 "FIFOdepth":[4,4,4,4]},
 "Connection158":{
 "fromModule":"SW_dup_13",
-"toModule":"ADD_dup_8",
+"toModule":"SPC_dup_2",
 "connectFeatureList":"d",
 "fromLocation":[6,8],
 "toLocation":[7,7],
@@ -2383,7 +2423,7 @@
 "FIFOdepth":[4,4,4,4]},
 "Connection159":{
 "fromModule":"SW_dup_13",
-"toModule":"ADD_dup_6",
+"toModule":"SPC_dup_0",
 "connectFeatureList":"d",
 "fromLocation":[6,8],
 "toLocation":[5,7],
@@ -2449,7 +2489,7 @@
 "FIFOdepth":[4,4,4,4]},
 "Connection165":{
 "fromModule":"Sw9",
-"toModule":"ADD_dup_7",
+"toModule":"SPC_dup_1",
 "connectFeatureList":"d",
 "fromLocation":[6,10],
 "toLocation":[5,9],
@@ -2525,7 +2565,7 @@
 "deCompOutput":4,
 "FIFOdepth":[4,4,4,4]},
 "Connection172":{
-"fromModule":"ADD_dup_8",
+"fromModule":"SPC_dup_2",
 "toModule":"Sw13",
 "connectFeatureList":"d",
 "fromLocation":[7,7],
@@ -2691,7 +2731,7 @@
 "FIFOdepth":[4,4,4,4]},
 "Connection187":{
 "fromModule":"Sw12",
-"toModule":"ADD_dup_8",
+"toModule":"SPC_dup_2",
 "connectFeatureList":"d",
 "fromLocation":[8,6],
 "toLocation":[7,7],
@@ -2757,7 +2797,7 @@
 "FIFOdepth":[4,4,4,4]},
 "Connection193":{
 "fromModule":"Sw13",
-"toModule":"ADD_dup_8",
+"toModule":"SPC_dup_2",
 "connectFeatureList":"d",
 "fromLocation":[8,8],
 "toLocation":[7,7],
