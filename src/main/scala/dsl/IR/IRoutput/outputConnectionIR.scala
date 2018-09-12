@@ -28,8 +28,12 @@ trait outputConnectionIR extends formatValue{
           case x:String=>"\""+x+"\""
           case x => x.toString
         }
-
-        if(field.getName == "FIFOdepth" || field.getName == "toModule" || field.getName == "fromModule")
+          /*
+        if(field.getName == "FIFOdepth" ||
+          field.getName == "toModule" ||
+          field.getName == "fromModule" ||
+          field.getName == "")
+          */
           emptyString = emptyString + Properties.lineSeparator +"\""+ field.getName +"\""+ ":"+ fieldJSONformat + ","
       }
       emptyString = emptyString.reverse.replaceFirst(",","").reverse

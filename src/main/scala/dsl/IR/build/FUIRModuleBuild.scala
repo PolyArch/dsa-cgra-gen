@@ -91,7 +91,6 @@ trait FUIRModuleBuild extends Env{
           }
 
           require(x.numInput==x.inputLocation.length)
-          require(x.numOutput==x.outputLocation.length)
 
           val opcodeList = x.Instructions(0)(0)
           x.Instructions = new Array[Array[Array[Int]]](x.numOutput)

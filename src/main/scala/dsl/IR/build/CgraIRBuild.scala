@@ -206,10 +206,8 @@ trait CgraIRBuild extends Env
       }else if (toModules.isEmpty) {
         throw new Exception("connect from undefined module")
       }
-
-      fromModules.head.numOutput += 1
-
-
+      if(!fromModules.head.isInstanceOf[GridFUIR])
+        fromModules.head.numOutput += 1
       toModules.head.numInput += 1
 
       fromModules.head.outputLocation = fromModules.head.outputLocation union List((model.numRows,model.numCols))

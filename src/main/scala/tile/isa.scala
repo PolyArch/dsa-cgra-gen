@@ -14,5 +14,5 @@ object isa {
   val Mul = 5
   val Div = 6
 
-  val maxNumISA = 16
+  val numISA = 16
 }

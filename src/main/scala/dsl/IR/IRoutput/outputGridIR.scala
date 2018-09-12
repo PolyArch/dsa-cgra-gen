@@ -33,6 +33,18 @@ trait outputGridIR extends formatValue{
         fields = (new GridFUIR).getClass.getDeclaredFields
     }
 
+    emptyString += "\"col\":"
+    emptyString +=  md.col
+    emptyString += ","+ Properties.lineSeparator
+
+    emptyString += "\"row\":"
+    emptyString +=  md.row
+    emptyString += ","+ Properties.lineSeparator
+
+    emptyString += "\"deComp\":"
+    emptyString += "\"" + md.deComp + "\""
+    emptyString += ","+ Properties.lineSeparator
+
     emptyString += "\"input\":"
     emptyString += locationList2Name("i",md.inputLocation,md,model)
     emptyString += ","+ Properties.lineSeparator
@@ -132,7 +144,7 @@ trait outputGridIR extends formatValue{
             val targetConnections = model.InterfacePorts.filter(c=>{c.InOrOut=="OutputPorts"}).zipWithIndex
             for(tCI <- targetConnections.indices){
               if(targetConnections(tCI)._1.connectIR.exists(cc=>{cc.fromModule == md && cc.fromPort==Port})){
-                targetName = "IFPort_OUT_" + targetConnections(tCI)._2
+                targetName = "OutputPorts_" + targetConnections(tCI)._2
               }
             }
           }
@@ -151,7 +163,7 @@ trait outputGridIR extends formatValue{
             val targetConnections = model.InterfacePorts.filter(c=>{c.InOrOut=="InputPorts"}).zipWithIndex
             for(tCI <- targetConnections.indices){
               if(targetConnections(tCI)._1.connectIR.exists(cc=>{cc.toModule == md && cc.toPort==Port})){
-                targetName = "IFPort_IN_" + targetConnections(tCI)._2
+                targetName = "InputPorts_" + targetConnections(tCI)._2
               }
             }
           }

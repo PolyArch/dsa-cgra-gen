@@ -7,6 +7,8 @@ import dsl.IR._
 import scala.util.Properties
 
 trait irOutput extends outputConnectionIR
+  with isaIR
+  with outputInterfaceIR
   with outputGridIR{
 
   def cleanModel(model:CgraModel):CgraModel={
@@ -30,10 +32,13 @@ trait irOutput extends outputConnectionIR
   }
 
   def irOutput(model: CgraModel): String ={
-    "{" + "\"numRows\":" + model.numRows + "," + Properties.lineSeparator +
+    "{" +
+      "\"ISAencode\":" + isaIRoutput + "," + Properties.lineSeparator +
+      "\"numRows\":" + model.numRows + "," + Properties.lineSeparator +
       "\"numCols\":" + model.numCols + "," + Properties.lineSeparator +
-      outputGridIR(model) + "," + Properties.lineSeparator+
-      outputConnectionIR(model) +
+      outputGridIR(model) + "," + Properties.lineSeparator +
+      outputConnectionIR(model) + "," + Properties.lineSeparator +
+      outputInterfacePortIR(model) +
       "}"
   }
 }

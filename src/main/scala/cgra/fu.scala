@@ -100,10 +100,10 @@ class FU(
   // Opcode Register definition
   val opcodeReg = new Array[UInt](numModuleOutput * numDecomp)
   val opcodeRegInsLow: Int = pipeInsHigh + 1
-  val opcodeRegInsHigh: Int = log2Ceil(isa.maxNumISA) - 1 + opcodeRegInsLow
+  val opcodeRegInsHigh: Int = log2Ceil(isa.numISA) - 1 + opcodeRegInsLow
   for (outPort <- 0 until numModuleOutput; subNet <- 0 until numDecomp) {
     opcodeReg(numModuleOutput * subNet + outPort) =
-      RegInit(0.U(log2Ceil(isa.maxNumISA).W))
+      RegInit(0.U(log2Ceil(isa.numISA).W))
     when(io.cfg_mode) {
       opcodeReg(numModuleOutput * subNet + outPort) :=
         io.input_ports(1).bits(pipeInsHigh, pipeInsLow)

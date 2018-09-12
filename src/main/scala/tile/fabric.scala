@@ -21,7 +21,7 @@ trait HasFabricModuleParams extends HasFabricParams
   lazy val decompDataWidth       : Int = datawidthModule / numDecomp
 
   require(numModuleInput==inputMoudleLocation.length)
-  require(numModuleOutput==outputModuleLocation.length)
+  //require(numModuleOutput==outputModuleLocation.length)
   require(isPow2(fabricDataWidth/numDecomp))
 }
 

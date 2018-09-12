@@ -5,12 +5,18 @@ import dsl.IR.{GridFUIR, GridModule, GridRouterIR}
 import scala.util.Properties
 
 trait formatValue {
+
+  implicit def String2JSON (Str:String):String = "\"" + Str + "\""
+
   implicit def Seq2JSONString (Ses:Seq[_]):String={
     var tar = "["
     for(se <- Ses){
       se match {
         case se:Seq[_] => tar = tar + Seq2JSONString(se) + ","
+        case se:String => tar += "\"" + se + "\"" +","
+        case se:GridModule => tar += "\"" + se.name + "\"" +","
         case x:Tuple2[Int,Int] => tar = tar + "["+x._1+","+x._2+"]" +","
+        case _ => tar = tar + se.toString +","
       }
     }
     tar = tar.reverse.replaceFirst(",","").reverse
@@ -22,6 +28,8 @@ trait formatValue {
     for(se <- Ses){
       se match {
         case se:Array[_] => tar = tar + Array2JSONString(se) + ","
+        case se:String => tar += "\"" + se + "\"" +","
+        case se:GridModule => tar += "\"" + se.name + "\"" +","
         case _ => tar = tar + se.toString +","
       }
     }
