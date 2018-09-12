@@ -9,7 +9,7 @@ class FUClass{
   var Opcodes:List[String] = List()
   var Input_Routing:List[Location] = List()
   var Output_Routing:List[Location] = List()
-  var Mapping:String = ""// Shared(8) //8 instructions in instruction buffer
+  var Iteration:Int = 1// Shared(8) //8 instructions in instruction buffer
   var Firing:String = "" //TriggeredInstructions //(Triggered-instructions dataflow execution)
   var Size:List[Int] = List()
   var Decomposability:Int = _
@@ -77,12 +77,12 @@ class FUClassInitializer extends Env{
             throw new Exception("Output_Routing need to be collection of location")
           }
 
-        case "Mapping" =>
-          if (!memberContent.isInstanceOf[Item]){
-            throw new Exception("Mapping needs to be Item")
+        case "Iteration" =>
+          if (!memberContent.isInstanceOf[String]){
+            throw new Exception("Iteration needs to be String")
           }
-          val mp = memberContent.asInstanceOf[Item].itemName
-          newFU.Mapping = mp
+          val mp = memberContent.asInstanceOf[String]
+          newFU.Iteration = mp.toInt
 
         case "Firing" =>
           if (!memberContent.isInstanceOf[Item]){

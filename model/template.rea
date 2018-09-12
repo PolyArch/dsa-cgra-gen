@@ -9,8 +9,7 @@ ADD = new FU{
   Output_Routing = {
       SE:[1,1]
   }
-  Mapping = Dedicated
-  Firing = InputArrival
+  Firing = Dedicated
 };
 
 MUL = new FU {
@@ -24,8 +23,8 @@ MUL = new FU {
   Output_Routing = {
     SE:[1,1]
   }
-  Mapping = Dedicated
-  Firing = InputArrival
+  Firing = Dedicated
+  Iteration = 1
 };
 
 MUL_1 = new FU {
@@ -39,8 +38,8 @@ MUL_1 = new FU {
   Output_Routing = {
     SE:[1,1]
   }
-  Mapping = Dedicated
-  Firing = InputArrival
+  Iteration = 1
+  Firing = Dedicated
 };
 
 
@@ -55,8 +54,8 @@ SPC = new FU{
   Output_Routing = {
       SE:[1,1]
   }
-  Mapping = Shared_8 //8 instructions in instruction buffer
-  Firing = TriggeredInstructions //(Triggered-instructions dataflow execution)
+  Iteration = 9 //8 instructions in instruction buffer
+  Firing = Shared //(Triggered-instructions dataflow execution)
   Size = [1,2]
 };
 

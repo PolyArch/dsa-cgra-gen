@@ -53,6 +53,14 @@ trait outputGridIR extends formatValue{
     emptyString += locationList2Name("o",md.outputLocation,md,model)
     emptyString += ","+ Properties.lineSeparator
 
+    md match {
+      case x:GridFUIR =>
+        if(x.Firing=="Shared"){
+          require(x.Iteration > 1,"Shared region need to have more than one instructions")
+        }
+      case _ =>
+    }
+
     for (field <- fields){
       field.setAccessible(true)
 
@@ -64,6 +72,9 @@ trait outputGridIR extends formatValue{
           }
         case x:String =>
           emptyString += "\""+field.getName + "\":" + "\"" + x + "\""
+          emptyString += "," + Properties.lineSeparator
+        case x =>
+          emptyString += "\""+field.getName + "\":"  + x.toString
           emptyString += "," + Properties.lineSeparator
       }
     }
