@@ -32,9 +32,8 @@ class ReALanguage(fileName:String) extends Env
 {
   val parsedCodes:List[Any] = ReALanParse(fileName)
   val model:CgraModel = cgraCompile(parsedCodes)
-  override def toString= {
-    "{"+"\"numRows\":"+model.numRows+","+Properties.lineSeparator+
-    "\"numCols\":"+model.numCols+","+Properties.lineSeparator+
-      outputGridIR(model)+Properties.lineSeparator+","+outputConnectionIR(model)+"}"
+  override def toString:String= {
+
+    irOutput(cleanModel(model))
   }
 }

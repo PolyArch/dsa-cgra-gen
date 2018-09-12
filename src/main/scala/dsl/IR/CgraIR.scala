@@ -38,12 +38,12 @@ class GridFUIR extends GridModule {
   var maxDelayPipeLen : Array[Array[Array[Int]]] =
     Array(
       Array(Array(-1))
-    ) //maxDelayPipeLen(outPort)(subNet)(operand)
+    ) //maxDelayPipeLen(outPort)(subNet)
   var muxDirMatrix    : Array[Array[Array[Array[Boolean]]]]=
     Array(
       Array(
         Array(Array(x = false)))
-    )
+    ) // muxDirMatrix(outPort)(subNet)(operand)
   def copy(copyF:GridFUIR):GridFUIR={
     new GridFUIR{
       name= copyF.name
