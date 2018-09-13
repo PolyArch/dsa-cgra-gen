@@ -9,9 +9,10 @@ hardware and get estimated Power and Area result.
 
 ## Getting Started
 
-1. Make sure you have JDK from Oracle, make sure you have version 1.8 or above.
-2. Put the CGRA description file like "*fileNAME*.rea" in model directory.
-3. make sure you have an *IRoutput* directory in ss-cgra-gen
+1. Install [Scala](https://www.scala-lang.org/) and [sbt](https://www.scala-sbt.org/)
+2. Make sure you have JDK from Oracle with version 1.8 or above.
+3. Put the CGRA description file like "*fileNAME*.rea" in model directory.
+4. make sure you have an *IRoutput* directory in ss-cgra-gen
 
 ### run ss-cgra-gen from terminal
 
