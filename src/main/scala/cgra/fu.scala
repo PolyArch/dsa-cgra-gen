@@ -224,13 +224,13 @@ class ALU (InstructionList : Array[Int],aluDataWidth : Int) extends Module {
   io.output_ports.valid <> false.B
   result := 0.U
 
-  if (InstructionList.contains(isa.OR)){
-    when(io.opcode === isa.OR.U){
+  if (InstructionList.contains(isa.Or)){
+    when(io.opcode === isa.Or.U){
       result := (io.operand1.bits | io.operand2.bits)
     }
   }
-  if (InstructionList.contains(isa.AND)){
-    when(io.opcode === isa.AND.U){
+  if (InstructionList.contains(isa.And)){
+    when(io.opcode === isa.And.U){
       result := (io.operand1.bits & io.operand2.bits)
     }
   }
@@ -249,13 +249,13 @@ class ALU (InstructionList : Array[Int],aluDataWidth : Int) extends Module {
       result := (io.operand1.bits - io.operand2.bits)
     }
   }
-  if (InstructionList.contains(isa.Div)){
-    when(io.opcode === isa.Div.U){
+  if (InstructionList.contains(isa.UDiv)){
+    when(io.opcode === isa.UDiv.U){
       result := (io.operand1.bits - io.operand2.bits)
     }
   }
-  if (InstructionList.contains(isa.XOR)){
-    when(io.opcode === isa.XOR.U){
+  if (InstructionList.contains(isa.Xor)){
+    when(io.opcode === isa.Xor.U){
       result := (io.operand1.bits ^ io.operand2.bits)
     }
   }
