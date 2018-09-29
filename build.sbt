@@ -24,9 +24,9 @@ def javacOptionsVersion(scalaVersion: String): Seq[String] = {
   }
 }
 
-name := "CgraEF"
+name := "ss-cgra-gen"
 
-version := "3.1.0"
+version := "0.0.1"
 
 scalaVersion := "2.11.12"
 
