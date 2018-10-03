@@ -14,5 +14,9 @@ object isa {
   val Mul = 5
   val UDiv = 6
 
-  val numISA = 16
+  val numISA = 7
+}
+
+object Constant {
+  val maxBitsWidth = 2048
 }

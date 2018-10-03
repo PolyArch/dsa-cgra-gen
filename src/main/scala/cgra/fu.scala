@@ -6,15 +6,141 @@ import chisel3._
 import chisel3.util._
 import tile._
 
+import scala.util.Properties
+
+class ALU (InstructionList : Array[Int],aluDataWidth : Int) extends Module {
+  val io = IO(new Bundle{
+    val operand1 = Flipped(DecoupledIO(UInt(aluDataWidth.W)))
+    val operand2 = Flipped(DecoupledIO(UInt(aluDataWidth.W)))
+    val opcode = Input(UInt({
+      var opWidth = 0
+      if (InstructionList.max == 0)
+        opWidth = 1
+      else if(InstructionList.max == 1)
+        opWidth = 1
+      else if(isPow2(InstructionList.max))
+        opWidth = log2Ceil(InstructionList.max) + 1
+      else
+        opWidth = log2Ceil(InstructionList.max)
+      opWidth
+    }.W))
+    val output_ports = DecoupledIO(UInt(aluDataWidth.W))
+  }
+  )
+  val result = Wire(UInt(aluDataWidth.W))
+  io.operand1.ready <> io.output_ports.ready
+  io.operand2.ready <> io.output_ports.ready
+  io.output_ports.bits <> result
+  io.output_ports.valid <> false.B
+  result := 0.U
+
+  when(io.operand1.valid && io.operand2.valid){
+    if (InstructionList.contains(isa.Or)){
+      when(io.opcode === isa.Or.U){
+        result := (io.operand1.bits | io.operand2.bits)
+      }
+    }
+    if (InstructionList.contains(isa.And)){
+      when(io.opcode === isa.And.U){
+        result := (io.operand1.bits & io.operand2.bits)
+      }
+    }
+    if (InstructionList.contains(isa.Add)){
+      when(io.opcode === isa.Add.U){
+        result := (io.operand1.bits + io.operand2.bits)
+      }
+    }
+    if (InstructionList.contains(isa.Sub)){
+      when(io.opcode === isa.Sub.U){
+        result := (io.operand1.bits - io.operand2.bits)
+      }
+    }
+    if (InstructionList.contains(isa.Mul)){
+      when(io.opcode === isa.Mul.U){
+        result := (io.operand1.bits * io.operand2.bits)
+      }
+    }
+    if (InstructionList.contains(isa.UDiv)){
+      when(io.opcode === isa.UDiv.U){
+        result := (io.operand1.bits / io.operand2.bits)
+      }
+    }
+    if (InstructionList.contains(isa.Xor)){
+      when(io.opcode === isa.Xor.U){
+        result := (io.operand1.bits ^ io.operand2.bits)
+      }
+    }
+    printf(p"Operand 1 Bits inside ${io.operand1.bits}\n")
+    printf(p"Operand 2 Bits inside ${io.operand2.bits}\n")
+    printf(p"Result Wire inside ${result}\n")
+    io.output_ports.valid <> true.B
+  }
+
+  // Debug
+  printf(p"Operand 1 Ready ${io.operand1.ready}\n")
+  printf(p"Operand 2 Ready ${io.operand2.ready}\n")
+  printf(p"Result Wire ${result}\n")
+  printf(p"Output Bits ${io.output_ports.bits}\n")
+  printf(p"Output Valid ${io.output_ports.valid}\n")
+  printf(">>--<<\n")
+}
+
+class DelayPipe (maxLength:Int,pipeDataWidth:Int) extends Module {
+  val io = IO(new Bundle{
+    val cfg_mode = Input(Bool())
+    val delayLen = Input(UInt(log2Ceil(maxLength + 1).W))
+    val input_ports = Flipped(DecoupledIO(UInt(pipeDataWidth.W)))
+    val output_ports = DecoupledIO(UInt(pipeDataWidth.W))
+  })
+
+  io.input_ports.ready := io.output_ports.ready
+
+  val FIFO = RegInit(VecInit(Seq.fill(maxLength + 1)(0.U(pipeDataWidth.W))))
+  val FIFO_Valid = RegInit(VecInit(Seq.fill(maxLength + 1)(false.B)))
+
+  var leastWidth = 0
+  if(maxLength < 2) leastWidth = 2
+  else leastWidth = maxLength
+  val delay = RegInit(0.U(log2Ceil(leastWidth).W))
+
+  when(io.cfg_mode) {
+    // Reconfiguration
+    // reconfig delay
+    delay := io.delayLen
+    // empty the FIFO
+    for (i <- 0 until maxLength) {
+      FIFO(i) := 0.U
+      FIFO_Valid(i) := false.B
+    }
+  }.otherwise {
+    for (i <- 0 until maxLength) {
+      when(io.output_ports.ready){
+        when(i.U(maxLength.W) === delay) {
+          FIFO(i) := io.input_ports.bits
+          FIFO_Valid(i) := io.input_ports.valid
+        }.otherwise {
+          FIFO(i) := FIFO(i + 1)
+          FIFO_Valid(i) := FIFO_Valid(i + 1)
+        }
+      }
+    }
+  }
+  io.output_ports.bits := FIFO(0)
+  io.output_ports.valid := FIFO_Valid(0)
+}
+
 class FU(
           numInput        : Int,
           numOutput       : Int,
           inputLocation  : Array[(Int,Int)],
           outputLocation : Array[(Int,Int)],
           deComp          : Int,
-          Instructions    : Array[Array[Array[Int]]], //Instructions(outPort)(subNet) : Array of Instructions Set
-          maxDelayPipeLen : Array[Array[Array[Int]]], //maxDelayPipeLen(outPort)(subNet)(operand)
-          muxDirMatrix    : Array[Array[Array[Array[Boolean]]]] //muxDirMatrix(outPort)(subNet)(operand)(inPut)
+          Instructions    : Array[Array[Array[Int]]],
+          //Instructions(outPort)(subNet) : Array of Instructions Set
+          maxDelayPipeLen : Array[Array[Array[Int]]],
+          //maxDelayPipeLen(outPort)(subNet)(operand)
+          muxDirMatrix    : Array[Array[Array[Array[Boolean]]]]
+          //muxDirMatrix(outPort)(subNet)(operand)(inPut)
         ) extends FabricModule {
   //Override value
   override val datawidthModule: Int = fabricDataWidth
@@ -24,6 +150,7 @@ class FU(
   override lazy val outputModuleLocation: Array[(Int,Int)] = outputLocation
   override lazy val numDecomp: Int = deComp
 
+  val maxDelayLimitation = 16
   val maxDelay: Int = maxDelayPipeLen.map {
     _.map {
       _.max
@@ -31,8 +158,7 @@ class FU(
   }.max
 
   // Requirement check
-
-
+  require(maxDelay <= maxDelayLimitation)
   require(numModuleOutput == muxDirMatrix.length)
   for (subNet <- 0 until numDecomp) {
     for (outPort <- 0 until this.numModuleOutput; operand <- 0 until 2) {
@@ -41,7 +167,8 @@ class FU(
       }
 
       require(numModuleInput == muxDirMatrix(outPort)(subNet)(operand).length, "Mux select Matrix size mismatch")
-      require(muxDirMatrix(outPort)(subNet)(operand).exists(p => p), s"each output location need to have one input,Output ${outPort + 1} Sec ${subNet + 1}")
+      require(muxDirMatrix(outPort)(subNet)(operand).exists(p => p),
+        s"each output location need to have one input,Output ${outPort + 1} Sec ${subNet + 1}")
     }
     for (inPort <- 0 until this.numModuleInput; operand <- 0 until 2) {
       require(numModuleOutput == muxDirMatrix.map {
@@ -56,7 +183,10 @@ class FU(
   }
 
   // Select Register definition
+  val configPort = 0
+
   val SelReg = new Array[UInt](numModuleOutput * numDecomp * 2)
+  val SelRegWidth = new Array[Int](numModuleOutput * numDecomp * 2)
   val selInsHigh: Int = {
     if(log2Ceil(numModuleOutput)==0)
       0
@@ -64,34 +194,60 @@ class FU(
       log2Ceil(numModuleOutput) - 1
   }
   val selInsLow = 0
-  for (outPort <- 0 until numModuleOutput; subNet <- 0 until numDecomp; operand <- 0 until 2) {
+  for (outPort <- 0 until numModuleOutput;
+       subNet <- 0 until numDecomp;
+       operand <- 0 until 2) {
+    val numMuxIn: Int = muxDirMatrix(outPort)(subNet)(operand).count(p => p)
+
     SelReg(numModuleOutput * numDecomp * operand + numModuleOutput * subNet + outPort) =
       RegInit(0.U({
-        if(log2Ceil(numModuleOutput)<1)
+        if(isPow2(numMuxIn))
+          log2Ceil(numMuxIn) + 1
+        else if(numMuxIn == 1)
           1
         else
-          log2Ceil(numModuleOutput)
+          log2Ceil(numMuxIn)
       }.W))
+    SelRegWidth(numModuleOutput * numDecomp * operand +
+      numModuleOutput * subNet +
+      outPort) ={
+      if(isPow2(numMuxIn))
+        log2Ceil(numMuxIn) + 1
+      else if(numMuxIn == 1)
+        1
+      else
+        log2Ceil(numMuxIn)
+    }
     when(io.cfg_mode) {
-      SelReg(numModuleOutput * numDecomp * operand + numModuleOutput * subNet + outPort) :=
-        io.input_ports(1).bits(selInsHigh, selInsLow)
-    } //TODO: Currently from inport(1)
-    //TODO: How to update the register is not defined yet (Instructions related)
+      SelReg(numModuleOutput * numDecomp * operand +
+        numModuleOutput * subNet +
+        outPort) :=
+        io.input_ports(configPort).bits(selInsHigh, selInsLow)
+    } //TODO: Currently from inPort(configPort)
+    //TODO: How to update the register is not defined yet
+    // todo(Instructions related)
   }
 
   // Delay Pipe Len Register definition
   val pipeLenReg = new Array[UInt](numModuleOutput * numDecomp * 2)
-  val pipeInsLow: Int = selInsHigh + 1
-  val pipeInsHigh: Int = log2Ceil(maxDelay) - 1 + pipeInsLow
-  for (outPort <- 0 until numModuleOutput; subNet <- 0 until numDecomp; operand <- 0 until 2) {
+  val pipeInsLow: Int = selInsHigh + 1//TODO
+  val pipeInsHigh: Int = log2Ceil(maxDelay) - 1 + pipeInsLow//TODO
+  for (outPort <- 0 until numModuleOutput;
+       subNet <- 0 until numDecomp;
+       operand <- 0 until 2) {
     val leastWidth = {
       if (maxDelayPipeLen(outPort)(subNet)(operand) < 2) 1
       else log2Ceil(maxDelayPipeLen(outPort)(subNet)(operand))
     }
-    pipeLenReg(numModuleOutput * numDecomp * operand + numModuleOutput * subNet + outPort) =
+    pipeLenReg(
+      numModuleOutput * numDecomp * operand +
+        numModuleOutput * subNet +
+        outPort) =
       RegInit(0.U(leastWidth.W))
     when(io.cfg_mode) {
-      pipeLenReg(numModuleOutput * numDecomp * operand + numModuleOutput * subNet + outPort) :=
+      pipeLenReg(numModuleOutput * numDecomp * operand +
+        numModuleOutput * subNet +
+        outPort) :=
         io.input_ports(1).bits(pipeInsHigh, pipeInsLow)
     } //TODO: Currently from inport(1)
     //TODO: How to update the register is not defined yet (Instructions related)
@@ -207,106 +363,13 @@ class FU(
     }
     io.input_ports(numModuleInput * subNet + inPort).ready := readySum
   }
-}
 
-class ALU (InstructionList : Array[Int],aluDataWidth : Int) extends Module {
-  val io = IO(new Bundle{
-    val operand1 = Flipped(DecoupledIO(UInt(aluDataWidth.W)))
-    val operand2 = Flipped(DecoupledIO(UInt(aluDataWidth.W)))
-    val opcode = Input(UInt(log2Ceil(InstructionList.length).W))
-    val output_ports = DecoupledIO(UInt(aluDataWidth.W))
-  }
-  )
-  val result = Wire(UInt(aluDataWidth.W))
-  io.operand1.ready <> io.output_ports.ready
-  io.operand2.ready <> io.output_ports.ready
-  io.output_ports.bits <> result
-  io.output_ports.valid <> false.B
-  result := 0.U
+  // Debug
 
-  if (InstructionList.contains(isa.Or)){
-    when(io.opcode === isa.Or.U){
-      result := (io.operand1.bits | io.operand2.bits)
-    }
-  }
-  if (InstructionList.contains(isa.And)){
-    when(io.opcode === isa.And.U){
-      result := (io.operand1.bits & io.operand2.bits)
-    }
-  }
-  if (InstructionList.contains(isa.Add)){
-    when(io.opcode === isa.Add.U){
-      result := (io.operand1.bits + io.operand2.bits)
-    }
-  }
-  if (InstructionList.contains(isa.Sub)){
-    when(io.opcode === isa.Sub.U){
-      result := (io.operand1.bits - io.operand2.bits)
-    }
-  }
-  if (InstructionList.contains(isa.Mul)){
-    when(io.opcode === isa.Mul.U){
-      result := (io.operand1.bits - io.operand2.bits)
-    }
-  }
-  if (InstructionList.contains(isa.UDiv)){
-    when(io.opcode === isa.UDiv.U){
-      result := (io.operand1.bits - io.operand2.bits)
-    }
-  }
-  if (InstructionList.contains(isa.Xor)){
-    when(io.opcode === isa.Xor.U){
-      result := (io.operand1.bits ^ io.operand2.bits)
-    }
+  for (outPortIndex <- 0 until numOutput) {
+    printf(p"OutputPort-$outPortIndex-bits-${-io.output_ports(outPortIndex).bits}\n")
   }
 
-  when(io.operand1.valid && io.operand2.valid){
-    io.output_ports.valid <> true.B
-  }
-}
-
-class DelayPipe (maxLength:Int,pipeDataWidth:Int) extends Module {
-  val io = IO(new Bundle{
-    val cfg_mode = Input(Bool())
-    val delayLen = Input(UInt(log2Ceil(maxLength + 1).W))
-    val input_ports = Flipped(DecoupledIO(UInt(pipeDataWidth.W)))
-    val output_ports = DecoupledIO(UInt(pipeDataWidth.W))
-  })
-
-  io.input_ports.ready := io.output_ports.ready
-
-  val FIFO = RegInit(VecInit(Seq.fill(maxLength + 1)(0.U(pipeDataWidth.W))))
-  val FIFO_Valid = RegInit(VecInit(Seq.fill(maxLength + 1)(false.B)))
-
-  var leastWidth = 0
-  if(maxLength < 2) leastWidth = 2
-  else leastWidth = maxLength
-  val delay = RegInit(0.U(log2Ceil(leastWidth).W))
-
-  when(io.cfg_mode) {
-    // Reconfiguration
-    // reconfig delay
-    delay := io.delayLen
-    // empty the FIFO
-    for (i <- 0 until maxLength) {
-      FIFO(i) := 0.U
-      FIFO_Valid(i) := false.B
-    }
-  }.otherwise {
-    for (i <- 0 until maxLength) {
-      when(io.output_ports.ready){
-        when(i.U(maxLength.W) === delay) {
-          FIFO(i) := io.input_ports.bits
-          FIFO_Valid(i) := io.input_ports.valid
-        }.otherwise {
-          FIFO(i) := FIFO(i + 1)
-          FIFO_Valid(i) := FIFO_Valid(i + 1)
-        }
-      }
-    }
-  }
-  io.output_ports.bits := FIFO(0)
-  io.output_ports.valid := FIFO_Valid(0)
 }
 
 // Instantiate
