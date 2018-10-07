@@ -2,7 +2,7 @@
 
 package cgra.fu
 
-import cgra.{ALU, FU}
+import cgra._
 import dsl.IR._
 import tile.tools._
 import chisel3.iotesters
@@ -10,80 +10,59 @@ import chisel3.iotesters._
 import tile.{HasFabricParams, isa}
 import tile.isa._
 import tile.Constant._
-
 import scala.util.Random
 
-class FUTester(c: FU, params:GridFUIR ) extends PeekPokeTester(c)
-  with HasFabricParams {
-  private val fu = c
-  for(cycle <- 0 until 100){
-    for (inPortIndex <- 0 until params.numInput) {
-      val pokeBits = getRandomBits
-      val pokeValid = getRandomBoolean
-      poke(fu.io.input_ports(inPortIndex).bits, pokeBits)
-      poke(fu.io.input_ports(inPortIndex).valid, pokeValid)
-      println("InputPort-"+inPortIndex+"-bits-"+pokeBits+"-valid-"+pokeValid)
-    }
-    for (outPortIndex <- 0 until params.numOutput){
-      poke(fu.io.output_ports(outPortIndex).ready,true)
-    }
+class DelayPipeTest(dP:DelayPipe,
+                    delayPipeParam:DelayPipeParam) extends
+  PeekPokeTester(dP){
+
+  poke(dP.io.cfg_mode,true)
+  poke(dP.io.delayLen,delayPipeParam.maxLength* 4 / 5)
+  step(1)
+
+  for(cycle <- 1 until 50){
+    val cfg_mode = false
+    val delayLength = Random.nextInt(delayPipeParam.maxLength + 1)
+    val input_bits = BigInt(delayPipeParam.pipeDataWidth,Random)
+    val input_valid = Random.nextBoolean()
+    val output_ready = Random.nextBoolean()
+
+    poke(dP.io.cfg_mode,cfg_mode)
+    poke(dP.io.delayLen,delayLength)
+    poke(dP.io.input_ports.bits,input_bits)
+    poke(dP.io.input_ports.valid,input_valid)
+    poke(dP.io.output_ports.ready,output_ready)
+    // Debug
+    println("Config mode = " + cfg_mode)
+    println("Delay Length = " + delayLength)
+    println("Input bits = " + input_bits)
+    println("Input bits binary = " + input_bits.toString(2))
+    println("Input valid = " + input_valid)
+    println("Output ready = " + output_ready)
+
+    // tic
     step(1)
-    println("End of cycle " + cycle)
+    println("The end of cycle " + cycle)
+
+    //Expect
+
+    println("---------------------------------")
   }
 }
-
-object FuTest extends App {
-
-  var param = new GridFUIR
-  param.numInput = 4
-  param.numOutput = 4
-  param.inputLocation = Array((1,0),(0,1),(-1,0),(0,-1)).toList
-  param.outputLocation = Array((1,0),(0,1),(-1,0),(0,-1)).toList
-  param.deComp = 4
-  param.Instructions = Array(
-    Array(Array(0,1,2),Array(0,1,2),Array(0,1,2),Array(0,1,2)),
-    Array(Array(1,2),Array(0,1,2),Array(0,1,2),Array(0)),
-    Array(Array(0,1,2),Array(0,1,2),Array(0,2),Array(0,1,2)),
-    Array(Array(0,1),Array(0,2),Array(0,1,2),Array(0,2))
-  )
-  param.maxDelayPipeLen = Array(
-    Array(Array(4,3),Array(2,6),Array(1,7),Array(3,3)),
-    Array(Array(1,7),Array(1,2),Array(0,5),Array(0,0)),
-    Array(Array(1,2),Array(0,5),Array(2,6),Array(1,7)),
-    Array(Array(0,5),Array(2,6),Array(1,7),Array(1,2))
-  )
-  param.muxDirMatrix = Array(
-    Array(
-      Array(Array(false,true,false,true),Array(true, false, true, false)),
-      Array(Array(false,true,false,true),Array(false,true,false,true)),
-      Array(Array(true, false, true, false),Array(true, false, true, false)),
-      Array(Array(true,false,false,true),Array(true, false, true, false))),
-    Array(
-      Array(Array(false,true,false,true),Array(true, false, true, false)),
-      Array(Array(false,true,false,true),Array(false,true,false,true)),
-      Array(Array(true, false, true, false),Array(true, false, true, false)),
-      Array(Array(true,false,false,true),Array(true, false, true, false))),
-    Array(
-      Array(Array(false,true,false,true),Array(false,true,false,true)),
-      Array(Array(true, false, true, false),Array(true, false, true, false)),
-      Array(Array(true, true, true, true),Array(true, false, true, false)),
-      Array(Array(true,true,true,true),Array(true, false, true, false))),
-    Array(
-      Array(Array(true, false, true, false),Array(true, false, true, false)),
-      Array(Array(true, false, true, false),Array(true, false, true, false)),
-      Array(Array(true, false, true, false),Array(true, true, true, false)),
-      Array(Array(true,false,false,true),Array(true, false, true, false)))
-  )
-
-
-  iotesters.Driver.execute(args, () =>
-    new FU(param.numInput,param.numOutput,param.inputLocation.toArray,
-      param.outputLocation.toArray,param.deComp,
-      param.Instructions,param.maxDelayPipeLen,param.muxDirMatrix))
-  {
-    c => new FUTester(c,param)
+object DelayPipeTest extends App{
+  for(repeat <- 0 until 10){
+    val delayPipeParam = new DelayPipeParam
+    delayPipeParam.maxLength = Random.nextInt(17)
+    delayPipeParam.pipeDataWidth = Random.nextInt(65)
+    if(delayPipeParam.pipeDataWidth == 0)
+      delayPipeParam.pipeDataWidth = 1
+    println("Max Length = " + delayPipeParam.maxLength)
+    println("pipe data width = " + delayPipeParam.pipeDataWidth)
+    iotesters.Driver.execute(args,() =>
+      new DelayPipe(delayPipeParam.maxLength,delayPipeParam.pipeDataWidth)){
+      dP => new DelayPipeTest(dP,delayPipeParam)
+    }
   }
-
 }
 
 class AluTest(alu: ALU, aluParam: AluParam) extends PeekPokeTester(alu)
@@ -136,10 +115,11 @@ class AluTest(alu: ALU, aluParam: AluParam) extends PeekPokeTester(alu)
     }
 
     if(op1Valid && op2Valid){
-      val opcodeName = isa.getClass.getDeclaredFields.find(field=>{
-        field.setAccessible(true)
-        field.get(isa) == opcode
-      }) match {
+      val opcodeName = isa.getClass.getDeclaredFields
+        .find(field=>{
+          field.setAccessible(true)
+          field.get(isa) == opcode
+        }) match {
         case Some(i) => i.getName
         case _ => throw new Exception("No match opcode")
       }
@@ -160,7 +140,98 @@ class AluTest(alu: ALU, aluParam: AluParam) extends PeekPokeTester(alu)
     println("---------------------------------")
   }
 }
+object AluTest extends App {
+  for (repeat <- 0 until 10)
+  {
+    val aluParam = new AluParam
 
+    var numInst = Random.nextInt(numISA)
+    if (numInst <= 0) numInst = 1
+    aluParam.InstructionList = Seq.fill(numInst)(Random.nextInt(numISA))
+      .toArray.distinct.sorted
+
+    aluParam.aluDataWidth = Random.nextInt(2049)
+    if (aluParam.aluDataWidth <= 0) aluParam.aluDataWidth = 1
+
+    iotesters.Driver.execute(args, () =>
+      new ALU(aluParam.InstructionList, aluParam.aluDataWidth)) {
+      c => new AluTest(c, aluParam)
+    }
+  }
+}
+
+class FuTest(c: FU, params:GridFUIR ) extends PeekPokeTester(c)
+  with HasFabricParams {
+  private val fu = c
+  for(cycle <- 0 until 100){
+    for (inPortIndex <- 0 until params.numInput) {
+      val pokeBits = getRandomBits
+      val pokeValid = getRandomBoolean
+      poke(fu.io.input_ports(inPortIndex).bits, pokeBits)
+      poke(fu.io.input_ports(inPortIndex).valid, pokeValid)
+      println("InputPort-"+inPortIndex+"-bits-"+pokeBits+"-valid-"+pokeValid)
+    }
+    for (outPortIndex <- 0 until params.numOutput){
+      poke(fu.io.output_ports(outPortIndex).ready,true)
+    }
+    step(1)
+    println("End of cycle " + cycle)
+  }
+}
+object FuTest extends App {
+
+  var param = new GridFUIR
+  param.numInput = 4
+  param.numOutput = 4
+  param.inputLocation = Array((1,0),(0,1),(-1,0),(0,-1)).toList
+  param.outputLocation = Array((1,0),(0,1),(-1,0),(0,-1)).toList
+  param.deComp = 4
+  param.Instructions = Array(
+    Array(Array(0,1,2),Array(0,1,2),Array(0,1,2),Array(0,1,2)),
+    Array(Array(1,2),Array(0,1,2),Array(0,1,2),Array(0)),
+    Array(Array(0,1,2),Array(0,1,2),Array(0,2),Array(0,1,2)),
+    Array(Array(0,1),Array(0,2),Array(0,1,2),Array(0,2))
+  )
+  param.maxDelayPipeLen = Array(
+    Array(Array(4,3),Array(2,6),Array(1,7),Array(3,3)),
+    Array(Array(1,7),Array(1,2),Array(0,5),Array(0,0)),
+    Array(Array(1,2),Array(0,5),Array(2,6),Array(1,7)),
+    Array(Array(0,5),Array(2,6),Array(1,7),Array(1,2))
+  )
+  param.muxDirMatrix = Array(
+    Array(
+      Array(Array(false,true,false,true),Array(true, false, true, false)),
+      Array(Array(false,true,false,true),Array(false,true,false,true)),
+      Array(Array(true, false, true, false),Array(true, false, true, false)),
+      Array(Array(true,false,false,true),Array(true, false, true, false))),
+    Array(
+      Array(Array(false,true,false,true),Array(true, false, true, false)),
+      Array(Array(false,true,false,true),Array(false,true,false,true)),
+      Array(Array(true, false, true, false),Array(true, false, true, false)),
+      Array(Array(true,false,false,true),Array(true, false, true, false))),
+    Array(
+      Array(Array(false,true,false,true),Array(false,true,false,true)),
+      Array(Array(true, false, true, false),Array(true, false, true, false)),
+      Array(Array(true, true, true, true),Array(true, false, true, false)),
+      Array(Array(true,true,true,true),Array(true, false, true, false))),
+    Array(
+      Array(Array(true, false, true, false),Array(true, false, true, false)),
+      Array(Array(true, false, true, false),Array(true, false, true, false)),
+      Array(Array(true, false, true, false),Array(true, true, true, false)),
+      Array(Array(true,false,false,true),Array(true, false, true, false)))
+  )
+
+  iotesters.Driver.execute(args, () =>
+    new FU(param.numInput,param.numOutput,param.inputLocation.toArray,
+      param.outputLocation.toArray,param.deComp,
+      param.Instructions,param.maxDelayPipeLen,param.muxDirMatrix))
+  {
+    c => new FuTest(c,param)
+  }
+
+}
+
+// Parameter
 class AluParam {
   var InstructionList: Array[Int] = _
   var aluDataWidth: Int = -1
@@ -170,22 +241,7 @@ class AluParam {
     InstructionList.foreach(i=>{print(i + " ")});print("\n")
   }
 }
-
-object AluTest extends App {
-  for (repeat <- 0 until 10)
-  {
-    val aluParam = new AluParam
-
-    var numInst = Random.nextInt(numISA)
-    if (numInst <= 0) numInst = 1
-    aluParam.InstructionList = Seq.fill(numInst)(Random.nextInt(numISA)).toArray.distinct.sorted
-
-    aluParam.aluDataWidth = Random.nextInt(65)
-    if (aluParam.aluDataWidth <= 0) aluParam.aluDataWidth = 1
-
-    iotesters.Driver.execute(args, () =>
-      new ALU(aluParam.InstructionList, aluParam.aluDataWidth)) {
-      c => new AluTest(c, aluParam)
-    }
-  }
+class DelayPipeParam{
+  var maxLength:Int = -1
+  var pipeDataWidth:Int = -1
 }

@@ -12,21 +12,21 @@ object tools extends HasFabricParams{
   def getRandomBoolean : Boolean = Random.nextBoolean()
 
 
-  def dupString (str:String,width:Int) : String = {
-    if (width > 1)
-      dupString(str,width-1) + str
+  def dupString (str:String,dupTime:Int) : String = {
+    if (dupTime > 1)
+      dupString(str,dupTime-1) + str
     else
       str
   }
 
-  def unsignedBigInt(a:BigInt,aluDataWidth:Int):BigInt = {
+  def unsignedBigInt(a:BigInt,dataWidth:Int):BigInt = {
     if(a>=0)
       a
     else{
       val sBigIntL = a.toString(2).length
       var sBigIntBinStr = a.toString(2).substring(1,sBigIntL)
 
-      sBigIntBinStr = dupString("0",aluDataWidth - sBigIntL + 1) + sBigIntBinStr
+      sBigIntBinStr = dupString("0",dataWidth - sBigIntL + 1) + sBigIntBinStr
 
       println("before " + sBigIntBinStr)
       val subStr = sBigIntBinStr.map(c=>
