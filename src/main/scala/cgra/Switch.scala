@@ -4,17 +4,29 @@ package cgra
 
 import chisel3._
 import chisel3.util._
+import encode.configEncode
+import encode.configSwitchContentEncode._
 import tile._
+import tile.Constant._
+
+import scala.collection.mutable.Map
+
 
 class Switch(
+              row             :Int,
+              col             :Int,
               numInput        : Int,
               numOutput       : Int,
               inputLocation  : Array[(Int,Int)],
               outputLocation : Array[(Int,Int)],
               deComp          : Int,
-              muxDirMatrix    : Array[Array[Array[Boolean]]] //muxDirMatrix(outPort)(decompSec)(inPut)
+              muxDirMatrix    : Array[Array[Array[Boolean]]], //muxDirMatrix(outPort)(decompSec)(inPut)
+              configsFromPort : Int,
+              configsToPort   : Int
             ) extends FabricModule
+  with configEncode
 {
+
   //Override value
   override val datawidthModule: Int = fabricDataWidth
   override lazy val numModuleInput:Int = numInput
@@ -22,9 +34,13 @@ class Switch(
   override lazy val inputMoudleLocation: Array[(Int,Int)] = inputLocation
   override lazy val outputModuleLocation: Array[(Int,Int)] = outputLocation
   override lazy val numDecomp: Int = deComp
+  override val configsModuleFromPort: Int = configsFromPort
+  override val configsModuleToPort: Int = configsToPort
 
   // Requirement check
   require(numModuleOutput==muxDirMatrix.length)
+  require(configsModuleFromPort!=configsModuleToPort,s"from ${configsModuleFromPort} - " +
+    s"to ${configsModuleToPort}")
   for(subNet <- 0 until numDecomp){
     for (outPort <-0 until this.numModuleOutput){
       require(numModuleInput==muxDirMatrix(outPort)(subNet).length,"Mux select Matrix size mismatch")
@@ -38,25 +54,44 @@ class Switch(
     }
   }
 
+  // Build Config Port
+  val configFromPort:UInt = Wire(UInt(datawidthModule.W))
+  configFromPort := io.input_ports.zipWithIndex.filter(iP => {
+    iP._2%numModuleInput == configsModuleFromPort
+  }).map(_._1.bits).reverse.reduceRight(Cat(_,_))
+  val configRowBits = configFromPort(rowBits.high,rowBits.low)
+  val configColBits = configFromPort(colBits.high,colBits.low)
+  val configHeaderBits = configFromPort(configHeader.high,configHeader.low)
+  val configSectionBits = configFromPort(configSection.high,configSection.low)
+
 
   // Select Register definition
   val SelReg = new Array[UInt](numModuleOutput * numDecomp)
-  for(outPort <- 0 until numModuleOutput;subNet <- 0 until numDecomp){
-    SelReg(numModuleOutput * subNet + outPort) = RegInit(0.U({
-      if(log2Ceil(numModuleOutput)<1)
-        1
-      else
-        log2Ceil(numModuleOutput)
-    }.W))
-    when(io.cfg_mode){SelReg(numModuleOutput * subNet + outPort) := io.input_ports(1).bits({
-      if(log2Ceil(numModuleOutput)==0)
-        0
-      else
-        log2Ceil(numModuleOutput) - 1
-    },0)}
-    //TODO: How to update the select register is not defined yet (Instructions related)
-  }
+  val SelRegWidth = new Array[(Int,Int,Int)](numModuleOutput * numDecomp)
 
+  for(outPort <- 0 until numModuleOutput;subNet <- 0 until numDecomp){
+    val numMuxIn: Int = muxDirMatrix(outPort)(subNet).count(p => p)
+    SelReg(numModuleOutput * subNet + outPort) =
+      RegInit(0.U(log2Ceil(numMuxIn + 1).W))
+    SelRegWidth(numModuleOutput * subNet + outPort) =
+      (outPort,subNet,log2Ceil(numMuxIn + 1))
+
+  }
+  val SwitchMuxEncode : Map[(Int,Int),MuxEncode]=
+    switchContentEncode(SelRegWidth)
+  when(io.cfg_mode &&
+    configHeaderBits === SwitchType.U(configHeader.bitsLen.W) &&
+    row.U(rowBits.bitsLen.W) === configRowBits &&
+    col.U(colBits.bitsLen.W) === configColBits)
+  {
+    for(outPort <- 0 until numModuleOutput;subNet <- 0 until numDecomp) {
+      val muxEncode = SwitchMuxEncode((outPort,subNet))
+      val configSec = muxEncode.configBitSec
+      when(configSec.U(configSection.bitsLen.W) === configSectionBits){
+        SelReg(numModuleOutput * subNet + outPort) := configFromPort(muxEncode.highBits,muxEncode.lowBit)
+      }
+    }
+  }
 
   // Output Register definition
   val OutputBitsReg = RegInit(VecInit(Seq.fill(numModuleOutput * numDecomp)(0.U(decompDataWidth.W))))
@@ -64,10 +99,25 @@ class Switch(
 
   // Output Register <-> output_port
   for (subNet <- 0 until numDecomp;outPort <- 0 until numModuleOutput){
-    io.output_ports(numModuleOutput * subNet + outPort).valid <>
-      OutputValidReg(numModuleOutput * subNet + outPort)
-    io.output_ports(numModuleOutput * subNet + outPort).bits <>
-      OutputBitsReg(numModuleOutput * subNet + outPort)
+    if(outPort != configsModuleToPort || configsModuleToPort == -1){
+      io.output_ports(numModuleOutput * subNet + outPort).valid <>
+        Mux(io.cfg_mode,
+          false.B,
+          OutputValidReg(numModuleOutput * subNet + outPort))
+      io.output_ports(numModuleOutput * subNet + outPort).bits <>
+        Mux(io.cfg_mode,
+          0.U,
+          OutputBitsReg(numModuleOutput * subNet + outPort))
+    }else{
+      io.output_ports(numModuleOutput * subNet + outPort).valid <>
+        Mux(io.cfg_mode,
+          io.input_ports(numModuleInput * subNet + configsModuleFromPort).valid,
+          OutputValidReg(numModuleOutput * subNet + outPort))
+      io.output_ports(numModuleOutput * subNet + outPort).bits <>
+        Mux(io.cfg_mode,
+          io.input_ports(numModuleInput * subNet + configsModuleFromPort).bits,
+          OutputBitsReg(numModuleOutput * subNet + outPort))
+    }
   }
 
   for (subNet <- 0 until numDecomp)
@@ -120,21 +170,22 @@ class Switch(
 
 
   for (inPort <- 0 until numModuleInput;subNet <- 0 until numDecomp){
-    var readySum = true.B
+    var readyReduce = true.B
     for(outPort <- 0 until numModuleOutput) {
       if (muxDirMatrix(outPort)(subNet)(inPort)){
-        readySum = readySum & io.output_ports(numModuleOutput * subNet + outPort).ready
+        readyReduce = readyReduce & io.output_ports(numModuleOutput * subNet + outPort).ready
       }
     }
-    io.input_ports(numModuleInput * subNet + inPort).ready := readySum
+    io.input_ports(numModuleInput * subNet + inPort).ready := readyReduce
   }
 }
 
 // Instantiate
-/*
+
 object SwitchDriver extends App {
   chisel3.Driver.execute(args, () =>
-    new Switch(4,4,
+    new Switch(1,2,
+      4,4,
       Array((1,0),(0,1),(-1,0),(0,-1)),
       Array((1,0),(0,1),(-1,0),(0,-1)),
       4,
@@ -149,8 +200,8 @@ object SwitchDriver extends App {
         Array(Array(false,true,false,true),Array(true, false, true, false),Array(false,true,false,true),Array(true, false, true, false)),
         Array(Array(false,true,false,true),Array(true, false, true, false),Array(true, false, true, false),Array(false,true,false,true)),
         Array(Array(true,true,true,true),Array(false, true, false,true ),Array(true, false, true, false),Array(true, false, true, false)),
-        Array(Array(true,false,false,true),Array(true, true, true, false),Array(false, true, false,true ),Array(true, false, true, false)))
+        Array(Array(true,false,false,true),Array(true, true, true, false),Array(false, true, false,true ),Array(true, false, true, false))),
+      1,2
     )
   )
 }
-*/

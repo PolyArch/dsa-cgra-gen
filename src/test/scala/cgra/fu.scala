@@ -7,8 +7,8 @@ import dsl.IR._
 import tile.tools._
 import chisel3.iotesters
 import chisel3.iotesters._
-import tile.{HasFabricParams, isa}
-import tile.isa._
+import tile.{HasFabricParams, ISA}
+import tile.ISA._
 import tile.Constant._
 import scala.util.Random
 
@@ -52,10 +52,12 @@ class DelayPipeTest(dP:DelayPipe,
 object DelayPipeTest extends App{
   for(repeat <- 0 until 10){
     val delayPipeParam = new DelayPipeParam
-    delayPipeParam.maxLength = Random.nextInt(17)
-    delayPipeParam.pipeDataWidth = Random.nextInt(65)
+    delayPipeParam.maxLength = Random.nextInt(maxFuDelayPipeLength + 1)
+    delayPipeParam.pipeDataWidth = Random.nextInt(maxBitsWidth) + 1
+    /*
     if(delayPipeParam.pipeDataWidth == 0)
       delayPipeParam.pipeDataWidth = 1
+    */
     println("Max Length = " + delayPipeParam.maxLength)
     println("pipe data width = " + delayPipeParam.pipeDataWidth)
     iotesters.Driver.execute(args,() =>
@@ -115,10 +117,10 @@ class AluTest(alu: ALU, aluParam: AluParam) extends PeekPokeTester(alu)
     }
 
     if(op1Valid && op2Valid){
-      val opcodeName = isa.getClass.getDeclaredFields
+      val opcodeName = ISA.getClass.getDeclaredFields
         .find(field=>{
           field.setAccessible(true)
-          field.get(isa) == opcode
+          field.get(ISA) == opcode
         }) match {
         case Some(i) => i.getName
         case _ => throw new Exception("No match opcode")
@@ -150,8 +152,7 @@ object AluTest extends App {
     aluParam.InstructionList = Seq.fill(numInst)(Random.nextInt(numISA))
       .toArray.distinct.sorted
 
-    aluParam.aluDataWidth = Random.nextInt(2049)
-    if (aluParam.aluDataWidth <= 0) aluParam.aluDataWidth = 1
+    aluParam.aluDataWidth = Random.nextInt(maxBitsWidth) + 1
 
     iotesters.Driver.execute(args, () =>
       new ALU(aluParam.InstructionList, aluParam.aluDataWidth)) {
@@ -222,9 +223,10 @@ object FuTest extends App {
   )
 
   iotesters.Driver.execute(args, () =>
-    new FU(param.numInput,param.numOutput,param.inputLocation.toArray,
+    new FU(3,4,param.numInput,param.numOutput,param.inputLocation.toArray,
       param.outputLocation.toArray,param.deComp,
-      param.Instructions,param.maxDelayPipeLen,param.muxDirMatrix))
+      param.Instructions,param.maxDelayPipeLen,param.muxDirMatrix,
+      0,0))
   {
     c => new FuTest(c,param)
   }

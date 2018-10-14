@@ -5,7 +5,7 @@ package dsl.IR.build
 import dsl.IR._
 import dsl.compiler._
 import dsl.library.builtinClass.FUClass
-import tile.isa
+import tile.ISA
 
 trait FUIRModuleBuild extends Env{
   def buildFUIRModule(fuVar:EnvVariable, model:CgraModel):CgraModel={
@@ -56,9 +56,9 @@ trait FUIRModuleBuild extends Env{
           if(opC.length > 2) opC(2).toInt
           else 1
         }
-        val opEncodeField = isa.getClass.getDeclaredField(opcode)
+        val opEncodeField = ISA.getClass.getDeclaredField(opcode)
         opEncodeField.setAccessible(true)
-        val opencode :Int = opEncodeField.get(isa).asInstanceOf[Int]
+        val opencode :Int = opEncodeField.get(ISA).asInstanceOf[Int]
         opcodeList = opcodeList :+ opencode
         fuIR.deComp = fuIR.deComp max deOp
       })

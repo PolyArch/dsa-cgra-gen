@@ -37,18 +37,22 @@ trait CgraGenerator {
       for(col <- model.GridIR(row).indices){
         FabricGrid(row)(col) = model.GridIR(row)(col) match {
           case x:GridRouterIR =>
-            Module(new Switch(x.numInput,
+            Module(new Switch(x.row,x.col,
+              x.numInput,
               x.numOutput,x.inputLocation.toArray,
               x.outputLocation.toArray,
-              x.deComp,x.muxDirMatrix))
+              x.deComp,x.muxDirMatrix,
+              0,1))
           case x:GridFUIR =>
-            Module(new FU(x.numInput,
+            Module(new FU(x.row,x.col,
+              x.numInput,
               x.numOutput,
               x.inputLocation.toArray,
               x.outputLocation.toArray,
               x.deComp, x.Instructions,
               x.maxDelayPipeLen,
-              x.muxDirMatrix))
+              x.muxDirMatrix,
+              0,1))
           case _ => null
         }
         FabricGrid(row)(col) match {
