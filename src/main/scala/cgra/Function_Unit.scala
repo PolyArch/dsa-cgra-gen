@@ -84,67 +84,6 @@ class ALU (InstructionList : Array[Int],aluDataWidth : Int) extends Module {
   printf(p"Output Valid ${io.output_ports.valid}\n")
   printf(">>--<<\n")
 }
-/*
-class DelayPipe (maxLength:Int,pipeDataWidth:Int) extends Module {
-  val io = IO(new Bundle{
-    val cfg_mode = Input(Bool())
-    val delayLen = Input(UInt(log2Ceil(maxLength + 1).W))
-    val input_ports = Flipped(DecoupledIO(UInt(pipeDataWidth.W)))
-    val output_ports = DecoupledIO(UInt(pipeDataWidth.W))
-  })
-
-  if(maxLength == 0){
-    io.input_ports <> io.output_ports
-  }else {
-    val FIFO = RegInit(VecInit(Seq.fill(maxLength)(0.U(pipeDataWidth.W))))
-    val FIFO_Valid = RegInit(VecInit(Seq.fill(maxLength)(false.B)))
-
-    var delayRegWidth = 0
-    if (maxLength == 0) {
-      delayRegWidth = 1
-    } else {
-      delayRegWidth = log2Ceil(maxLength + 1)
-    }
-    val delayReg = RegInit(0.U(delayRegWidth.W))
-
-    when(io.cfg_mode) {
-      // Reconfiguration
-      // reconfig delay
-      delayReg := io.delayLen
-      // empty the FIFO
-      for (i <- 0 until maxLength) {
-        FIFO(i) := 0.U
-        FIFO_Valid(i) := false.B
-      }
-    }.otherwise {
-      when(io.output_ports.ready) {
-        for (i <- 0 until maxLength) {
-          if(i < maxLength - 1){
-            when((i+1).U(delayRegWidth.W) === delayReg) {
-              FIFO(i) := io.input_ports.bits
-              FIFO_Valid(i) := io.input_ports.valid
-            }.otherwise {
-              FIFO(i) := FIFO(i + 1)
-              FIFO_Valid(i) := FIFO_Valid(i + 1)
-            }
-          }else{
-            when((i+1).U(delayRegWidth.W) === delayReg) {
-              FIFO(i) := io.input_ports.bits
-              FIFO_Valid(i) := io.input_ports.valid
-            }.otherwise {
-              FIFO(i) := 0.U
-              FIFO_Valid(i) := false.B
-            }
-          }
-        }
-      }
-    }
-    io.output_ports.bits := Mux(delayReg === 0.U,io.input_ports.bits,FIFO(0))
-    io.output_ports.valid := Mux(delayReg === 0.U,io.input_ports.valid,FIFO_Valid(0))
-    io.input_ports.ready := io.output_ports.ready
-  }
-}
-*/
 
 class DelayPipe (maxLength:Int,pipeDataWidth:Int) extends Module {
   val io = IO(new Bundle{
