@@ -8,7 +8,7 @@ class mm_instruction extends  Module
   with inst_util{
   val io = IO(new Bundle{
     val enable = Input(Bool())
-    val read = Flipped(new mm_instruction_if)
+    val read = Output(new mm_instruction_t)
     val write = Input(UInt(TIA_MM_INSTRUCTION_WIDTH.W))
   })
 
@@ -27,17 +27,6 @@ class mm_instruction extends  Module
   val ictv = RegEnable(extractBits(io.write,ictv_r),io.enable)
   val immediate = RegEnable(extractBits(io.write,immediate_r),io.enable)
   //val padding = RegEnable(extractBits(io.write,padding_r),io.enable)
-
-  // RegNext
-  /*
-  instructions.write := extractBits(io.write,non_imme_bits_r)
-  val ptm = RegNext(extractBits(io.write,ptm_r),0.U(TIA_PTM_WIDTH.W))
-  val ici = RegNext(extractBits(io.write,ici_r),0.U(TIA_ICI_WIDTH.W))
-  val ictb = RegNext(extractBits(io.write,ictb_r),0.U(TIA_ICTB_WIDTH.W))
-  val ictv = RegNext(extractBits(io.write,ictv_r),0.U(TIA_ICTV_WIDTH.W))
-  val immediate = RegNext(extractBits(io.write,immediate_r),0.U(TIA_WORD_WIDTH.W))
-  //val padding = RegNext(extractBits(io.write,padding_r),0.U(TIA_MM_INSTRUCTION_PADDING_WIDTH.W))
-  */
 
   // read
   io.read.vi <> instructions.read.vi
@@ -64,7 +53,7 @@ class instruction extends Module
   with inst_util{
   val io = IO(new Bundle{
     val enable = Input(Bool())
-    val read = Flipped(new non_datapath_instruction_if)
+    val read = Output(new non_datapath_instruction_t)
     val write = Input(UInt((pum_r.high + 1).W))
   })
 
@@ -78,18 +67,7 @@ class instruction extends Module
   val oct = RegEnable(extractBits(io.write,oct_r),io.enable)
   val icd = RegEnable(extractBits(io.write,icd_r),io.enable)
   val pum = RegEnable(extractBits(io.write,pum_r),io.enable)
-  /*
-  val vi = RegNext(extractBits(io.write,vi_r),false.B)
-  val op = RegNext(extractBits(io.write,op_r),0.U(TIA_OP_WIDTH.W))
-  val st = RegNext(extractBits(io.write,st_r),0.U(TIA_ST_WIDTH.W))
-  val si = RegNext(extractBits(io.write,si_r),0.U(TIA_SI_WIDTH.W))
-  val dt = RegNext(extractBits(io.write,dt_r),0.U(TIA_DT_WIDTH.W))
-  val di = RegNext(extractBits(io.write,di_r),0.U(TIA_DI_WIDTH.W))
-  val oci = RegNext(extractBits(io.write,oct_r),0.U(TIA_OCI_WIDTH.W))
-  val oct = RegNext(extractBits(io.write,oct_r),0.U(TIA_OCT_WIDTH.W))
-  val icd = RegNext(extractBits(io.write,icd_r),0.U(TIA_ICD_WIDTH.W))
-  val pum = RegNext(extractBits(io.write,pum_r),0.U(TIA_PUM_WIDTH.W))
-  */
+
   io.read.vi := vi
   io.read.op := op
   io.read.st := st
@@ -100,31 +78,6 @@ class instruction extends Module
   io.read.oct := oct
   io.read.icd := icd
   io.read.pum := pum
-}
-
-class mm_instruction_if extends datapath_instruction_if {
-  val ptm = Input(UInt(TIA_PTM_WIDTH.W))
-  val ici = Input(UInt(TIA_ICI_WIDTH.W))
-  val ictb = Input(UInt(TIA_ICTB_WIDTH.W))
-  val ictv = Input(UInt(TIA_ICTV_WIDTH.W))
-  val padding = Input(UInt(TIA_MM_INSTRUCTION_PADDING_WIDTH.W))
-}
-
-class datapath_instruction_if extends non_datapath_instruction_if{
-  val immediate = Input(UInt(TIA_WORD_WIDTH.W))
-}
-
-class non_datapath_instruction_if extends Bundle {
-  val vi = Input(Bool())
-  val op = Input(UInt(TIA_OP_WIDTH.W))
-  val st = Input(UInt(TIA_ST_WIDTH.W))
-  val si = Input(UInt(TIA_SI_WIDTH.W))
-  val dt = Input(UInt(TIA_DT_WIDTH.W))
-  val di = Input(UInt(TIA_DI_WIDTH.W))
-  val oci = Input(UInt(TIA_OCI_WIDTH.W))
-  val oct = Input(UInt(TIA_OCT_WIDTH.W))
-  val icd = Input(UInt(TIA_ICD_WIDTH.W))
-  val pum = Input(UInt(TIA_PUM_WIDTH.W))
 }
 
 class mm_instruction_t extends datapath_instruction_t {
@@ -153,8 +106,8 @@ class non_datapath_instruction_t extends Bundle {
 }
 
 class zero_mm_instruction extends Module{
-  val io = IO(Flipped(new mm_instruction_if))
-  io.vi := false.B
+  val io = IO(Output(new mm_instruction_t))
+  io.vi := 0.U
   io.op := 0.U(TIA_OP_WIDTH.W)
   io.st := 0.U(TIA_ST_WIDTH.W)
   io.si := 0.U(TIA_SI_WIDTH.W)
@@ -173,23 +126,23 @@ class zero_mm_instruction extends Module{
 }
 
 class zero_datapath_instruction extends Module {
-  val io = IO(Flipped(new datapath_instruction_if))
-  io.vi := false.B
-  io.op := 0.U(TIA_OP_WIDTH.W)
-  io.st := 0.U(TIA_ST_WIDTH.W)
-  io.si := 0.U(TIA_SI_WIDTH.W)
-  io.dt := 0.U(TIA_DT_WIDTH.W)
-  io.di := 0.U(TIA_DI_WIDTH.W)
-  io.oci := 0.U(TIA_OCI_WIDTH.W)
-  io.oct := 0.U(TIA_OCT_WIDTH.W)
-  io.icd := 0.U(TIA_ICD_WIDTH.W)
-  io.pum := 0.U(TIA_PUM_WIDTH.W)
-  io.immediate := 0.U(TIA_WORD_WIDTH.W)
+  val io = IO(Output(new datapath_instruction_t))
+  io.vi := 0.U
+  io.op := 0.U
+  io.st := 0.U
+  io.si := 0.U
+  io.dt := 0.U
+  io.di := 0.U
+  io.oci := 0.U
+  io.oct := 0.U
+  io.icd := 0.U
+  io.pum := 0.U
+  io.immediate := 0.U
 }
 
 class zero_non_datapath_instruction extends Module{
-  val io = IO(Flipped(new non_datapath_instruction_if))
-  io.vi := false.B
+  val io = IO(Output(new non_datapath_instruction_t))
+  io.vi := 0.U
   io.op := 0.U(TIA_OP_WIDTH.W)
   io.st := 0.U(TIA_ST_WIDTH.W)
   io.si := 0.U(TIA_SI_WIDTH.W)
@@ -202,7 +155,7 @@ class zero_non_datapath_instruction extends Module{
 }
 
 trait inst_util {
-  def cat_inst_asOne(tbr_ins:mm_instruction_if):UInt = {
+  def cat_inst_asOne(tbr_ins:mm_instruction_t):UInt = {
     Cat(tbr_ins.padding,
       tbr_ins.immediate,
       tbr_ins.ictv,

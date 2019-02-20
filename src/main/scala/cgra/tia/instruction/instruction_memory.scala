@@ -13,10 +13,10 @@ class instruction_memory extends Module
   val io = IO(new Bundle{
     val enable = Input(Bool())
     val host_interface = new mmio_if
-    val triggers = Flipped(Vec(TIA_MAX_NUM_INSTRUCTIONS,new trigger_if))
+    val triggers = Vec(TIA_MAX_NUM_INSTRUCTIONS,Output(new trigger_t))
     val triggered_instruction_valid = Input(Bool())
     val triggered_instruction_index = Input(UInt(TIA_INSTRUCTION_INDEX_WIDTH.W))
-    val triggered_datapath_instruction = Flipped(new datapath_instruction_if)
+    val triggered_datapath_instruction = Output(new datapath_instruction_t)
   })
 
   val mm_instruction = VecInit(Seq.fill(TIA_MAX_NUM_INSTRUCTIONS){Module(new mm_instruction).io })
@@ -48,33 +48,10 @@ class instruction_memory extends Module
   io.host_interface.write_ack := io.host_interface.write_req
 
   // default
-  io.triggered_datapath_instruction.vi := false.B
-  io.triggered_datapath_instruction.op := 0.U
-  io.triggered_datapath_instruction.st := 0.U
-  io.triggered_datapath_instruction.si := 0.U
-  io.triggered_datapath_instruction.dt := 0.U
-  io.triggered_datapath_instruction.di := 0.U
-  io.triggered_datapath_instruction.oci := 0.U
-  io.triggered_datapath_instruction.oct := 0.U
-  io.triggered_datapath_instruction.icd := 0.U
-  io.triggered_datapath_instruction.pum := 0.U
-  io.triggered_datapath_instruction.immediate := 0.U
+  io.triggered_datapath_instruction := Module(new zero_mm_instruction).io
   // trigger one instruction
   when(io.triggered_instruction_valid){
-    io.triggered_datapath_instruction.vi := true.B
-
-    /*
-    io.triggered_datapath_instruction.op := mm_instruction(io.triggered_instruction_index).read.op
-    io.triggered_datapath_instruction.st := mm_instruction(io.triggered_instruction_index).read.st
-    io.triggered_datapath_instruction.si := mm_instruction(io.triggered_instruction_index).read.si
-    io.triggered_datapath_instruction.dt := mm_instruction(io.triggered_instruction_index).read.dt
-    io.triggered_datapath_instruction.di := mm_instruction(io.triggered_instruction_index).read.di
-    io.triggered_datapath_instruction.oci := mm_instruction(io.triggered_instruction_index).read.oci
-    io.triggered_datapath_instruction.oct := mm_instruction(io.triggered_instruction_index).read.oct
-    io.triggered_datapath_instruction.icd := mm_instruction(io.triggered_instruction_index).read.icd
-    io.triggered_datapath_instruction.pum := mm_instruction(io.triggered_instruction_index).read.pum
-    io.triggered_datapath_instruction.immediate := mm_instruction(io.triggered_instruction_index).read.immediate
-    */
+    io.triggered_datapath_instruction := mm_instruction(io.triggered_instruction_index).read
   }
 
   // read instruction from mm_instruction
@@ -98,6 +75,7 @@ class instruction_memory extends Module
   when(io.enable && io.host_interface.write_req){
     read_instruction := cat_inst_asOne(mm_instruction(instruction_write_index).read)
     for (index_w <- 0 until log2Ceil(TIA_MM_INSTRUCTION_WIDTH / TIA_MMIO_DATA_WIDTH)){
+      // Here we update the instruction words with the incomming word from interface
       instruction_words(index_w) := Mux(index_w.U === word_write_index,
         io.host_interface.write_data,
         read_instruction(TIA_MMIO_DATA_WIDTH * (index_w+1)-1,TIA_MMIO_DATA_WIDTH * index_w))

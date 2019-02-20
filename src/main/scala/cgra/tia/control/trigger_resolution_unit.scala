@@ -12,7 +12,7 @@ class trigger_resolution_unit extends Module
       val enable = Input(Bool())
       val execute = Input(Bool())
       val halted = Input(Bool())
-      val triggers = Vec(TIA_MAX_NUM_INSTRUCTIONS,new trigger_if)
+      val triggers = Vec(TIA_MAX_NUM_INSTRUCTIONS,Input(new trigger_t))
       val predicates = Input(UInt(TIA_NUM_PREDICATES.W))
       val input_channel_empty_status = Input(UInt(TIA_NUM_INPUT_CHANNELS.W))
       val input_channel_tags = Input(Vec(TIA_NUM_INPUT_CHANNELS,UInt(TIA_TAG_WIDTH.W)))

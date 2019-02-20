@@ -9,7 +9,7 @@ class trigger_resolver extends Module
 
   val io = IO(
     new Bundle {
-      val trigger = new trigger_if
+      val trigger = Input(new trigger_t)
       val predicates = Input(UInt(TIA_NUM_PREDICATES.W))
       val input_channel_empty_status = Input(UInt(TIA_NUM_INPUT_CHANNELS.W))
       val input_channel_tags = Input(Vec(TIA_NUM_INPUT_CHANNELS,UInt(TIA_TAG_WIDTH.W)))
