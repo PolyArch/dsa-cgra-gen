@@ -160,7 +160,7 @@ object AluTest extends App {
   }
 }
 
-class FuTest(c: FU, params:GridFUIR ) extends PeekPokeTester(c)
+class FuTest(c: Function_Unit, params:GridFUIR ) extends PeekPokeTester(c)
   with HasFabricParams {
   private val fu = c
   for(cycle <- 0 until 100){
@@ -222,7 +222,7 @@ object FuTest extends App {
   )
 
   iotesters.Driver.execute(args, () =>
-    new FU(param.numInput,param.numOutput,param.inputLocation.toArray,
+    new Function_Unit(param.numInput,param.numOutput,param.inputLocation.toArray,
       param.outputLocation.toArray,param.deComp,
       param.Instructions,param.maxDelayPipeLen,param.muxDirMatrix))
   {

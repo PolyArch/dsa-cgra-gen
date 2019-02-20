@@ -42,7 +42,7 @@ trait CgraGenerator {
               x.outputLocation.toArray,
               x.deComp,x.muxDirMatrix))
           case x:GridFUIR =>
-            Module(new FU(x.numInput,
+            Module(new Function_Unit(x.numInput,
               x.numOutput,
               x.inputLocation.toArray,
               x.outputLocation.toArray,
@@ -77,7 +77,7 @@ trait CgraGenerator {
       for(subNet <- 0 until fromDecomp){
         val fromPorts =  FabricGrid(fromRow)(fromCol) match {
           case x:Switch => x.io.output_ports(x.numModuleOutput * subNet + fromPort)
-          case x:FU =>x.io.output_ports(x.numModuleOutput * subNet + fromPort)
+          case x:Function_Unit =>x.io.output_ports(x.numModuleOutput * subNet + fromPort)
           case _=> throw new Exception("Grid have unknown module")
         }
         currConnectionModule.io.input_ports(subNet) <> fromPorts
@@ -85,7 +85,7 @@ trait CgraGenerator {
       for(subNet <- 0 until toDecomp){
         val toPorts =  FabricGrid(toRow)(toCol) match {
           case x:Switch => x.io.input_ports(x.numModuleInput * subNet + toPort)
-          case x:FU =>x.io.input_ports(x.numModuleInput * subNet + toPort)
+          case x:Function_Unit =>x.io.input_ports(x.numModuleInput * subNet + toPort)
           case _=> throw new Exception("Grid have unknown module")
         }
         toPorts <> currConnectionModule.io.output_ports(subNet)

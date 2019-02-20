@@ -112,6 +112,5 @@ class InterfacePort(IOType:String,
 }
 
 
-/*
+
 object InterfacePortDriver extends App {chisel3.Driver.execute(args, () => new InterfacePort("InputPorts",2,List(4,4),List(4,4)))}
-*/

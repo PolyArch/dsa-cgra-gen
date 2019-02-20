@@ -228,7 +228,7 @@ class DelayPipe (maxLength:Int,pipeDataWidth:Int) extends Module {
   printf(p"Input ready = ${io.input_ports.ready}\n")
 }
 
-class FU(
+class Function_Unit(
           numInput        : Int,
           numOutput       : Int,
           inputLocation  : Array[(Int,Int)],
@@ -476,7 +476,7 @@ class FU(
 object DelayPipeDriver extends App {chisel3.Driver.execute(args, () => new DelayPipe(4,32))}
 object AluDriver extends App {chisel3.Driver.execute(args, () => new ALU(Array(0,1,2),32))}
 object FuDriver extends App {chisel3.Driver.execute(args, () =>
-  new FU(4,4,
+  new Function_Unit(4,4,
     Array((1,0),(0,1),(-1,0),(0,-1)),
     Array((1,0),(0,1),(-1,0),(0,-1)),
     4,
