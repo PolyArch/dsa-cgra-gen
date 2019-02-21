@@ -3,13 +3,15 @@
 package cgra.fu
 
 import cgra._
+import cgra.config._
+import cgra.config.isa._
+import cgra.fabric._
 import dsl.IR._
 import tile.tools._
 import chisel3.iotesters
 import chisel3.iotesters._
-import tile.{HasFabricParams, isa}
-import tile.isa._
-import tile.Constant._
+import tile._
+
 import scala.util.Random
 
 class DelayPipeTest(dP:DelayPipe,
@@ -224,7 +226,7 @@ object FuTest extends App {
   iotesters.Driver.execute(args, () =>
     new Function_Unit(param.numInput,param.numOutput,param.inputLocation.toArray,
       param.outputLocation.toArray,param.deComp,
-      param.Instructions,param.maxDelayPipeLen,param.muxDirMatrix))
+      param.Instructions,param.maxDelayPipeLen,param.muxDirMatrix,0,0))
   {
     c => new FuTest(c,param)
   }

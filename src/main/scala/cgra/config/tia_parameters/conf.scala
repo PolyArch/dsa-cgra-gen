@@ -1,6 +1,7 @@
 package cgra.tia.parameters
 
 trait conf {
+
   val TIA_HAS_CORE_MONITOR:Boolean = true
   val TIA_HAS_CORE_PERFORMANCE_COUNTERS:Boolean = true
   val TIA_HAS_MULTIPLIER:Boolean = true

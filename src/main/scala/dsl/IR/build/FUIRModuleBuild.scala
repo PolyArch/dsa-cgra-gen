@@ -2,10 +2,10 @@
 
 package dsl.IR.build
 
+import cgra.config.isa
 import dsl.IR._
 import dsl.compiler._
 import dsl.library.builtinClass.FUClass
-import tile.isa
 
 trait FUIRModuleBuild extends Env{
   def buildFUIRModule(fuVar:EnvVariable, model:CgraModel):CgraModel={

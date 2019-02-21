@@ -1,7 +1,8 @@
 // See README.md for license details.
 
-package cgra
+package cgra.fabric
 
+import cgra.config._
 import chisel3._
 import chisel3.util._
 import tile._
@@ -12,9 +13,12 @@ class Switch(
               inputLocation  : Array[(Int,Int)],
               outputLocation : Array[(Int,Int)],
               deComp          : Int,
-              muxDirMatrix    : Array[Array[Array[Boolean]]] //muxDirMatrix(outPort)(decompSec)(inPut)
-            ) extends FabricModule
+              muxDirMatrix    : Array[Array[Array[Boolean]]], //muxDirMatrix(outPort)(decompSec)(inPut)
+              configsFromPort : Int,
+              configsToPort   : Int) extends FabricModule
 {
+  override val configsModuleFromPort: Int = configsFromPort
+  override val configsModuleToPort: Int = configsToPort
   //Override value
   override val datawidthModule: Int = fabricDataWidth
   override lazy val numModuleInput:Int = numInput
@@ -149,7 +153,8 @@ object SwitchDriver extends App {
         Array(Array(false,true,false,true),Array(true, false, true, false),Array(false,true,false,true),Array(true, false, true, false)),
         Array(Array(false,true,false,true),Array(true, false, true, false),Array(true, false, true, false),Array(false,true,false,true)),
         Array(Array(true,true,true,true),Array(false, true, false,true ),Array(true, false, true, false),Array(true, false, true, false)),
-        Array(Array(true,false,false,true),Array(true, true, true, false),Array(false, true, false,true ),Array(true, false, true, false)))
+        Array(Array(true,false,false,true),Array(true, true, true, false),Array(false, true, false,true ),Array(true, false, true, false))),
+      1,2
     )
   )
 }

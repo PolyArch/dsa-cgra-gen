@@ -1,12 +1,11 @@
 // See README.md for license details.
 
-package cgra
+package cgra.fabric
 
+import cgra.config._
 import chisel3._
 import chisel3.util._
 import tile._
-
-import scala.util.Properties
 
 class ALU (InstructionList : Array[Int],aluDataWidth : Int) extends Module {
   val io = IO(new Bundle{
@@ -177,9 +176,11 @@ class Function_Unit(
           //Instructions(outPort)(subNet) : Array of Instructions Set
           maxDelayPipeLen : Array[Array[Array[Int]]],
           //maxDelayPipeLen(outPort)(subNet)(operand)
-          muxDirMatrix    : Array[Array[Array[Array[Boolean]]]]
+          muxDirMatrix    : Array[Array[Array[Array[Boolean]]]],
           //muxDirMatrix(outPort)(subNet)(operand)(inPut)
-        ) extends FabricModule {
+          configsFromPort : Int,
+          configsToPort   : Int
+) extends FabricModule {
   //Override value
   override val datawidthModule: Int = fabricDataWidth
   override lazy val numModuleInput: Int = numInput
@@ -187,6 +188,8 @@ class Function_Unit(
   override lazy val inputMoudleLocation: Array[(Int,Int)] = inputLocation
   override lazy val outputModuleLocation: Array[(Int,Int)] = outputLocation
   override lazy val numDecomp: Int = deComp
+  override val configsModuleFromPort: Int = configsFromPort
+  override val configsModuleToPort: Int = configsToPort
 
   val maxDelayLimitation = 16
   val maxDelay: Int = maxDelayPipeLen.map {
@@ -452,7 +455,8 @@ object FuDriver extends App {chisel3.Driver.execute(args, () =>
         Array(Array(true, false, true, false),Array(true, false, true, false)),
         Array(Array(true, false, true, false),Array(true, true, true, false)),
         Array(Array(true,false,false,true),Array(true, false, true, false)))
-    )
+    ),
+    1,2
   )
 )}
 

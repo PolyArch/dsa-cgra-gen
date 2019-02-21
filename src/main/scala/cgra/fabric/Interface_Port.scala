@@ -1,6 +1,6 @@
 // See README.md for license details.
 
-package cgra
+package cgra.fabric
 
 import chisel3._
 import chisel3.util._

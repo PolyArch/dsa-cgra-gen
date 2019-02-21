@@ -1,5 +1,3 @@
-// See README.md for license details.
-
 package tile
 
 import dsl.IR._
@@ -15,10 +13,13 @@ trait HasFabricModuleParams extends HasFabricParams
   val datawidthModule       : Int
   val numModuleInput        : Int
   val numModuleOutput       : Int
-  val inputMoudleLocation  : Array[(Int,Int)]
-  val outputModuleLocation : Array[(Int,Int)]
+  val inputMoudleLocation   : Array[(Int,Int)]
+  val outputModuleLocation  : Array[(Int,Int)]
   val numDecomp             : Int
-  lazy val decompDataWidth       : Int = datawidthModule / numDecomp
+  lazy val decompDataWidth  : Int = datawidthModule / numDecomp
+  val configsModuleFromPort       : Int
+  val configsModuleToPort         : Int
+
 
   require(numModuleInput==inputMoudleLocation.length)
   //require(numModuleOutput==outputModuleLocation.length)
@@ -41,7 +42,7 @@ abstract class FabricModule  extends Module
 class ModuleChannel(deCompInput     : Int,
                     deCompOutput    : Int,
                     FIFOdepth       : Array[Int]) extends Module
-with HasFabricParams
+  with HasFabricParams
 {
 
   require(FIFOdepth.length == (deCompInput max deCompOutput))
@@ -155,20 +156,16 @@ abstract class Fabric(modelFile: String) extends Module
       val cfg_mode = Input(Bool())
     }
   )
-
   val model : CgraModel = new CgraModel(modelFile)
   override lazy val numRows:Int = model.numRows
   override lazy val numCols:Int = model.numCols
   override lazy val numFabricInput:Int = model.numFabricInput
   override lazy val numFabricOutput:Int = model.numFabricOutput
-
   // Initialize Fabric Grid
   lazy val FabricGrid = new Array[Array[FabricModule]](numRows)
   FabricGrid.foreach(row =>{
     new Array[FabricModule](numCols)
   })
-
-
 }
 */
 

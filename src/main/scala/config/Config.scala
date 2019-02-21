@@ -2,6 +2,9 @@
 
 package config
 
+// ----------------------------------------------------------------------------------------------------------------
+// If Field take augmentation like Filed(SomeClass()) mean such key have default field
+// If Field take Type like Field[someClass or someTrait] mean such
 abstract class Field[T] private (val default: Option[T])
 {
   def this() = this(None)
@@ -12,6 +15,7 @@ abstract class View {
   final def apply[T](pname: Field[T]): T = apply(pname, this)
   final def apply[T](pname: Field[T], site: View): T = {
     val out = find(pname, site)
+    val test = 1
     require (out.isDefined, s"Key $pname is not defined in Parameters")
     out.get
   }
@@ -21,6 +25,8 @@ abstract class View {
 
   protected[config] def find[T](pname: Field[T], site: View): Option[T]
 }
+
+// ----------------------------------------------------------------------------------------------------------------
 
 abstract class Parameters extends View {
   final def ++ (x: Parameters): Parameters =
@@ -47,12 +53,15 @@ object Parameters {
 class Config(p: Parameters) extends Parameters {
   def this(f: (View, View, View) => PartialFunction[Any,Any]) = this(Parameters(f))
 
-  protected[config] def chain[T](site: View, tail: View, pname: Field[T]) = p.chain(site, tail, pname)
+  protected[config] def chain[T](site: View, tail: View, pname: Field[T]) =
+    p.chain(site, tail, pname)
   override def toString = this.getClass.getSimpleName
   def toInstance = this
 }
 
-// Internal implementation:
+// ----------------------------------------------------------------------------------------------------------------
+
+// View Internal implementation:
 
 private class TerminalView extends View {
   def find[T](pname: Field[T], site: View): Option[T] = pname.default
@@ -62,21 +71,36 @@ private class ChainView(head: Parameters, tail: View) extends View {
   def find[T](pname: Field[T], site: View) = head.chain(site, tail, pname)
 }
 
+// Parameters Internal implementation:
+
+// ++
 private class ChainParameters(x: Parameters, y: Parameters) extends Parameters {
-  def chain[T](site: View, tail: View, pname: Field[T]) = x.chain(site, new ChainView(y, tail), pname)
+  def chain[T](site: View, tail: View, pname: Field[T])
+  = x.chain(site, new ChainView(y, tail), pname)
 }
 
+// empty
 private class EmptyParameters extends Parameters {
   def chain[T](site: View, tail: View, pname: Field[T]) = tail.find(pname, site)
 }
 
+// alter(f) -> object.apply(f) ++ this
+// alterPartial(f) -> object.apply(f) ++ this
 private class PartialParameters(f: (View, View, View) => PartialFunction[Any,Any]) extends Parameters {
   protected[config] def chain[T](site: View, tail: View, pname: Field[T]) = {
     val g = f(site, this, tail)
-    if (g.isDefinedAt(pname)) Some(g.apply(pname).asInstanceOf[T]) else tail.find(pname, site)
+    if (g.isDefinedAt(pname)){
+      val test = 1
+      Some(g.apply(pname).asInstanceOf[T])
+    }
+    else{
+      val test = 1
+      tail.find(pname, site)
+    }
   }
 }
 
+// alterMap
 private class MapParameters(map: Map[Any, Any]) extends Parameters {
   protected[config] def chain[T](site: View, tail: View, pname: Field[T]) = {
     val g = map.get(pname)

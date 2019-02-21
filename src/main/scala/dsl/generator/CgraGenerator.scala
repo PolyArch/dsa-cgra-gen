@@ -4,9 +4,12 @@ package dsl.generator
 
 import dsl.IR._
 import cgra._
+import cgra.config._
+import cgra.fabric._
 import chisel3._
 import chisel3.util._
 import tile._
+
 
 trait CgraGenerator {
 
@@ -40,7 +43,7 @@ trait CgraGenerator {
             Module(new Switch(x.numInput,
               x.numOutput,x.inputLocation.toArray,
               x.outputLocation.toArray,
-              x.deComp,x.muxDirMatrix))
+              x.deComp,x.muxDirMatrix,1,1))//TODO
           case x:GridFUIR =>
             Module(new Function_Unit(x.numInput,
               x.numOutput,
@@ -48,7 +51,7 @@ trait CgraGenerator {
               x.outputLocation.toArray,
               x.deComp, x.Instructions,
               x.maxDelayPipeLen,
-              x.muxDirMatrix))
+              x.muxDirMatrix,1,2))//TODO
           case _ => null
         }
         FabricGrid(row)(col) match {

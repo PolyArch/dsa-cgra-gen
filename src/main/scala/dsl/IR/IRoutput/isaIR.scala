@@ -2,7 +2,7 @@
 
 package dsl.IR.IRoutput
 
-import tile.isa
+import cgra.config.isa
 
 import scala.util.Properties
 

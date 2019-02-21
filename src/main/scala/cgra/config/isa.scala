@@ -1,8 +1,4 @@
-package tile
-
-import config._
-import chisel3._
-import chisel3.util._
+package cgra.config
 
 object isa {
   val Or   = 0
