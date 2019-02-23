@@ -15,7 +15,6 @@ abstract class View {
   final def apply[T](pname: Field[T]): T = apply(pname, this)
   final def apply[T](pname: Field[T], site: View): T = {
     val out = find(pname, site)
-    val test = 1
     require (out.isDefined, s"Key $pname is not defined in Parameters")
     out.get
   }
@@ -90,11 +89,9 @@ private class PartialParameters(f: (View, View, View) => PartialFunction[Any,Any
   protected[config] def chain[T](site: View, tail: View, pname: Field[T]) = {
     val g = f(site, this, tail)
     if (g.isDefinedAt(pname)){
-      val test = 1
       Some(g.apply(pname).asInstanceOf[T])
     }
     else{
-      val test = 1
       tail.find(pname, site)
     }
   }

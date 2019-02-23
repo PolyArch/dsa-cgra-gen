@@ -5,13 +5,13 @@ import config._
 /*
 // ----------------Parameter Template--------------------------------------------------
 
-case object NameKey extends Field[module_type_Params]
+case object NameKey extends Field[Module_Type_Params]
 case object DatapathKey extends Field[DatapathParams]
 case object TileKey extends Field[TileParams]
 case object PeKey extends Field[PeParams]
 case object RouterKey extends Field[RouterParams]
 
-trait module_type_Params {
+trait Module_Type_Params {
   val module_type : String
 }
 
@@ -20,7 +20,7 @@ trait DatapathParams {
 }
 
 trait TileParams extends DatapathParams
-  with module_type_Params{
+  with Module_Type_Params{
   val x_location  : Int
   val y_location  : Int
   val num_input   : Int
@@ -38,7 +38,7 @@ trait RouterParams extends TileParams{
 }
 
 trait InterfacePortParams extends DatapathParams
-  with module_type_Params{
+  with Module_Type_Params{
   val input_word_width_multiple   : Int
   val output_word_width_multiple  : Int
   val buffer_depth                : Array[Int]
