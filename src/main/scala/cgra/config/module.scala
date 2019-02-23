@@ -31,7 +31,7 @@ case class AluParams(parent_type: String,parent_id:Int,tile_id:Int)
 case class DedicatedPeParams(parent_type: String,
                              parent_id: Int,
                              tile_id:Int)
-  extends HasPeParams(parent_type: String,parent_id:Int,tile_id:Int) {
+  extends PeParams(parent_type: String,parent_id:Int,tile_id:Int) {
   override val inst_firing : String = "dedicated"
   var mux_parameters : Parameters = null
   var alu_parameters : Parameters = null
@@ -42,7 +42,7 @@ case class DedicatedPeParams(parent_type: String,
 case class SharedPeParams(parent_type: String,
                           parent_id: Int,
                           tile_id:Int)
-  extends HasPeParams(parent_type: String,parent_id:Int,tile_id:Int){
+  extends PeParams(parent_type: String,parent_id:Int,tile_id:Int){
   override val inst_firing : String = "shared"
 
 }
@@ -53,7 +53,10 @@ case class RouterParams(parent_type: String,
                         tile_id:Int)
   extends TileParams(parent_type: String,parent_id:Int,tile_id:Int){
   override val module_type:String = "router"
-  val ports_params : Array[port_param] = new Array[port_param](num_output)
+  var ports_params : List[port_param] = Nil
+  def modify_port(port_index:Int)={
+    ports_params(port_index)
+  }
 }
 
 // Interface Ports
@@ -65,3 +68,13 @@ case class InterfacePortParams(parent_type: String,
   var buffer_depth       : Array[Int] = null
 }
 
+// CGRA (for further use, in case we need one CGRA to be a tile itself, which means we can have multiple CGRAs)
+case class CgraParams(parent_type: String,
+                parent_id: Int,
+                tile_id:Int)
+  extends TileParams(parent_type: String,parent_id:Int,tile_id:Int){
+  var ProcessingElementsSize:(Int,Int) = (0,0)
+  var routers_params :List[RouterParams] = Nil
+  var pe_params : List[PeParams] = Nil
+  var interface_port_params : List[InterfacePortParams] = Nil
+}

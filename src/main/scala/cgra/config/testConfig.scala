@@ -42,8 +42,8 @@ object TestConfig extends App{
   val Mix_RouterPE_param = parameters(RouterKey).is
 
 
-  val connect_1 = Connect_ID(0,1423,456)
-  val connect_2 = Connect_ID(3,1,456)
+  val connect_1 = Connect_Key(0,1423,456)
+  val connect_2 = Connect_Key(3,1,456)
 
   val array_Connect_Config:Array[Parameters] = Array(
     new Connect_Config(connect_1,0,2),
@@ -52,7 +52,7 @@ object TestConfig extends App{
   val connects_config = array_Connect_Config.reduce(_ ++ _)
 
   val test = connects_config(connect_1)
-
+*/
   val test = new port_param(4)
   val zero_subnet_source = subnet_source_param(-1,-1)
   test.subnets_param(0).source_param =
@@ -84,7 +84,7 @@ object TestConfig extends App{
       subnet_source_param(3,-1)::zero_subnet_source::Nil
 
   val tryTest = test.getModes("Group by Port")
-  */
+
 
 
 

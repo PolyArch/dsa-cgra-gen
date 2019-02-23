@@ -1,10 +1,14 @@
 package cgra.config
 
+// This package is for those parameters that are just part of module's parameters,
+// which can be instantiated to a true module
 
 case class subnet_source_param (sp:Int,ss:Int){
   var port:Int = sp
   var subnet:Int = ss
 }
+
+case class groud_subnet_source_param() extends subnet_source_param(-1,-1)
 
 case class subnet_param() {
   var source_param : List[subnet_source_param] = Nil
@@ -12,6 +16,10 @@ case class subnet_param() {
 
 class port_param(num_subnet:Int) {
   val subnets_param : List[subnet_param] = List.fill[subnet_param](num_subnet)(subnet_param())
+
+  def use_default_port_params : port_param = {
+    this
+  }
 
   def getModes(method:String) : Traversable[Traversable[subnet_source_param]] = {
     method match {

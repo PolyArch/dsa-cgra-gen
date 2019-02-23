@@ -1,25 +1,28 @@
 package cgra.config
 
-import cgra.fabric.HasRouter
-
-abstract class CGRA extends Build("CGRA")
-  {
-  var ProcessingElementsSize:(Int,Int) = (0,0)
-}
-
+import config._
 
 //Pragma
-object myCGRA extends CGRA {
+object myCGRA extends CgraParams("CGRA's Parent System",0,0)
+  with Build{
 
   ProcessingElementsSize = (4,3)
 
-  val Router = newtile("Router",125)
+  var routers = new Array[Field[TileParams]](6)
 
-  let (Router) at (1,3)
+  val Router = new_tile("Router").asInstanceOf[Router_Key]
 
-  expand (Router) by (5,4)
+  let (Router) modify_port(1) use_default_port_params
 
-  val test = duplicate(Params(Router))
+  add_connect(Router,Router)
 
-  println("Hello World")
+  let (Router)
+
+  // expand (Router) by (5,4)
+
+  // val test = duplicate(Params(Router))
+
+  GenerateTile(Router)
+
+
 }
