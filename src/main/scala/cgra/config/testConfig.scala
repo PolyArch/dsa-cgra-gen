@@ -45,11 +45,11 @@ object TestConfig extends App{
   val connect_1 = Connect_ID(0,1423,456)
   val connect_2 = Connect_ID(3,1,456)
 
-  val array_connect_config:Array[Parameters] = Array(
-    new connect_config(connect_1,0,2),
-    new connect_config(connect_2,5,3))
+  val array_Connect_Config:Array[Parameters] = Array(
+    new Connect_Config(connect_1,0,2),
+    new Connect_Config(connect_2,5,3))
 
-  val connects_config = array_connect_config.reduce(_ ++ _)
+  val connects_config = array_Connect_Config.reduce(_ ++ _)
 
   val test = connects_config(connect_1)
 

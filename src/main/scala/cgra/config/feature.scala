@@ -27,13 +27,26 @@ class TileParams(parent_type: String,
                  tile_id:Int) extends DatapathParams
   with IOParams
   with Module_Type_Params{
+  var x_location  : Int = -1
+  var y_location  : Int = -1
+  // Judge
   def isPE = module_type == "PE"
   def isRouter = module_type == "router"
   def isInterfacePort = module_type == "if_port"
   def getID = tile_id
   def haveID = tile_id >= 0
-  var x_location  : Int = -1
-  var y_location  : Int = -1
+  // port operation
+  def add_output_port: Int = {num_output += 1;num_output}
+  def add_input_port : Int = {num_input += 1;num_input}
+  def decrease_output_port : Int = {num_output -=1;num_output}
+  def decrease_input_port : Int = {num_input -=1;num_input}
+  // location operation
+  def move_horizontal(x:Int)=x_location = x
+  def move_vertical(y:Int)=y_location = y
+  def at(x:Int,y:Int) = {x_location = x;y_location = y}
+  // duplicate
+
+
 }
 
 class HasPeParams(parent_type: String,parent_id:Int,tile_id:Int)

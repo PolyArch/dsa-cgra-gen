@@ -13,8 +13,6 @@ case class subnet_param() {
 class port_param(num_subnet:Int) {
   val subnets_param : List[subnet_param] = List.fill[subnet_param](num_subnet)(subnet_param())
 
-
-
   def getModes(method:String) : Traversable[Traversable[subnet_source_param]] = {
     method match {
       case "Full" =>
