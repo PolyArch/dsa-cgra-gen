@@ -8,13 +8,11 @@ case class subnet_source_param (sp:Int,ss:Int){
   var subnet:Int = ss
 }
 
-case class groud_subnet_source_param() extends subnet_source_param(-1,-1)
-
 case class subnet_param() {
   var source_param : List[subnet_source_param] = Nil
 }
 
-class port_param(num_subnet:Int) {
+case class port_param(port_index:Int,num_subnet:Int) {
   val subnets_param : List[subnet_param] = List.fill[subnet_param](num_subnet)(subnet_param())
 
   def use_default_port_params : port_param = {

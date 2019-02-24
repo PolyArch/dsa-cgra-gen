@@ -7,13 +7,12 @@ case object IOKey extends Field[IOParams]
 case object TileKey extends Field[TileParams]
 */
 
-
-trait Module_Type_Params {
-  val module_type : String = null
+trait Module_Type_Params extends isParameters{
+  val module_type : String
   def get_module_type = module_type
 }
 
-trait DatapathParams {
+trait DatapathParams extends isParameters{
   var word_width : Int = -1
 }
 
@@ -27,11 +26,12 @@ trait IOParams {
 // Below is for those categories who can be instantiated but still have sub class,
 // like we can have a tile hardware of PE, but PE still have different types
 
-class TileParams(parent_type: String,
+abstract class TileParams(parent_type: String,
                  parent_id: Int,
                  tile_id:Int) extends DatapathParams
   with IOParams
-  with Module_Type_Params{
+  with Module_Type_Params
+  with isParameters {
   var x_location  : Int = -1
   var y_location  : Int = -1
   // Judge
@@ -56,7 +56,8 @@ class TileParams(parent_type: String,
 }
 
 class PeParams(parent_type: String,parent_id:Int,tile_id:Int)
-  extends TileParams(parent_type: String,parent_id:Int,tile_id:Int){
+  extends TileParams(parent_type: String,parent_id:Int,tile_id:Int)
+  with isParameters {
   override val module_type:String = "PE"
   var inst_set : List[Int] = Nil
   val inst_firing : String = ""

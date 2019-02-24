@@ -15,14 +15,14 @@ object TestConfig extends App{
 
 
   val test = TileKey.default
-  val otherKey = No_1_Key.default
-  val key3default = No_3_Key.default
+  val otherKey = No_1.default
+  val key3default = No_3.default
 
   val t = 1
 
-  var No1Params = parameters(No_1_Key)
+  var No1Params = parameters(No_1)
 
-  var someParams = parameters(No_3_Key)
+  var someParams = parameters(No_3)
   //var extraParam = parameters(BroadcastKey)
   //var busParam = parameters(ExtBus)
 
@@ -42,8 +42,8 @@ object TestConfig extends App{
   val Mix_RouterPE_param = parameters(RouterKey).is
 
 
-  val connect_1 = Connect_Key(0,1423,456)
-  val connect_2 = Connect_Key(3,1,456)
+  val connect_1 = Connect(0,1423,456)
+  val connect_2 = Connect(3,1,456)
 
   val array_Connect_Config:Array[Parameters] = Array(
     new Connect_Config(connect_1,0,2),
@@ -53,7 +53,7 @@ object TestConfig extends App{
 
   val test = connects_config(connect_1)
 */
-  val test = new port_param(4)
+  val test = new port_param(1,4)
   val zero_subnet_source = subnet_source_param(-1,-1)
   test.subnets_param(0).source_param =
     subnet_source_param(0,0)::

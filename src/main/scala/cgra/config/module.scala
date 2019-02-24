@@ -6,23 +6,24 @@ import config._
 
 // ------ Keys ------
 
-case class Router_Key(parent_name:String,parent_id:Int,tile_id:Int)
+case class Router(parent_name:String,parent_id:Int,tile_id:Int)
   extends Field[RouterParams](RouterParams(parent_name,parent_id,tile_id))
 
-case class Dedicated_PE_Key(parent_name:String,parent_id:Int,tile_id:Int)
+case class Dedicated_PE(parent_name:String,parent_id:Int,tile_id:Int)
   extends Field[DedicatedPeParams](DedicatedPeParams(parent_name,parent_id,tile_id))
 
-case class Shared_PE_Key(parent_name:String,parent_id:Int,tile_id:Int)
+case class Shared_PE(parent_name:String,parent_id:Int,tile_id:Int)
   extends Field[SharedPeParams](SharedPeParams(parent_name,parent_id,tile_id))
 
-case class Alu_Key(parent_name:String,parent_id:Int,tile_id:Int)
+case class Alu(parent_name:String,parent_id:Int,tile_id:Int)
   extends Field[AluParams](AluParams(parent_name,parent_id:Int,tile_id))
 
 // ------ Parameters ------
 
 // Arithmetic Logic Unit
 case class AluParams(parent_type: String,parent_id:Int,tile_id:Int)
-  extends TileParams(parent_type: String,parent_id:Int,tile_id:Int){
+  extends TileParams(parent_type: String,parent_id:Int,tile_id:Int)
+  with isParameters {
   override val module_type:String = "arithmetic_logic_unit"
   val inst_set : Array[Int] = null
 }
@@ -31,8 +32,12 @@ case class AluParams(parent_type: String,parent_id:Int,tile_id:Int)
 case class DedicatedPeParams(parent_type: String,
                              parent_id: Int,
                              tile_id:Int)
-  extends PeParams(parent_type: String,parent_id:Int,tile_id:Int) {
+  extends PeParams(parent_type: String,parent_id:Int,tile_id:Int)
+  with isParameters {
   override val inst_firing : String = "dedicated"
+  def has_ports(n:Int) = {num_output = n;num_input = n}
+  def has_outputs(n:Int) = {num_output = n}
+  def has_inputs(n:Int) = {num_input = n}
   var mux_parameters : Parameters = null
   var alu_parameters : Parameters = null
   var delay_pipe_parameters : Parameters = null
@@ -42,7 +47,8 @@ case class DedicatedPeParams(parent_type: String,
 case class SharedPeParams(parent_type: String,
                           parent_id: Int,
                           tile_id:Int)
-  extends PeParams(parent_type: String,parent_id:Int,tile_id:Int){
+  extends PeParams(parent_type: String,parent_id:Int,tile_id:Int)
+  with isParameters {
   override val inst_firing : String = "shared"
 
 }
@@ -51,19 +57,33 @@ case class SharedPeParams(parent_type: String,
 case class RouterParams(parent_type: String,
                         parent_id: Int,
                         tile_id:Int)
-  extends TileParams(parent_type: String,parent_id:Int,tile_id:Int){
+  extends TileParams(parent_type: String,parent_id:Int,tile_id:Int)
+  with isParameters {
   override val module_type:String = "router"
   var ports_params : List[port_param] = Nil
-  def modify_port(port_index:Int)={
+  def port(port_index:Int)={
     ports_params(port_index)
   }
+  def has_ports(n:Int) = {num_output = n;num_input = n
+    for (i <- 0 until n){
+      ports_params = port_param(i,1) :: ports_params
+    }
+  }
+  def has_ports(n:Int,num_subnet:Int)= {num_output = n;num_input = n
+    for (i <- 0 until n){
+      ports_params = port_param(i,num_subnet) :: ports_params
+    }
+  }
+  def has_outputs(n:Int) = {num_output = n}
+  def has_inputs(n:Int) = {num_input = n}
 }
 
 // Interface Ports
 case class InterfacePortParams(parent_type: String,
                                parent_id: Int,
                                tile_id:Int)
-  extends TileParams(parent_type: String,parent_id:Int,tile_id:Int){
+  extends TileParams(parent_type: String,parent_id:Int,tile_id:Int)
+  with isParameters {
   override val module_type:String = "ip_port"
   var buffer_depth       : Array[Int] = null
 }
@@ -72,7 +92,9 @@ case class InterfacePortParams(parent_type: String,
 case class CgraParams(parent_type: String,
                 parent_id: Int,
                 tile_id:Int)
-  extends TileParams(parent_type: String,parent_id:Int,tile_id:Int){
+  extends TileParams(parent_type: String,parent_id:Int,tile_id:Int)
+  with isParameters {
+  override val module_type: String = "CGRA"
   var ProcessingElementsSize:(Int,Int) = (0,0)
   var routers_params :List[RouterParams] = Nil
   var pe_params : List[PeParams] = Nil
