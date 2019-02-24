@@ -29,7 +29,7 @@ trait Build extends App {
     val key:Field[_] = param match{
       case param:TileParams =>
         new_tile(param)
-      case param:Connect_Param =>
+      case param:ConnectParam =>
         Connect(new_connect_id,param.source_tile_id,param.destination_tile_id)
     }
     Params += key -> param
@@ -39,7 +39,7 @@ trait Build extends App {
       val key:Field[_] = param match{
         case param:TileParams =>
           new_tile(param)
-        case param:Connect_Param =>
+        case param:ConnectParam =>
           Connect(new_connect_id,param.source_tile_id,param.destination_tile_id)
       }
       Params += key -> param
@@ -47,6 +47,9 @@ trait Build extends App {
   }
   def let[T](f:TileParams => isParameters,key:Field[T]) = {
     have(f(pick(key)))
+  }
+  def initial[T](key:Field[T]) = {
+    key.default.get
   }
 
   // Tile Utility
@@ -85,7 +88,7 @@ trait Build extends App {
     }).asInstanceOf[Field[TileParams]]
     add_tile(key,key.default.get)
   }
-  def new_tile(param:isParameters):Field[_] = {
+  def new_tile[T](param:T):Field[TileParams] = {
     val key = (param match {
       case p:AluParams => Alu(p.getParent,p.getParent_id,p.get_id)
       case p:DedicatedPeParams => Dedicated_PE(p.getParent,p.getParent_id,p.get_id)
@@ -95,6 +98,10 @@ trait Build extends App {
     }).asInstanceOf[Field[TileParams]]
     add_tile(key,param.asInstanceOf[TileParams])
   }
+  def new_tile[T](key:Field[T]):Field[TileParams] = {
+    new_tile(initial(key))
+  }
+  def copy(key:Field[TileParams]) = new_tile(pick(key) copy)
   def delete_tile(tile_key:Field[TileParams]) = {
     val connects_to_be_depicke = get_connects_by_tile(tile_key)
     // depicke connections which connects to this tile
@@ -103,7 +110,10 @@ trait Build extends App {
     tile_keys = tile_keys.filter(_!=tile_key)
     Params -= tile_key
   }
-
+  def get_all_tile : List [TileParams] = {
+    tile_keys.map(Params(_).asInstanceOf[TileParams])
+  }
+  
   // Connection
   def new_connect_id: Int = {
     var new_id = 0
@@ -163,10 +173,18 @@ trait Build extends App {
     // depicke the connect_key in connection list
     connect_keys = connect_keys.filter(c => c.id != connect_id.id)
   }
-
+  def get_all_connects : List[ConnectParam] = {
+    connect_keys.map(Params(_).asInstanceOf[ConnectParam])
+  }
+  
   // Multiple Tiles
-
-
+  def one_dimension_one_way_connect(keys:Field[TileParams]*) = {
+    for (i <- 0 until keys.length - 1){
+      have(pick(keys(i)) <-> pick(keys(i+1)))
+    }
+    keys.toList
+  }
+  
   // Generator
   def Generate[T](pname: Field[T]) = {
     val para = pick(pname).asInstanceOf[TileParams]

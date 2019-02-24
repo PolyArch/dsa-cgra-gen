@@ -13,8 +13,11 @@ object BuildingMyTiles
   val sw = new_tile("Router")
   val dedicated_pe = new_tile("Dedicated_PE")
 
-
   val switch = Router(current_type,current_id,1)
+
+  initial (switch)
+
+
 
   have (switch)
   pick (switch) has_ports (4,2)
@@ -26,6 +29,8 @@ object BuildingMyTiles
   have (pick(switch) <-> pick(switch) )
   have (pick(sw) --> pick(switch) )
   add_connect(sw,sw)
+
+  pick (CGRA) interconnect all_connects
 
   let(pick(switch) -->,sw)
 }

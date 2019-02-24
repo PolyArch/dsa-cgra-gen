@@ -62,22 +62,67 @@ case class RouterParams(parent_type: String,
   extends TileParams(parent_type: String,parent_id:Int,tile_id:Int)
   with isParameters {
   override val module_type:String = "router"
-  var ports_params : List[port_param] = Nil
-  def port(port_index:Int)={
-    ports_params(port_index)
+  var input_ports_params : List[port_param] = Nil
+  var output_ports_params : List[port_param] = Nil
+
+  def get_port(port_index:Int)={
+    (input_ports_params(port_index),output_ports_params(port_index))
   }
-  def has_ports(n:Int) = {num_output = n;num_input = n
+  def get_input_port(i:Int) = {
+    input_ports_params(i)
+  }
+  def get_output_port(i:Int) = {
+    output_ports_params(i)
+  }
+  def has_ports(n:Int) = {
+    has_ports(n,default_decomposer)
+  }
+  def has_ports(n:Int,num_subnet:Int)= {
+    has_inputs(n,num_subnet)
+    has_outputs(n,num_subnet)
+  }
+  def has_inputs(n:Int) = has_inputs(n,default_decomposer)
+  def has_inputs(n:Int, d:Int) = {
+    change_num_input(n)
     for (i <- 0 until n){
-      ports_params = port_param(i,1) :: ports_params
+      input_ports_params = input_ports_params ::: List(port_param("input",i,d))
+      add_input_decomposer(d)
     }
   }
-  def has_ports(n:Int,num_subnet:Int)= {num_output = n;num_input = n
+  def had_outputs(n:Int) = has_outputs(n,default_decomposer)
+  def has_outputs(n:Int,d:Int) = {
+    change_num_output(n)
     for (i <- 0 until n){
-      ports_params = port_param(i,num_subnet) :: ports_params
+      output_ports_params = output_ports_params ::: List(port_param("output",i,d))
+      add_output_decomposer(d)
     }
   }
-  def has_outputs(n:Int) = {num_output = n}
-  def has_inputs(n:Int) = {num_input = n}
+  def get_destination_subnet_by_source_subnet(port:Int,subnet:Int)
+  :List[(Int,Int)] = {
+    val des = for {
+      i <- 0 until get_num_output
+      s <- 0 until output_word_width_decomposer(i)
+      val subnet_param = output_ports_params(i).subnets_param(s)
+      if subnet_param.source_param.map(x=>(x.port,x.subnet)).contains((port,subnet))
+    } yield (i,s)
+    des.toList
+  }
+
+  def get_num_config_of_destination_port(n:Int) = {
+    get_output_port(n).destination_config.length
+  }
+  def calulate_all_output_config_mode(method:String) = {
+    output_ports_params.foreach(_.method = method)
+    calulate_all_output_config_mode
+    output_ports_params.map(_.destination_config)
+  }
+  def calulate_all_output_config_mode = {
+    output_ports_params.foreach(x=>calulate_all_output_config_mode(x.method))
+    output_ports_params.map(_.destination_config)
+  }
+  def calulate_output_config(i:Int,method:String) = {
+    output_ports_params(i).get_source_mode(method)
+  }
 }
 
 // Interface Ports
@@ -101,12 +146,15 @@ case class CgraParams(parent_type: String,
 
   var ProcessingElements_Size:(Int,Int) = (0,0)
 
-  var routers_params :List[RouterParams] = Nil
-  var pe_params : List[PeParams] = Nil
-  var interface_port_params : List[InterfacePortParams] = Nil
-  var connects_params : List[Connect_Param] = Nil
+  private var routers_params :List[RouterParams] = Nil
+  private var pe_params : List[PeParams] = Nil
+  private var interface_port_params : List[InterfacePortParams] = Nil
+  private var connects_params : List[ConnectParam] = Nil
 
   def fill_processing_element(pe:TileParams) : Unit = {
 
+  }
+  def interconnect (connects:List[ConnectParam]) : Unit ={
+    connects_params = connects
   }
 }

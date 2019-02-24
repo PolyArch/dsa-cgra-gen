@@ -53,37 +53,37 @@ object TestConfig extends App{
 
   val test = connects_config(connect_1)
 */
-  val test = new port_param(1,4)
-  val zero_subnet_source = subnet_source_param(-1,-1)
+  val test = new port_param("output",1,4)
+  val zero_subnet_source = subnet_location_param(-1,-1)
   test.subnets_param(0).source_param =
-    subnet_source_param(0,0)::
-    subnet_source_param(1,2)::
-    subnet_source_param(2,-1)::
-    subnet_source_param(3,-1)::zero_subnet_source::Nil
+    subnet_location_param(0,0)::
+    subnet_location_param(1,2)::
+    subnet_location_param(2,1)::
+    subnet_location_param(3,1)::zero_subnet_source::Nil
 
   test.subnets_param(1).source_param =
-    subnet_source_param(0,0)::
-      subnet_source_param(0,2)::
-     // subnet_source_param(9,2)::
-      subnet_source_param(1,1)::
-      subnet_source_param(2,-1)::
-      subnet_source_param(3,-1)::zero_subnet_source::Nil
+    subnet_location_param(0,0)::
+      subnet_location_param(0,2)::
+     // subnet_location_param(9,2)::
+      subnet_location_param(1,1)::
+      subnet_location_param(2,1)::
+      subnet_location_param(3,1)::zero_subnet_source::Nil
 
   test.subnets_param(2).source_param =
-    subnet_source_param(0,2)::
-      subnet_source_param(1,1)::
-      subnet_source_param(1,2)::
-      subnet_source_param(2,-1)::
-      subnet_source_param(3,-1)::zero_subnet_source::Nil
+    subnet_location_param(0,2)::
+      subnet_location_param(1,1)::
+      subnet_location_param(1,2)::
+      subnet_location_param(2,1)::
+      subnet_location_param(3,1)::zero_subnet_source::Nil
 
   test.subnets_param(3).source_param =
-    subnet_source_param(0,3)::
-      subnet_source_param(1,2)::
-      subnet_source_param(1,3)::
-      subnet_source_param(2,-1)::
-      subnet_source_param(3,-1)::zero_subnet_source::Nil
+    subnet_location_param(0,3)::
+      subnet_location_param(1,2)::
+      subnet_location_param(1,3)::
+      subnet_location_param(2,1)::
+      subnet_location_param(3,1)::zero_subnet_source::Nil
 
-  val tryTest = test.getModes("Group by Port")
+  val tryTest = test.get_source_mode("Group by Port")
 
 
 

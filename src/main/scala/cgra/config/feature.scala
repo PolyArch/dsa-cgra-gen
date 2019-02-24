@@ -6,6 +6,8 @@ case object DatapathKey extends Field[DatapathParams]
 case object IOKey extends Field[IOParams]
 case object TileKey extends Field[TileParams]
 */
+import chisel3._
+import chisel3.util.MixedVec
 
 trait Module_Type_Params extends isParameters{
   val module_type : String
@@ -13,6 +15,7 @@ trait Module_Type_Params extends isParameters{
 }
 
 trait DatapathParams extends isParameters{
+  def get_word_width = word_width
   var word_width : Int = -1
 }
 
@@ -25,14 +28,32 @@ trait IOParams {
   def add_input_port : Int = {num_input += 1;num_input-1} // return index
   def decrease_output_port : Int = {num_output -=1;num_output}
   def decrease_input_port : Int = {num_input -=1;num_input}
+  def change_num_input(x:Int) =num_input = x
+  def change_num_output(x:Int)=num_output = x
+  var default_decomposer = 1
   var num_input   : Int = 0
   var num_output  : Int = 0
+  def add_input_decomposer(d:Int) =
+    input_word_width_decomposer = input_word_width_decomposer ::: List(d)
+  def add_output_decomposer(d:Int)=
+    output_word_width_decomposer = output_word_width_decomposer ::: List(d)
+  def change_input_decomposer(d:Int,i:Int) =
+    input_word_width_decomposer(i) = d
+  def change_output_decomposer(d:Int,i:Int) =
+    output_word_width_decomposer(i) = d
   var input_word_width_decomposer   : List[Int] = Nil
   var output_word_width_decomposer  : List[Int] = Nil
 }
 
 // Below is for those categories who can be instantiated but still have sub class,
 // like we can have a tile hardware of PE, but PE still have different types
+
+class Tile_IO_Bundle(word_width:Int) extends Bundle
+  with DatapathParams{
+  val req = Input(Bool())
+  val ack = Output(Bool())
+  val data = Input(UInt(word_width.W))
+}
 
 abstract class TileParams(parent_type: String,
                  parent_id: Int,
@@ -42,6 +63,15 @@ abstract class TileParams(parent_type: String,
   with isParameters {
   var x_location  : Int = -1
   var y_location  : Int = -1
+  // get tile bundle
+  def get_tile_bundle = {
+    new Bundle {
+      val in = MixedVec(input_word_width_decomposer.map(x=>Vec(x,new Tile_IO_Bundle(word_width/x))))
+      val out = Flipped(MixedVec(output_word_width_decomposer.map(x=>Vec(x,new Tile_IO_Bundle(word_width/x)))))
+    }
+  }
+  // Duplicate
+  def copy = this
   // Judge
   def isPE = module_type == "PE"
   def isRouter = module_type == "router"
@@ -56,21 +86,20 @@ abstract class TileParams(parent_type: String,
   def move_vertical(y:Int)=y_location = y
   def at(x:Int,y:Int) = {x_location = x;y_location = y}
   // Connect
-  def <-> (that:TileParams) : List[Connect_Param] =  {
+  def <-> (that:TileParams) : List[ConnectParam] =  {
     List(this --> that,this <-- that)
   }
-  def --> (that:TileParams) : Connect_Param =  {
-    val connect_Param = Connect_Param(getParent,getParent_id)
+  def --> (that:TileParams) : ConnectParam =  {
+    val connect_Param = ConnectParam(getParent,getParent_id)
     connect_Param.source_tile_id = this.get_id
     connect_Param.destination_tile_id = that.get_id
     connect_Param.source_port_index = this.add_output_port
     connect_Param.destination_port_index = that.add_input_port
     connect_Param
   }
-  def <-- (that:TileParams) : Connect_Param =  {
+  def <-- (that:TileParams) : ConnectParam =  {
     that --> this
   }
-
 }
 
 class PeParams(parent_type: String,parent_id:Int,tile_id:Int)
