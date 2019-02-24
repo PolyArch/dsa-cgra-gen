@@ -20,7 +20,7 @@ class Connect_Config(cid:Connect,
 case class Connect(id:Int,source_tile_id:Int,destination_tile_id:Int)
   extends Field[Connect_Param]
 
-case class Connect_Param(connect_id:Int)
+case class Connect_Param(parent_type:String,parent_id:Int)
   extends isParameters{
   var source_tile_id :Int = -1
   var destination_tile_id : Int = -1

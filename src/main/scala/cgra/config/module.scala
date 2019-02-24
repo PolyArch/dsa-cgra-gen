@@ -5,7 +5,6 @@ package cgra.config
 import config._
 
 // ------ Keys ------
-
 case class Router(parent_name:String,parent_id:Int,tile_id:Int)
   extends Field[RouterParams](RouterParams(parent_name,parent_id,tile_id))
 
@@ -17,6 +16,9 @@ case class Shared_PE(parent_name:String,parent_id:Int,tile_id:Int)
 
 case class Alu(parent_name:String,parent_id:Int,tile_id:Int)
   extends Field[AluParams](AluParams(parent_name,parent_id:Int,tile_id))
+
+case class Cgra(parent_name:String,parent_id:Int,tile_id:Int)
+  extends Field[CgraParams](CgraParams(parent_name,parent_id,tile_id))
 
 // ------ Parameters ------
 
@@ -94,9 +96,17 @@ case class CgraParams(parent_type: String,
                 tile_id:Int)
   extends TileParams(parent_type: String,parent_id:Int,tile_id:Int)
   with isParameters {
+
   override val module_type: String = "CGRA"
-  var ProcessingElementsSize:(Int,Int) = (0,0)
+
+  var ProcessingElements_Size:(Int,Int) = (0,0)
+
   var routers_params :List[RouterParams] = Nil
   var pe_params : List[PeParams] = Nil
   var interface_port_params : List[InterfacePortParams] = Nil
+  var connects_params : List[Connect_Param] = Nil
+
+  def fill_processing_element(pe:TileParams) : Unit = {
+
+  }
 }
