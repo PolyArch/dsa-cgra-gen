@@ -74,23 +74,23 @@ case class RouterParams(parent_type: String,
   def get_output_port(i:Int) = {
     output_ports_params(i)
   }
-  def has_ports(n:Int) = {
+  def has_ports(n:Int):Unit = {
     has_ports(n,default_decomposer)
   }
-  def has_ports(n:Int,num_subnet:Int)= {
+  def has_ports(n:Int,num_subnet:Int):Unit= {
     has_inputs(n,num_subnet)
     has_outputs(n,num_subnet)
   }
-  def has_inputs(n:Int) = has_inputs(n,default_decomposer)
-  def has_inputs(n:Int, d:Int) = {
+  def has_inputs(n:Int):Unit = has_inputs(n,default_decomposer)
+  def has_inputs(n:Int, d:Int):Unit = {
     change_num_input(n)
     for (i <- 0 until n){
       input_ports_params = input_ports_params ::: List(port_param("input",i,d))
       add_input_decomposer(d)
     }
   }
-  def had_outputs(n:Int) = has_outputs(n,default_decomposer)
-  def has_outputs(n:Int,d:Int) = {
+  def had_outputs(n:Int) :Unit= has_outputs(n,default_decomposer)
+  def has_outputs(n:Int,d:Int):Unit = {
     change_num_output(n)
     for (i <- 0 until n){
       output_ports_params = output_ports_params ::: List(port_param("output",i,d))
@@ -111,12 +111,12 @@ case class RouterParams(parent_type: String,
   def get_num_config_of_destination_port(n:Int) = {
     get_output_port(n).destination_config.length
   }
-  def calulate_all_output_config_mode(method:String) = {
+  def calulate_all_output_config_mode(method:String):List[List[List[subnet_location_param]]] = {
     output_ports_params.foreach(_.method = method)
     calulate_all_output_config_mode
     output_ports_params.map(_.destination_config)
   }
-  def calulate_all_output_config_mode = {
+  def calulate_all_output_config_mode:List[List[List[subnet_location_param]]] = {
     output_ports_params.foreach(x=>calulate_all_output_config_mode(x.method))
     output_ports_params.map(_.destination_config)
   }

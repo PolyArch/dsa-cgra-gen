@@ -38,9 +38,9 @@ trait IOParams {
   def add_output_decomposer(d:Int)=
     output_word_width_decomposer = output_word_width_decomposer ::: List(d)
   def change_input_decomposer(d:Int,i:Int) =
-    input_word_width_decomposer(i) = d
+    input_word_width_decomposer = input_word_width_decomposer.updated(i,d)
   def change_output_decomposer(d:Int,i:Int) =
-    output_word_width_decomposer(i) = d
+    output_word_width_decomposer = output_word_width_decomposer.updated(i,d)
   var input_word_width_decomposer   : List[Int] = Nil
   var output_word_width_decomposer  : List[Int] = Nil
 }

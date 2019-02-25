@@ -21,7 +21,7 @@ object BuildingMyTiles
 
   have (switch)
   pick (switch) has_ports (4,2)
-  pick (switch) port 1 use_default_port_params
+  //pick (switch) port 1 use_default_port_params
 
   pick (CGRA) fill_processing_element pick(switch)
   pick (CGRA) fill_processing_element pick(dedicated_pe)
@@ -30,7 +30,7 @@ object BuildingMyTiles
   have (pick(sw) --> pick(switch) )
   add_connect(sw,sw)
 
-  pick (CGRA) interconnect all_connects
+  //pick (CGRA) interconnect all_connects
 
   let(pick(switch) -->,sw)
 }

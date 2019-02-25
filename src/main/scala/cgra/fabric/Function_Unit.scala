@@ -459,4 +459,3 @@ object FuDriver extends App {chisel3.Driver.execute(args, () =>
     1,2
   )
 )}
-

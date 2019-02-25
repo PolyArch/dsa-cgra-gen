@@ -33,12 +33,12 @@ class Router(p:TileParams) extends Module {
         val source_port_de = input_decomposer(source_port.port)
         when(configs_registers(i) === j.U) {
           if (source_port_de == num_subnet) {
-            io.tile_io.out(i)(s) <> io.tile_io.in(source_port.port)(s)
+            io.tile_io.out(i)(s) <> io.tile_io.in(source_port.port)(source_port.subnet)
           } else {
             val input_combined_word:UInt =
-              io.tile_io.in(source_port).map(_.data).reduce(Cat(_,_))
+              io.tile_io.in(source_port.port).map(_.data).reduce(Cat(_,_))
             val input_combined_req:Bool =
-              io.tile_io.in(source_port).map(_.req).reduce(_&&_)
+              io.tile_io.in(source_port.port).map(_.req).reduce(_&&_)
             io.tile_io.out(i)(s).data :=
               input_combined_word(decompoed_word_width * (s+1)-1,decompoed_word_width * s)
             io.tile_io.out(i)(s).req := input_combined_req

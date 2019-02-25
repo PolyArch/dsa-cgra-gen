@@ -27,7 +27,7 @@ case class port_param(io_type:String,port_index:Int,num_subnet:Int) {
     this
   }
 
-  def get_source_mode = get_source_mode(method)
+  def get_source_mode: List[List[subnet_location_param]] = get_source_mode(method)
   def get_source_mode(method:String) : List[List[subnet_location_param]] = {
     method match {
       case "Full" =>

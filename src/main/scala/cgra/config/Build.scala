@@ -3,6 +3,8 @@ package cgra.config
 import scala.collection.mutable.Map
 import chisel3.experimental.RawModule
 import config._
+import scala.reflect.ClassTag
+import scala.reflect._
 
 // CGRA
 trait Build extends App {
@@ -45,7 +47,7 @@ trait Build extends App {
       Params += key -> param
     }
   }
-  def let[T](f:TileParams => isParameters,key:Field[T]) = {
+  def let[T](f:T => isParameters,key:Field[T]) = {
     have(f(pick(key)))
   }
   def initial[T](key:Field[T]) = {
@@ -186,11 +188,11 @@ trait Build extends App {
   }
   
   // Generator
-  def Generate[T](pname: Field[T]) = {
+  def Generate[T:ClassTag](pname: Field[T]) = {
     val para = pick(pname).asInstanceOf[TileParams]
     val tile_chisel_class =
-      Class.forName("cgra.config."+para.module_type).getConstructor(classOf[T])
-    val module = tile_chisel_class.newInstance(classOf[T]).asInstanceOf[RawModule]
+      Class.forName("cgra.config."+para.module_type).getConstructor(classTag[T].runtimeClass)//(classOf[T])
+    val module = tile_chisel_class.newInstance(classTag[T].runtimeClass).asInstanceOf[RawModule]
     chisel3.Driver.execute(args,()=>module)
   }
 }

@@ -240,7 +240,7 @@ class integer_core extends Module
   post_ofu_operands := ofu.post_ofu_operands
 
   // Arithmetic Logic Unit
-  val alu = Module(new arithmetic_logic_unit).io
+  val alu = Module(new arithmetic_logic_unit(TIA_WORD_WIDTH,List(1,2,3,4,5,6,7,8,9))).io
   alu.opcode := dx1_triggered_datapath_instruction.op
   alu.operands := pre_ofu_operands
   alu_result := alu.result
