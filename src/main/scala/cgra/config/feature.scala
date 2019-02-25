@@ -64,6 +64,43 @@ abstract class TileParams  (parent_type: String,
   with isParameters {
   var x_location  : Int = -1
   var y_location  : Int = -1
+  var input_ports_params : List[port_param] = Nil
+  var output_ports_params : List[port_param] = Nil
+
+  // Port Operation
+  def get_port(port_index:Int)={
+    (input_ports_params(port_index),output_ports_params(port_index))
+  }
+  def get_input_port(i:Int) = {
+    input_ports_params(i)
+  }
+  def get_output_port(i:Int) = {
+    output_ports_params(i)
+  }
+  def has_ports(n:Int):Unit = {
+    has_ports(n,default_decomposer)
+  }
+  def has_ports(n:Int,num_subnet:Int):Unit= {
+    has_inputs(n,num_subnet)
+    has_outputs(n,num_subnet)
+  }
+  def has_inputs(n:Int):Unit = has_inputs(n,default_decomposer)
+  def has_inputs(n:Int, d:Int):Unit = {
+    change_num_input(n)
+    for (i <- 0 until n){
+      input_ports_params = input_ports_params ::: List(port_param("input",i,d))
+      add_input_decomposer(d)
+    }
+  }
+  def has_outputs(n:Int) :Unit= has_outputs(n,default_decomposer)
+  def has_outputs(n:Int,d:Int):Unit = {
+    change_num_output(n)
+    for (i <- 0 until n){
+      output_ports_params = output_ports_params ::: List(port_param("output",i,d))
+      add_output_decomposer(d)
+    }
+  }
+
   // get tile bundle
   def get_tile_bundle = {
     new Bundle {

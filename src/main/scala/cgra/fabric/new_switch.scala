@@ -22,7 +22,7 @@ class Router(p:TileParams) extends Module {
 
   // Output Port Connection (data and req)
   for (i <- 0 until param.get_num_output) {
-    val configs = param.output_ports_params(i).destination_config
+    val configs = param.output_ports_params(i).source_config
     val num_subnet = output_decomposer(i)
     val decompoed_word_width = word_width / num_subnet
     for (s <- 0 until num_subnet) {
@@ -36,9 +36,12 @@ class Router(p:TileParams) extends Module {
             io.tile_io.out(i)(s).data := io.tile_io.in(source_port.port)(source_port.subnet).data
             io.tile_io.out(i)(s).req := io.tile_io.in(source_port.port)(source_port.subnet).req
           } else {
-            val input_combined_word: UInt = io.tile_io.in(source_port.port).map(_.data).reduce(Cat(_, _))
-            val input_combined_req: Bool = io.tile_io.in(source_port.port).map(_.req).reduce(_ || _)
-            io.tile_io.out(i)(s).data := input_combined_word(decompoed_word_width * (s + 1) - 1, decompoed_word_width * s)
+            val input_combined_word: UInt =
+              io.tile_io.in(source_port.port).map(_.data).reduce(Cat(_, _))
+            val input_combined_req: Bool =
+              io.tile_io.in(source_port.port).map(_.req).reduce(_ || _)
+            io.tile_io.out(i)(s).data :=
+              input_combined_word(decompoed_word_width * (s + 1) - 1, decompoed_word_width * s)
             io.tile_io.out(i)(s).req := input_combined_req
           }
         }

@@ -10,17 +10,23 @@ case class subnet_location_param (sp:Int,ss:Int){
 
 case class subnet_param() {
   var source_param : List[subnet_location_param] = Nil
+
+  var multiple_factor : Int = 0
+  var multiple_source_param : List[List[subnet_location_param]] = Nil
+  var multiple_delay_param : List[Int] = Nil
+  var multiple_alu_param : List[Int] = Nil
 }
 
 case class port_param(io_type:String,port_index:Int,num_subnet:Int) {
 
   lazy val subnets_param : List[subnet_param] =
     List.fill[subnet_param](num_subnet)(subnet_param())
-  var destination_config : List[List[subnet_location_param]] = Nil
+
+  var source_config : List[List[subnet_location_param]] = Nil
   var method : String = "Group by Port"
 
   // Method
-  def num_config = destination_config.length
+  def num_config = source_config.length
   def get_io_type = io_type
   def isInput = io_type == "input"
   def isOutput = io_type == "output"
@@ -28,13 +34,14 @@ case class port_param(io_type:String,port_index:Int,num_subnet:Int) {
     this
   }
   def get_source_mode: List[List[subnet_location_param]] = get_source_mode(method)
+
   def get_source_mode(method:String) : List[List[subnet_location_param]] = {
     method match {
       case "Full" =>
         println("[warn] Full Interconnection can be really complicated")
-        destination_config =
+        source_config =
           crossJoin(subnets_param.map(_.source_param)).map(_.toList).toList
-        destination_config
+        source_config
       case "Group by Port" =>
         val port_list : List [Int]= subnets_param.flatMap(_.source_param.map(_.port)).distinct
         var res : List[List[subnet_location_param]] = Nil
@@ -46,8 +53,8 @@ case class port_param(io_type:String,port_index:Int,num_subnet:Int) {
           val current_group_combination = crossJoin(source_for_each_subnet)
           res = res ::: current_group_combination.asInstanceOf[List[List[subnet_location_param]]]
         }
-        destination_config = res
-        destination_config
+        source_config = res
+        source_config
       case "Group by Index" =>
         val subnet_list : List [Int]= subnets_param.flatMap(_.source_param.map(_.subnet)).distinct
         var res : List[List[subnet_location_param]] = Nil
@@ -59,8 +66,8 @@ case class port_param(io_type:String,port_index:Int,num_subnet:Int) {
           val current_group_combination = crossJoin(source_for_each_subnet)
           res = res ::: current_group_combination.asInstanceOf[List[List[subnet_location_param]]]
         }
-        destination_config = res
-        destination_config
+        source_config = res
+        source_config
       case _ => throw new Exception("No such method")
     }
   }

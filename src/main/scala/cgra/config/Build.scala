@@ -79,7 +79,14 @@ trait Build extends App {
   def count_tiles: Int = tile_keys.length
   def new_tile(tile_name: String): Field[TileParams] = new_tile(tile_name, new_tile_id)
   def new_tile(tile_name: String, tile_id: Int): Field[TileParams] = {
+    /*
+    val key = Class.forName("cgra.config."+tile_name)
+      .getConstructor(classOf[String],Integer.TYPE,Integer.TYPE)
+      .newInstance(current_type,0,0).asInstanceOf[Field[TileParams]]
+      //.newInstance(current_type,current_id,new_tile_id(tile_id)).asInstanceOf[Field[TileParams]]
+    */
     val key = (tile_name match {
+      // TODO: Dynamically Instantiate
       case "Router" =>
         Router(current_type, current_id, new_tile_id(tile_id))
       case "Dedicated_PE" =>
@@ -95,6 +102,7 @@ trait Build extends App {
   }
   def new_tile[T](param:T):Field[TileParams] = {
     val key = (param match {
+        // TODO: Dynamically Instantiate
       case p:AluParams => Alu(p.getParent,p.getParent_id,p.get_id)
       case p:DedicatedPeParams => Dedicated_PE(p.getParent,p.getParent_id,p.get_id)
       case p:SharedPeParams => Shared_PE(p.getParent,p.getParent_id,p.get_id)

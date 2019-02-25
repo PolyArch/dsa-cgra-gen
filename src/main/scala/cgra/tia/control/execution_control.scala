@@ -18,7 +18,7 @@ class execution_control_unit extends Module{
       val channels_quiescent = Output(Bool())
     }
   )
-/*
+
   val halted = Wire(Bool())
 
   // default: not halted, channels not full
@@ -47,7 +47,7 @@ class execution_control_unit extends Module{
 
   // output halted status
   io.halted <> halted
-  */
+
 }
 
 object execControlDriver extends App
