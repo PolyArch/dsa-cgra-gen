@@ -13,6 +13,7 @@ class integer_issue_unit extends Module
     val functional_unit = Output(UInt(log2Ceil(TIA_NUM_FU_TYPES).W))
   })
 
+
   when(basic_insts.exists(_ === io.dx1_instruction_op)){
     io.retiring_stage := 1.U
     io.functional_unit := ALU.U
@@ -26,4 +27,5 @@ class integer_issue_unit extends Module
     io.retiring_stage := 1.U
     io.functional_unit := ALU.U
   }
+
 }

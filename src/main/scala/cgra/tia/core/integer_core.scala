@@ -316,6 +316,7 @@ class integer_core extends Module
   eu.oct := retiring_datapath_instruction.oct
   output_channels.zipWithIndex.foreach(x=>x._1.enqueue := eu.enqueue_signals(x._2))
   output_channels.zipWithIndex.foreach(x=>x._1.pack.tag := eu.outout_channel_tags(x._2))
+
 }
 
 object integerCore_Driver extends App {

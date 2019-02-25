@@ -16,6 +16,7 @@ trait Module_Type_Params extends isParameters{
 
 trait DatapathParams extends isParameters{
   def get_word_width = word_width
+  def set_word_width (w:Int) = word_width = w
   var word_width : Int = -1
 }
 
@@ -48,14 +49,14 @@ trait IOParams {
 // Below is for those categories who can be instantiated but still have sub class,
 // like we can have a tile hardware of PE, but PE still have different types
 
-class Tile_IO_Bundle(word_width:Int) extends Bundle
-  with DatapathParams{
+class Tile_IO_Bundle(word_w:Int) extends Bundle{
   val req = Input(Bool())
   val ack = Output(Bool())
-  val data = Input(UInt(word_width.W))
+  val data = Input(UInt(word_w.W))
+  override def cloneType = new Tile_IO_Bundle(word_w).asInstanceOf[this.type]
 }
 
-abstract class TileParams(parent_type: String,
+abstract class TileParams  (parent_type: String,
                  parent_id: Int,
                  tile_id:Int) extends DatapathParams
   with IOParams
@@ -67,18 +68,19 @@ abstract class TileParams(parent_type: String,
   def get_tile_bundle = {
     new Bundle {
       val in = MixedVec(input_word_width_decomposer.map(x=>Vec(x,new Tile_IO_Bundle(word_width/x))))
-      val out = Flipped(MixedVec(output_word_width_decomposer.map(x=>Vec(x,new Tile_IO_Bundle(word_width/x)))))
+      val out = MixedVec(output_word_width_decomposer.map(x=>Flipped(Vec(x,new Tile_IO_Bundle(word_width/x)))))
     }
   }
   // Duplicate
   def copy = this
   // Judge
   def isPE = module_type == "PE"
-  def isRouter = module_type == "router"
-  def isInterfacePort = module_type == "if_port"
+  def isRouter = module_type == "Router"
+  def isInterfacePort = module_type == "IfPort"
   // Returm Information
   def getParent = parent_type
   def getParent_id = parent_id
+  def getType = module_type
   def get_id = tile_id
   def haveID = tile_id >= 0
   // location operation
@@ -111,29 +113,3 @@ class PeParams(parent_type: String,parent_id:Int,tile_id:Int)
   def isDedicated : Boolean = inst_firing == "dedicated"
   def isShared : Boolean = inst_firing == "shared"
 }
-
-/* Seems not very useful currently, might be useful when we have the chisel implementation of module
-// Now just parameters
-trait HasDatapathParameters {
-  implicit val p : Parameters
-  def datapathParams : DatapathParams = p(DatapathKey)
-  val word_width = datapathParams.word_width
-}
-trait HasIOParameters {
-  implicit val p : Parameters
-  def ioParams : IOParams = p(IOKey)
-  val num_input   : Int = ioParams.num_input
-  val num_output  : Int = ioParams.num_output
-  val input_word_width_decomposer   : Array[Int] = ioParams.input_word_width_decomposer
-  val output_word_width_decomposer  : Array[Int] = ioParams.output_word_width_decomposer
-}
-
-trait HasTileParameters extends HasDatapathParameters
-  with HasIOParameters{
-  val parent_id : Int
-  def tileParams : TileParams = p(TileKey)
-  val module_type:String = tileParams.module_type
-  val x_location:Int = tileParams.x_location
-  val y_location:Int = tileParams.y_location
-}
-*/

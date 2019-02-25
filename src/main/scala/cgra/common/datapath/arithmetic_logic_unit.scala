@@ -20,6 +20,7 @@ class arithmetic_logic_unit(word_width:Int,
       val result = Output(UInt(word_width.W))
     }
   )
+
   // Connect result with output
   val op:UInt = Wire(UInt(op_width.W))
   op := io.opcode
@@ -156,6 +157,7 @@ class arithmetic_logic_unit(word_width:Int,
   printf(p"operand 2 = ${io.operands(2)}\n")
   printf(p"result = ${io.result}\n")
   printf("-----------------------------------\n")
+
 }
 
 object AluDriver extends App

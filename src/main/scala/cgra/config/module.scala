@@ -5,19 +5,19 @@ package cgra.config
 import config._
 
 // ------ Keys ------
-case class Router(parent_name:String,parent_id:Int,tile_id:Int)
+case class Router private (parent_name:String,parent_id:Int,tile_id:Int)
   extends Field[RouterParams](RouterParams(parent_name,parent_id,tile_id))
 
-case class Dedicated_PE(parent_name:String,parent_id:Int,tile_id:Int)
+case class Dedicated_PE private (parent_name:String,parent_id:Int,tile_id:Int)
   extends Field[DedicatedPeParams](DedicatedPeParams(parent_name,parent_id,tile_id))
 
-case class Shared_PE(parent_name:String,parent_id:Int,tile_id:Int)
+case class Shared_PE private (parent_name:String,parent_id:Int,tile_id:Int)
   extends Field[SharedPeParams](SharedPeParams(parent_name,parent_id,tile_id))
 
-case class Alu(parent_name:String,parent_id:Int,tile_id:Int)
+case class Alu private (parent_name:String,parent_id:Int,tile_id:Int)
   extends Field[AluParams](AluParams(parent_name,parent_id:Int,tile_id))
 
-case class Cgra(parent_name:String,parent_id:Int,tile_id:Int)
+case class Cgra private (parent_name:String,parent_id:Int,tile_id:Int)
   extends Field[CgraParams](CgraParams(parent_name,parent_id,tile_id))
 
 // ------ Parameters ------
@@ -61,10 +61,11 @@ case class RouterParams(parent_type: String,
                         tile_id:Int)
   extends TileParams(parent_type: String,parent_id:Int,tile_id:Int)
   with isParameters {
-  override val module_type:String = "router"
+  override val module_type:String = "Router"
   var input_ports_params : List[port_param] = Nil
   var output_ports_params : List[port_param] = Nil
 
+  // Port Operation
   def get_port(port_index:Int)={
     (input_ports_params(port_index),output_ports_params(port_index))
   }
@@ -97,6 +98,8 @@ case class RouterParams(parent_type: String,
       add_output_decomposer(d)
     }
   }
+
+  // Get information
   def get_destination_subnet_by_source_subnet(port:Int,subnet:Int)
   :List[(Int,Int)] = {
     val des = for {
@@ -107,13 +110,12 @@ case class RouterParams(parent_type: String,
     } yield (i,s)
     des.toList
   }
-
   def get_num_config_of_destination_port(n:Int) = {
     get_output_port(n).destination_config.length
   }
   def calulate_all_output_config_mode(method:String):List[List[List[subnet_location_param]]] = {
     output_ports_params.foreach(_.method = method)
-    calulate_all_output_config_mode
+    output_ports_params.foreach(_.get_source_mode)
     output_ports_params.map(_.destination_config)
   }
   def calulate_all_output_config_mode:List[List[List[subnet_location_param]]] = {
@@ -122,6 +124,18 @@ case class RouterParams(parent_type: String,
   }
   def calulate_output_config(i:Int,method:String) = {
     output_ports_params(i).get_source_mode(method)
+  }
+
+  // Set up parameters
+  def use_subnet_match_connect = {
+    for (i<- 0 until num_output){
+      for (s <- 0 until output_word_width_decomposer(i)){
+        for(j <- 0 until num_input){
+          output_ports_params(i).subnets_param(s).source_param =
+            subnet_location_param(j,s) :: output_ports_params(i).subnets_param(s).source_param
+        }
+      }
+    }
   }
 }
 

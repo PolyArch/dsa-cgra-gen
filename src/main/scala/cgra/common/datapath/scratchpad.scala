@@ -62,6 +62,7 @@ class scratchpad extends Module{
       index := 0.U
     }
   }
+
 }
 
 object spmDriver extends App

@@ -13,20 +13,20 @@ case class subnet_param() {
 }
 
 case class port_param(io_type:String,port_index:Int,num_subnet:Int) {
+
   lazy val subnets_param : List[subnet_param] =
     List.fill[subnet_param](num_subnet)(subnet_param())
   var destination_config : List[List[subnet_location_param]] = Nil
   var method : String = "Group by Port"
 
+  // Method
   def num_config = destination_config.length
   def get_io_type = io_type
   def isInput = io_type == "input"
   def isOutput = io_type == "output"
-
   def use_default_port_params : port_param = {
     this
   }
-
   def get_source_mode: List[List[subnet_location_param]] = get_source_mode(method)
   def get_source_mode(method:String) : List[List[subnet_location_param]] = {
     method match {
@@ -64,7 +64,7 @@ case class port_param(io_type:String,port_index:Int,num_subnet:Int) {
       case _ => throw new Exception("No such method")
     }
   }
-  def crossJoin[T](list: Traversable[Traversable[T]]): Traversable[Traversable[T]] =
+  private def crossJoin[T](list: Traversable[Traversable[T]]): Traversable[Traversable[T]] =
     list match {
       case xs :: Nil => xs map (Traversable(_))
       case x :: xs => for {

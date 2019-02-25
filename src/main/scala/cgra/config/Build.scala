@@ -1,8 +1,11 @@
 package cgra.config
 
+import chisel3.core.Module
+
 import scala.collection.mutable.Map
 import chisel3.experimental.RawModule
 import config._
+
 import scala.reflect.ClassTag
 import scala.reflect._
 
@@ -188,11 +191,12 @@ trait Build extends App {
   }
   
   // Generator
-  def Generate[T:ClassTag](pname: Field[T]) = {
-    val para = pick(pname).asInstanceOf[TileParams]
-    val tile_chisel_class =
-      Class.forName("cgra.config."+para.module_type).getConstructor(classTag[T].runtimeClass)//(classOf[T])
-    val module = tile_chisel_class.newInstance(classTag[T].runtimeClass).asInstanceOf[RawModule]
-    chisel3.Driver.execute(args,()=>module)
+  def Generate(pname: Field[TileParams]) = {
+    val para = pick(pname)
+    val module_name = para.asInstanceOf[TileParams].getType
+    chisel3.Driver.execute(args,()=>
+      Class.forName("cgra.fabric."+module_name)
+        .getConstructor(classOf[TileParams])
+        .newInstance(para).asInstanceOf[RawModule])
   }
 }

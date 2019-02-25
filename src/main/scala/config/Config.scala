@@ -5,7 +5,7 @@ package config
 // ----------------------------------------------------------------------------------------------------------------
 // If Field take augmentation like Filed(SomeClass()) mean such key have default field
 // If Field take Type like Field[someClass or someTrait] mean such
-abstract class Field[T] private (val default: Option[T])
+abstract class Field[+T] private (val default: Option[T])
 {
   def this() = this(None)
   def this(default: T) = this(Some(default))
