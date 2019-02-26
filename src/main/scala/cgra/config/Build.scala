@@ -15,7 +15,7 @@ trait Build extends App {
   val current_type: String
   val current_id: Int
 
-  val Params = Map[Field[_],isParameters]()
+  val Params = Map[Field[_],IsParameters]()
 
   // Tile Information
   var tile_keys: List[Field[TileParams]] = Nil
@@ -28,9 +28,9 @@ trait Build extends App {
     Params(p_tile).asInstanceOf[T]
   }
   def have[T](key:Field[T]) = {
-    Params += key -> key.default.get.asInstanceOf[isParameters]
+    Params += key -> key.default.get.asInstanceOf[IsParameters]
   }
-  def have(param : isParameters) = {
+  def have(param : IsParameters) = {
     val key:Field[_] = param match{
       case param:TileParams =>
         new_tile(param)
@@ -39,7 +39,7 @@ trait Build extends App {
     }
     Params += key -> param
   }
-  def have(params:List[isParameters]) = {
+  def have(params:List[IsParameters]) = {
     for (param <- params){
       val key:Field[_] = param match{
         case param:TileParams =>
@@ -50,7 +50,7 @@ trait Build extends App {
       Params += key -> param
     }
   }
-  def let[T](f:T => isParameters,key:Field[T]) = {
+  def let[T](f:T => IsParameters, key:Field[T]) = {
     have(f(pick(key)))
   }
   def initial[T](key:Field[T]) = {

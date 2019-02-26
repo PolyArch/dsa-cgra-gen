@@ -14,5 +14,7 @@ object isa {
 }
 
 object Constant {
+  val INPUT_TYPE : String = "INPUT"
+  val OUTPUT_TYPE : String = "OUTPUT"
   val maxBitsWidth = 2048
 }

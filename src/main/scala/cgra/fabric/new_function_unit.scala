@@ -11,6 +11,7 @@ class Dedicated_PE(p:TileParams) extends Module {
     val tile_io = param.get_tile_bundle
     val host_interface = new mmio_if
   })
+  /*
   val num_output = param.get_num_output
   val num_input = param.get_num_input
   val word_width = param.get_word_width
@@ -24,6 +25,9 @@ class Dedicated_PE(p:TileParams) extends Module {
   for (o<- 0 until num_output){
     val num_subnet = output_decomposer(o)
     val decomp_word_width = word_width / num_subnet
+
+    val source_configs = param.output_ports_params(o).subnets_param.map(_.multiple_source_param)
+
     for (s <- 0 until num_subnet){
       val subnet_param = param.output_ports_params(o).subnets_param(s)
 
@@ -32,10 +36,12 @@ class Dedicated_PE(p:TileParams) extends Module {
       val delay_pipes_max_lens = subnet_param.multiple_delay_param
       val alu_inst_list = subnet_param.multiple_alu_param
 
+
       for (multi_fac <- 0 until multiple_factor){
-        source_config = param.output_ports_params(o).get_source_mode
       }
+
+
     }
   }
-
+*/
 }

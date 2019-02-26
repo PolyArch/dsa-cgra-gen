@@ -6,15 +6,18 @@ case object DatapathKey extends Field[DatapathParams]
 case object IOKey extends Field[IOParams]
 case object TileKey extends Field[TileParams]
 */
+import cgra.config.Constant._
 import chisel3._
 import chisel3.util.MixedVec
+import scala.collection.mutable.Map
 
-trait Module_Type_Params extends isParameters{
+
+trait Module_Type_Params extends IsParameters{
   val module_type : String
   def get_module_type = module_type
 }
 
-trait DatapathParams extends isParameters{
+trait DatapathParams extends IsParameters{
   def get_word_width = word_width
   def set_word_width (w:Int) = word_width = w
   var word_width : Int = -1
@@ -61,13 +64,64 @@ abstract class TileParams  (parent_type: String,
                  tile_id:Int) extends DatapathParams
   with IOParams
   with Module_Type_Params
-  with isParameters {
+  with IsParameters {
   var x_location  : Int = -1
   var y_location  : Int = -1
-  var input_ports_params : List[port_param] = Nil
-  var output_ports_params : List[port_param] = Nil
+
+  //var input_ports_params : List[port_param] = Nil
+  //var output_ports_params : List[port_param] = Nil
+
+  var input_ports_list : List[port_subnet] = Nil
+  var output_ports_list : List[port_subnet] = Nil
+
+  // This is a port/subnet/operand based internal module parameter storage
+  val InternalParam = Map[IsKey,List[IsParameters]]()
+  // Parameters
+  def add_internal(key:IsKey, Params:List[IsParameters]) = {
+    InternalParam += key -> Params
+    if(InternalParam.isDefinedAt(key))
+      InternalParam += key -> AddInUniqueList(InternalParam(key),Params)
+    else
+      InternalParam += key -> Params
+  }
+  def add_internal(key:IsKey, Params:IsParameters) = {
+    add_internal(key,List(Params))
+  }
 
   // Port Operation
+  def get_port_by_port(i:Int)={
+    (get_input_port_by_port(i),get_output_port_by_port(i))
+  }
+  def get_input_port_by_port(i:Int) = {
+    input_ports_list.filter(_.port==i)
+  }
+  def get_output_port_by_port(i:Int) = {
+    output_ports_list.filter(_.port==i)
+  }
+  def has_ports(n:Int):Unit = {
+    has_ports(n,default_decomposer)
+  }
+  def has_ports(n:Int,num_subnet:Int):Unit= {
+    has_inputs(n,num_subnet)
+    has_outputs(n,num_subnet)
+  }
+  def has_inputs(n:Int):Unit = has_inputs(n,default_decomposer)
+  def has_inputs(n:Int, d:Int):Unit = {
+    change_num_input(n)
+    for (i <- 0 until n){
+      input_ports_list = input_ports_list ::: List(new port_subnet(INPUT_TYPE,i,d))
+      add_input_decomposer(d)
+    }
+  }
+  def has_outputs(n:Int) :Unit= has_outputs(n,default_decomposer)
+  def has_outputs(n:Int,d:Int):Unit = {
+    change_num_output(n)
+    for (i <- 0 until n){
+      output_ports_list = output_ports_list ::: List(new port_subnet(OUTPUT_TYPE,i,d))
+      add_output_decomposer(d)
+    }
+  }
+  /*
   def get_port(port_index:Int)={
     (input_ports_params(port_index),output_ports_params(port_index))
   }
@@ -98,6 +152,37 @@ abstract class TileParams  (parent_type: String,
     for (i <- 0 until n){
       output_ports_params = output_ports_params ::: List(port_param("output",i,d))
       add_output_decomposer(d)
+    }
+  }
+  */
+
+  // Mux is a unique module which have side effect of adding connected input port
+  def add_mux(k:IsKey) = {
+    val key = k.asInstanceOf[port_subnet]
+    val mux:Mux_source_param = key.io match {
+      case INPUT_TYPE =>
+        val m = Mux_source_param()
+        m.add_source(key.port,key.subnet)
+        m
+      case OUTPUT_TYPE =>
+        Mux_source_param()
+    }
+    add_module(k,mux)
+  }
+
+  // add internal module
+  def add_module(key:IsKey, s:IsParameters) = {
+    add_internal(key,s)
+    s match {
+      case s:Mux_source_param =>
+        if (s.hasSource)
+          for (ps <- s.source_port_subnet)
+            add_internal(port_subnet(INPUT_TYPE,ps._1,ps._2),s)
+    }
+  }
+  def add_module(key:IsKey, source:List[IsParameters]) = {
+    for (s <- source){
+      add_module(key,s)
     }
   }
 
@@ -139,11 +224,25 @@ abstract class TileParams  (parent_type: String,
   def <-- (that:TileParams) : ConnectParam =  {
     that --> this
   }
+  // Add to unique list
+  def AddInUniqueList [T](v:T,list:List[T]) : List[T]={
+    if(list.contains(v))
+      list
+    else
+      list ::: List(v)
+  }
+  def AddInUniqueList [T](l:List[T],list:List[T]) : List[T]={
+    var ll : List[T] = list
+    for (v <- l){
+      ll = AddInUniqueList(v,list)
+    }
+    ll
+  }
 }
 
 class PeParams(parent_type: String,parent_id:Int,tile_id:Int)
   extends TileParams(parent_type: String,parent_id:Int,tile_id:Int)
-  with isParameters {
+  with IsParameters {
   override val module_type:String = "PE"
   var inst_set : List[Int] = Nil
   val inst_firing : String = ""

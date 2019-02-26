@@ -4,6 +4,7 @@ package cgra.config
 
 import config._
 
+
 // ------ Keys ------
 case class Router private (parent_name:String,parent_id:Int,tile_id:Int)
   extends Field[RouterParams](RouterParams(parent_name,parent_id,tile_id))
@@ -25,7 +26,7 @@ case class Cgra private (parent_name:String,parent_id:Int,tile_id:Int)
 // Arithmetic Logic Unit
 case class AluParams(parent_type: String,parent_id:Int,tile_id:Int)
   extends TileParams(parent_type: String,parent_id:Int,tile_id:Int)
-  with isParameters {
+  with IsParameters {
   override val module_type:String = "arithmetic_logic_unit"
   val inst_set : Array[Int] = null
 }
@@ -35,10 +36,8 @@ case class DedicatedPeParams(parent_type: String,
                              parent_id: Int,
                              tile_id:Int)
   extends PeParams(parent_type: String,parent_id:Int,tile_id:Int)
-  with isParameters {
+  with IsParameters {
   override val inst_firing : String = "dedicated"
-
-
 
 }
 
@@ -47,7 +46,7 @@ case class SharedPeParams(parent_type: String,
                           parent_id: Int,
                           tile_id:Int)
   extends PeParams(parent_type: String,parent_id:Int,tile_id:Int)
-  with isParameters {
+  with IsParameters {
   override val inst_firing : String = "shared"
 
 }
@@ -57,9 +56,9 @@ case class RouterParams(parent_type: String,
                         parent_id: Int,
                         tile_id:Int)
   extends TileParams(parent_type: String,parent_id:Int,tile_id:Int)
-  with isParameters {
+  with IsParameters {
   override val module_type:String = "Router"
-
+/*
   // Get information
   def get_destination_subnet_by_source_subnet(port:Int,subnet:Int):List[(Int,Int)] = {
     val des = for {
@@ -71,19 +70,19 @@ case class RouterParams(parent_type: String,
     des.toList
   }
   def get_num_config_of_destination_port(n:Int) = {
-    get_output_port(n).source_config.length
+    get_output_port(n).source_configs.length
   }
   def calulate_all_output_config_mode(method:String):List[List[List[subnet_location_param]]] = {
     output_ports_params.foreach(_.method = method)
-    output_ports_params.foreach(_.get_source_mode)
-    output_ports_params.map(_.source_config)
+    output_ports_params.foreach(x=>x.get_source_mode(x.subnets_param.map(_.source_param)))
+    output_ports_params.map(_.source_configs)
   }
   def calulate_all_output_config_mode:List[List[List[subnet_location_param]]] = {
     output_ports_params.foreach(x=>calulate_all_output_config_mode(x.method))
-    output_ports_params.map(_.source_config)
+    output_ports_params.map(_.source_configs)
   }
   def calulate_output_config(i:Int,method:String) = {
-    output_ports_params(i).get_source_mode(method)
+    output_ports_params(i).get_source_mode(method,output_ports_params(i).subnets_param.map(_.source_param))
   }
 
   // Set up parameters
@@ -118,6 +117,7 @@ case class RouterParams(parent_type: String,
     output_ports_params(out_port).subnets_param(out_subnet).source_param =
       subnet_location_param(in_port,in_sub) :: output_ports_params(out_port).subnets_param(out_subnet).source_param
   }
+  */
 }
 
 // Interface Ports
@@ -125,7 +125,7 @@ case class InterfacePortParams(parent_type: String,
                                parent_id: Int,
                                tile_id:Int)
   extends TileParams(parent_type: String,parent_id:Int,tile_id:Int)
-  with isParameters {
+  with IsParameters {
   override val module_type:String = "ip_port"
   var buffer_depth       : Array[Int] = null
 }
@@ -135,7 +135,7 @@ case class CgraParams(parent_type: String,
                 parent_id: Int,
                 tile_id:Int)
   extends TileParams(parent_type: String,parent_id:Int,tile_id:Int)
-  with isParameters {
+  with IsParameters {
 
   override val module_type: String = "CGRA"
 

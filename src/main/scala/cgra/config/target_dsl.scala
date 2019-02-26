@@ -7,7 +7,7 @@ object BuildingMyTiles
   extends Build{
   override val current_type = "CGRA"
   override val current_id = 0
-
+/*
   //Pragma
   val switch = Router(current_type,current_id,1)
 
@@ -26,6 +26,7 @@ object BuildingMyTiles
   pick (switch) calulate_all_output_config_mode
 
   Generate(switch)
+  */
 }
 
 // Some useless command

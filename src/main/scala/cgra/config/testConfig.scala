@@ -83,7 +83,7 @@ object TestConfig extends App{
       subnet_location_param(2,1)::
       subnet_location_param(3,1)::zero_subnet_source::Nil
 
-  val tryTest = test.get_source_mode("Group by Port")
+  //val tryTest = test.get_source_mode("Group by Port")
 
 
 
