@@ -7,7 +7,7 @@ object BuildingMyTiles
   extends Build{
   override val current_type = "CGRA"
   override val current_id = 0
-/*
+
   //Pragma
   val switch = Router(current_type,current_id,1)
 
@@ -16,17 +16,16 @@ object BuildingMyTiles
   have (switch)
 
   pick (switch) set_word_width 64
+  pick (switch) set_config_width 4
 
   pick (switch) has_ports (4,2)
 
-  pick (switch) use_subnet_match_connect
-
-  pick (switch) add_neighbor_loop_connect(0,1,"ascend")
-
-  pick (switch) calulate_all_output_config_mode
+  for (out <- 0 until 4)
+    for (in <- 0 until 4)
+      pick (switch) add_neighbor_loop_connect(in,out,"ascend")
 
   Generate(switch)
-  */
+
 }
 
 // Some useless command

@@ -3,10 +3,10 @@ package cgra.config
 import scala.collection.mutable.Map
 
 object new_config extends App {
-
+/*
   val MapParam = Map[IsKey,List[IsParameters]]()
 
-  var mux_param : List[Mux_source_param] = Nil
+  var mux_param : List[Mux_param] = Nil
   var delay_pipe_param : List[Delay_pipe_delay_param] = Nil
   var alu_param : List[Alu_inst_param] = Nil
 
@@ -29,6 +29,6 @@ object new_config extends App {
   def get_alu_param(inst:Int) : Alu_inst_param = {
     new Alu_inst_param(inst)
   }
-
+*/
   println("Hello World")
 }

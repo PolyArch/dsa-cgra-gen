@@ -93,8 +93,7 @@ trait Build extends App {
         Dedicated_PE(current_type, current_id, new_tile_id(tile_id))
       case "Shared_PE" =>
         Shared_PE(current_type, current_id, new_tile_id(tile_id))
-      case "Alu" =>
-        Alu(current_type, current_id, new_tile_id(tile_id))
+      //case "Alu" => Alu(current_type, current_id, new_tile_id(tile_id))
       case "Cgra" =>
         Cgra(current_type,current_id,new_tile_id(tile_id))
     }).asInstanceOf[Field[TileParams]]
@@ -103,7 +102,7 @@ trait Build extends App {
   def new_tile[T](param:T):Field[TileParams] = {
     val key = (param match {
         // TODO: Dynamically Instantiate
-      case p:AluParams => Alu(p.getParent,p.getParent_id,p.get_id)
+      //case p:AluParams => Alu(p.getParent,p.getParent_id,p.get_id)
       case p:DedicatedPeParams => Dedicated_PE(p.getParent,p.getParent_id,p.get_id)
       case p:SharedPeParams => Shared_PE(p.getParent,p.getParent_id,p.get_id)
       case p:RouterParams => Router(p.getParent,p.getParent_id,p.get_id)
@@ -114,7 +113,7 @@ trait Build extends App {
   def new_tile[T](key:Field[T]):Field[TileParams] = {
     new_tile(initial(key))
   }
-  def copy(key:Field[TileParams]) = new_tile(pick(key) copy)
+  //def copy(key:Field[TileParams]) = new_tile(pick(key) copy)
   def delete_tile(tile_key:Field[TileParams]) = {
     val connects_to_be_depicke = get_connects_by_tile(tile_key)
     // depicke connections which connects to this tile
