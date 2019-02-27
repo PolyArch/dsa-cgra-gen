@@ -3,9 +3,10 @@
 package cgra.fu
 
 import cgra._
-import cgra.config._
-import cgra.config.isa._
+import cgra.parameter._
+import cgra.parameter.isa._
 import cgra.fabric._
+import cgra.fabric.old.{ALU, DelayPipe, Function_Unit}
 import dsl.IR._
 import tile.tools._
 import chisel3.iotesters

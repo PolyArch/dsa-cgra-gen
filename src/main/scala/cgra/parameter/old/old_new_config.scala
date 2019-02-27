@@ -1,4 +1,4 @@
-package cgra.config
+package cgra.parameter
 
 import scala.collection.mutable.Map
 

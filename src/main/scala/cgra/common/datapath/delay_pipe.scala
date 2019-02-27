@@ -1,7 +1,7 @@
 package cgra.common.datapath
 
 import cgra.common.mmio.mmio_if
-import cgra.config.Tile_IO_Bundle
+import cgra.parameter.Tile_IO_Bundle
 import chisel3._
 import chisel3.util._
 

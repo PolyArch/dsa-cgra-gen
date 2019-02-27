@@ -1,6 +1,6 @@
-package cgra.config
+package cgra.parameter.test
 
-import config._
+import cgra.parameter.{port_param, subnet_location_param}
 
 object TestConfig extends App{
 

@@ -2,7 +2,7 @@
 
 package dsl.IR.build
 
-import cgra.config.isa
+import cgra.parameter.isa
 import dsl.IR._
 import dsl.compiler._
 import dsl.library.builtinClass.FUClass

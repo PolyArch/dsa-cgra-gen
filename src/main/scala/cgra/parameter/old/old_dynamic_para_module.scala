@@ -1,4 +1,4 @@
-package cgra.config
+package cgra.parameter
 
 import chisel3._
 import config._

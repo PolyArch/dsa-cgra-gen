@@ -1,10 +1,20 @@
 package cgra.fabric
 
+import cgra.common.mmio.mmio_if
+import cgra.parameter._
 import chisel3._
-import chisel3.util._
-import cgra.common.mmio._
-import cgra.config._
 
+// ------ Parameters ------
+case class DedicatedPeParams(parent_type: String,
+                             parent_id: Int,
+                             tile_id:Int)
+  extends PeParams(parent_type: String,parent_id:Int,tile_id:Int)
+    with IsParameters {
+  override val inst_firing : String = "dedicated"
+
+}
+
+// ------ Module ------
 class Dedicated_PE(p:TileParams) extends Module {
   val param = p.asInstanceOf[DedicatedPeParams]
   val io = IO(new Bundle{

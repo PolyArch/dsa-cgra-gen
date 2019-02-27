@@ -1,4 +1,4 @@
-package cgra.config
+package cgra.parameter
 
 // This package is for those parameters that are just part of module's parameters,
 // which can be instantiated to a true module

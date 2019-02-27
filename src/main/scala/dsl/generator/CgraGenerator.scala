@@ -4,8 +4,9 @@ package dsl.generator
 
 import dsl.IR._
 import cgra._
-import cgra.config._
+import cgra.parameter._
 import cgra.fabric._
+import cgra.fabric.old.{Function_Unit, InterfacePort, Switch}
 import chisel3._
 import chisel3.util._
 import tile._

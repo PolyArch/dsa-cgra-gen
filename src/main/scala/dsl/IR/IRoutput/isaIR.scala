@@ -2,7 +2,7 @@
 
 package dsl.IR.IRoutput
 
-import cgra.config.isa
+import cgra.parameter.isa
 
 import scala.util.Properties
 

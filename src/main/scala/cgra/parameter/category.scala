@@ -1,106 +1,12 @@
-package cgra.config
+package cgra.parameter
 
-/*  abstract key is not useful for now
-case object NameKey extends Field[Module_Type_Params]
-case object DatapathKey extends Field[DatapathParams]
-case object IOKey extends Field[IOParams]
-case object TileKey extends Field[TileParams]
-*/
-import cgra.config.Constant._
+import cgra.fabric._
 import chisel3._
 import chisel3.util.MixedVec
+
 import scala.collection.mutable.Map
 
-
-trait Module_Type_Params extends IsParameters{
-  val module_type : String
-  def get_module_type = module_type
-}
-
-trait DatapathParams extends IsParameters{
-  def get_word_width = word_width
-  def set_word_width (w:Int) = word_width = w
-  var word_width : Int = -1
-}
-
-trait IOParams {
-  // Basic Information which not really related to synthesize
-  var default_decomposer = 1
-  private var num_input   : Int = 0
-  private var num_output  : Int = 0
-  // Have synthesize meaning
-  var input_ports_list : List[port_subnet] = Nil
-  var output_ports_list : List[port_subnet] = Nil
-  var input_word_width_decomposer   : List[Int] = Nil
-  var output_word_width_decomposer  : List[Int] = Nil
-
-  // Get information of port
-  def get_num_input = num_input
-  def get_num_output = num_output
-  def get_port_by_port(i:Int)={
-    (get_input_port_by_port(i),get_output_port_by_port(i))
-  }
-  def get_input_port_by_port(i:Int) = {
-    input_ports_list.filter(_.port==i)
-  }
-  def get_output_port_by_port(i:Int) = {
-    output_ports_list.filter(_.port==i)
-  }
-
-  // Port increment / decrement operation
-  def add_output_port: Int = {num_output += 1;num_output-1} // return index
-  def add_input_port : Int = {num_input += 1;num_input-1} // return index
-  def decrease_output_port : Int = {num_output -=1;num_output}
-  def decrease_input_port : Int = {num_input -=1;num_input}
-  def add_input_decomposer(d:Int) =
-    input_word_width_decomposer = input_word_width_decomposer ::: List(d)
-  def add_output_decomposer(d:Int)=
-    output_word_width_decomposer = output_word_width_decomposer ::: List(d)
-
-  // Change the port
-  def change_input_decomposer(d:Int,i:Int) =
-    input_word_width_decomposer = input_word_width_decomposer.updated(i,d)
-  def change_output_decomposer(d:Int,i:Int) =
-    output_word_width_decomposer = output_word_width_decomposer.updated(i,d)
-  private def change_num_input(x:Int) =num_input = x
-  private def change_num_output(x:Int)=num_output = x
-  def has_ports(n:Int):Unit = {
-    has_ports(n,default_decomposer)
-  }
-  def has_ports(n:Int,num_subnet:Int):Unit= {
-    has_inputs(n,num_subnet)
-    has_outputs(n,num_subnet)
-  }
-  def has_inputs(n:Int):Unit = has_inputs(n,default_decomposer)
-  def has_inputs(n:Int, d:Int):Unit = {
-    change_num_input(n)
-    for (i <- 0 until n){
-      for (dd <- 0 until d)
-        input_ports_list = input_ports_list ::: List(new port_subnet(INPUT_TYPE,i,dd,d))
-      add_input_decomposer(d)
-    }
-  }
-  def has_outputs(n:Int) :Unit= has_outputs(n,default_decomposer)
-  def has_outputs(n:Int,d:Int):Unit = {
-    change_num_output(n)
-    for (i <- 0 until n){
-      for (dd <- 0 until d)
-        output_ports_list = output_ports_list ::: List(new port_subnet(OUTPUT_TYPE,i,dd,d))
-      add_output_decomposer(d)
-    }
-  }
-
-  // Decomposer subnet calculation
-  def subnet_match(more_index:Int,more_num_subnet:Int,
-                   less_num_subnet:Int) : Int = {//return less index
-    more_index / (more_num_subnet / less_num_subnet)
-  }
-  def subnet_match (more_index:Int,less_index:Int,more_num_subnet:Int,less_num_subnet:Int):Boolean={
-    more_index == less_index * (more_num_subnet/less_num_subnet)
-  }
-}
-
-// Below is for those categories who can be instantiated but still have sub class,
+// FILE Category is for those categories who can be instantiated but still have sub class,
 // like we can have a tile hardware of PE, but PE still have different types
 
 class Tile_IO_Bundle(word_w:Int) extends Bundle{
@@ -110,8 +16,8 @@ class Tile_IO_Bundle(word_w:Int) extends Bundle{
   override def cloneType = new Tile_IO_Bundle(word_w).asInstanceOf[this.type]
 }
 abstract class TileParams  (parent_type: String,
-                 parent_id: Int,
-                 tile_id:Int) extends DatapathParams
+                            parent_id: Int,
+                            tile_id:Int) extends DatapathParams
   with IOParams
   with Module_Type_Params
   with IsParameters {
@@ -214,11 +120,27 @@ abstract class TileParams  (parent_type: String,
     }
     ll
   }
+
+  // Calculate config sec, basc and bound
+  def calaulate_config_location(config_width:Int,range:Int,
+                                previous_sec:Int,previous_bound:Int,previous_base:Int) :(Int,Int,Int)= {
+    var try_base = previous_bound + 1
+    var try_bound = previous_bound + range
+    var try_config_sec = previous_sec
+    if (try_bound/config_width == 1){
+      try_base = 0
+      try_bound = try_base + range - 1
+      try_config_sec += 1
+    }else if (try_bound/config_width > 1){
+      throw new Exception("Range cover two config registers")
+    }
+    (try_config_sec,try_bound,try_base)
+  }
 }
 
 class PeParams(parent_type: String,parent_id:Int,tile_id:Int)
   extends TileParams(parent_type: String,parent_id:Int,tile_id:Int)
-  with IsParameters {
+    with IsParameters {
   override val module_type:String = "PE"
   var inst_set : List[Int] = Nil
   val inst_firing : String = ""

@@ -1,7 +1,7 @@
-package cgra.config
+package cgra.parameter
 
 import config._
-import cgra.config.Constant._
+import cgra.parameter.Constant._
 import chisel3.util.log2Ceil
 
 // --------------Module Config-----------------------------------------
@@ -12,7 +12,6 @@ case class port_subnet(t:String,p:Int,s:Int,d:Int) extends IsKey {
   var port : Int = p
   var subnet : Int = s
   var num_subnet : Int = d
-
   override def equals(o: Any): Boolean = {
     var result : Boolean = o match {
       case o:port_subnet => {
@@ -41,6 +40,7 @@ case class MUX() extends IsParameters
     if (!sources.exists(x=>x.equals(port_subnet(INPUT_TYPE,p,s,d))))
       sources = sources ::: List(port_subnet(INPUT_TYPE,p,s,d))
   }
+  def get_config_range = log2Ceil(sources.length)
   def add_source(ps:port_subnet) : Unit = add_source(ps.port,ps.subnet,ps.num_subnet)
   def hasSource = sources.nonEmpty
   def notInitialized = !hasSource
@@ -68,17 +68,10 @@ case class Alu() extends IsParameters{
 }
 
 // Internal Module Trait
-/*
-trait WithPortSubnetLocation {
-  var location : port_subnet = port_subnet("",-1,-1)
-}
-*/
 trait WithOperandIndex {
   var operand_index : Int = -1
   def SetOperandIndex(oi:Int) = operand_index = oi
 }
-
-// FSM
 
 
 /*

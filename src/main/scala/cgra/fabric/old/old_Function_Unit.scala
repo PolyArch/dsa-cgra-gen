@@ -1,8 +1,8 @@
 // See README.md for license details.
 
-package cgra.fabric
+package cgra.fabric.old
 
-import cgra.config._
+import cgra.parameter._
 import chisel3._
 import chisel3.util._
 import tile._

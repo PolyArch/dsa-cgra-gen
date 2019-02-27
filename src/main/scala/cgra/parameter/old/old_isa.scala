@@ -1,4 +1,4 @@
-package cgra.config
+package cgra.parameter
 
 object isa {
   val Or   = 0
