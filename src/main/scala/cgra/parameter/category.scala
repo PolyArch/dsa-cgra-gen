@@ -161,11 +161,11 @@ abstract class TileParams  (parent_type: String,
 
   // IR output
   def internal_parameter_xml = {
-    <INTERNAL_PARAMETER>
+    <INTERNAL_Modules>
     {InternalParam
       .filter(x=>x._1.asInstanceOf[port_subnet].io == OUTPUT_TYPE)
-      .map(x=>{<KEY>{x._1.toXML}</KEY><VALUE>{x._2.map(_.toXML)}</VALUE>})}
-    </INTERNAL_PARAMETER>
+      .map(x=>{{x._2.map(_.toXML(x._1))}})}
+    </INTERNAL_Modules>
   }
   def ports_to_XML = {
     <PORTS>
@@ -181,7 +181,7 @@ abstract class TileParams  (parent_type: String,
       })}</OUTPUT>
     </PORTS>
   }
-  def toXML =
+  def toXML(k:IsKey) =
     <TILE>
       <PARENT>{parent_type}</PARENT><PARENT_ID>{parent_id}</PARENT_ID>
       <NAME>{module_type}</NAME><ID>{tile_id}</ID>

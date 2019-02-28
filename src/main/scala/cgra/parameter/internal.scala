@@ -38,7 +38,7 @@ trait IsParameters {
   var base : Int = -1
   var bound : Int = -1
   def get_bound(num_option:Int):Int = {bound = base + log2Ceil(num_option) - 1;bound}
-  def toXML : Elem
+  def toXML(k:IsKey) : Elem
   def get_config_XML  = {
     <CONFIG><CONFIG_BASE>{base}</CONFIG_BASE><CONFIG_BOUND>{bound}</CONFIG_BOUND><CONFIG_SECTION>{config_sec}</CONFIG_SECTION></CONFIG>
   }
@@ -58,10 +58,11 @@ case class MUX() extends IsParameters
   def hasSource = sources.nonEmpty
   def notInitialized = !hasSource
 
-  def toXML ={
+  def toXML(k:IsKey) ={
     <MUX>
       {get_config_XML}
-      {sources.zipWithIndex.map(x=> <SOURCE><sel>{x._2}</sel>{x._1.toXML}</SOURCE>)}
+      {sources.zipWithIndex.map(x=> <Mux_Source><sel>{x._2}</sel>{x._1.toXML}</Mux_Source>)}
+      <Mux_Destination>{k.toXML}</Mux_Destination>
     </MUX>
   }
 }
@@ -75,7 +76,7 @@ case class Delay_Pipe() extends IsParameters
     max_delay = delay max
   }
   def get_delay_by_max_delay : Unit = delay = (0 to max_delay).toList
-  def toXML = {
+  def toXML(k:IsKey) = {
     <DELAY_PIPE>
       {get_config_XML}
     </DELAY_PIPE>
@@ -90,7 +91,7 @@ case class Alu() extends IsParameters{
     inst = inst ::: List(i)
     num_opcode = inst length
   }
-  def toXML = {
+  def toXML(k:IsKey) = {
     <ALU>
       {get_config_XML}
     </ALU>
