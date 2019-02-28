@@ -11,6 +11,9 @@ case class SharedPeParams(parent_type: String,
     with IsParameters {
   override val inst_firing : String = "shared"
 
+  def ReadyForSynthesis: Unit = {
+
+  }
 }
 
 // ------ Module ------

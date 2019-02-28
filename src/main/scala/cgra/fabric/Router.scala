@@ -12,10 +12,10 @@ case class RouterParams(parent_type: String,
                         parent_id: Int,
                         tile_id:Int)
   extends TileParams(parent_type: String,parent_id:Int,tile_id:Int)
-    with IsParameters {
+  with IsParameters {
   override val module_type:String = "Router"
   // Parameter Operation
-  def add_internal(key:IsKey,mux:MUX):Unit = {
+  private def add_internal(key:IsKey,mux:MUX):Unit = {
     add_internal(key,mux.asInstanceOf[IsParameters])
     if(mux.hasSource)
       for (s<- mux.sources){
@@ -26,9 +26,9 @@ case class RouterParams(parent_type: String,
 
   // Add MUX connection
   def add_mux_connect(in:port_subnet,out:port_subnet):Unit ={
-    val possible_mux_of_input = Nil//find_Param(in,MUX())
-    val possible_mux_of_output = find_Param(out,MUX())
-    val muxes:List[MUX] = (possible_mux_of_input union possible_mux_of_output).distinct
+    //require(in.num_subnet == out.num_subnet,"please use port index to connect two ports, that having different decomposer")
+    val possible_mux_of_output = find_internal(out,MUX())
+    val muxes:List[MUX] = possible_mux_of_output.distinct
     val mux = if (muxes.nonEmpty){
       require(muxes.length == 1)
       muxes.head
@@ -38,6 +38,37 @@ case class RouterParams(parent_type: String,
     mux.add_source(in)
     add_internal(out,mux)
     add_internal(in,mux)
+  }
+  def add_mux_connect(source_port:Int,des_port:Int):Unit = {
+    val des_port_list = output_ports_list.filter(_.port == des_port)
+    val source_port_list = input_ports_list.filter(_.port == source_port)
+    val source_num_subnet = source_port_list.head.num_subnet
+    val des_num_subnet = des_port_list.head.num_subnet
+    if (source_num_subnet != des_num_subnet){
+      if (source_num_subnet > des_num_subnet){
+        for (out_s <- 0 until des_num_subnet){
+          val d_ps = des_port_list.find(p=>p.subnet == out_s).get
+          val s_matched_subnet:List[Int] = subnet_match_less(out_s,des_num_subnet,source_num_subnet)
+          for (source_subnet <- s_matched_subnet){
+            val source_port_subnet = source_port_list.find(p=>p.subnet == source_subnet).get
+            add_mux_connect(source_port_subnet,d_ps)
+          }
+        }
+      }else{
+        for (out_s <- 0 until des_num_subnet){
+          val d_ps = des_port_list.find(p=>p.subnet == out_s).get
+          val s_matched_subnet:Int = subnet_match(out_s,des_num_subnet,source_num_subnet)
+          val source_port_subnet = source_port_list.find(p=>p.subnet == s_matched_subnet).get
+          add_mux_connect(source_port_subnet,d_ps)
+        }
+      }
+    }else{
+      for (s <- 0 until des_num_subnet){
+        val s_ps = source_port_list.find(p=>p.subnet == s).get
+        val d_ps = des_port_list.find(p=>p.subnet == s).get
+        add_mux_connect(s_ps,d_ps)
+      }
+    }
   }
   def add_neighbor_loop_connect(in:Int,out:Int,way:String) = {
     require(input_word_width_decomposer(in)==output_word_width_decomposer(out),
@@ -74,83 +105,46 @@ case class RouterParams(parent_type: String,
     }
   }
 
+
   def get_mux_information(io_type:String) = {
     InternalParam.filter(x=>x._1.asInstanceOf[port_subnet].io == io_type&&
       x._2.exists(y=>y.isInstanceOf[MUX]))
       .map(x=>(x._1,x._2.filter(y=>y.isInstanceOf[MUX]).asInstanceOf[List[MUX]]))
   }
 
-  def arrange_mux_configuration_memory(cf_b_width:Int) : Int= {
-    config_file_width = cf_b_width
+  def arrange_mux_configuration_memory : Unit= {
     val key_muxes = get_mux_information(OUTPUT_TYPE).toList
     val key_mux = key_muxes.map(x=>(x._1,x._2.head))
-
     key_mux.head._2.config_sec = 0
     key_mux.head._2.base = 0
     key_mux.head._2.get_bound(key_mux.head._2.sources.length)
-
     for (i <- 1 until key_mux.length){
       val previous_sec = key_mux(i - 1)._2.config_sec
       val previous_base = key_mux(i - 1)._2.base
       val previous_bound = key_mux(i - 1)._2.bound
       val range = key_mux(i)._2.get_config_range
-      val conf_bundle = calaulate_config_location(cf_b_width,range,previous_sec,previous_bound,previous_base)
+      val conf_bundle =
+        calaulate_config_location(config_file_width,range,previous_sec,
+          previous_bound,previous_base)
       key_mux(i)._2.config_sec = conf_bundle._1
       key_mux(i)._2.bound = conf_bundle._2
       key_mux(i)._2.base = conf_bundle._3
     }
-    val test = 1
-    1 + (key_mux.map(_._2.config_sec) max)
+    num_config_register = 1 + (key_mux.map(_._2.config_sec) max)
   }
 
-  // Check all output port have mux
+  // Ready for Synthesis
+  def ReadyForSynthesis = {
+    arrange_mux_configuration_memory
+  }
+
+  // --- Check ---
+
+  // All output port have mux
   def check_port_list_isDefined(a:List[port_subnet])  = {
-    require(a.forall(InternalParam.isDefinedAt(_)),"All input/output port " +
+    require(a.forall(InternalParam.isDefinedAt(_)),s"All ${a.head.io} port " +
       "and its subnet need to have at least one mux")
   }
-
-  /* TODO This part code is totally shit, my brain must fucked up when I wrote them
-  // Get information
-  def get_destination_subnet_by_source_subnet(port:Int,subnet:Int):List[(Int,Int)] = {
-    val des = for {
-      i <- 0 until get_num_output
-      s <- 0 until output_word_width_decomposer(i)
-      val subnet_param = output_ports_params(i).subnets_param(s)
-      if subnet_param.source_param.map(x=>(x.port,x.subnet)).contains((port,subnet))
-    } yield (i,s)
-    des.toList
-  }
-  def get_num_config_of_destination_port(n:Int) = {
-    get_output_port(n).source_configs.length
-  }
-  def calulate_all_output_config_mode(method:String):List[List[List[subnet_location_param]]] = {
-    output_ports_params.foreach(_.method = method)
-    output_ports_params.foreach(x=>x.get_source_mode(x.subnets_param.map(_.source_param)))
-    output_ports_params.map(_.source_configs)
-  }
-  def calulate_all_output_config_mode:List[List[List[subnet_location_param]]] = {
-    output_ports_params.foreach(x=>calulate_all_output_config_mode(x.method))
-    output_ports_params.map(_.source_configs)
-  }
-  def calulate_output_config(i:Int,method:String) = {
-    output_ports_params(i).get_source_mode(method,output_ports_params(i).subnets_param.map(_.source_param))
-  }
-
-  // Set up parameters
-  def use_subnet_match_connect = {
-    for (i<- 0 until num_output){
-      for (s <- 0 until output_word_width_decomposer(i)){
-        for(j <- 0 until num_input){
-          connect_subnet(j,s,i,s)
-        }
-      }
-    }
-  }
-  def connect_subnet(in_port:Int,in_sub:Int,out_port:Int,out_subnet:Int): Unit ={
-    output_ports_params(out_port).subnets_param(out_subnet).source_param =
-      subnet_location_param(in_port,in_sub) :: output_ports_params(out_port).subnets_param(out_subnet).source_param
-  }
-  */
 }
 
 // ------ Module ------
@@ -166,7 +160,7 @@ class Router(p:TileParams) extends Module {
 
   val ps_muxes_param = param.get_mux_information(OUTPUT_TYPE)
   val config_reg_width = param.config_file_width
-  val num_config_reg = param.arrange_mux_configuration_memory(config_reg_width)
+  val num_config_reg = param.num_config_register
 
   // --- Hardware ---
   val config_registers = Reg(Vec(num_config_reg, UInt(config_reg_width.W)))
@@ -188,7 +182,7 @@ class Router(p:TileParams) extends Module {
       val source_num_subnet = source_port_subnet.num_subnet
       io.tile_io.out(des_port)(des_subnet).data := 0.U
       io.tile_io.out(des_port)(des_subnet).req := false.B
-      if (destination_port_subnet.num_subnet == source_port_subnet.num_subnet){
+      if (des_num_subnet == source_num_subnet){
         when(config_registers(mux.config_sec)(mux.bound,mux.base) === index.U){
           io.tile_io.out(des_port)(des_subnet).data :=
             io.tile_io.in(source_port)(source_subnet).data
@@ -203,9 +197,9 @@ class Router(p:TileParams) extends Module {
             val ss = param.subnet_match(des_subnet,des_num_subnet,source_num_subnet)
             io.tile_io.in(source_port)(ss).req
           }else{
-             io.tile_io.in(source_port).zipWithIndex
-               .filter(x=>param.subnet_match(x._2,des_subnet,source_num_subnet,des_num_subnet))
-               .map(_._1.req).reduce(_ && _)
+            io.tile_io.in(source_port).zipWithIndex
+              .filter(x=>param.subnet_match(x._2,des_subnet,source_num_subnet,des_num_subnet))
+              .map(_._1.req).reduce(_ && _)
           }
         io.tile_io.out(des_port)(des_subnet).data :=
           input_combined_word(decompoed_word_width * (des_subnet + 1) - 1, decompoed_word_width * des_subnet)

@@ -24,6 +24,10 @@ case class CgraParams(parent_type: String,
   def interconnect (connects:List[ConnectParam]) : Unit ={
     connects_params = connects
   }
+
+  def ReadyForSynthesis: Unit = {
+
+  }
 }
 
 class Cgra {

@@ -3,8 +3,8 @@ package cgra.parameter
 import cgra.fabric._
 import chisel3._
 import chisel3.util.MixedVec
-
 import scala.collection.mutable.Map
+import cgra.parameter.Constant._
 
 // FILE Category is for those categories who can be instantiated but still have sub class,
 // like we can have a tile hardware of PE, but PE still have different types
@@ -23,30 +23,35 @@ abstract class TileParams  (parent_type: String,
   with IsParameters {
   var x_location  : Int = -1
   var y_location  : Int = -1
+
   var config_file_width : Int = -1
+  var num_config_register : Int = -1
+
+  def ReadyForSynthesis : Unit
+
   def set_config_width(w:Int) = config_file_width = w
   val InternalParam = Map[IsKey,List[IsParameters]]()
 
   // Parameters Operation
   // Find
-  def find_Param (ps:port_subnet):List[IsParameters] = {
+  def find_internal(ps:port_subnet):List[IsParameters] = {
     val io = ps.io
     val port = ps.port
     val subnet = ps.subnet
-    val destination_port_subnet:List[port_subnet] = InternalParam.filter(x=>{
+    val found_port_subnet:List[port_subnet] = InternalParam.filter(x=>{
       val exist_destination_key = x._1.asInstanceOf[port_subnet]
       exist_destination_key.io == io &&
         exist_destination_key.port == port &&
         exist_destination_key.subnet == subnet
     }).map(_._1.asInstanceOf[port_subnet]).toList
-    require(destination_port_subnet.length <= 1,"find multiple keys with same io,port and subnet")
-    if (destination_port_subnet.nonEmpty)
-      InternalParam(destination_port_subnet.head)
+    require(found_port_subnet.length <= 1,"find multiple keys with same io,port and subnet")
+    if (found_port_subnet.nonEmpty)
+      InternalParam(found_port_subnet.head)
     else
-      Nil
+      Nil // Not found
   }
-  def find_Param[T](ps:port_subnet,p:T):List[T] = {
-    val list_p = find_Param(ps)
+  def find_internal[T](ps:port_subnet, p:T):List[T] = {
+    val list_p = find_internal(ps)
     val target_ps = list_p.filter(_.isInstanceOf[T]).asInstanceOf[List[T]]
     if (target_ps.nonEmpty){
       List(target_ps.head)
@@ -54,7 +59,7 @@ abstract class TileParams  (parent_type: String,
       Nil
     }
   }
-  // Add
+  // Add Internal Parameter
   def add_internal(key:IsKey, Params:List[IsParameters]):TileParams.this.InternalParam.type = {
     if(InternalParam.isDefinedAt(key))
       InternalParam += key -> AddInUniqueList(InternalParam(key),Params)
@@ -90,7 +95,8 @@ abstract class TileParams  (parent_type: String,
   def move_vertical(y:Int)=y_location = y
   def at(x:Int,y:Int) = {x_location = x;y_location = y}
 
-  // Connect
+  // --- Connect ---
+  // symbol connect will add extra port
   def <-> (that:TileParams) : List[ConnectParam] =  {
     List(this --> that,this <-- that)
   }
@@ -104,6 +110,22 @@ abstract class TileParams  (parent_type: String,
   }
   def <-- (that:TileParams) : ConnectParam =  {
     that --> this
+  }
+  def connect_port (a:TileParams,ap:Int,b:TileParams,bp:Int) : ConnectParam = {
+    val connectParam = ConnectParam(getParent,getParent_id)
+    connectParam.source_tile_id = a.get_id
+    connectParam.destination_tile_id = b.get_id
+    connectParam.source_port_index = ap
+    connectParam.destination_port_index = bp
+    connectParam
+  }
+  def connect_port (a:TileParams,ap:String,b:TileParams,bp:String) : ConnectParam = {
+    val connectParam = ConnectParam(getParent,getParent_id)
+    connectParam.source_tile_id = a.get_id
+    connectParam.destination_tile_id = b.get_id
+    connectParam.source_port_index = a.get_Port_by_Direction(ap)
+    connectParam.destination_port_index = b.get_Port_by_Direction(bp)
+    connectParam
   }
 
   // Add to unique list
@@ -136,9 +158,43 @@ abstract class TileParams  (parent_type: String,
     }
     (try_config_sec,try_bound,try_base)
   }
+
+  // IR output
+  def internal_parameter_xml = {
+    <INTERNAL_PARAMETER>
+    {InternalParam
+      .filter(x=>x._1.asInstanceOf[port_subnet].io == OUTPUT_TYPE)
+      .map(x=>{<KEY>{x._1.toXML}</KEY><VALUE>{x._2.map(_.toXML)}</VALUE>})}
+    </INTERNAL_PARAMETER>
+  }
+  def ports_to_XML = {
+    <PORTS>
+      <INPUT>{input_word_width_decomposer.zipWithIndex.map(x=>{
+        val decomposer = x._1
+        val index = x._2
+        <INDEX>{index}</INDEX><Decomposer>{decomposer}</Decomposer>
+      })}</INPUT>
+      <OUTPUT>{output_word_width_decomposer.zipWithIndex.map(x=>{
+        val index = x._2
+        val decomposer = x._1
+        <INDEX>{index}</INDEX><Decomposer>{decomposer}</Decomposer>
+      })}</OUTPUT>
+    </PORTS>
+  }
+  def toXML =
+    <TILE>
+      <PARENT>{parent_type}</PARENT><PARENT_ID>{parent_id}</PARENT_ID>
+      <NAME>{module_type}</NAME><ID>{tile_id}</ID>
+      <DataPath_Width>{word_width}</DataPath_Width>
+      <X_location>{x_location}</X_location><Y_location>{y_location}</Y_location>
+      <Num_Config_Register>{num_config_register}</Num_Config_Register>
+      <Config_Register_Width>{config_file_width}</Config_Register_Width>
+      {ports_to_XML}
+      {internal_parameter_xml}
+    </TILE>
 }
 
-class PeParams(parent_type: String,parent_id:Int,tile_id:Int)
+abstract class PeParams(parent_type: String,parent_id:Int,tile_id:Int)
   extends TileParams(parent_type: String,parent_id:Int,tile_id:Int)
     with IsParameters {
   override val module_type:String = "PE"

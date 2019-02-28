@@ -4,9 +4,13 @@ import config._
 import cgra.parameter.Constant._
 import chisel3.util.log2Ceil
 
+import scala.xml.Elem
+
 // --------------Module Config-----------------------------------------
 // Internal Module Key
-trait IsKey
+trait IsKey {
+  def toXML : Elem
+}
 case class port_subnet(t:String,p:Int,s:Int,d:Int) extends IsKey {
   var io : String = t
   var port : Int = p
@@ -21,6 +25,11 @@ case class port_subnet(t:String,p:Int,s:Int,d:Int) extends IsKey {
     }
     result
   }
+  def toXML = {
+    <port_subnet>
+      <io_type>{io}</io_type><port>{port}</port><subnet>{subnet}</subnet><num_subnet>{num_subnet}</num_subnet>
+    </port_subnet>
+  }
 }
 
 // Internal Module Parameter
@@ -29,6 +38,10 @@ trait IsParameters {
   var base : Int = -1
   var bound : Int = -1
   def get_bound(num_option:Int):Int = {bound = base + log2Ceil(num_option) - 1;bound}
+  def toXML : Elem
+  def get_config_XML  = {
+    <CONFIG><CONFIG_BASE>{base}</CONFIG_BASE><CONFIG_BOUND>{bound}</CONFIG_BOUND><CONFIG_SECTION>{config_sec}</CONFIG_SECTION></CONFIG>
+  }
 }
 
 case class MUX() extends IsParameters
@@ -44,6 +57,13 @@ case class MUX() extends IsParameters
   def add_source(ps:port_subnet) : Unit = add_source(ps.port,ps.subnet,ps.num_subnet)
   def hasSource = sources.nonEmpty
   def notInitialized = !hasSource
+
+  def toXML ={
+    <MUX>
+      {get_config_XML}
+      {sources.zipWithIndex.map(x=> <SOURCE><sel>{x._2}</sel>{x._1.toXML}</SOURCE>)}
+    </MUX>
+  }
 }
 case class Delay_Pipe() extends IsParameters
   with WithOperandIndex {
@@ -55,6 +75,11 @@ case class Delay_Pipe() extends IsParameters
     max_delay = delay max
   }
   def get_delay_by_max_delay : Unit = delay = (0 to max_delay).toList
+  def toXML = {
+    <DELAY_PIPE>
+      {get_config_XML}
+    </DELAY_PIPE>
+  }
 }
 case class Alu() extends IsParameters{
   //var index : Int = -1
@@ -64,6 +89,11 @@ case class Alu() extends IsParameters{
   def add_inst(i:Int) : Unit = {
     inst = inst ::: List(i)
     num_opcode = inst length
+  }
+  def toXML = {
+    <ALU>
+      {get_config_XML}
+    </ALU>
   }
 }
 

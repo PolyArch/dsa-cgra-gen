@@ -10,6 +10,9 @@ case class InterfacePortParams(parent_type: String,
   with IsParameters {
   override val module_type:String = "ip_port"
   var buffer_depth       : Array[Int] = null
+  def ReadyForSynthesis: Unit = {
+
+  }
 }
 
 // ------ Module ------
