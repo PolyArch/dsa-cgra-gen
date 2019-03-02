@@ -4,6 +4,8 @@ import cgra.common.mmio.mmio_if
 import cgra.parameter._
 import chisel3._
 
+import scala.xml.Elem
+
 // ------ Parameters ------
 case class DedicatedPeParams(parent_type: String,
                              parent_id: Int,
@@ -12,10 +14,17 @@ case class DedicatedPeParams(parent_type: String,
     with IsParameters {
   override val inst_firing : String = "dedicated"
 
+
+
+
   def ReadyForSynthesis: Unit = {
 
   }
-
+  def toXML(k:IsKey) : Elem = {
+    <Processing_Element>
+      <InstructionFiring>{inst_firing}</InstructionFiring>
+    </Processing_Element>
+  }
 }
 
 // ------ Module ------
@@ -32,6 +41,4 @@ class Dedicated_PE(p:TileParams) extends Module {
 
   val input_decomposer = param.input_word_width_decomposer
   val output_decomposer = param.output_word_width_decomposer
-
-
 }

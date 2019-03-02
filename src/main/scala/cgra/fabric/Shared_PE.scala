@@ -2,6 +2,8 @@ package cgra.fabric
 
 import cgra.parameter._
 
+import scala.xml.Elem
+
 
 // ------ Parameter ------
 case class SharedPeParams(parent_type: String,
@@ -13,6 +15,10 @@ case class SharedPeParams(parent_type: String,
 
   def ReadyForSynthesis: Unit = {
 
+  }
+  def toXML(k:IsKey) : Elem = {
+    <Processing_Element>
+    </Processing_Element>
   }
 }
 

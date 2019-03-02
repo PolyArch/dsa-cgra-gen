@@ -1,214 +1,221 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<TILE>
-      <PARENT>CGRA</PARENT><PARENT_ID>0</PARENT_ID>
-      <NAME>Router</NAME><ID>0</ID>
-      <DataPath_Width>32</DataPath_Width>
-      <X_location>-1</X_location><Y_location>-1</Y_location>
-      <Num_Config_Register>3</Num_Config_Register>
-      <Config_Register_Width>16</Config_Register_Width>
-      <PORTS>
-      <INPUT><INDEX>0</INDEX><Decomposer>1</Decomposer><INDEX>1</INDEX><Decomposer>1</Decomposer><INDEX>2</INDEX><Decomposer>2</Decomposer><INDEX>3</INDEX><Decomposer>4</Decomposer></INPUT>
-      <OUTPUT><INDEX>0</INDEX><Decomposer>2</Decomposer><INDEX>1</INDEX><Decomposer>2</Decomposer><INDEX>2</INDEX><Decomposer>1</Decomposer><INDEX>3</INDEX><Decomposer>4</Decomposer><INDEX>4</INDEX><Decomposer>4</Decomposer></OUTPUT>
-    </PORTS>
+<Router>
+      <PARENT_TYPE>CGRA</PARENT_TYPE><PARENT_ID>0</PARENT_ID><TYPE>Router</TYPE><ID>1</ID><DataPath_Width>32</DataPath_Width><X_location>-1</X_location><Y_location>-1</Y_location><Num_Config_Register>3</Num_Config_Register><Config_Register_Width>16</Config_Register_Width><PORTS>
+          <INPUT><INDEX>0</INDEX><Decomposer>1</Decomposer><INDEX>1</INDEX><Decomposer>1</Decomposer><INDEX>2</INDEX><Decomposer>2</Decomposer><INDEX>3</INDEX><Decomposer>4</Decomposer></INPUT>
+          <OUTPUT><INDEX>0</INDEX><Decomposer>2</Decomposer><INDEX>1</INDEX><Decomposer>2</Decomposer><INDEX>2</INDEX><Decomposer>1</Decomposer><INDEX>3</INDEX><Decomposer>4</Decomposer><INDEX>4</INDEX><Decomposer>4</Decomposer></OUTPUT>
+        </PORTS>
       <INTERNAL_Modules>
     <MUX>
+      <refer_id>1</refer_id>
       <CONFIG><CONFIG_BASE>0</CONFIG_BASE><CONFIG_BOUND>2</CONFIG_BOUND><CONFIG_SECTION>0</CONFIG_SECTION></CONFIG>
       <Mux_Source><sel>0</sel><port_subnet>
-      <io_type>INPUT</io_type><port>0</port><subnet>0</subnet><num_subnet>1</num_subnet>
+      <io_type>INPUT</io_type><port>0</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>1</sel><port_subnet>
-      <io_type>INPUT</io_type><port>1</port><subnet>0</subnet><num_subnet>1</num_subnet>
+      <io_type>INPUT</io_type><port>1</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>2</sel><port_subnet>
-      <io_type>INPUT</io_type><port>2</port><subnet>0</subnet><num_subnet>2</num_subnet>
+      <io_type>INPUT</io_type><port>2</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>3</sel><port_subnet>
-      <io_type>INPUT</io_type><port>3</port><subnet>0</subnet><num_subnet>4</num_subnet>
+      <io_type>INPUT</io_type><port>3</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>4</sel><port_subnet>
-      <io_type>INPUT</io_type><port>3</port><subnet>1</subnet><num_subnet>4</num_subnet>
+      <io_type>INPUT</io_type><port>3</port><subnet>1</subnet>
     </port_subnet></Mux_Source>
       <Mux_Destination><port_subnet>
-      <io_type>OUTPUT</io_type><port>1</port><subnet>0</subnet><num_subnet>2</num_subnet>
+      <io_type>OUTPUT</io_type><port>1</port><subnet>0</subnet>
     </port_subnet></Mux_Destination>
     </MUX><MUX>
+      <refer_id>4</refer_id>
       <CONFIG><CONFIG_BASE>3</CONFIG_BASE><CONFIG_BOUND>4</CONFIG_BOUND><CONFIG_SECTION>0</CONFIG_SECTION></CONFIG>
       <Mux_Source><sel>0</sel><port_subnet>
-      <io_type>INPUT</io_type><port>0</port><subnet>0</subnet><num_subnet>1</num_subnet>
+      <io_type>INPUT</io_type><port>0</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>1</sel><port_subnet>
-      <io_type>INPUT</io_type><port>1</port><subnet>0</subnet><num_subnet>1</num_subnet>
+      <io_type>INPUT</io_type><port>1</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>2</sel><port_subnet>
-      <io_type>INPUT</io_type><port>2</port><subnet>0</subnet><num_subnet>2</num_subnet>
+      <io_type>INPUT</io_type><port>2</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>3</sel><port_subnet>
-      <io_type>INPUT</io_type><port>3</port><subnet>1</subnet><num_subnet>4</num_subnet>
+      <io_type>INPUT</io_type><port>3</port><subnet>1</subnet>
     </port_subnet></Mux_Source>
       <Mux_Destination><port_subnet>
-      <io_type>OUTPUT</io_type><port>3</port><subnet>1</subnet><num_subnet>4</num_subnet>
+      <io_type>OUTPUT</io_type><port>3</port><subnet>1</subnet>
     </port_subnet></Mux_Destination>
     </MUX><MUX>
+      <refer_id>6</refer_id>
       <CONFIG><CONFIG_BASE>5</CONFIG_BASE><CONFIG_BOUND>6</CONFIG_BOUND><CONFIG_SECTION>0</CONFIG_SECTION></CONFIG>
       <Mux_Source><sel>0</sel><port_subnet>
-      <io_type>INPUT</io_type><port>0</port><subnet>0</subnet><num_subnet>1</num_subnet>
+      <io_type>INPUT</io_type><port>0</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>1</sel><port_subnet>
-      <io_type>INPUT</io_type><port>1</port><subnet>0</subnet><num_subnet>1</num_subnet>
+      <io_type>INPUT</io_type><port>1</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>2</sel><port_subnet>
-      <io_type>INPUT</io_type><port>2</port><subnet>1</subnet><num_subnet>2</num_subnet>
+      <io_type>INPUT</io_type><port>2</port><subnet>1</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>3</sel><port_subnet>
-      <io_type>INPUT</io_type><port>3</port><subnet>2</subnet><num_subnet>4</num_subnet>
+      <io_type>INPUT</io_type><port>3</port><subnet>2</subnet>
     </port_subnet></Mux_Source>
       <Mux_Destination><port_subnet>
-      <io_type>OUTPUT</io_type><port>4</port><subnet>2</subnet><num_subnet>4</num_subnet>
+      <io_type>OUTPUT</io_type><port>4</port><subnet>2</subnet>
     </port_subnet></Mux_Destination>
     </MUX><MUX>
+      <refer_id>8</refer_id>
       <CONFIG><CONFIG_BASE>7</CONFIG_BASE><CONFIG_BOUND>9</CONFIG_BOUND><CONFIG_SECTION>0</CONFIG_SECTION></CONFIG>
       <Mux_Source><sel>0</sel><port_subnet>
-      <io_type>INPUT</io_type><port>0</port><subnet>0</subnet><num_subnet>1</num_subnet>
+      <io_type>INPUT</io_type><port>0</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>1</sel><port_subnet>
-      <io_type>INPUT</io_type><port>1</port><subnet>0</subnet><num_subnet>1</num_subnet>
+      <io_type>INPUT</io_type><port>1</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>2</sel><port_subnet>
-      <io_type>INPUT</io_type><port>2</port><subnet>1</subnet><num_subnet>2</num_subnet>
+      <io_type>INPUT</io_type><port>2</port><subnet>1</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>3</sel><port_subnet>
-      <io_type>INPUT</io_type><port>3</port><subnet>2</subnet><num_subnet>4</num_subnet>
+      <io_type>INPUT</io_type><port>3</port><subnet>2</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>4</sel><port_subnet>
-      <io_type>INPUT</io_type><port>3</port><subnet>3</subnet><num_subnet>4</num_subnet>
+      <io_type>INPUT</io_type><port>3</port><subnet>3</subnet>
     </port_subnet></Mux_Source>
       <Mux_Destination><port_subnet>
-      <io_type>OUTPUT</io_type><port>1</port><subnet>1</subnet><num_subnet>2</num_subnet>
+      <io_type>OUTPUT</io_type><port>1</port><subnet>1</subnet>
     </port_subnet></Mux_Destination>
     </MUX><MUX>
+      <refer_id>14</refer_id>
       <CONFIG><CONFIG_BASE>10</CONFIG_BASE><CONFIG_BOUND>11</CONFIG_BOUND><CONFIG_SECTION>0</CONFIG_SECTION></CONFIG>
       <Mux_Source><sel>0</sel><port_subnet>
-      <io_type>INPUT</io_type><port>0</port><subnet>0</subnet><num_subnet>1</num_subnet>
+      <io_type>INPUT</io_type><port>0</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>1</sel><port_subnet>
-      <io_type>INPUT</io_type><port>1</port><subnet>0</subnet><num_subnet>1</num_subnet>
+      <io_type>INPUT</io_type><port>1</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>2</sel><port_subnet>
-      <io_type>INPUT</io_type><port>2</port><subnet>0</subnet><num_subnet>2</num_subnet>
+      <io_type>INPUT</io_type><port>2</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>3</sel><port_subnet>
-      <io_type>INPUT</io_type><port>3</port><subnet>1</subnet><num_subnet>4</num_subnet>
+      <io_type>INPUT</io_type><port>3</port><subnet>1</subnet>
     </port_subnet></Mux_Source>
       <Mux_Destination><port_subnet>
-      <io_type>OUTPUT</io_type><port>4</port><subnet>1</subnet><num_subnet>4</num_subnet>
+      <io_type>OUTPUT</io_type><port>4</port><subnet>1</subnet>
     </port_subnet></Mux_Destination>
     </MUX><MUX>
+      <refer_id>10</refer_id>
       <CONFIG><CONFIG_BASE>12</CONFIG_BASE><CONFIG_BOUND>13</CONFIG_BOUND><CONFIG_SECTION>0</CONFIG_SECTION></CONFIG>
       <Mux_Source><sel>0</sel><port_subnet>
-      <io_type>INPUT</io_type><port>0</port><subnet>0</subnet><num_subnet>1</num_subnet>
+      <io_type>INPUT</io_type><port>0</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>1</sel><port_subnet>
-      <io_type>INPUT</io_type><port>1</port><subnet>0</subnet><num_subnet>1</num_subnet>
+      <io_type>INPUT</io_type><port>1</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>2</sel><port_subnet>
-      <io_type>INPUT</io_type><port>2</port><subnet>1</subnet><num_subnet>2</num_subnet>
+      <io_type>INPUT</io_type><port>2</port><subnet>1</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>3</sel><port_subnet>
-      <io_type>INPUT</io_type><port>3</port><subnet>3</subnet><num_subnet>4</num_subnet>
+      <io_type>INPUT</io_type><port>3</port><subnet>3</subnet>
     </port_subnet></Mux_Source>
       <Mux_Destination><port_subnet>
-      <io_type>OUTPUT</io_type><port>3</port><subnet>3</subnet><num_subnet>4</num_subnet>
+      <io_type>OUTPUT</io_type><port>3</port><subnet>3</subnet>
     </port_subnet></Mux_Destination>
     </MUX><MUX>
+      <refer_id>12</refer_id>
       <CONFIG><CONFIG_BASE>0</CONFIG_BASE><CONFIG_BOUND>2</CONFIG_BOUND><CONFIG_SECTION>1</CONFIG_SECTION></CONFIG>
       <Mux_Source><sel>0</sel><port_subnet>
-      <io_type>INPUT</io_type><port>0</port><subnet>0</subnet><num_subnet>1</num_subnet>
+      <io_type>INPUT</io_type><port>0</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>1</sel><port_subnet>
-      <io_type>INPUT</io_type><port>1</port><subnet>0</subnet><num_subnet>1</num_subnet>
+      <io_type>INPUT</io_type><port>1</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>2</sel><port_subnet>
-      <io_type>INPUT</io_type><port>2</port><subnet>0</subnet><num_subnet>2</num_subnet>
+      <io_type>INPUT</io_type><port>2</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>3</sel><port_subnet>
-      <io_type>INPUT</io_type><port>2</port><subnet>1</subnet><num_subnet>2</num_subnet>
+      <io_type>INPUT</io_type><port>2</port><subnet>1</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>4</sel><port_subnet>
-      <io_type>INPUT</io_type><port>3</port><subnet>0</subnet><num_subnet>4</num_subnet>
+      <io_type>INPUT</io_type><port>3</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>5</sel><port_subnet>
-      <io_type>INPUT</io_type><port>3</port><subnet>1</subnet><num_subnet>4</num_subnet>
+      <io_type>INPUT</io_type><port>3</port><subnet>1</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>6</sel><port_subnet>
-      <io_type>INPUT</io_type><port>3</port><subnet>2</subnet><num_subnet>4</num_subnet>
+      <io_type>INPUT</io_type><port>3</port><subnet>2</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>7</sel><port_subnet>
-      <io_type>INPUT</io_type><port>3</port><subnet>3</subnet><num_subnet>4</num_subnet>
+      <io_type>INPUT</io_type><port>3</port><subnet>3</subnet>
     </port_subnet></Mux_Source>
       <Mux_Destination><port_subnet>
-      <io_type>OUTPUT</io_type><port>2</port><subnet>0</subnet><num_subnet>1</num_subnet>
+      <io_type>OUTPUT</io_type><port>2</port><subnet>0</subnet>
     </port_subnet></Mux_Destination>
     </MUX><MUX>
+      <refer_id>15</refer_id>
       <CONFIG><CONFIG_BASE>3</CONFIG_BASE><CONFIG_BOUND>4</CONFIG_BOUND><CONFIG_SECTION>1</CONFIG_SECTION></CONFIG>
       <Mux_Source><sel>0</sel><port_subnet>
-      <io_type>INPUT</io_type><port>0</port><subnet>0</subnet><num_subnet>1</num_subnet>
+      <io_type>INPUT</io_type><port>0</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>1</sel><port_subnet>
-      <io_type>INPUT</io_type><port>1</port><subnet>0</subnet><num_subnet>1</num_subnet>
+      <io_type>INPUT</io_type><port>1</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>2</sel><port_subnet>
-      <io_type>INPUT</io_type><port>2</port><subnet>1</subnet><num_subnet>2</num_subnet>
+      <io_type>INPUT</io_type><port>2</port><subnet>1</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>3</sel><port_subnet>
-      <io_type>INPUT</io_type><port>3</port><subnet>3</subnet><num_subnet>4</num_subnet>
+      <io_type>INPUT</io_type><port>3</port><subnet>3</subnet>
     </port_subnet></Mux_Source>
       <Mux_Destination><port_subnet>
-      <io_type>OUTPUT</io_type><port>4</port><subnet>3</subnet><num_subnet>4</num_subnet>
+      <io_type>OUTPUT</io_type><port>4</port><subnet>3</subnet>
     </port_subnet></Mux_Destination>
     </MUX><MUX>
+      <refer_id>16</refer_id>
       <CONFIG><CONFIG_BASE>5</CONFIG_BASE><CONFIG_BOUND>7</CONFIG_BOUND><CONFIG_SECTION>1</CONFIG_SECTION></CONFIG>
       <Mux_Source><sel>0</sel><port_subnet>
-      <io_type>INPUT</io_type><port>0</port><subnet>0</subnet><num_subnet>1</num_subnet>
+      <io_type>INPUT</io_type><port>0</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>1</sel><port_subnet>
-      <io_type>INPUT</io_type><port>1</port><subnet>0</subnet><num_subnet>1</num_subnet>
+      <io_type>INPUT</io_type><port>1</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>2</sel><port_subnet>
-      <io_type>INPUT</io_type><port>2</port><subnet>1</subnet><num_subnet>2</num_subnet>
+      <io_type>INPUT</io_type><port>2</port><subnet>1</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>3</sel><port_subnet>
-      <io_type>INPUT</io_type><port>3</port><subnet>2</subnet><num_subnet>4</num_subnet>
+      <io_type>INPUT</io_type><port>3</port><subnet>2</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>4</sel><port_subnet>
-      <io_type>INPUT</io_type><port>3</port><subnet>3</subnet><num_subnet>4</num_subnet>
+      <io_type>INPUT</io_type><port>3</port><subnet>3</subnet>
     </port_subnet></Mux_Source>
       <Mux_Destination><port_subnet>
-      <io_type>OUTPUT</io_type><port>0</port><subnet>1</subnet><num_subnet>2</num_subnet>
+      <io_type>OUTPUT</io_type><port>0</port><subnet>1</subnet>
     </port_subnet></Mux_Destination>
     </MUX><MUX>
+      <refer_id>17</refer_id>
       <CONFIG><CONFIG_BASE>8</CONFIG_BASE><CONFIG_BOUND>9</CONFIG_BOUND><CONFIG_SECTION>1</CONFIG_SECTION></CONFIG>
       <Mux_Source><sel>0</sel><port_subnet>
-      <io_type>INPUT</io_type><port>0</port><subnet>0</subnet><num_subnet>1</num_subnet>
+      <io_type>INPUT</io_type><port>0</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>1</sel><port_subnet>
-      <io_type>INPUT</io_type><port>1</port><subnet>0</subnet><num_subnet>1</num_subnet>
+      <io_type>INPUT</io_type><port>1</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>2</sel><port_subnet>
-      <io_type>INPUT</io_type><port>2</port><subnet>0</subnet><num_subnet>2</num_subnet>
+      <io_type>INPUT</io_type><port>2</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>3</sel><port_subnet>
-      <io_type>INPUT</io_type><port>3</port><subnet>0</subnet><num_subnet>4</num_subnet>
+      <io_type>INPUT</io_type><port>3</port><subnet>0</subnet>
     </port_subnet></Mux_Source>
       <Mux_Destination><port_subnet>
-      <io_type>OUTPUT</io_type><port>3</port><subnet>0</subnet><num_subnet>4</num_subnet>
+      <io_type>OUTPUT</io_type><port>3</port><subnet>0</subnet>
     </port_subnet></Mux_Destination>
     </MUX><MUX>
+      <refer_id>18</refer_id>
       <CONFIG><CONFIG_BASE>10</CONFIG_BASE><CONFIG_BOUND>11</CONFIG_BOUND><CONFIG_SECTION>1</CONFIG_SECTION></CONFIG>
       <Mux_Source><sel>0</sel><port_subnet>
-      <io_type>INPUT</io_type><port>0</port><subnet>0</subnet><num_subnet>1</num_subnet>
+      <io_type>INPUT</io_type><port>0</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>1</sel><port_subnet>
-      <io_type>INPUT</io_type><port>1</port><subnet>0</subnet><num_subnet>1</num_subnet>
+      <io_type>INPUT</io_type><port>1</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>2</sel><port_subnet>
-      <io_type>INPUT</io_type><port>2</port><subnet>0</subnet><num_subnet>2</num_subnet>
+      <io_type>INPUT</io_type><port>2</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>3</sel><port_subnet>
-      <io_type>INPUT</io_type><port>3</port><subnet>0</subnet><num_subnet>4</num_subnet>
+      <io_type>INPUT</io_type><port>3</port><subnet>0</subnet>
     </port_subnet></Mux_Source>
       <Mux_Destination><port_subnet>
-      <io_type>OUTPUT</io_type><port>4</port><subnet>0</subnet><num_subnet>4</num_subnet>
+      <io_type>OUTPUT</io_type><port>4</port><subnet>0</subnet>
     </port_subnet></Mux_Destination>
     </MUX><MUX>
+      <refer_id>19</refer_id>
       <CONFIG><CONFIG_BASE>12</CONFIG_BASE><CONFIG_BOUND>14</CONFIG_BOUND><CONFIG_SECTION>1</CONFIG_SECTION></CONFIG>
       <Mux_Source><sel>0</sel><port_subnet>
-      <io_type>INPUT</io_type><port>0</port><subnet>0</subnet><num_subnet>1</num_subnet>
+      <io_type>INPUT</io_type><port>0</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>1</sel><port_subnet>
-      <io_type>INPUT</io_type><port>1</port><subnet>0</subnet><num_subnet>1</num_subnet>
+      <io_type>INPUT</io_type><port>1</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>2</sel><port_subnet>
-      <io_type>INPUT</io_type><port>2</port><subnet>0</subnet><num_subnet>2</num_subnet>
+      <io_type>INPUT</io_type><port>2</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>3</sel><port_subnet>
-      <io_type>INPUT</io_type><port>3</port><subnet>0</subnet><num_subnet>4</num_subnet>
+      <io_type>INPUT</io_type><port>3</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>4</sel><port_subnet>
-      <io_type>INPUT</io_type><port>3</port><subnet>1</subnet><num_subnet>4</num_subnet>
+      <io_type>INPUT</io_type><port>3</port><subnet>1</subnet>
     </port_subnet></Mux_Source>
       <Mux_Destination><port_subnet>
-      <io_type>OUTPUT</io_type><port>0</port><subnet>0</subnet><num_subnet>2</num_subnet>
+      <io_type>OUTPUT</io_type><port>0</port><subnet>0</subnet>
     </port_subnet></Mux_Destination>
     </MUX><MUX>
+      <refer_id>20</refer_id>
       <CONFIG><CONFIG_BASE>0</CONFIG_BASE><CONFIG_BOUND>1</CONFIG_BOUND><CONFIG_SECTION>2</CONFIG_SECTION></CONFIG>
       <Mux_Source><sel>0</sel><port_subnet>
-      <io_type>INPUT</io_type><port>0</port><subnet>0</subnet><num_subnet>1</num_subnet>
+      <io_type>INPUT</io_type><port>0</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>1</sel><port_subnet>
-      <io_type>INPUT</io_type><port>1</port><subnet>0</subnet><num_subnet>1</num_subnet>
+      <io_type>INPUT</io_type><port>1</port><subnet>0</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>2</sel><port_subnet>
-      <io_type>INPUT</io_type><port>2</port><subnet>1</subnet><num_subnet>2</num_subnet>
+      <io_type>INPUT</io_type><port>2</port><subnet>1</subnet>
     </port_subnet></Mux_Source><Mux_Source><sel>3</sel><port_subnet>
-      <io_type>INPUT</io_type><port>3</port><subnet>2</subnet><num_subnet>4</num_subnet>
+      <io_type>INPUT</io_type><port>3</port><subnet>2</subnet>
     </port_subnet></Mux_Source>
       <Mux_Destination><port_subnet>
-      <io_type>OUTPUT</io_type><port>3</port><subnet>2</subnet><num_subnet>4</num_subnet>
+      <io_type>OUTPUT</io_type><port>3</port><subnet>2</subnet>
     </port_subnet></Mux_Destination>
     </MUX>
     </INTERNAL_Modules>
-    </TILE>
+    </Router>

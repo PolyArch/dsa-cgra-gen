@@ -2,16 +2,23 @@ package cgra.fabric
 
 import cgra.parameter._
 
+import scala.xml.Elem
+
 // ------ Parameters ------
 case class InterfacePortParams(parent_type: String,
                                parent_id: Int,
                                tile_id:Int)
   extends TileParams(parent_type: String,parent_id:Int,tile_id:Int)
   with IsParameters {
-  override val module_type:String = "ip_port"
+  refer_id = tile_id
+  override val TYPE:String = "ip_port"
   var buffer_depth       : Array[Int] = null
   def ReadyForSynthesis: Unit = {
 
+  }
+  def toXML(k:IsKey) : Elem = {
+    <InterfacePort>
+    </InterfacePort>
   }
 }
 

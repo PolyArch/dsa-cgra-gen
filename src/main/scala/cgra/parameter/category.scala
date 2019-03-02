@@ -21,6 +21,7 @@ abstract class TileParams  (parent_type: String,
   with IOParams
   with Module_Type_Params
   with IsParameters {
+  refer_id = tile_id
   var x_location  : Int = -1
   var y_location  : Int = -1
 
@@ -30,11 +31,77 @@ abstract class TileParams  (parent_type: String,
   def ReadyForSynthesis : Unit
 
   def set_config_width(w:Int) = config_file_width = w
-  val InternalParam = Map[IsKey,List[IsParameters]]()
+  val InternalParam = Map[IsKey,List[IsKey]]()
+
+  // ------ Internal Connection ------
+  def add_internal(key:IsKey,mux:MUX):Unit = {
+    add_internal(key,mux.asInstanceOf[IsParameters])
+    if(mux.hasSource)
+      for (s<- mux.sources){
+        val k = port_subnet(INPUT_TYPE,s.port,s.subnet,s.num_subnet)
+        add_internal(k,mux.asInstanceOf[IsParameters])
+      }
+  }
+  // MUX connection
+  def add_mux_connect(in:port_subnet,out:port_subnet):Unit ={
+    //require(in.num_subnet == out.num_subnet,"please use port index to connect two ports, that having different decomposer")
+    val possible_mux_of_output = find_internal(out,MUX())
+    val muxes:List[MUX] = possible_mux_of_output.distinct
+    val mux = if (muxes.nonEmpty){
+      require(muxes.length == 1)
+      muxes.head
+    }else{
+      MUX()
+    }
+    mux.add_source(in)
+    add_internal(out,mux)
+    add_internal(in,mux)
+  }
+  def add_mux_connect(source_port:Int,des_port:Int):Unit = {
+    val des_port_list = output_ports_list.filter(_.port == des_port)
+    val source_port_list = input_ports_list.filter(_.port == source_port)
+    val source_num_subnet = source_port_list.head.num_subnet
+    val des_num_subnet = des_port_list.head.num_subnet
+    if (source_num_subnet != des_num_subnet){
+      if (source_num_subnet > des_num_subnet){
+        for (out_s <- 0 until des_num_subnet){
+          val d_ps = des_port_list.find(p=>p.subnet == out_s).get
+          val s_matched_subnet:List[Int] = subnet_match_less(out_s,des_num_subnet,source_num_subnet)
+          for (source_subnet <- s_matched_subnet){
+            val source_port_subnet = source_port_list.find(p=>p.subnet == source_subnet).get
+            add_mux_connect(source_port_subnet,d_ps)
+          }
+        }
+      }else{
+        for (out_s <- 0 until des_num_subnet){
+          val d_ps = des_port_list.find(p=>p.subnet == out_s).get
+          val s_matched_subnet:Int = subnet_match(out_s,des_num_subnet,source_num_subnet)
+          val source_port_subnet = source_port_list.find(p=>p.subnet == s_matched_subnet).get
+          add_mux_connect(source_port_subnet,d_ps)
+        }
+      }
+    }else{
+      for (s <- 0 until des_num_subnet){
+        val s_ps = source_port_list.find(p=>p.subnet == s).get
+        val d_ps = des_port_list.find(p=>p.subnet == s).get
+        add_mux_connect(s_ps,d_ps)
+      }
+    }
+  }
+  def connect_internal (source:IsKey,des:IsKey) = {
+    if (InternalParam.isDefinedAt(des))
+      InternalParam(des) = InternalParam(des) ::: List(source)
+    else
+      InternalParam += des -> List(source)
+    if (InternalParam.isDefinedAt(source))
+      InternalParam(source) = InternalParam(source) ::: List(des)
+    else
+      InternalParam += source -> List(des)
+  }
 
   // Parameters Operation
   // Find
-  def find_internal(ps:port_subnet):List[IsParameters] = {
+  def find_internal(ps:port_subnet):List[IsKey] = {
     val io = ps.io
     val port = ps.port
     val subnet = ps.subnet
@@ -79,16 +146,16 @@ abstract class TileParams  (parent_type: String,
   }
 
   // Judge
-  def isPE = module_type == "PE"
-  def isRouter = module_type == "Router"
-  def isInterfacePort = module_type == "IfPort"
+  def isPE = TYPE == "PE"
+  def isRouter = TYPE == "Router"
+  def isInterfacePort = TYPE == "IfPort"
 
   // Returm Information
   def getParent = parent_type
   def getParent_id = parent_id
-  def getType = module_type
-  def get_id = tile_id
-  def haveID = tile_id >= 0
+  def getType = TYPE
+  def get_id = refer_id
+  def haveID = refer_id >= 0
 
   // location operation
   def move_horizontal(x:Int)=x_location = x
@@ -102,8 +169,8 @@ abstract class TileParams  (parent_type: String,
   }
   def --> (that:TileParams) : ConnectParam =  {
     val connect_Param = ConnectParam(getParent,getParent_id)
-    connect_Param.source_tile_id = this.get_id
-    connect_Param.destination_tile_id = that.get_id
+    connect_Param.source_refer_id = this.get_id
+    connect_Param.destination_refer_id = that.get_id
     connect_Param.source_port_index = this.add_output_port
     connect_Param.destination_port_index = that.add_input_port
     connect_Param
@@ -113,16 +180,16 @@ abstract class TileParams  (parent_type: String,
   }
   def connect_port (a:TileParams,ap:Int,b:TileParams,bp:Int) : ConnectParam = {
     val connectParam = ConnectParam(getParent,getParent_id)
-    connectParam.source_tile_id = a.get_id
-    connectParam.destination_tile_id = b.get_id
+    connectParam.source_refer_id = a.get_id
+    connectParam.destination_refer_id = b.get_id
     connectParam.source_port_index = ap
     connectParam.destination_port_index = bp
     connectParam
   }
   def connect_port (a:TileParams,ap:String,b:TileParams,bp:String) : ConnectParam = {
     val connectParam = ConnectParam(getParent,getParent_id)
-    connectParam.source_tile_id = a.get_id
-    connectParam.destination_tile_id = b.get_id
+    connectParam.source_refer_id = a.get_id
+    connectParam.destination_refer_id = b.get_id
     connectParam.source_port_index = a.get_Port_by_Direction(ap)
     connectParam.destination_port_index = b.get_Port_by_Direction(bp)
     connectParam
@@ -167,37 +234,37 @@ abstract class TileParams  (parent_type: String,
       .map(x=>{{x._2.map(_.toXML(x._1))}})}
     </INTERNAL_Modules>
   }
-  def ports_to_XML = {
-    <PORTS>
-      <INPUT>{input_word_width_decomposer.zipWithIndex.map(x=>{
-        val decomposer = x._1
-        val index = x._2
-        <INDEX>{index}</INDEX><Decomposer>{decomposer}</Decomposer>
-      })}</INPUT>
-      <OUTPUT>{output_word_width_decomposer.zipWithIndex.map(x=>{
-        val index = x._2
-        val decomposer = x._1
-        <INDEX>{index}</INDEX><Decomposer>{decomposer}</Decomposer>
-      })}</OUTPUT>
-    </PORTS>
-  }
-  def toXML(k:IsKey) =
-    <TILE>
-      <PARENT>{parent_type}</PARENT><PARENT_ID>{parent_id}</PARENT_ID>
-      <NAME>{module_type}</NAME><ID>{tile_id}</ID>
+
+  def tile_basic_toXML = {
+      <PARENT_TYPE>{parent_type}</PARENT_TYPE><PARENT_ID>{parent_id}</PARENT_ID>
+      <TYPE>{TYPE}</TYPE><ID>{refer_id}</ID>
       <DataPath_Width>{word_width}</DataPath_Width>
       <X_location>{x_location}</X_location><Y_location>{y_location}</Y_location>
       <Num_Config_Register>{num_config_register}</Num_Config_Register>
       <Config_Register_Width>{config_file_width}</Config_Register_Width>
-      {ports_to_XML}
-      {internal_parameter_xml}
-    </TILE>
+        <PORTS>
+          <INPUT>{input_word_width_decomposer.zipWithIndex.map(x=>{
+            val decomposer = x._1
+            val index = x._2
+            <INDEX>{index}</INDEX><Decomposer>{decomposer}</Decomposer>
+          })}</INPUT>
+          <OUTPUT>{output_word_width_decomposer.zipWithIndex.map(x=>{
+            val index = x._2
+            val decomposer = x._1
+            <INDEX>{index}</INDEX><Decomposer>{decomposer}</Decomposer>
+          })}</OUTPUT>
+        </PORTS>
+  }
+  def assign_refer_id = {
+    var current_id = -1
+    InternalParam.foreach(x=>x._2.foreach(y=>y.refer_id = {current_id+=1;current_id}))
+  }
 }
 
-abstract class PeParams(parent_type: String,parent_id:Int,tile_id:Int)
-  extends TileParams(parent_type: String,parent_id:Int,tile_id:Int)
+abstract class PeParams(parent_type: String,parent_id:Int,refer_id:Int)
+  extends TileParams(parent_type: String,parent_id:Int,refer_id:Int)
     with IsParameters {
-  override val module_type:String = "PE"
+  override val TYPE:String = "PE"
   var inst_set : List[Int] = Nil
   val inst_firing : String = ""
   def isDedicated : Boolean = inst_firing == "dedicated"

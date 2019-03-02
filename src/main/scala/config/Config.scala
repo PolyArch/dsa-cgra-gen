@@ -2,6 +2,10 @@
 
 package config
 
+import cgra.parameter.IsKey
+
+import scala.xml.Elem
+
 // ----------------------------------------------------------------------------------------------------------------
 // If Field take augmentation like Filed(SomeClass()) mean such key have default field
 // If Field take Type like Field[someClass or someTrait] mean such
@@ -9,6 +13,7 @@ abstract class Field[+T] private (val default: Option[T])
 {
   def this() = this(None)
   def this(default: T) = this(Some(default))
+  def toXML(k:IsKey):Elem = this.default.get.asInstanceOf[IsKey].toXML(k)
 }
 
 abstract class View {

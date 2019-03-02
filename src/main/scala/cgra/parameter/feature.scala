@@ -8,8 +8,8 @@ import scala.collection.mutable.Map
 // FILE feature is for those
 
 trait Module_Type_Params extends IsParameters{
-  val module_type : String
-  def get_module_type = module_type
+  val TYPE : String
+  def get_module_type = TYPE
 }
 
 trait DatapathParams extends IsParameters{

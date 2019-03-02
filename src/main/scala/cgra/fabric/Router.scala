@@ -13,63 +13,8 @@ case class RouterParams(parent_type: String,
                         tile_id:Int)
   extends TileParams(parent_type: String,parent_id:Int,tile_id:Int)
   with IsParameters {
-  override val module_type:String = "Router"
-  // Parameter Operation
-  private def add_internal(key:IsKey,mux:MUX):Unit = {
-    add_internal(key,mux.asInstanceOf[IsParameters])
-    if(mux.hasSource)
-      for (s<- mux.sources){
-        val k = port_subnet(INPUT_TYPE,s.port,s.subnet,s.num_subnet)
-        add_internal(k,mux.asInstanceOf[IsParameters])
-      }
-  }
+  override val TYPE:String = "Router"
 
-  // Add MUX connection
-  def add_mux_connect(in:port_subnet,out:port_subnet):Unit ={
-    //require(in.num_subnet == out.num_subnet,"please use port index to connect two ports, that having different decomposer")
-    val possible_mux_of_output = find_internal(out,MUX())
-    val muxes:List[MUX] = possible_mux_of_output.distinct
-    val mux = if (muxes.nonEmpty){
-      require(muxes.length == 1)
-      muxes.head
-    }else{
-      MUX()
-    }
-    mux.add_source(in)
-    add_internal(out,mux)
-    add_internal(in,mux)
-  }
-  def add_mux_connect(source_port:Int,des_port:Int):Unit = {
-    val des_port_list = output_ports_list.filter(_.port == des_port)
-    val source_port_list = input_ports_list.filter(_.port == source_port)
-    val source_num_subnet = source_port_list.head.num_subnet
-    val des_num_subnet = des_port_list.head.num_subnet
-    if (source_num_subnet != des_num_subnet){
-      if (source_num_subnet > des_num_subnet){
-        for (out_s <- 0 until des_num_subnet){
-          val d_ps = des_port_list.find(p=>p.subnet == out_s).get
-          val s_matched_subnet:List[Int] = subnet_match_less(out_s,des_num_subnet,source_num_subnet)
-          for (source_subnet <- s_matched_subnet){
-            val source_port_subnet = source_port_list.find(p=>p.subnet == source_subnet).get
-            add_mux_connect(source_port_subnet,d_ps)
-          }
-        }
-      }else{
-        for (out_s <- 0 until des_num_subnet){
-          val d_ps = des_port_list.find(p=>p.subnet == out_s).get
-          val s_matched_subnet:Int = subnet_match(out_s,des_num_subnet,source_num_subnet)
-          val source_port_subnet = source_port_list.find(p=>p.subnet == s_matched_subnet).get
-          add_mux_connect(source_port_subnet,d_ps)
-        }
-      }
-    }else{
-      for (s <- 0 until des_num_subnet){
-        val s_ps = source_port_list.find(p=>p.subnet == s).get
-        val d_ps = des_port_list.find(p=>p.subnet == s).get
-        add_mux_connect(s_ps,d_ps)
-      }
-    }
-  }
   def add_neighbor_loop_connect(in:Int,out:Int,way:String) = {
     require(input_word_width_decomposer(in)==output_word_width_decomposer(out),
       s"In order to achieve inter-subnet communication, In Port ${in} and Out Port ${out}" +
@@ -135,6 +80,7 @@ case class RouterParams(parent_type: String,
 
   // Ready for Synthesis
   def ReadyForSynthesis = {
+    assign_refer_id
     arrange_mux_configuration_memory
   }
 
@@ -145,6 +91,12 @@ case class RouterParams(parent_type: String,
     require(a.forall(InternalParam.isDefinedAt(_)),s"All ${a.head.io} port " +
       "and its subnet need to have at least one mux")
   }
+
+  def toXML(k:IsKey) =
+    <Router>
+      {tile_basic_toXML}
+      {internal_parameter_xml}
+    </Router>
 }
 
 // ------ Module ------

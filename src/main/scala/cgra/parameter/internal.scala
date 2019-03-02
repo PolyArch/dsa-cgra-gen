@@ -9,7 +9,11 @@ import scala.xml.Elem
 // --------------Module Config-----------------------------------------
 // Internal Module Key
 trait IsKey {
-  def toXML : Elem
+  var refer_id :Int = -1
+  def toXML(k:IsKey) : Elem
+  def KeyXML : Elem = {
+    <refer_id>{refer_id}</refer_id>
+  }
 }
 case class port_subnet(t:String,p:Int,s:Int,d:Int) extends IsKey {
   var io : String = t
@@ -25,15 +29,19 @@ case class port_subnet(t:String,p:Int,s:Int,d:Int) extends IsKey {
     }
     result
   }
-  def toXML = {
+
+  override def KeyXML: Elem = {
+    toXML(this)
+  }
+  def toXML(k:IsKey) = {
     <port_subnet>
-      <io_type>{io}</io_type><port>{port}</port><subnet>{subnet}</subnet><num_subnet>{num_subnet}</num_subnet>
+      <io_type>{io}</io_type><port>{port}</port><subnet>{subnet}</subnet>
     </port_subnet>
   }
 }
 
 // Internal Module Parameter
-trait IsParameters {
+trait IsParameters extends IsKey{
   var config_sec : Int = -1
   var base : Int = -1
   var bound : Int = -1
@@ -43,12 +51,17 @@ trait IsParameters {
     <CONFIG><CONFIG_BASE>{base}</CONFIG_BASE><CONFIG_BOUND>{bound}</CONFIG_BOUND><CONFIG_SECTION>{config_sec}</CONFIG_SECTION></CONFIG>
   }
 }
+// Internal Module Trait
+trait WithOperandIndex {
+  var operand_index : Int = -1
+  def SetOperandIndex(oi:Int) = operand_index = oi
+}
 
+// ------ MUX ------
 case class MUX() extends IsParameters
-  with WithOperandIndex{
-  //var index : Int = -1
+  with WithOperandIndex
+  with IsKey{
   var sources : List[port_subnet] = Nil // Reconfigurable
-
   def add_source(p:Int,s:Int,d:Int) : Unit = {
     if (!sources.exists(x=>x.equals(port_subnet(INPUT_TYPE,p,s,d))))
       sources = sources ::: List(port_subnet(INPUT_TYPE,p,s,d))
@@ -60,15 +73,19 @@ case class MUX() extends IsParameters
 
   def toXML(k:IsKey) ={
     <MUX>
+      {KeyXML}
       {get_config_XML}
-      {sources.zipWithIndex.map(x=> <Mux_Source><sel>{x._2}</sel>{x._1.toXML}</Mux_Source>)}
-      <Mux_Destination>{k.toXML}</Mux_Destination>
+      {sources.zipWithIndex.map(x=> <Mux_Source><sel>{x._2}</sel>{x._1.KeyXML}</Mux_Source>)}
+      <Mux_Destination>{k.KeyXML}</Mux_Destination>
     </MUX>
   }
 }
+
+// ------ Delay Pipe ------
 case class Delay_Pipe() extends IsParameters
-  with WithOperandIndex {
-  //var index : Int = -1
+  with WithOperandIndex
+  with IsKey {
+  var sources : List[IsKey] = Nil
   var delay : List[Int] = Nil // Reconfigurable
   var max_delay : Int = -1
   def add_delay_option (n:Int) :Unit = {
@@ -78,12 +95,16 @@ case class Delay_Pipe() extends IsParameters
   def get_delay_by_max_delay : Unit = delay = (0 to max_delay).toList
   def toXML(k:IsKey) = {
     <DELAY_PIPE>
+      {KeyXML}
       {get_config_XML}
     </DELAY_PIPE>
   }
 }
-case class Alu() extends IsParameters{
-  //var index : Int = -1
+
+// ------ Arithmetic Logic Unit ------
+case class Alu() extends IsParameters
+  with IsKey{
+  var sources : List[IsKey] = Nil
   var inst : List[Int] = Nil // Reconfigurable
   var num_operand : Int = -1
   var num_opcode = -1
@@ -93,40 +114,8 @@ case class Alu() extends IsParameters{
   }
   def toXML(k:IsKey) = {
     <ALU>
+      {KeyXML}
       {get_config_XML}
     </ALU>
   }
 }
-
-// Internal Module Trait
-trait WithOperandIndex {
-  var operand_index : Int = -1
-  def SetOperandIndex(oi:Int) = operand_index = oi
-}
-
-
-/*
-class Dedicated_PE_Config[T](key:T) extends Config((site, here, up) => {
-  case key:Dedicated_PE => DedicatedPeParams("",key.parent_id,key.tile_id)
-})
-
-class Shared_PE_Config[T](key:T) extends Config((site, here, up) => {
-  case key:Shared_PE => SharedPeParams("",key.parent_id,key.tile_id)
-})
-
-class Alu_Config[T](key:T) extends Config((site,here,up) => {
-  case key:Alu => AluParams("PE",key.parent_id,key.tile_id)
-})
-
-class Router_Config[T](key:T) extends Config((site,here,up) => {
-  case key:Router => RouterParams("",key.parent_id,key.tile_id)
-})
-
-
-class Tile_Config[T](key:T) extends Config((site,here,up) => {
-  case key:Shared_PE => SharedPeParams(key.parent_name,key.parent_id,key.tile_id)
-  case key:Dedicated_PE => DedicatedPeParams(key.parent_name,key.parent_id,key.tile_id)
-  case key:Router => RouterParams(key.parent_name,key.parent_id,key.tile_id)
-  case key:Alu => AluParams(key.parent_name,key.parent_id,key.tile_id)
-})
-*/
