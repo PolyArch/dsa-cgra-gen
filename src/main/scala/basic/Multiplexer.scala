@@ -9,11 +9,12 @@ import scala.collection.mutable.Map
 case class Multiplexer() extends Entity
   with RegisterControlled
   with WithWordWidth {
+  entity_type = this.getClass.getName
   def forsyn: Unit = {
     // Initialize the Parameter
     assign_index
-    val input_ports = ports.filter(p=>p.io == "INPUT")
-    val output_ports = ports.filter(p=>p.io == "OUTPUT")
+    val input_ports = Ports.filter(p=>p.io == "INPUT")
+    val output_ports = Ports.filter(p=>p.io == "OUTPUT")
 
     val index_config_port = input_ports.find(x=>x.get("function") == "control").get.get("Index")
     val index_input_data_port = input_ports
@@ -35,19 +36,18 @@ case class Multiplexer() extends Entity
   }
 }
 
-class Multiplexer_Hw(p:Multiplexer) extends Module {
-  val io = IO(get_io(p.ports))
-
+class Multiplexer_Hw(p:Entity) extends Module {
+  val io = IO(get_io(p.Ports))
   // Extract Parameter
   val index_config_port = p.get("index_config_port").asInstanceOf[Int]
   val index_input_data_ports = p.get("index_input_data_port").asInstanceOf[List[Int]]
-  val index_output_data_ports = p.get("index_output_data_port").asInstanceOf[List[Int]]
+  val index_output_data_ports = p.get("index_output_data_port").asInstanceOf[Int]
   val select2index = p.get("select2input").asInstanceOf[Map[Int,Int]]
 
   // Calculate Intermediate Parameter
   val num_options = index_input_data_ports.length
   val num_config_bit = log2Ceil(num_options)
-  val output_index = index_output_data_ports.head
+  val output_index = index_output_data_ports
 
   // ------ Hardware Operation ------
   val config = Wire(UInt(num_config_bit.W))

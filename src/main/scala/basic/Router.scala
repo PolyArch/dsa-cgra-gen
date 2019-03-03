@@ -11,10 +11,11 @@ case class Router() extends Entity
   with WithDecomposer
   with WithWordWidth {
   def forsyn:Unit = {
+    entity_type = this.getClass.getName
     var temp_port: ListBuffer[Port] = new ListBuffer[Port]()
-    val ori_input_ports:ListBuffer[Port] = ports.filter(p=>p.io == INPUT_TYPE)
-    val ori_output_ports:ListBuffer[Port] = ports.filter(p=>p.io == OUTPUT_TYPE)
-    val ori_control_ports:ListBuffer[Port] = ports.filter(p=>p.io == MMIO_TYPE)
+    val ori_input_ports:ListBuffer[Port] = Ports.filter(p=>p.io == INPUT_TYPE)
+    val ori_output_ports:ListBuffer[Port] = Ports.filter(p=>p.io == OUTPUT_TYPE)
+    val ori_control_ports:ListBuffer[Port] = Ports.filter(p=>p.io == MMIO_TYPE)
     val input_decomposer = get("input_decomposer").asInstanceOf[List[Int]]
     val output_decomposer = get("output_decomposer").asInstanceOf[List[Int]]
     val decompoed_input_ports = decompose_ports(ori_input_ports,input_decomposer)
@@ -22,7 +23,7 @@ case class Router() extends Entity
     decompoed_input_ports.foreach(temp_port += _)
     decompoed_output_ports.foreach(temp_port += _)
     ori_control_ports.foreach(temp_port += _)
-    ports = temp_port
+    Ports --= Ports;temp_port.foreach(Ports += _)
     assign_index
   }
   def decompose_ports(ports:ListBuffer[Port],decomp:List[Int]):ListBuffer[Port]={
@@ -46,6 +47,6 @@ case class Router() extends Entity
 }
 
 class Router_Hw(p:Router) extends Module {
-  val io = IO(get_io(p.ports))
+  val io = IO(get_io(p.Ports))
 
 }
