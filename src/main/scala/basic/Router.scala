@@ -20,9 +20,11 @@ case class Router() extends Entity
     val output_decomposer = get("output_decomposer").asInstanceOf[List[Int]]
     val decompoed_input_ports = decompose_ports(ori_input_ports,input_decomposer)
     val decompoed_output_ports = decompose_ports(ori_output_ports,output_decomposer)
+
     decompoed_input_ports.foreach(temp_port += _)
     decompoed_output_ports.foreach(temp_port += _)
     ori_control_ports.foreach(temp_port += _)
+
     Ports --= Ports;temp_port.foreach(Ports += _)
     assign_index
   }
@@ -31,15 +33,17 @@ case class Router() extends Entity
     val temp_ports: ListBuffer[Port] = new ListBuffer[Port]()
     for(i <- ports.indices){
       val temp_p = decompose_port(ports(i),decomp(i))
-      temp_p.foreach(p=>temp_ports += p)
+      temp_p.foreach(p=>{p.have("Port_Index",i);temp_ports += p})
     }
     temp_ports
   }
   def decompose_port(p:Port,de:Int):ListBuffer[Port]={
     val temp_ports: ListBuffer[Port] = new ListBuffer[Port]()
     for (i <- 0 until de){
-      val temp_port = Port(p.io,p.hasValid,p.hasReady)
+      val temp_port = p.copy(p.io,p.hasValid,p.hasReady)
+      temp_port.copyInternalEntity(p)
       temp_port.have("Word_Width",p.get("Word_Width").asInstanceOf[Int]/de)
+      temp_port.have("Sub_Net_Index",i)
       temp_ports += temp_port
     }
     temp_ports
@@ -48,5 +52,7 @@ case class Router() extends Entity
 
 class Router_Hw(p:Router) extends Module {
   val io = IO(get_io(p.Ports))
+
+
 
 }

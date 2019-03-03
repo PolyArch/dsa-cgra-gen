@@ -4,8 +4,9 @@ import basic.Constant._
 import chisel3.util.log2Ceil
 
 object myFirstBuilding extends Build {
+
   val mux = Multiplexer()
-  mux.have("Word_Width",64)
+  mux.have("Word_Width",64,8,64,8)
   mux.Ports +=
     Port(INPUT_TYPE,true,true) +=
     Port(INPUT_TYPE,true,true) +=
@@ -16,8 +17,6 @@ object myFirstBuilding extends Build {
 
   mux passdown_word_width
 
-  mux.Reconfig += "Word_Width" -> (true,1,128,List(2,4,8,16,32,64,128))
-
   val config_port = Port(INPUT_TYPE,false,false)
   config_port have ("function","control")
   config_port have("Word_Width",log2Ceil(4 + 1))
@@ -25,14 +24,10 @@ object myFirstBuilding extends Build {
 
   // Synthesis Start
   mux.forsyn
-
-  val fileName:String = "/home/sihao/ss-stack/ss-cgra-gen/test_new_mux.xml"
-
-  scala.xml.XML.save(fileName,mux toXML,"UTF-8",false,null)
-
-  val test:Entity = load_Entity_fromXML(loadXMLFile(fileName))
-
-  instantiate(test)
+  val fileName:String = "/home/sihao/ss-stack/ss-cgra-gen/"+ mux.entity_type +".xml"
+  saveXMLFile(mux,fileName)
+  val muxEntity = load_Entity_fromXML(loadXMLFile(fileName))
+  instantiate(muxEntity)
 }
 
 // ------ Switch ------
@@ -40,7 +35,6 @@ object myFirstBuilding extends Build {
   // Create Module
   val switch = Router()
   switch.have("Word_Width",64)
-
 
   // Add Ports
   switch.Ports +=
@@ -71,28 +65,26 @@ object myFirstBuilding extends Build {
 
   // Synthesis Start
   switch.forsyn
-
-  val fileName:String = "/home/sihao/ss-stack/ss-cgra-gen/test_new_mux.xml"
-
-  scala.xml.XML.save(fileName,switch toXML,"UTF-8",false,null)
-
-  val test = load_Entity_fromXML(loadXMLFile(fileName))
-
-  instantiate(switch)
+  val fileName:String = "/home/sihao/ss-stack/ss-cgra-gen/"+ switch.entity_type +".xml"
+  saveXMLFile(switch,fileName)
+  val switchEntity = load_Entity_fromXML(loadXMLFile(fileName))
+  instantiate(switchEntity)
  */
 
 
 // ------ Mux ------
 /*
+  val fileName:String = "/home/sihao/ss-stack/ss-cgra-gen/test_new_mux.xml"
+
   val mux = Multiplexer()
-  mux.have("Word_Width",64)
-  mux.ports +=
+  mux.have("Word_Width",64,8,64,8)
+  mux.Ports +=
     Port(INPUT_TYPE,true,true) +=
     Port(INPUT_TYPE,true,true) +=
     Port(INPUT_TYPE,true,true) +=
     Port(INPUT_TYPE,true,true)
-  mux.ports += Port(OUTPUT_TYPE,true,true)
-  mux.ports.foreach(x=>x.have("function","data"))
+  mux.Ports += Port(OUTPUT_TYPE,true,true)
+  mux.Ports.foreach(x=>x.have("function","data"))
 
   mux passdown_word_width
 
@@ -101,6 +93,7 @@ object myFirstBuilding extends Build {
   config_port have("Word_Width",log2Ceil(4 + 1))
   mux have config_port
 
+  // Synthesis Start
   mux.forsyn
 
   scala.xml.XML.save("/home/sihao/ss-stack/ss-cgra-gen/test_new_mux.xml",

@@ -13,10 +13,17 @@ class Build extends App{
         .newInstance(p).asInstanceOf[RawModule])
   }
 
+  // Save Entity to XML File
+  def saveXMLFile(x:Entity,fileName:String):Unit = {
+    scala.xml.XML.save(fileName,x toXML,"UTF-8",false,null)
+  }
+
   // Load XML File
   def loadXMLFile(fileName:String):NodeSeq={
     scala.xml.XML.loadFile(fileName)
   }
+
+  // Normalize the XML File to Entity
   def load_Entity_fromXML(xmlNode:NodeSeq):Entity = {
 
     val Parent = (xmlNode \ "Parent")
@@ -37,8 +44,10 @@ class Build extends App{
         entity_type = (Current \ "Type").text
         entity_id = (Current \ "ID").text.toInt
       }
-      if(parameters.text != "")
+      if(parameters.text != ""){
         get_Parameters_fromXML(parameters).foreach(Parameters += _)
+        get_DSE_Options_fromXML(parameters).foreach(DSE_Options += _)
+      }
       if(sources.text != "")
         SourceSinkPortMap(sources).foreach(Sources += _)
       if(sinks.text != "")
@@ -61,7 +70,7 @@ class Build extends App{
       val hasValid = pe.get("hasValid").toString.toBoolean
       val hasReady = pe.get("hasReady").toString.toBoolean
       val temp_port = Port(iotype,hasValid,hasReady)
-      copyInternalEntity(temp_port,pe)
+      temp_port.copyInternalEntity(pe)
       temp_ports += temp_port
     }
     temp_ports
@@ -75,6 +84,19 @@ class Build extends App{
       Parameters += key -> value
     }
     Parameters
+  }
+  def get_DSE_Options_fromXML(node:NodeSeq):Map[String,List[Int]] = {
+    var DSE_Options : Map[String,List[Int]] = Map[String,List[Int]]()
+    val kv_list = node \ "KeyValue"
+    for (kv <- kv_list){
+      val isDSE = ((kv \ "PKey") \"@DSE").text.toBoolean
+      if (isDSE){
+        val k = (kv \ "PKey").text
+        val value : List[Int] = PValueNormalized((kv \ "POptions").text).asInstanceOf[List[Int]]
+        DSE_Options += k -> value
+      }
+    }
+    DSE_Options
   }
   def PValueNormalized (value:String) :Any ={
     // Determine Type
@@ -149,34 +171,12 @@ class Build extends App{
     }
     temp_links
   }
-  def copyInternalEntity(t:Entity,s:Entity):Unit={
-    t.parent_type = s.parent_type
-    t.parent_id = s.parent_id
-    t.entity_type = s.entity_type
-    t.entity_id = s.entity_id
-    s.Ports.foreach(t.Ports+=_)
-    s.Sources.foreach(t.Sources += _)
-    s.Sinks.foreach(t.Sinks += _)
-    s.Relationships.foreach(t.Relationships += _)
-    s.Entities.foreach(t.Entities += _)
-    s.Parameters.foreach(t.Parameters += _)
-    /*
-    t.Ports --= t.Ports
-    t.Sources --= t.Sources
-    t.Sinks --= t.Sinks
-    t.Relationships --= t.Relationships
-    t.Entities --= t.Entities
-    */
-  }
-
-
 
   // Deserialize to Object
   import java.io.ByteArrayInputStream
   import java.io.IOException
   import java.io.ObjectInputStream
   import java.util.Base64
-
   @throws[IOException]
   @throws[ClassNotFoundException]
   private def deserialize(s: String) = {

@@ -29,7 +29,7 @@ trait Entity {
   val Sinks : ListBuffer[(Int,Int)] = new ListBuffer[(Int,Int)]()
 
   // Reconfigurability
-  val Reconfig :Map[String,(Boolean,Any,Any,Any)] = Map[String,(Boolean,Any,Any,Any)]()
+  val DSE_Options :Map[String,List[Int]] = Map[String,List[Int]]()
   //(Whether it is configured or not, bottom bound, upper bound)
 
   // Internal Relationship and Entities
@@ -44,6 +44,14 @@ trait Entity {
   def have(ab:(Entity,Entity)) = Relationships += ab._1.entity_id -> ab._2.entity_id
   def have(aabb:List[(Entity,Entity)]):Unit = aabb.foreach(have)
   def have(Key:String, Value:Any) :Unit = Parameters += Key -> Value
+  def have(Key:String, Value:Int,lowerBound:Int,upperBound:Int,stride:Int):Unit={
+    val options:List[Int] = (lowerBound to upperBound by stride).toList
+    have(Key,Value,options)
+  }
+  def have(Key:String, Value:Int,options:List[Int]):Unit={
+    have(Key,Value)
+    DSE_Options += Key -> options
+  }
   def have(p:Port):Unit = {
     Ports += p
   }
@@ -70,6 +78,27 @@ trait Entity {
   }
   def find_sink(source:Int):List[Int]={
     Relationships.filter(x=>x._1 == source).map(x=>x._2).toList
+  }
+
+  //Dulplicate
+  def copyInternalEntity(s:Entity):Unit={
+    s.Ports.foreach(this.Ports+=_)
+    s.Sources.foreach(this.Sources += _)
+    s.Sinks.foreach(this.Sinks += _)
+    s.Relationships.foreach(this.Relationships += _)
+    s.Entities.foreach(this.Entities += _)
+    s.Parameters.foreach(this.Parameters += _)
+    /*
+    t.parent_type = s.parent_type
+    t.parent_id = s.parent_id
+    t.entity_type = s.entity_type
+    t.entity_id = s.entity_id
+    t.Ports --= t.Ports
+    t.Sources --= t.Sources
+    t.Sinks --= t.Sinks
+    t.Relationships --= t.Relationships
+    t.Entities --= t.Entities
+    */
   }
 
   // Ready for Synthesis
@@ -99,7 +128,6 @@ trait Entity {
   import java.io.IOException
   import java.io.ObjectOutputStream
   import java.util.Base64
-
   @throws[IOException]
   private def serialize(o: Any) = {
     val baos = new ByteArrayOutputStream
@@ -112,7 +140,6 @@ trait Entity {
   // IR Output
   def toXML : Elem = {
     <Entity>
-
       {if(parent_type != "" || parent_id != -1){
       <Parent>
         <Type>{parent_type}</Type><ID>{parent_id}</ID>
@@ -120,7 +147,6 @@ trait Entity {
     }else{
         <Parent/>
     }}
-
       {if(entity_type != "" || entity_id != -1){
       <Current>
         <Type>{entity_type}</Type><ID>{entity_id}</ID>
@@ -128,29 +154,24 @@ trait Entity {
     }else{
         <Current/>
     }}
-
       {if(Parameters nonEmpty){
       <Parameters>{Parameters.map(x=>{
         <KeyValue>
           {
-            if(Reconfig.isDefinedAt(x._1)){
-              <PKey>{x._1}</PKey> %
-                Attribute(None,"options",Text(Reconfig(x._1)._4.toString),Null) %
-                Attribute(None,"upperBound",Text(Reconfig(x._1)._3.toString),Null) %
-                Attribute(None,"lowerBound",Text(Reconfig(x._1)._2.toString),Null) %
-                Attribute(None,"reconfigurable",Text(Reconfig(x._1)._1.toString),Null)
+            if(DSE_Options.isDefinedAt(x._1)){
+              <PKey DSE="true">{x._1}</PKey>
+              <PValue type={x._2.getClass.getName}>{x._2}</PValue>
+              <POptions>{DSE_Options(x._1)}</POptions>
             }else{
-              <PKey reconfiguable="false">{x._1}</PKey>
+              <PKey DSE="false">{x._1}</PKey>
+              <PValue type={x._2.getClass.getName}>{x._2}</PValue>
             }
           }
-          <PValue type={x._2.getClass.getName}>{x._2}</PValue>
-
         </KeyValue>
       })}</Parameters>
     }else{
       <Parameter/>
     }}
-
       {if(Sources nonEmpty){
       <Sources>{Sources.map(s=>{
         <SPPair><ID>{s._1}</ID><Port>{s._2}</Port></SPPair>
@@ -158,7 +179,6 @@ trait Entity {
     }else{
       <Sources/>
     }}
-
       {if(Sinks nonEmpty){
       <Sinks>{Sinks.map(s=>{
         <SPPair><ID>{s._1}</ID><Port>{s._2}</Port></SPPair>
@@ -166,20 +186,13 @@ trait Entity {
     }else{
       <Sinks/>
     }}
-
       {if(Ports nonEmpty){<Ports>{Ports.map(i=>i.toXML)}</Ports>}else{<Ports/>}}
-
       {if(Relationships nonEmpty){
       <Relationships>{Relationships.map(r=>{<link><Source>{r._1}</Source><Sink>{r._2}</Sink></link>})}</Relationships>
     }else{<Relationships/>}}
-
       {if(Entities.nonEmpty){
       <InternalEntities>{Entities.map(e=>{e.toXML})}</InternalEntities>}else{<InternalEntities/>}}
     </Entity>
   }
 }
-
-// reconfiguable={Reconfigurability(x._1)._1} lowerBound={Reconfigurability(x._1)._2} upperBound={Reconfigurability(x._1)._3}
-
-
 

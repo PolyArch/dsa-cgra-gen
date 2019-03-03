@@ -29,9 +29,6 @@ case class Multiplexer() extends Entity
       select2index += sel -> input_ports(index_input_data_port(sel)).get("Index").asInstanceOf[Int]
 
     // Store Parameters
-    have("index_config_port",index_config_port)
-    have("index_input_data_port",index_input_data_port)
-    have("index_output_data_port",index_output_data_port)
     have("select2input",select2index)
   }
 }
@@ -39,9 +36,17 @@ case class Multiplexer() extends Entity
 class Multiplexer_Hw(p:Entity) extends Module {
   val io = IO(get_io(p.Ports))
   // Extract Parameter
-  val index_config_port = p.get("index_config_port").asInstanceOf[Int]
-  val index_input_data_ports = p.get("index_input_data_port").asInstanceOf[List[Int]]
-  val index_output_data_ports = p.get("index_output_data_port").asInstanceOf[Int]
+
+  val index_config_port = p.Ports
+    .filter(p=>p.get("function").asInstanceOf[String] == "control")
+    .head.get("Index").asInstanceOf[Int]
+  val index_input_data_ports = p.Ports
+    .filter(p=>p.get("IO Type").asInstanceOf[String] == "INPUT" && p.get("function").asInstanceOf[String] == "data")
+    .map(x=>x.get("Index").asInstanceOf[Int])
+  val index_output_data_ports = p.Ports
+    .filter(p=>p.get("IO Type").asInstanceOf[String] == "OUTPUT")
+    .map(x=>x.get("Index").asInstanceOf[Int]).head
+
   val select2index = p.get("select2input").asInstanceOf[Map[Int,Int]]
 
   // Calculate Intermediate Parameter
