@@ -16,6 +16,8 @@ object myFirstBuilding extends Build {
 
   mux passdown_word_width
 
+  mux.Reconfig += "Word_Width" -> (true,1,128,List(2,4,8,16,32,64,128))
+
   val config_port = Port(INPUT_TYPE,false,false)
   config_port have ("function","control")
   config_port have("Word_Width",log2Ceil(4 + 1))

@@ -16,6 +16,7 @@ case class Multiplexer() extends Entity
     val input_ports = Ports.filter(p=>p.io == "INPUT")
     val output_ports = Ports.filter(p=>p.io == "OUTPUT")
 
+    // Calculate Intermediate Parameters
     val index_config_port = input_ports.find(x=>x.get("function") == "control").get.get("Index")
     val index_input_data_port = input_ports
       .filter(x=>x.get("function") ==  "data")
@@ -23,12 +24,11 @@ case class Multiplexer() extends Entity
     val index_output_data_port = output_ports
       .filter(x=>x.get("function") ==  "data")
       .map(_.get("Index").asInstanceOf[Int]).toList
-
     val select2index : Map[Int,Int] = Map[Int,Int]()
-
     for (sel <- index_input_data_port.indices)
       select2index += sel -> input_ports(index_input_data_port(sel)).get("Index").asInstanceOf[Int]
 
+    // Store Parameters
     have("index_config_port",index_config_port)
     have("index_input_data_port",index_input_data_port)
     have("index_output_data_port",index_output_data_port)

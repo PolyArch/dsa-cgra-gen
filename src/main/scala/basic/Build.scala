@@ -5,7 +5,7 @@ import scala.collection.mutable.{ListBuffer, Map}
 import scala.xml.NodeSeq
 
 class Build extends App{
-
+  // Chisel Driver and Verilog Output
   def instantiate(p:Entity): Unit = {
     chisel3.Driver.execute(args,()=>
       Class.forName(p.entity_type+"_Hw")
@@ -13,6 +13,7 @@ class Build extends App{
         .newInstance(p).asInstanceOf[RawModule])
   }
 
+  // Load XML File
   def loadXMLFile(fileName:String):NodeSeq={
     scala.xml.XML.loadFile(fileName)
   }
@@ -96,6 +97,7 @@ class Build extends App{
     def isMap(value:String):Boolean = {
       value.split(" ").forall(x=>x.startsWith("(")&&x.endsWith(")"))
     }
+
     // Conevert
     def toIntList(v:String):List[Int]=value.split(" ").map(_.toInt).toList
     def toMap(value:String):Map[Any,Any]={
@@ -111,6 +113,11 @@ class Build extends App{
       temp
     }
 
+    // Deserialize
+    //val test = deserialize(value)
+    //test
+
+    // If-Else Condition
     if(isInt(value)){
       value.toInt
     }else if(isIntList(value)){
@@ -122,6 +129,7 @@ class Build extends App{
     }else{
       value
     }
+
   }
   def SourceSinkPortMap(node:NodeSeq):ListBuffer[(Int,Int)]={
     val sp_pairs = node \ "SPPair"
@@ -146,12 +154,36 @@ class Build extends App{
     t.parent_id = s.parent_id
     t.entity_type = s.entity_type
     t.entity_id = s.entity_id
-    t.Ports --= t.Ports;s.Ports.foreach(t.Ports+=_)
-    t.Sources --= t.Sources;s.Sources.foreach(t.Sources += _)
-    t.Sinks --= t.Sinks;s.Sinks.foreach(t.Sinks += _)
-    t.Relationships --= t.Relationships;s.Relationships.foreach(t.Relationships += _)
-    t.Entities --= t.Entities;s.Entities.foreach(t.Entities += _)
+    s.Ports.foreach(t.Ports+=_)
+    s.Sources.foreach(t.Sources += _)
+    s.Sinks.foreach(t.Sinks += _)
+    s.Relationships.foreach(t.Relationships += _)
+    s.Entities.foreach(t.Entities += _)
     s.Parameters.foreach(t.Parameters += _)
+    /*
+    t.Ports --= t.Ports
+    t.Sources --= t.Sources
+    t.Sinks --= t.Sinks
+    t.Relationships --= t.Relationships
+    t.Entities --= t.Entities
+    */
   }
 
+
+
+  // Deserialize to Object
+  import java.io.ByteArrayInputStream
+  import java.io.IOException
+  import java.io.ObjectInputStream
+  import java.util.Base64
+
+  @throws[IOException]
+  @throws[ClassNotFoundException]
+  private def deserialize(s: String) = {
+    val data = Base64.getDecoder.decode(s)
+    val ois = new ObjectInputStream(new ByteArrayInputStream(data))
+    val o = ois.readObject
+    ois.close()
+    o
+  }
 }

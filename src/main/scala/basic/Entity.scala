@@ -4,7 +4,7 @@ package basic
 import basic.Constant._
 import scala.collection.mutable.Map
 import scala.collection.mutable.ListBuffer
-import scala.xml.Elem
+import scala.xml.{Attribute, Elem, Text,Null}
 
 case class Port(io:String,hasValid:Boolean,hasReady:Boolean) extends Entity
   with IsPort{
@@ -28,8 +28,9 @@ trait Entity {
   val Sources : ListBuffer[(Int,Int)] = new ListBuffer[(Int,Int)]()
   val Sinks : ListBuffer[(Int,Int)] = new ListBuffer[(Int,Int)]()
 
-  // Virtual <-> Physical
-
+  // Reconfigurability
+  val Reconfig :Map[String,(Boolean,Any,Any,Any)] = Map[String,(Boolean,Any,Any,Any)]()
+  //(Whether it is configured or not, bottom bound, upper bound)
 
   // Internal Relationship and Entities
   val Relationships : ListBuffer[(Int,Int)] = new ListBuffer[(Int,Int)]()
@@ -93,10 +94,25 @@ trait Entity {
     }
   }
 
+  // Serialize to String
+  import java.io.ByteArrayOutputStream
+  import java.io.IOException
+  import java.io.ObjectOutputStream
+  import java.util.Base64
+
+  @throws[IOException]
+  private def serialize(o: Any) = {
+    val baos = new ByteArrayOutputStream
+    val oos = new ObjectOutputStream(baos)
+    oos.writeObject(o)
+    oos.close()
+    Base64.getEncoder.encodeToString(baos.toByteArray)
+  }
 
   // IR Output
   def toXML : Elem = {
     <Entity>
+
       {if(parent_type != "" || parent_id != -1){
       <Parent>
         <Type>{parent_type}</Type><ID>{parent_id}</ID>
@@ -104,6 +120,7 @@ trait Entity {
     }else{
         <Parent/>
     }}
+
       {if(entity_type != "" || entity_id != -1){
       <Current>
         <Type>{entity_type}</Type><ID>{entity_id}</ID>
@@ -111,13 +128,29 @@ trait Entity {
     }else{
         <Current/>
     }}
+
       {if(Parameters nonEmpty){
       <Parameters>{Parameters.map(x=>{
-        <KeyValue><PKey>{x._1}</PKey><PValue>{x._2}</PValue></KeyValue>
+        <KeyValue>
+          {
+            if(Reconfig.isDefinedAt(x._1)){
+              <PKey>{x._1}</PKey> %
+                Attribute(None,"options",Text(Reconfig(x._1)._4.toString),Null) %
+                Attribute(None,"upperBound",Text(Reconfig(x._1)._3.toString),Null) %
+                Attribute(None,"lowerBound",Text(Reconfig(x._1)._2.toString),Null) %
+                Attribute(None,"reconfigurable",Text(Reconfig(x._1)._1.toString),Null)
+            }else{
+              <PKey reconfiguable="false">{x._1}</PKey>
+            }
+          }
+          <PValue type={x._2.getClass.getName}>{x._2}</PValue>
+
+        </KeyValue>
       })}</Parameters>
     }else{
       <Parameter/>
     }}
+
       {if(Sources nonEmpty){
       <Sources>{Sources.map(s=>{
         <SPPair><ID>{s._1}</ID><Port>{s._2}</Port></SPPair>
@@ -125,6 +158,7 @@ trait Entity {
     }else{
       <Sources/>
     }}
+
       {if(Sinks nonEmpty){
       <Sinks>{Sinks.map(s=>{
         <SPPair><ID>{s._1}</ID><Port>{s._2}</Port></SPPair>
@@ -132,6 +166,7 @@ trait Entity {
     }else{
       <Sinks/>
     }}
+
       {if(Ports nonEmpty){<Ports>{Ports.map(i=>i.toXML)}</Ports>}else{<Ports/>}}
 
       {if(Relationships nonEmpty){
@@ -139,11 +174,12 @@ trait Entity {
     }else{<Relationships/>}}
 
       {if(Entities.nonEmpty){
-      <InternalEntities>{Entities.map(e=>{e.toXML})}</InternalEntities>}
-      else{<InternalEntities/>}}
+      <InternalEntities>{Entities.map(e=>{e.toXML})}</InternalEntities>}else{<InternalEntities/>}}
     </Entity>
   }
 }
+
+// reconfiguable={Reconfigurability(x._1)._1} lowerBound={Reconfigurability(x._1)._2} upperBound={Reconfigurability(x._1)._3}
 
 
 
