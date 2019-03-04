@@ -3,13 +3,16 @@
 package cgra.fu
 
 import cgra._
+import cgra.parameter._
+import cgra.parameter.isa._
+import cgra.fabric._
+import cgra.fabric.old.{ALU, DelayPipe, Function_Unit}
 import dsl.IR._
 import tile.tools._
 import chisel3.iotesters
 import chisel3.iotesters._
-import tile.{HasFabricParams, ISA}
-import tile.ISA._
-import tile.Constant._
+import tile._
+
 import scala.util.Random
 
 class DelayPipeTest(dP:DelayPipe,
@@ -52,12 +55,10 @@ class DelayPipeTest(dP:DelayPipe,
 object DelayPipeTest extends App{
   for(repeat <- 0 until 10){
     val delayPipeParam = new DelayPipeParam
-    delayPipeParam.maxLength = Random.nextInt(maxFuDelayPipeLength + 1)
-    delayPipeParam.pipeDataWidth = Random.nextInt(maxBitsWidth) + 1
-    /*
+    delayPipeParam.maxLength = Random.nextInt(17)
+    delayPipeParam.pipeDataWidth = Random.nextInt(65)
     if(delayPipeParam.pipeDataWidth == 0)
       delayPipeParam.pipeDataWidth = 1
-    */
     println("Max Length = " + delayPipeParam.maxLength)
     println("pipe data width = " + delayPipeParam.pipeDataWidth)
     iotesters.Driver.execute(args,() =>
@@ -117,10 +118,10 @@ class AluTest(alu: ALU, aluParam: AluParam) extends PeekPokeTester(alu)
     }
 
     if(op1Valid && op2Valid){
-      val opcodeName = ISA.getClass.getDeclaredFields
+      val opcodeName = isa.getClass.getDeclaredFields
         .find(field=>{
           field.setAccessible(true)
-          field.get(ISA) == opcode
+          field.get(isa) == opcode
         }) match {
         case Some(i) => i.getName
         case _ => throw new Exception("No match opcode")
@@ -152,7 +153,8 @@ object AluTest extends App {
     aluParam.InstructionList = Seq.fill(numInst)(Random.nextInt(numISA))
       .toArray.distinct.sorted
 
-    aluParam.aluDataWidth = Random.nextInt(maxBitsWidth) + 1
+    aluParam.aluDataWidth = Random.nextInt(2049)
+    if (aluParam.aluDataWidth <= 0) aluParam.aluDataWidth = 1
 
     iotesters.Driver.execute(args, () =>
       new ALU(aluParam.InstructionList, aluParam.aluDataWidth)) {
@@ -161,7 +163,7 @@ object AluTest extends App {
   }
 }
 
-class FuTest(c: FU, params:GridFUIR ) extends PeekPokeTester(c)
+class FuTest(c: Function_Unit, params:GridFUIR ) extends PeekPokeTester(c)
   with HasFabricParams {
   private val fu = c
   for(cycle <- 0 until 100){
@@ -223,10 +225,9 @@ object FuTest extends App {
   )
 
   iotesters.Driver.execute(args, () =>
-    new FU(3,4,param.numInput,param.numOutput,param.inputLocation.toArray,
+    new Function_Unit(param.numInput,param.numOutput,param.inputLocation.toArray,
       param.outputLocation.toArray,param.deComp,
-      param.Instructions,param.maxDelayPipeLen,param.muxDirMatrix,
-      0,0))
+      param.Instructions,param.maxDelayPipeLen,param.muxDirMatrix,0,0))
   {
     c => new FuTest(c,param)
   }

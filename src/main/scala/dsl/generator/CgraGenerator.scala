@@ -4,9 +4,13 @@ package dsl.generator
 
 import dsl.IR._
 import cgra._
+import cgra.parameter._
+import cgra.fabric._
+import cgra.fabric.old.{Function_Unit, InterfacePort, Switch}
 import chisel3._
 import chisel3.util._
 import tile._
+
 
 trait CgraGenerator {
 
@@ -37,22 +41,18 @@ trait CgraGenerator {
       for(col <- model.GridIR(row).indices){
         FabricGrid(row)(col) = model.GridIR(row)(col) match {
           case x:GridRouterIR =>
-            Module(new Switch(x.row,x.col,
-              x.numInput,
+            Module(new Switch(x.numInput,
               x.numOutput,x.inputLocation.toArray,
               x.outputLocation.toArray,
-              x.deComp,x.muxDirMatrix,
-              0,1))
+              x.deComp,x.muxDirMatrix,1,1))//TODO
           case x:GridFUIR =>
-            Module(new FU(x.row,x.col,
-              x.numInput,
+            Module(new Function_Unit(x.numInput,
               x.numOutput,
               x.inputLocation.toArray,
               x.outputLocation.toArray,
               x.deComp, x.Instructions,
               x.maxDelayPipeLen,
-              x.muxDirMatrix,
-              0,1))
+              x.muxDirMatrix,1,2))//TODO
           case _ => null
         }
         FabricGrid(row)(col) match {
@@ -81,7 +81,7 @@ trait CgraGenerator {
       for(subNet <- 0 until fromDecomp){
         val fromPorts =  FabricGrid(fromRow)(fromCol) match {
           case x:Switch => x.io.output_ports(x.numModuleOutput * subNet + fromPort)
-          case x:FU =>x.io.output_ports(x.numModuleOutput * subNet + fromPort)
+          case x:Function_Unit =>x.io.output_ports(x.numModuleOutput * subNet + fromPort)
           case _=> throw new Exception("Grid have unknown module")
         }
         currConnectionModule.io.input_ports(subNet) <> fromPorts
@@ -89,7 +89,7 @@ trait CgraGenerator {
       for(subNet <- 0 until toDecomp){
         val toPorts =  FabricGrid(toRow)(toCol) match {
           case x:Switch => x.io.input_ports(x.numModuleInput * subNet + toPort)
-          case x:FU =>x.io.input_ports(x.numModuleInput * subNet + toPort)
+          case x:Function_Unit =>x.io.input_ports(x.numModuleInput * subNet + toPort)
           case _=> throw new Exception("Grid have unknown module")
         }
         toPorts <> currConnectionModule.io.output_ports(subNet)
