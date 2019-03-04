@@ -3,6 +3,7 @@ package basic
 import chisel3._
 import chisel3.util._
 import basic.IO_Interface._
+import basic.Constant._
 
 import scala.collection.mutable.Map
 
@@ -13,8 +14,26 @@ case class Multiplexer() extends Entity
   def forsyn: Unit = {
     // Initialize the Parameter
     assign_index
-    val input_ports = Ports.filter(p=>p.io == "INPUT")
-    val output_ports = Ports.filter(p=>p.io == "OUTPUT")
+    val input_ports = Ports.filter(p=>p.io == INPUT_TYPE)
+    val output_ports = Ports.filter(p=>p.io == OUTPUT_TYPE)
+
+    // Assign Virtual Source to Physical Port
+    if(Sources nonEmpty){
+      require(Sources.size == input_ports.length)
+      for (s <- Sources.zipWithIndex.map(x=>(x._1._1,x._2))){
+        val index = s._2
+        val source_id = s._1
+        Sources(source_id) = input_ports(index).get("Index").asInstanceOf[Int]
+      }
+    }
+    if(Sinks nonEmpty){
+      require(Sinks.size == output_ports.length)
+      for (s <- Sinks.zipWithIndex.map(x=>(x._1._1,x._2))){
+        val index = s._2
+        val sink_id = s._1
+        Sinks(sink_id) = output_ports(index).get("Index").asInstanceOf[Int]
+      }
+    }
 
     // Calculate Intermediate Parameters
     val index_config_port = input_ports.find(x=>x.get("function") == "control").get.get("Index")
@@ -41,10 +60,10 @@ class Multiplexer_Hw(p:Entity) extends Module {
     .filter(p=>p.get("function").asInstanceOf[String] == "control")
     .head.get("Index").asInstanceOf[Int]
   val index_input_data_ports = p.Ports
-    .filter(p=>p.get("IO Type").asInstanceOf[String] == "INPUT" && p.get("function").asInstanceOf[String] == "data")
+    .filter(p=>p.get("IO_Type").asInstanceOf[String] == "INPUT" && p.get("function").asInstanceOf[String] == "data")
     .map(x=>x.get("Index").asInstanceOf[Int])
   val index_output_data_ports = p.Ports
-    .filter(p=>p.get("IO Type").asInstanceOf[String] == "OUTPUT")
+    .filter(p=>p.get("IO_Type").asInstanceOf[String] == "OUTPUT")
     .map(x=>x.get("Index").asInstanceOf[Int]).head
 
   val select2index = p.get("select2input").asInstanceOf[Map[Int,Int]]

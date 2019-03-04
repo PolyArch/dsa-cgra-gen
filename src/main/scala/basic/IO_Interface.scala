@@ -8,7 +8,7 @@ import scala.collection.mutable.ListBuffer
 object IO_Interface {
   def get_io(p:ListBuffer[Port]) = {
     MixedVec(p map (x=>{
-      x.Parameters("IO Type") match {
+      x.Parameters("IO_Type") match {
         case INPUT_TYPE =>{
           x.Parameters("hasValid") match {
             case true =>

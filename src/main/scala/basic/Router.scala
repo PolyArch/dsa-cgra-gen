@@ -8,45 +8,37 @@ import scala.collection.mutable.{ListBuffer, Map}
 
 case class Router() extends Entity
   with WithRegisterFile
-  with WithDecomposer
-  with WithWordWidth {
+  with IsDecomposable
+  with WithWordWidth{
+  entity_type = this.getClass.getName
+
   def forsyn:Unit = {
-    entity_type = this.getClass.getName
-    var temp_port: ListBuffer[Port] = new ListBuffer[Port]()
-    val ori_input_ports:ListBuffer[Port] = Ports.filter(p=>p.io == INPUT_TYPE)
-    val ori_output_ports:ListBuffer[Port] = Ports.filter(p=>p.io == OUTPUT_TYPE)
-    val ori_control_ports:ListBuffer[Port] = Ports.filter(p=>p.io == MMIO_TYPE)
-    val input_decomposer = get("input_decomposer").asInstanceOf[List[Int]]
-    val output_decomposer = get("output_decomposer").asInstanceOf[List[Int]]
-    val decompoed_input_ports = decompose_ports(ori_input_ports,input_decomposer)
-    val decompoed_output_ports = decompose_ports(ori_output_ports,output_decomposer)
+    val num_input = get("num_input").asInstanceOf[Int]
+    val num_output = get("num_output").asInstanceOf[Int]
+    for (o <- 0 until num_output){
+      val sink_ports = Ports.filter(p=>p.get("Port_Index").asInstanceOf[Int] == o &&
+        p.get("IO_Type").asInstanceOf[String] == OUTPUT_TYPE)
+      for (sink_port <- sink_ports){
+        val sink_port_index = sink_port.entity_id
+        val sources_port_id = Relationships.filter(r=>r._2 == sink_port_index).map(_._1)
+        val source_ports:ListBuffer[Port] = sources_port_id
+          .map(i=>Ports.find(p=>p.entity_id == i).get)
+        val num_source_port = source_ports.length
+        val mux = Multiplexer()
+        for (s <- source_ports){
+          val temp_port = Port(INPUT_TYPE,true,true)
+          temp_port.copyInternalEntity(s)
+          mux.Ports += temp_port
+        }
+        val temp_port = Port(OUTPUT_TYPE,true,true)
+        temp_port.copyInternalEntity(sink_port)
+        mux.Ports += temp_port
+        sources_port_id.foreach(s_id=>{mux.Sources += s_id -> -1})
+        mux.Sinks += sink_port_index -> -1
+        mux.forsyn
 
-    decompoed_input_ports.foreach(temp_port += _)
-    decompoed_output_ports.foreach(temp_port += _)
-    ori_control_ports.foreach(temp_port += _)
-
-    Ports --= Ports;temp_port.foreach(Ports += _)
-    assign_index
-  }
-  def decompose_ports(ports:ListBuffer[Port],decomp:List[Int]):ListBuffer[Port]={
-    require(ports.length == decomp.length)
-    val temp_ports: ListBuffer[Port] = new ListBuffer[Port]()
-    for(i <- ports.indices){
-      val temp_p = decompose_port(ports(i),decomp(i))
-      temp_p.foreach(p=>{p.have("Port_Index",i);temp_ports += p})
+      }
     }
-    temp_ports
-  }
-  def decompose_port(p:Port,de:Int):ListBuffer[Port]={
-    val temp_ports: ListBuffer[Port] = new ListBuffer[Port]()
-    for (i <- 0 until de){
-      val temp_port = p.copy(p.io,p.hasValid,p.hasReady)
-      temp_port.copyInternalEntity(p)
-      temp_port.have("Word_Width",p.get("Word_Width").asInstanceOf[Int]/de)
-      temp_port.have("Sub_Net_Index",i)
-      temp_ports += temp_port
-    }
-    temp_ports
   }
 }
 

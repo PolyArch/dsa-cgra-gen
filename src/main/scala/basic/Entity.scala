@@ -8,13 +8,18 @@ import scala.xml.{Attribute, Elem, Text,Null}
 
 case class Port(io:String,hasValid:Boolean,hasReady:Boolean) extends Entity
   with IsPort{
-  Parameters("IO Type") = io
-  Parameters("hasValid") = hasValid
-  Parameters("hasReady") = hasReady
+  Parameters("IO_Type").value = io
+  Parameters("hasValid").value = hasValid
+  Parameters("hasReady").value = hasReady
+  entity_type = this.getClass.getName
   def forsyn : Unit = ???
 }
 
-trait Entity {
+case class PValue(v:Any) {
+  var value : Any = v
+}
+
+trait Entity extends EntityUtil{
 
   var parent_type : String = ""
   var parent_id : Int = -1
@@ -24,9 +29,9 @@ trait Entity {
   // Ports are special entity, Physical
   val Ports : ListBuffer[Port] = new ListBuffer[Port]()
 
-  // External Sources and Sinks, Virtual
-  val Sources : ListBuffer[(Int,Int)] = new ListBuffer[(Int,Int)]()
-  val Sinks : ListBuffer[(Int,Int)] = new ListBuffer[(Int,Int)]()
+  // External Sources and Sinks, Virtual map to Physical Port Index
+  val Sources : Map[Int,Int] = Map[Int,Int]()
+  val Sinks : Map[Int,Int] = Map[Int,Int]()
 
   // Reconfigurability
   val DSE_Options :Map[String,List[Int]] = Map[String,List[Int]]()
@@ -37,13 +42,18 @@ trait Entity {
   val Entities : ListBuffer[Entity] = new ListBuffer[Entity]()
 
   // Internal Parameter
-  val Parameters : Map[String,Any] = Map[String,Any]()
+  val Parameters : Map[String,PValue] = Map[String,PValue]()
 
   // Add Internal Entity or Relationship
   def have(a:Entity):Unit = Entities += a
   def have(ab:(Entity,Entity)) = Relationships += ab._1.entity_id -> ab._2.entity_id
   def have(aabb:List[(Entity,Entity)]):Unit = aabb.foreach(have)
-  def have(Key:String, Value:Any) :Unit = Parameters += Key -> Value
+  def have(Key:String, Value:Any) :Unit = {
+    if(!Parameters.isDefinedAt(Key))
+      Parameters += Key -> PValue(Value)
+    else
+      Parameters(Key).value = Value
+  }
   def have(Key:String, Value:Int,lowerBound:Int,upperBound:Int,stride:Int):Unit={
     val options:List[Int] = (lowerBound to upperBound by stride).toList
     have(Key,Value,options)
@@ -104,7 +114,7 @@ trait Entity {
   // Ready for Synthesis
   def forsyn: Unit
 
-  // Convenience method
+  // ------ Convenience method with Side effect------
   // word width pass down
   def passdown_word_width:Unit={
     if(Entities nonEmpty)
@@ -122,8 +132,21 @@ trait Entity {
       p(index).have("Index",index)
     }
   }
+  // assign entity_id
+  var internal_entity_id_counter = 0
+  def assign_entity_id(ll:List[Entity]) :Unit={
+    ll.foreach(x=>{x.entity_id = internal_entity_id_counter
+      internal_entity_id_counter += 1})
+  }
+  def assign_entity_id(n:Int) :Int={
+    internal_entity_id_counter = n
+    assign_entity_id(Ports.toList)
+    assign_entity_id(Entities.toList)
+    internal_entity_id_counter
+  }
 
-  // Serialize to String
+
+  // Serialize to String --- Seams useless
   import java.io.ByteArrayOutputStream
   import java.io.IOException
   import java.io.ObjectOutputStream
