@@ -1,7 +1,7 @@
 <Entity>
       
       <Current>
-        <Type>basic.Router</Type><ID>-1</ID>
+        <Type>basic.Router</Type><ID>123456</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">default decomposer</PKey><PValue type="java.lang.Integer">1</PValue>
@@ -23,7 +23,9 @@
       
       
       <Ports><Entity>
-      
+      <Parent>
+        <Type>basic.Router</Type><ID>123456</ID>
+      </Parent>
       <Current>
         <Type>basic.Port</Type><ID>0</ID>
       </Current>
@@ -48,7 +50,9 @@
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>basic.Router</Type><ID>123456</ID>
+      </Parent>
       <Current>
         <Type>basic.Port</Type><ID>1</ID>
       </Current>
@@ -73,7 +77,9 @@
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>basic.Router</Type><ID>123456</ID>
+      </Parent>
       <Current>
         <Type>basic.Port</Type><ID>2</ID>
       </Current>
@@ -98,7 +104,9 @@
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>basic.Router</Type><ID>123456</ID>
+      </Parent>
       <Current>
         <Type>basic.Port</Type><ID>3</ID>
       </Current>
@@ -123,7 +131,9 @@
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>basic.Router</Type><ID>123456</ID>
+      </Parent>
       <Current>
         <Type>basic.Port</Type><ID>4</ID>
       </Current>
@@ -148,7 +158,9 @@
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>basic.Router</Type><ID>123456</ID>
+      </Parent>
       <Current>
         <Type>basic.Port</Type><ID>5</ID>
       </Current>
@@ -173,7 +185,9 @@
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>basic.Router</Type><ID>123456</ID>
+      </Parent>
       <Current>
         <Type>basic.Port</Type><ID>6</ID>
       </Current>
@@ -198,7 +212,9 @@
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>basic.Router</Type><ID>123456</ID>
+      </Parent>
       <Current>
         <Type>basic.Port</Type><ID>7</ID>
       </Current>
@@ -223,7 +239,9 @@
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>basic.Router</Type><ID>123456</ID>
+      </Parent>
       <Current>
         <Type>basic.Port</Type><ID>8</ID>
       </Current>
@@ -248,9 +266,11 @@
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>basic.Router</Type><ID>123456</ID>
+      </Parent>
       <Current>
-        <Type>basic.Port</Type><ID>-1</ID>
+        <Type>basic.Port</Type><ID>9</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">control</PValue>
@@ -270,7 +290,565 @@
       
       
       
+    </Entity><Entity>
+      
+      <Current>
+        <Type>basic.Port</Type><ID>10</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">0</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">decomposed</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">1</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">North</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">0</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">64</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">0</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      
+      
+      
+      
+    </Entity><Entity>
+      
+      <Current>
+        <Type>basic.Port</Type><ID>11</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">0</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">decomposed</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">2</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">East</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">1</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">1</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      <Sinks><SPPair><ID>19</ID><Port>-1</Port></SPPair></Sinks>
+      
+      
+      
+    </Entity><Entity>
+      
+      <Current>
+        <Type>basic.Port</Type><ID>12</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">1</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">decomposed</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">2</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">East</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">2</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">1</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      
+      
+      
+      
+    </Entity><Entity>
+      
+      <Current>
+        <Type>basic.Port</Type><ID>13</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">0</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">decomposed</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">4</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">South</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">3</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">0</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">2</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      
+      
+      
+      
+    </Entity><Entity>
+      
+      <Current>
+        <Type>basic.Port</Type><ID>14</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">1</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">decomposed</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">4</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">South</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">4</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">0</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">2</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      
+      
+      
+      
+    </Entity><Entity>
+      
+      <Current>
+        <Type>basic.Port</Type><ID>15</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">2</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">decomposed</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">4</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">South</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">5</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">0</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">2</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      
+      
+      
+      
+    </Entity><Entity>
+      
+      <Current>
+        <Type>basic.Port</Type><ID>16</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">3</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">decomposed</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">4</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">South</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">6</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">0</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">2</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      
+      
+      
+      
+    </Entity><Entity>
+      
+      <Current>
+        <Type>basic.Port</Type><ID>17</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">0</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">decomposed</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">1</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">West</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">7</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">64</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">3</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      
+      
+      
+      
+    </Entity><Entity>
+      
+      <Current>
+        <Type>basic.Port</Type><ID>18</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">0</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">decomposed</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">2</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">North</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">OUTPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">8</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">0</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      
+      
+      
+      
+    </Entity><Entity>
+      
+      <Current>
+        <Type>basic.Port</Type><ID>19</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">1</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">decomposed</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">2</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">North</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">OUTPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">9</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">0</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      <Sources><SPPair><ID>11</ID><Port>-1</Port></SPPair></Sources>
+      
+      
+      
+      
+    </Entity><Entity>
+      
+      <Current>
+        <Type>basic.Port</Type><ID>20</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">0</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">decomposed</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">2</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">East</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">OUTPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">10</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">1</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      
+      
+      
+      
+    </Entity><Entity>
+      
+      <Current>
+        <Type>basic.Port</Type><ID>21</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">1</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">decomposed</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">2</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">East</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">OUTPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">11</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">1</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      
+      
+      
+      
+    </Entity><Entity>
+      
+      <Current>
+        <Type>basic.Port</Type><ID>22</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">0</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">decomposed</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">1</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">South</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">OUTPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">12</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">64</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">2</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      
+      
+      
+      
+    </Entity><Entity>
+      
+      <Current>
+        <Type>basic.Port</Type><ID>23</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">0</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">decomposed</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">1</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">West</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">OUTPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">13</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">64</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">3</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      
+      
+      
+      
+    </Entity><Entity>
+      
+      <Current>
+        <Type>basic.Port</Type><ID>24</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">0</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">decomposed</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">4</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">NorthEast</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">OUTPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">14</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">0</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">4</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      
+      
+      
+      
+    </Entity><Entity>
+      
+      <Current>
+        <Type>basic.Port</Type><ID>25</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">1</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">decomposed</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">4</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">NorthEast</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">OUTPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">15</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">0</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">4</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      
+      
+      
+      
+    </Entity><Entity>
+      
+      <Current>
+        <Type>basic.Port</Type><ID>26</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">2</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">decomposed</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">4</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">NorthEast</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">OUTPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">16</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">0</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">4</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      
+      
+      
+      
+    </Entity><Entity>
+      
+      <Current>
+        <Type>basic.Port</Type><ID>27</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">3</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">decomposed</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">4</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">NorthEast</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">OUTPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">17</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">0</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">4</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      
+      
+      
+      
     </Entity></Ports>
-      <Relationships><link><Source>0</Source><Sink>4</Sink></link><link><Source>0</Source><Sink>5</Sink></link><link><Source>0</Source><Sink>6</Sink></link><link><Source>0</Source><Sink>7</Sink></link><link><Source>0</Source><Sink>8</Sink></link><link><Source>1</Source><Sink>4</Sink></link><link><Source>1</Source><Sink>5</Sink></link><link><Source>1</Source><Sink>6</Sink></link><link><Source>1</Source><Sink>7</Sink></link><link><Source>1</Source><Sink>8</Sink></link><link><Source>2</Source><Sink>4</Sink></link><link><Source>2</Source><Sink>5</Sink></link><link><Source>2</Source><Sink>6</Sink></link><link><Source>2</Source><Sink>7</Sink></link><link><Source>2</Source><Sink>8</Sink></link><link><Source>3</Source><Sink>4</Sink></link><link><Source>3</Source><Sink>5</Sink></link><link><Source>3</Source><Sink>6</Sink></link><link><Source>3</Source><Sink>7</Sink></link><link><Source>3</Source><Sink>8</Sink></link><link><Source>10</Source><Sink>18</Sink></link></Relationships>
+      <Relationships><link><Source>0</Source><Sink>4</Sink></link><link><Source>0</Source><Sink>5</Sink></link><link><Source>0</Source><Sink>6</Sink></link><link><Source>0</Source><Sink>7</Sink></link><link><Source>0</Source><Sink>8</Sink></link><link><Source>1</Source><Sink>4</Sink></link><link><Source>1</Source><Sink>5</Sink></link><link><Source>1</Source><Sink>6</Sink></link><link><Source>1</Source><Sink>7</Sink></link><link><Source>1</Source><Sink>8</Sink></link><link><Source>2</Source><Sink>4</Sink></link><link><Source>2</Source><Sink>5</Sink></link><link><Source>2</Source><Sink>6</Sink></link><link><Source>2</Source><Sink>7</Sink></link><link><Source>2</Source><Sink>8</Sink></link><link><Source>3</Source><Sink>4</Sink></link><link><Source>3</Source><Sink>5</Sink></link><link><Source>3</Source><Sink>6</Sink></link><link><Source>3</Source><Sink>7</Sink></link><link><Source>3</Source><Sink>8</Sink></link><link><Source>11</Source><Sink>19</Sink></link></Relationships>
       
     </Entity>

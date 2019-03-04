@@ -13,6 +13,11 @@ case class Router() extends Entity
   entity_type = this.getClass.getName
 
   def forsyn:Unit = {
+
+
+
+
+
     val num_input = get("num_input").asInstanceOf[Int]
     val num_output = get("num_output").asInstanceOf[Int]
     for (o <- 0 until num_output){

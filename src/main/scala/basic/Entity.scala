@@ -143,6 +143,13 @@ trait Entity extends EntityUtil{
     assign_entity_id(Entities.toList)
     internal_entity_id_counter
   }
+  // Assign parent type and id offspring
+  def assign_parent : Unit ={
+    Ports.foreach(_.parent_type = entity_type)
+    Ports.foreach(_.parent_id = entity_id)
+    Entities.foreach(_.parent_type = entity_type)
+    Entities.foreach(_.parent_id = entity_id)
+  }
 
 
   // Serialize to String --- Seams useless

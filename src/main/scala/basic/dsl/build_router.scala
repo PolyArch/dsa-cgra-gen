@@ -1,12 +1,13 @@
 package basic.dsl
 
 import basic.Constant._
-import basic.{Build,Port, Router}
+import basic.{Build, PValue, Port, Router}
 
 object build_router extends Build {
   // Create Module
   val switch = Router()
   switch.have("Word_Width",64)
+  switch.entity_id = 123456
 
   // Add Internal Parameters
   val input_decompoer = List(1,2,4,1)
@@ -37,8 +38,7 @@ object build_router extends Build {
   switch assign_direction switch.Ports.filter(p=>p.io == OUTPUT_TYPE)
   switch assign_direction switch.Ports.filter(p=>p.io == INPUT_TYPE)
   switch.decompose_all_Ports
-  assign_entity_id(switch.Ports.toList)
-  assign_entity_id(switch.decomposed_ports.toList)
+  switch.decomposed_ports.foreach(p=>p.Parameters("function") = PValue("decomposed"))
 
   // Add Control Port
   val control_port = Port(MMIO_TYPE,false,false)
@@ -46,6 +46,12 @@ object build_router extends Build {
   control_port have ("index_width",16)
   control_port have ("Word_Width",32)
   switch.Ports += control_port
+
+  //
+  switch assign_parent
+
+  // assign entity id to all ports
+  assign_entity_id((switch.Ports ++= switch.decomposed_ports).toList)
 
   // Router Connection (Input/Output Capability)
   for(i <- 0 until num_input){
