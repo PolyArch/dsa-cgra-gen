@@ -2,32 +2,33 @@ package basic
 
 import scala.collection.mutable.ListBuffer
 import basic.Constant._
+
 import scala.math.log
 
 trait RegisterControlled extends Entity {
-  Parameters += "index_config_register" -> -1
-  Parameters += "config_base" -> -1
-  Parameters += "config_bound" -> -1
+  Parameters += "index_config_register" -> PValue(-1)
+  Parameters += "config_base" -> PValue(-1)
+  Parameters += "config_bound" -> PValue(-1)
 }
 
 trait IsPort extends Entity {
-  Parameters += "IO_Type" -> ""
-  Parameters += "hasValid" -> false
-  Parameters += "hasReady" -> false
-  Parameters += "function" -> "" // data/control
+  Parameters += "IO_Type" -> PValue("")
+  Parameters += "hasValid" -> PValue(false)
+  Parameters += "hasReady" -> PValue(false)
+  Parameters += "function" -> PValue("") // data/control
 }
 trait WithWordWidth extends Entity {
-  Parameters += "Word_Width" -> -1
+  Parameters += "Word_Width" -> PValue(-1)
 }
 
 trait WithRegisterFile extends Entity {
-  Parameters += "register_files_length" -> -1
-  Parameters += "register_file_width" -> -1
+  Parameters += "register_files_length" -> PValue(-1)
+  Parameters += "register_file_width" -> PValue(-1)
 }
 
 trait IsDecomposable extends Entity {
-  Parameters += "input_decomposer" -> List()
-  Parameters += "output_decomposer" -> List()
+  Parameters += "input_decomposer" -> PValue(List())
+  Parameters += "output_decomposer" -> PValue(List())
 
   // Generate Decomposable Port
   def decompose_all_Ports:Unit={

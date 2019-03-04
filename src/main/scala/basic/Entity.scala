@@ -68,7 +68,7 @@ trait Entity extends EntityUtil{
   def have(key:String):Boolean = Parameters.isDefinedAt(key)
   def get(key:String):Any = {
     if(Parameters.isDefinedAt(key))
-      Parameters(key)
+      Parameters(key).value
     else
       None
   }
@@ -167,15 +167,11 @@ trait Entity extends EntityUtil{
       <Parent>
         <Type>{parent_type}</Type><ID>{parent_id}</ID>
       </Parent>
-    }else{
-        <Parent/>
     }}
       {if(entity_type != "" || entity_id != -1){
       <Current>
         <Type>{entity_type}</Type><ID>{entity_id}</ID>
       </Current>
-    }else{
-        <Current/>
     }}
       {if(Parameters nonEmpty){
       <Parameters>{Parameters.map(x=>{
@@ -183,38 +179,32 @@ trait Entity extends EntityUtil{
           {
             if(DSE_Options.isDefinedAt(x._1)){
               <PKey DSE="true">{x._1}</PKey>
-              <PValue type={x._2.getClass.getName}>{x._2}</PValue>
+              <PValue type={x._2.getClass.getName}>{x._2.value}</PValue>
               <POptions>{DSE_Options(x._1)}</POptions>
             }else{
               <PKey DSE="false">{x._1}</PKey>
-              <PValue type={x._2.getClass.getName}>{x._2}</PValue>
+              <PValue type={x._2.value.getClass.getName}>{x._2.value}</PValue>
             }
           }
         </KeyValue>
       })}</Parameters>
-    }else{
-      <Parameter/>
     }}
       {if(Sources nonEmpty){
       <Sources>{Sources.map(s=>{
         <SPPair><ID>{s._1}</ID><Port>{s._2}</Port></SPPair>
       })}</Sources>
-    }else{
-      <Sources/>
     }}
       {if(Sinks nonEmpty){
       <Sinks>{Sinks.map(s=>{
         <SPPair><ID>{s._1}</ID><Port>{s._2}</Port></SPPair>
       })}</Sinks>
-    }else{
-      <Sinks/>
     }}
-      {if(Ports nonEmpty){<Ports>{Ports.map(i=>i.toXML)}</Ports>}else{<Ports/>}}
+      {if(Ports nonEmpty){<Ports>{Ports.map(i=>i.toXML)}</Ports>}}
       {if(Relationships nonEmpty){
       <Relationships>{Relationships.map(r=>{<link><Source>{r._1}</Source><Sink>{r._2}</Sink></link>})}</Relationships>
-    }else{<Relationships/>}}
+    }}
       {if(Entities.nonEmpty){
-      <InternalEntities>{Entities.map(e=>{e.toXML})}</InternalEntities>}else{<InternalEntities/>}}
+      <InternalEntities>{Entities.map(e=>{e.toXML})}</InternalEntities>}}
     </Entity>
   }
 }

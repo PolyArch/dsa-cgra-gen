@@ -8,11 +8,11 @@ import scala.collection.mutable.ListBuffer
 object IO_Interface {
   def get_io(p:ListBuffer[Port]) = {
     MixedVec(p map (x=>{
-      x.Parameters("IO_Type") match {
+      x.Parameters("IO_Type").v match {
         case INPUT_TYPE =>{
-          x.Parameters("hasValid") match {
+          x.Parameters("hasValid").v match {
             case true =>
-              Flipped(x.Parameters("hasReady") match {
+              Flipped(x.Parameters("hasReady").v match {
                 case true =>
                   DecoupledIO(UInt(x.get("Word_Width").asInstanceOf[Int].W))
                 case false =>
@@ -23,9 +23,9 @@ object IO_Interface {
           }
         }
         case OUTPUT_TYPE =>{
-          x.Parameters("hasValid") match {
+          x.Parameters("hasValid").v match {
             case true =>
-              x.Parameters("hasReady") match {
+              x.Parameters("hasReady").v match {
                 case true =>
                   DecoupledIO(UInt(x.get("Word_Width").asInstanceOf[Int].W))
                 case false =>

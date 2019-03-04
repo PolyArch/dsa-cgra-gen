@@ -31,7 +31,7 @@ object build_mux extends Build {
 
   // Generate IR
   mux.forsyn
-  val fileName:String = "/home/sihao/ss-stack/ss-cgra-gen/"+ mux.entity_type +".xml"
+  val fileName:String = "/home/sihao/ss-stack/ss-cgra-gen/sample-IR/"+ mux.entity_type +".xml"
   saveXMLFile(mux,fileName)
 
   // Generate Verilog

@@ -66,7 +66,7 @@ class Multiplexer_Hw(p:Entity) extends Module {
     .filter(p=>p.get("IO_Type").asInstanceOf[String] == "OUTPUT")
     .map(x=>x.get("Index").asInstanceOf[Int]).head
 
-  val select2index = p.get("select2input").asInstanceOf[Map[Int,Int]]
+  val select2index = p.get("select2input").asInstanceOf[Map[PValue,PValue]]
 
   // Calculate Intermediate Parameter
   val num_options = index_input_data_ports.length
@@ -84,8 +84,8 @@ class Multiplexer_Hw(p:Entity) extends Module {
 
   // operation
   for (s2i <- select2index){
-    val select = s2i._1
-    val input = s2i._2
+    val select = s2i._1.value.asInstanceOf[Int]
+    val input= s2i._2.value.asInstanceOf[Int]
     when(config === select.U){
       io(output_index).asInstanceOf[DecoupledIO[UInt]] <> io(input).asInstanceOf[DecoupledIO[UInt]]
     }

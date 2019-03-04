@@ -87,7 +87,7 @@ trait BuildIO {
       val isDSE = ((kv \ "PKey") \"@DSE").text.toBoolean
       if (isDSE){
         val k = (kv \ "PKey").text
-        val value : List[Int] = PValueNormalized((kv \ "POptions").text).asInstanceOf[List[Int]]
+        val value : List[Int] = PValueNormalized((kv \ "POptions").text).value.asInstanceOf[List[Int]]
         DSE_Options += k -> value
       }
     }
