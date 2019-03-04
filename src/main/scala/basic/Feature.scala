@@ -26,9 +26,17 @@ trait WithRegisterFile extends Entity {
   Parameters += "register_file_width" -> PValue(-1)
 }
 
-trait IsDecomposable extends Entity {
+trait HasDecomposedPorts extends Entity {
   Parameters += "input_decomposer" -> PValue(List())
   Parameters += "output_decomposer" -> PValue(List())
+
+  val decomposed_ports : ListBuffer[Port] = new ListBuffer[Port]()
+
+  def get_subnet_port(io:String,port_index:Int,subnet:Int):Port={
+    decomposed_ports
+      .find(p=>p.io == io && p.get("Port_Index").asInstanceOf[Int] == port_index &&
+        p.get("Sub_Net_Index").asInstanceOf[Int] == subnet).get
+  }
 
   // Generate Decomposable Port
   def decompose_all_Ports:Unit={
@@ -43,8 +51,8 @@ trait IsDecomposable extends Entity {
     decompoed_input_ports.foreach(temp_port += _)
     decompoed_output_ports.foreach(temp_port += _)
     ori_control_ports.foreach(temp_port += _)
-    Ports --= Ports;temp_port.foreach(Ports += _)
-    assign_index
+    temp_port.foreach(decomposed_ports += _)
+    assign_index(decomposed_ports)
   }
   def decompose_ports(ports:ListBuffer[Port],decomp:List[Int]):ListBuffer[Port]={
     require(ports.length == decomp.length)

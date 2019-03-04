@@ -8,7 +8,7 @@ import scala.collection.mutable.{ListBuffer, Map}
 
 case class Router() extends Entity
   with WithRegisterFile
-  with IsDecomposable
+  with HasDecomposedPorts
   with WithWordWidth{
   entity_type = this.getClass.getName
 
@@ -16,8 +16,8 @@ case class Router() extends Entity
     val num_input = get("num_input").asInstanceOf[Int]
     val num_output = get("num_output").asInstanceOf[Int]
     for (o <- 0 until num_output){
-      val sink_ports = Ports.filter(p=>p.get("Port_Index").asInstanceOf[Int] == o &&
-        p.get("IO_Type").asInstanceOf[String] == OUTPUT_TYPE)
+      val sink_ports = Ports.filter(p=>p.io == OUTPUT_TYPE &&
+        p.get("Port_Index").asInstanceOf[Int] == o)
       for (sink_port <- sink_ports){
         val sink_port_index = sink_port.entity_id
         val sources_port_id = Relationships.filter(r=>r._2 == sink_port_index).map(_._1)

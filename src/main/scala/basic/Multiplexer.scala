@@ -13,7 +13,7 @@ case class Multiplexer() extends Entity
   entity_type = this.getClass.getName
   def forsyn: Unit = {
     // Initialize the Parameter
-    assign_index
+    assign_index(Ports)
     val input_ports = Ports.filter(p=>p.io == INPUT_TYPE)
     val output_ports = Ports.filter(p=>p.io == OUTPUT_TYPE)
 

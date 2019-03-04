@@ -126,9 +126,8 @@ trait Entity extends EntityUtil{
       Ports.foreach(x=>{x.have("Word_Width",get("Word_Width"));x.passdown_word_width})
   }
   // assign port index
-  def assign_index :Unit = {
-    val p = Ports
-    for(index<- 0 until p.length){
+  def assign_index(p:ListBuffer[Port]) :Unit = {
+    for(index<- p.indices){
       p(index).have("Index",index)
     }
   }
