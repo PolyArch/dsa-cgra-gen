@@ -21,14 +21,14 @@ trait BuildIO {
   // Normalize the XML File to Entity
   def load_Entity_fromXML(xmlNode:NodeSeq):Entity = {
 
-    val Parent = (xmlNode \ "Parent")
-    val Current = (xmlNode \ "Current")
+    val Parent = xmlNode \ "Parent"
+    val Current = xmlNode \ "Current"
     val sources = xmlNode \ "Sources"
     val sinks = xmlNode \ "Sinks"
     val ports = xmlNode \ "Ports"
     val parameters = xmlNode \ "Parameters"
     val relationships = xmlNode \ "Relationships"
-    val internalentities = xmlNode \ "InternalEntities"
+    val internalentities = (xmlNode \ "InternalEntities") \ "Entity"
 
     val loadEntity = new Entity {
       if(Parent.text != ""){
@@ -66,6 +66,8 @@ trait BuildIO {
       val hasReady = pe.get("hasReady").toString.toBoolean
       val temp_port = Port(iotype,hasValid,hasReady)
       temp_port.copyInternalEntity(pe)
+      temp_port.parent_type = pe.parent_type;temp_port.parent_id = pe.parent_id
+      temp_port.entity_type = pe.entity_type;temp_port.entity_id = pe.entity_id
       temp_ports += temp_port
     }
     temp_ports
@@ -75,7 +77,7 @@ trait BuildIO {
     val kv_list = node \ "KeyValue"
     for (kv <- kv_list){
       val key = (kv \ "PKey").text
-      val value : PValue = PValueNormalized((kv \ "PValue").text)
+      val value : PValue = PValue(PValueNormalized((kv \ "PValue").text))
       Parameters += key -> value
     }
     Parameters
@@ -87,13 +89,13 @@ trait BuildIO {
       val isDSE = ((kv \ "PKey") \"@DSE").text.toBoolean
       if (isDSE){
         val k = (kv \ "PKey").text
-        val value : List[Int] = PValueNormalized((kv \ "POptions").text).value.asInstanceOf[List[Int]]
+        val value : List[Int] = PValueNormalized((kv \ "POptions").text).asInstanceOf[List[Int]]
         DSE_Options += k -> value
       }
     }
     DSE_Options
   }
-  def PValueNormalized (value:String) : PValue ={
+  def PValueNormalized (value:String) : Any ={
     // Determine Type
     def isInt(value:String):Boolean = {
       try{
@@ -136,6 +138,18 @@ trait BuildIO {
 
     // If-Else Condition
     if(isInt(value)){
+      value.toInt
+    }else if(isIntList(value)){
+      toIntList(value)
+    }else if(isBoolean(value)){
+      value.toBoolean
+    }else if(isMap(value)){
+      toMap(value)
+    }else{
+      value
+    }
+    /*
+    if(isInt(value)){
       PValue(value.toInt)
     }else if(isIntList(value)){
       PValue(toIntList(value))
@@ -146,7 +160,7 @@ trait BuildIO {
     }else{
       PValue(value)
     }
-
+    */
   }
   def SourceSinkPortMap(node:NodeSeq):ListBuffer[(Int,Int)]={
     val sp_pairs = node \ "SPPair"

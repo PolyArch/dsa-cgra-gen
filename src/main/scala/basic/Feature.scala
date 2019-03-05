@@ -22,8 +22,23 @@ trait WithWordWidth extends Entity {
 }
 
 trait WithRegisterFile extends Entity {
-  Parameters += "register_files_length" -> PValue(-1)
+  Parameters += "register_file_length" -> PValue(-1)
   Parameters += "register_file_width" -> PValue(-1)
+  // Calculate config sec, basc and bound
+  def calaulate_config_location(config_width:Int, control_width:Int, // range is control width
+                                previous_sec:Int, previous_bound:Int) :(Int,Int,Int)= {
+    var try_base = previous_bound + 1
+    var try_bound = previous_bound + control_width
+    var try_config_sec = previous_sec
+    if (try_bound/config_width == 1){
+      try_base = 0
+      try_bound = try_base + control_width - 1
+      try_config_sec += 1
+    }else if (try_bound/config_width > 1){
+      throw new Exception("Range cover two config registers")
+    }
+    (try_config_sec,try_bound,try_base)
+  }
 }
 
 trait HasDecomposedPorts extends Entity {
@@ -52,7 +67,6 @@ trait HasDecomposedPorts extends Entity {
     decompoed_output_ports.foreach(temp_port += _)
     ori_control_ports.foreach(temp_port += _)
     temp_port.foreach(decomposed_ports += _)
-    assign_index(decomposed_ports)
   }
   def decompose_ports(ports:ListBuffer[Port],decomp:List[Int]):ListBuffer[Port]={
     require(ports.length == decomp.length)

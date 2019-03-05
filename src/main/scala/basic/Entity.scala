@@ -150,6 +150,17 @@ trait Entity extends EntityUtil{
     Entities.foreach(_.parent_type = entity_type)
     Entities.foreach(_.parent_id = entity_id)
   }
+  // Check connection between port have same word width
+  def check_port_connection : Unit = {
+    Relationships.foreach(r=>{
+      val source_id = r._1
+      val sink_id = r._2
+      val all_ports = Ports.toList ::: Entities.flatMap(e=>e.Ports).toList
+      val source_port = all_ports.find(_.entity_id == source_id).get
+      val sink_port = all_ports.find(_.entity_id == sink_id).get
+      require(source_port.get("Word_Width").asInstanceOf[Int] == sink_port.get("Word_Width").asInstanceOf[Int])
+    })
+  }
 
 
   // Serialize to String --- Seams useless

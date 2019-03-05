@@ -19,15 +19,8 @@ object build_mux extends Build {
     Port(INPUT_TYPE,true,true) +=
     Port(INPUT_TYPE,true,true)
   mux.Ports += Port(OUTPUT_TYPE,true,true)
-  mux.Ports.foreach(x=>x.have("function","data"))
 
   mux passdown_word_width
-
-  // Add Control Port
-  val config_port = Port(INPUT_TYPE,false,false)
-  config_port have ("function","control")
-  config_port have("Word_Width",log2Ceil(4 + 1))
-  mux have config_port
 
   // Generate IR
   mux.forsyn

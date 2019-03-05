@@ -12,10 +12,16 @@ case class Multiplexer() extends Entity
   with WithWordWidth {
   entity_type = this.getClass.getName
   def forsyn: Unit = {
-    // Initialize the Parameter
-    assign_index(Ports)
+    // Initialize the Parameter and Add Control Port
     val input_ports = Ports.filter(p=>p.io == INPUT_TYPE)
     val output_ports = Ports.filter(p=>p.io == OUTPUT_TYPE)
+    Ports.foreach(x=>x.have("function","data"))
+
+    val config_port = Port(INPUT_TYPE,false,false)
+    config_port have ("function","control")
+    config_port have("Word_Width",log2Ceil(input_ports.length + 1))
+    this have config_port
+    assign_index(Ports)
 
     // Assign Virtual Source to Physical Port
     if(Sources nonEmpty){
@@ -36,7 +42,7 @@ case class Multiplexer() extends Entity
     }
 
     // Calculate Intermediate Parameters
-    val index_config_port = input_ports.find(x=>x.get("function") == "control").get.get("Index")
+    val index_config_port = Ports.find(x=>x.get("function") == "control").get.get("Index")
     val index_input_data_port = input_ports
       .filter(x=>x.get("function") ==  "data")
       .map(_.get("Index").asInstanceOf[Int]).toList
@@ -66,7 +72,7 @@ class Multiplexer_Hw(p:Entity) extends Module {
     .filter(p=>p.get("IO_Type").asInstanceOf[String] == "OUTPUT")
     .map(x=>x.get("Index").asInstanceOf[Int]).head
 
-  val select2index = p.get("select2input").asInstanceOf[Map[PValue,PValue]]
+  val select2index = p.get("select2input").asInstanceOf[Map[Int,Int]]
 
   // Calculate Intermediate Parameter
   val num_options = index_input_data_ports.length
@@ -84,8 +90,8 @@ class Multiplexer_Hw(p:Entity) extends Module {
 
   // operation
   for (s2i <- select2index){
-    val select = s2i._1.value.asInstanceOf[Int]
-    val input= s2i._2.value.asInstanceOf[Int]
+    val select = s2i._1.asInstanceOf[Int]
+    val input= s2i._2.asInstanceOf[Int]
     when(config === select.U){
       io(output_index).asInstanceOf[DecoupledIO[UInt]] <> io(input).asInstanceOf[DecoupledIO[UInt]]
     }

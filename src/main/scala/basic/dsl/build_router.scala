@@ -8,11 +8,13 @@ object build_router extends Build {
   val switch = Router()
   switch.have("Word_Width",64)
   switch.entity_id = 123456
+  switch.have("register_file_length",5,1,16,1)
+  switch.have("register_file_width",16,List(4,8,16,32,64))
 
   // Add Internal Parameters
-  val input_decompoer = List(1,2,4,1)
+  val input_decompoer = List(2,2,2,2,2,4,4,1,1)
   val num_input = input_decompoer.length
-  val output_decomposer = List(2,2,1,1,4)
+  val output_decomposer = List(2,2,1,4)
   val num_output = output_decomposer.length
   switch have("default decomposer",1)
   switch have("num_input",num_input)
@@ -25,9 +27,13 @@ object build_router extends Build {
     Port(INPUT_TYPE,true,true) +=
     Port(INPUT_TYPE,true,true) +=
     Port(INPUT_TYPE,true,true) +=
+    Port(INPUT_TYPE,true,true) +=
+    Port(INPUT_TYPE,true,true) +=
+    Port(INPUT_TYPE,true,true) +=
+    Port(INPUT_TYPE,true,true) +=
+    Port(INPUT_TYPE,true,true) +=
     Port(INPUT_TYPE,true,true)
   switch.Ports +=
-    Port(OUTPUT_TYPE,true,true) +=
     Port(OUTPUT_TYPE,true,true) +=
     Port(OUTPUT_TYPE,true,true) +=
     Port(OUTPUT_TYPE,true,true) +=
@@ -38,7 +44,8 @@ object build_router extends Build {
   switch assign_direction switch.Ports.filter(p=>p.io == OUTPUT_TYPE)
   switch assign_direction switch.Ports.filter(p=>p.io == INPUT_TYPE)
   switch.decompose_all_Ports
-  switch.decomposed_ports.foreach(p=>p.Parameters("function") = PValue("decomposed"))
+  switch.Ports --= switch.Ports
+  switch.Ports ++= switch.decomposed_ports
 
   // Add Control Port
   val control_port = Port(MMIO_TYPE,false,false)
@@ -47,20 +54,26 @@ object build_router extends Build {
   control_port have ("Word_Width",32)
   switch.Ports += control_port
 
-  //
+  // Assign Parent and Index
+  switch assign_index switch.Ports
   switch assign_parent
 
   // assign entity id to all ports
-  assign_entity_id((switch.Ports ++= switch.decomposed_ports).toList)
+  switch.internal_entity_id_counter =
+    assign_entity_id(switch.Ports.toList ::: switch.decomposed_ports.toList)
 
   // Router Connection (Input/Output Capability)
   for(i <- 0 until num_input){
-    val source_port = switch.Ports
-      .find(p=>p.io == INPUT_TYPE && p.get("Port_Index").asInstanceOf[Int] == i).get
+    val num_input_subnet = input_decompoer(i)
     for (o <- 0 until num_output){
-      val sink_port = switch.Ports
-        .find(p=>p.io == OUTPUT_TYPE && p.get("Port_Index").asInstanceOf[Int] == o).get
-      switch have(source_port --> sink_port)
+      val num_output_subnet = output_decomposer(o)
+      if(num_input_subnet == num_output_subnet){
+        for(s <- 0 until num_output_subnet){
+          val source_port = switch.get_subnet_port(INPUT_TYPE,i,s)
+          val sink_port = switch.get_subnet_port(OUTPUT_TYPE,o,s)
+          switch have(source_port --> sink_port)
+        }
+      }
     }
   }
 
@@ -72,11 +85,11 @@ object build_router extends Build {
   switch have(decomp_source_port --> decomp_sink_port)
 
   // Generate IR
-  //switch.forsyn
+  switch.forsyn
   val fileName:String = "/home/sihao/ss-stack/ss-cgra-gen/sample-IR/"+ switch.entity_type +".xml"
   saveXMLFile(switch,fileName)
 
   // Generate Verilog
-  //val switchEntity = load_Entity_fromXML(loadXMLFile(fileName))
-  //instantiate(switchEntity)
+  val switchEntity = load_Entity_fromXML(loadXMLFile(fileName))
+  instantiate(switchEntity)
 }
