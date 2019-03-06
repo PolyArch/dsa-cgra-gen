@@ -1,7 +1,7 @@
 ### Project Specific stuff
 test_run_dir/*
 ### XilinxISE template
-# intermediate build files
+# intermediate old.build files
 *.bgn
 *.bit
 *.bld
@@ -227,7 +227,7 @@ atlassian-ide-plugin.xml
 # Crashlytics plugin (for Android Studio and IntelliJ)
 com_crashlytics_export_strings.xml
 crashlytics.properties
-crashlytics-build.properties
+crashlytics-old.build.properties
 ### C++ template
 # Compiled Object files
 *.slo
@@ -288,7 +288,7 @@ Temporary Items
 # gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
 
 ## Build generated
-build/
+old.build/
 DerivedData
 
 ## Various settings
