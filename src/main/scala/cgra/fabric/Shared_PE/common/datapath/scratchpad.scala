@@ -1,16 +1,18 @@
 package cgra.fabric.Shared_PE.common.datapath
 
+import cgra.IO.mmio_if
+import cgra.entity.Entity
 import cgra.fabric.Shared_PE.common.memory._
-import cgra.fabric.Shared_PE.common.mmio.mmio_if
 import cgra.fabric.Shared_PE.mmio._
-import cgra.fabric.Shared_PE.parameters.derived_parameters._
+import cgra.fabric.Shared_PE.parameters.derived_parameters
 import chisel3._
 import chisel3.util._
 
-class scratchpad extends Module{
+class scratchpad(p:Entity) extends Module with derived_parameters{
+  parameter_update(p)
   val io = IO(new Bundle {
       val opcode = Input(UInt(TIA_OP_WIDTH.W))
-      val hostInterface = new mmio_if
+      val hostInterface = mmio_if(TIA_MMIO_INDEX_WIDTH,TIA_MMIO_DATA_WIDTH)
       val operand0 = Input(UInt(TIA_WORD_WIDTH.W))
       val operand1 = Input(UInt(TIA_WORD_WIDTH.W))
       val result = Output(UInt(TIA_WORD_WIDTH.W))
@@ -64,8 +66,9 @@ class scratchpad extends Module{
   }
 
 }
-
+/*
 object spmDriver extends App
 {
   chisel3.Driver.execute(args, () => new scratchpad)
 }
+*/

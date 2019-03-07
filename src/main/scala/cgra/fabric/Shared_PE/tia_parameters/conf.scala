@@ -1,5 +1,5 @@
 package cgra.fabric.Shared_PE.parameters
-
+/*
 trait conf {
 
   val TIA_HAS_CORE_MONITOR:Boolean = true
@@ -11,3 +11,4 @@ trait conf {
 
   val TIA_HAS_SCRATCHPAD:Boolean = true
 }
+*/

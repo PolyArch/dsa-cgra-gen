@@ -69,10 +69,11 @@ class Arithmetic_Logic_Unit_Hw(p:Entity) extends Module{
   operand0_unsigned <> io(operand_index.head)
   operand1_unsigned <> io(operand_index(1))
   if(contain_three_inst(inst_list)) operand2_unsigned <> io(operand_index(2))
+  else operand2_unsigned := 0.U
   operand0_signed := io(operand_index.head).asUInt.asSInt()
   operand1_signed := io(operand_index(1)).asUInt.asSInt()
   if(contain_three_inst(inst_list)) operand2_signed := io(operand_index(2)).asUInt.asSInt
-
+  else operand2_signed := 0.S
   //default output
   result_signed := 0.S
   result_unsigned := 0.U

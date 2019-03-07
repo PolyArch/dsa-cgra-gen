@@ -1,67 +1,70 @@
 package cgra.fabric.Shared_PE.common.interconnect
 
-import cgra.fabric.Shared_PE.parameters.derived_parameters._
+import cgra.entity.Entity
+import cgra.fabric.Shared_PE.parameters.derived_parameters
 import chisel3._
 import chisel3.util._
 
-class channel_if_sender(bufferDepth :Int) extends Bundle{
+class channel_if_sender(p:Entity) extends Bundle with derived_parameters{
+  parameter_update(p)
   // data packet
-  val pack = Output(new packet_t)
-  val next_pack = Output(new packet_t)
+  val pack = Output(new packet_t(TIA_TAG_WIDTH,TIA_WORD_WIDTH))
+  val next_pack = Output(new packet_t(TIA_TAG_WIDTH,TIA_WORD_WIDTH))
   // channel action
   val dequeue = Input(Bool())
   // channel status
   val empty = Output(Bool())
-  val count = Output(UInt(log2Ceil(bufferDepth + 1).W))
+  val count = Output(UInt(TIA_CHANNEL_BUFFER_COUNT_WIDTH.W))
   override def cloneType =
-    new channel_if_sender(bufferDepth).asInstanceOf[this.type]
+    new channel_if_sender(p).asInstanceOf[this.type]
 }
 
-class channel_if_receiver(bufferDepth :Int) extends Bundle {
+class channel_if_receiver(p:Entity) extends Bundle with derived_parameters{
+  parameter_update(p)
   // data packet
-  val pack = Input(new packet_t)
+  val pack = Input(new packet_t(TIA_TAG_WIDTH,TIA_WORD_WIDTH))
   // channel action
   val enqueue = Input(Bool())
   // channel status
   val full = Output(Bool())
-  val count = Output(UInt(log2Ceil(bufferDepth + 1).W))
+  val count = Output(UInt(TIA_CHANNEL_BUFFER_COUNT_WIDTH.W))
   override def cloneType =
-    new channel_if_receiver(bufferDepth).asInstanceOf[this.type]
+    new channel_if_receiver(p).asInstanceOf[this.type]
 }
 
-class channel_if_sender_t(bufferDepth:Int) extends Bundle {
-  val pack = new packet_t
-  val next_pack = new packet_t
+class channel_if_sender_t(p:Entity) extends Bundle with derived_parameters{
+  parameter_update(p)
+  val pack = new packet_t(TIA_TAG_WIDTH,TIA_WORD_WIDTH)
+  val next_pack = new packet_t(TIA_TAG_WIDTH,TIA_WORD_WIDTH)
   val dequeue = Bool()
   val empty = Bool()
-  val count = UInt(log2Ceil(bufferDepth + 1).W)
+  val count = UInt(TIA_CHANNEL_BUFFER_COUNT_WIDTH.W)
   override def cloneType =
-    new channel_if_sender_t(bufferDepth).asInstanceOf[this.type]
+    new channel_if_sender_t(p).asInstanceOf[this.type]
 }
 
-class channel_if_receiver_t(bufferDepth :Int) extends Bundle {
-  val pack = new packet_t
+class channel_if_receiver_t(p:Entity) extends Bundle with derived_parameters{
+  parameter_update(p)
+  val pack = new packet_t(TIA_TAG_WIDTH,TIA_WORD_WIDTH)
   val enqueue = Bool()
   val full = Bool()
-  val count = UInt(log2Ceil(bufferDepth + 1).W)
+  val count = UInt(TIA_CHANNEL_BUFFER_COUNT_WIDTH.W)
   override def cloneType =
-    new channel_if_receiver_t(bufferDepth).asInstanceOf[this.type]
+    new channel_if_receiver_t(p).asInstanceOf[this.type]
 }
 
-class links_if_in(numLinks:Int) extends Bundle {
-  val in_links = Vec(numLinks,new link_if_in)
+class link_if_out(tag_width:Int,word_width:Int) extends ReqAckIO {
+  // packet
+  val packet = Output(new packet_t(tag_width,word_width))
+
+  override def cloneType: link_if_out.this.type = new link_if_out(tag_width,word_width).asInstanceOf[this.type]
+}
+
+class link_if_in(tag_width:Int,word_width:Int) extends ReqAckIO {
+  // packet
+  val packet = Input(new packet_t(tag_width,word_width))
   override def cloneType =
-    new links_if_in(numLinks).asInstanceOf[this.type]
-}
-
-class link_if_out extends ReqAckIO {
-  // packet
-  val packet = Output(new packet_t)
-}
-
-class link_if_in extends ReqAckIO {
-  // packet
-  val packet = Input(new packet_t)
+    new link_if_in(tag_width,word_width).asInstanceOf[this.type]
 }
 
 class ReqAckIO extends Bundle {
@@ -69,7 +72,10 @@ class ReqAckIO extends Bundle {
   val ack = Output(Bool())
 }
 
-class packet_t extends Bundle{
-  val tag = UInt(TIA_TAG_WIDTH.W)
-  val data = UInt(TIA_WORD_WIDTH.W)
+class packet_t(tag_width:Int,word_width:Int) extends Bundle {
+
+  val tag = UInt(tag_width.W)
+  val data = UInt(word_width.W)
+  override def cloneType =
+    new packet_t(tag_width,word_width).asInstanceOf[this.type]
 }

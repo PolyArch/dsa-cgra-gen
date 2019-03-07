@@ -1,14 +1,17 @@
 package cgra.fabric.Shared_PE.common.interconnect
 
-import cgra.fabric.Shared_PE.parameters.derived_parameters._
+import cgra.entity.Entity
+import cgra.fabric.Shared_PE.parameters.derived_parameters
 import chisel3._
 import chisel3.util._
 
-class channel_buffer(bufferDepth :Int) extends Module{
+class channel_buffer(p:Entity) extends Module with derived_parameters{
+  parameter_update(p)
+  val bufferDepth = TIA_CHANNEL_BUFFER_FIFO_DEPTH
   val io = IO(new Bundle{
     val enable = Input(Bool())
-    val sender = new channel_if_sender(bufferDepth)
-    val receiver = new channel_if_receiver(bufferDepth)
+    val sender = new channel_if_sender(p)
+    val receiver = new channel_if_receiver(p)
   })
 
   // Initialize FIFO
@@ -80,17 +83,18 @@ class channel_buffer(bufferDepth :Int) extends Module{
   }
 }
 
-class output_channel_buffer(bufferDepth :Int) extends Module{
+class output_channel_buffer(p:Entity) extends Module with derived_parameters{
+  parameter_update(p)
   val io = IO(
     new Bundle {
       val enable = Input(Bool())
-      val in = new channel_if_receiver(bufferDepth)
-      val out = new link_if_out
+      val in = new channel_if_receiver(p)
+      val out = new link_if_out(TIA_TAG_WIDTH,TIA_WORD_WIDTH)
       val quiescent = Output(Bool())
     }
   )
 
-  val channel_buffer = Module(new channel_buffer(bufferDepth)).io
+  val channel_buffer = Module(new channel_buffer(p)).io
 
   // capitulate to link
   io.out.packet.tag := channel_buffer.sender.pack.tag
@@ -104,17 +108,18 @@ class output_channel_buffer(bufferDepth :Int) extends Module{
   io.quiescent := channel_buffer.sender.empty
 }
 
-class input_channel_buffer(bufferDepth :Int) extends Module{
+class input_channel_buffer(p:Entity) extends Module with derived_parameters{
+  parameter_update(p)
   val io = IO(
     new Bundle {
       val enable = Input(Bool())
-      val in = new link_if_in
-      val out = new channel_if_sender(bufferDepth)
+      val in = new link_if_in(TIA_TAG_WIDTH,TIA_WORD_WIDTH)
+      val out = new channel_if_sender(p)
       val quiescent = Output(Bool())
     }
   )
 
-  val channel_buffer = Module(new channel_buffer(bufferDepth)).io
+  val channel_buffer = Module(new channel_buffer(p)).io
 
   // capitulate to link
   channel_buffer.receiver.enqueue := io.in.req
@@ -127,7 +132,7 @@ class input_channel_buffer(bufferDepth :Int) extends Module{
   io.out <> channel_buffer.sender
   io.quiescent := channel_buffer.sender.empty
 }
-
+/*
 object channelDriver extends App {
   chisel3.Driver.execute(args, () => new channel_buffer(15))
 }
@@ -139,3 +144,4 @@ object inputChannelDriver extends App {
 object outputChannelDriver extends App {
   chisel3.Driver.execute(args, () => new output_channel_buffer(15))
 }
+*/

@@ -1,16 +1,19 @@
 
 package cgra.fabric.Shared_PE.common.datapath
 
+import cgra.entity.Entity
 import cgra.fabric.Shared_PE.common.Instructions.Instructions
 import cgra.fabric.Shared_PE.datapath.floatpoint._
-import cgra.fabric.Shared_PE.parameters.derived_parameters._
+import cgra.fabric.Shared_PE.parameters.derived_parameters
 import chisel3._
 import chisel3.util._
 
-class arithmetic_logic_unit(word_width:Int,
-                            inst_list:List[Int]) extends Module
-  with Instructions {
+class arithmetic_logic_unit(p:Entity) extends Module
+  with Instructions with derived_parameters{
+  parameter_update(p)
 
+  val word_width = TIA_WORD_WIDTH
+  val inst_list = p.get("inst_list").asInstanceOf[List[Int]]
   val op_width = log2Ceil(inst_list.length)
 
   val io = IO(
@@ -141,11 +144,11 @@ class arithmetic_logic_unit(word_width:Int,
       }
     }
 
-  when(unsigned_insts.exists(_ === op)){
+  when(VecInit(unsigned_insts_list.map(x=>x.U)).exists(_ === op)){
     io.result := result_unsigned
-  } .elsewhen( signed_insts.exists( _ === op)){
+  } .elsewhen( VecInit(signed_insts_list.map(_.U)).exists( _ === op)){
     io.result := result_signed.asUInt()
-  } .elsewhen(float_insts.exists(_ === op)){
+  } .elsewhen(VecInit(float_insts_list.map(_.U)).exists(_ === op)){
     io.result := fpResult
   } .otherwise {
     io.result := 0.U
@@ -159,8 +162,9 @@ class arithmetic_logic_unit(word_width:Int,
   printf("-----------------------------------\n")
 
 }
-
+/*
 object AluDriver extends App
 {
   chisel3.Driver.execute(args, () => new arithmetic_logic_unit(64,List(1,3,4,6,7,9,10)))
 }
+*/

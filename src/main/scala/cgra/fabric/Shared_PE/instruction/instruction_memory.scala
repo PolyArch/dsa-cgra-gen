@@ -1,25 +1,26 @@
 package cgra.fabric.Shared_PE.instruction
 
-import cgra.fabric.Shared_PE.common.mmio.mmio_if
+import cgra.IO.mmio_if
+import cgra.entity.Entity
 import chisel3._
-import chisel3.iotesters.PeekPokeTester
 import chisel3.util._
 import cgra.fabric.Shared_PE.control._
-import cgra.fabric.Shared_PE.mmio._
-import cgra.fabric.Shared_PE.parameters.derived_parameters._
+import cgra.fabric.Shared_PE.parameters.derived_parameters
 
-class instruction_memory extends Module
-  with inst_util{
+class instruction_memory(p:Entity) extends Module
+  with derived_parameters{
+  parameter_update(p)
+
   val io = IO(new Bundle{
     val enable = Input(Bool())
-    val host_interface = new mmio_if
-    val triggers = Vec(TIA_MAX_NUM_INSTRUCTIONS,Output(new trigger_t))
+    val host_interface = mmio_if(TIA_MMIO_INDEX_WIDTH,TIA_MMIO_DATA_WIDTH)
+    val triggers = Vec(TIA_MAX_NUM_INSTRUCTIONS,Output(new trigger_t(p)))
     val triggered_instruction_valid = Input(Bool())
     val triggered_instruction_index = Input(UInt(TIA_INSTRUCTION_INDEX_WIDTH.W))
-    val triggered_datapath_instruction = Output(new datapath_instruction_t)
+    val triggered_datapath_instruction = Output(new datapath_instruction_t(p))
   })
 
-  val mm_instruction = VecInit(Seq.fill(TIA_MAX_NUM_INSTRUCTIONS){Module(new mm_instruction).io })
+  val mm_instruction = VecInit(Seq.fill(TIA_MAX_NUM_INSTRUCTIONS){Module(new mm_instruction(p)).io })
 
   val instruction_write_index = Wire(UInt(TIA_INSTRUCTION_INDEX_WIDTH.W))
   val word_write_index = Wire(UInt(log2Ceil(TIA_MM_INSTRUCTION_WIDTH / TIA_MMIO_DATA_WIDTH).W))
@@ -48,7 +49,7 @@ class instruction_memory extends Module
   io.host_interface.write_ack := io.host_interface.write_req
 
   // default
-  io.triggered_datapath_instruction := Module(new zero_mm_instruction).io
+  io.triggered_datapath_instruction := Module(new zero_mm_instruction(p)).io
   // trigger one instruction
   when(io.triggered_instruction_valid){
     io.triggered_datapath_instruction := mm_instruction(io.triggered_instruction_index).read
@@ -91,7 +92,8 @@ class instruction_memory extends Module
     }
   }
 }
-
+/*
 object instM_Driver extends App {
   chisel3.Driver.execute(args, () => new instruction_memory)
 }
+*/

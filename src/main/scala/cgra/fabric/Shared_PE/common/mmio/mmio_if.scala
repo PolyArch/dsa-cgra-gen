@@ -1,9 +1,12 @@
 package cgra.fabric.Shared_PE.common.mmio
 
-import cgra.fabric.Shared_PE.parameters.derived_parameters._
+import cgra.IO.mmio_if
+import cgra.entity.Entity
+import cgra.fabric.Shared_PE.parameters.derived_parameters
 import chisel3._
-
-class mmio_if extends Bundle {
+/*
+class mmio_if(p:Entity) extends Bundle with derived_parameters{
+  parameter_update(p)
 
   // DEVICE that store data, **use Flipped(new mmio_if) for those who consume data (like ALU)
 
@@ -17,8 +20,9 @@ class mmio_if extends Bundle {
   val write_index = Input(UInt(TIA_MMIO_INDEX_WIDTH.W))
   val write_data = Input(UInt(TIA_MMIO_DATA_WIDTH.W))
 }
-
-class mmio_if_t extends Bundle{
+*/
+class mmio_if_t(p:Entity) extends Bundle with derived_parameters{
+  parameter_update(p)
   val read_req = Bool()
   val read_ack = Bool()
   val read_index = UInt(TIA_MMIO_INDEX_WIDTH.W)
@@ -28,10 +32,13 @@ class mmio_if_t extends Bundle{
   val write_ack = Bool()
   val write_index = UInt(TIA_MMIO_INDEX_WIDTH.W)
   val write_data = UInt(TIA_MMIO_DATA_WIDTH.W)
+
+  override def cloneType: mmio_if_t.this.type = new mmio_if_t(p).asInstanceOf[this.type]
 }
 
-class unused_host_interface extends Module {
-  val io = IO(new mmio_if)
+class unused_host_interface(p:Entity) extends Module with derived_parameters{
+  parameter_update(p)
+  val io = IO(mmio_if(TIA_MMIO_INDEX_WIDTH,TIA_MMIO_DATA_WIDTH))
   io.read_ack := false.B
   io.read_data := 0.U
   io.write_ack := false.B

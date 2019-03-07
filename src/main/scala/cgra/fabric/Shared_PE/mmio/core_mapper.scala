@@ -1,17 +1,19 @@
 package cgra.fabric.Shared_PE.mmio
 
-import cgra.fabric.Shared_PE.common.mmio.mmio_if
+import cgra.IO.mmio_if
+import cgra.entity.Entity
+import cgra.fabric.Shared_PE.parameters.derived_parameters
 import chisel3._
-import cgra.fabric.Shared_PE.parameters.derived_parameters._
 
-class core_mapper extends Module{
+class core_mapper(p:Entity) extends Module with derived_parameters{
+  parameter_update(p)
   val io =  IO(new Bundle{
-    val host_interface = new mmio_if
-    val monitor_interface = Flipped(new mmio_if)
-    val performance_counters_interface = Flipped(new mmio_if)
-    val register_file_interface = Flipped(new mmio_if)
-    val instruction_memory_interface = Flipped(new mmio_if)
-    val scratchpad_memory_interface = Flipped(new mmio_if)
+    val host_interface = mmio_if(TIA_MMIO_INDEX_WIDTH,TIA_MMIO_DATA_WIDTH)
+    val monitor_interface = Flipped( mmio_if(TIA_MMIO_INDEX_WIDTH,TIA_MMIO_DATA_WIDTH))
+    val performance_counters_interface = Flipped( mmio_if(TIA_MMIO_INDEX_WIDTH,TIA_MMIO_DATA_WIDTH))
+    val register_file_interface = Flipped( mmio_if(TIA_MMIO_INDEX_WIDTH,TIA_MMIO_DATA_WIDTH))
+    val instruction_memory_interface = Flipped( mmio_if(TIA_MMIO_INDEX_WIDTH,TIA_MMIO_DATA_WIDTH))
+    val scratchpad_memory_interface = Flipped( mmio_if(TIA_MMIO_INDEX_WIDTH,TIA_MMIO_DATA_WIDTH))
   })
   
   val host_interface:mmio_if = io.host_interface
@@ -135,6 +137,8 @@ class core_mapper extends Module{
     }
   }
 }
+/*
 object coreM_Driver extends App {
   chisel3.Driver.execute(args, () => new core_mapper)
 }
+*/

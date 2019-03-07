@@ -1,15 +1,16 @@
 package cgra.fabric.Shared_PE.control
 
+import cgra.entity.Entity
+import cgra.fabric.Shared_PE.parameters.derived_parameters
 import chisel3._
 import chisel3.util._
-import cgra.fabric.Shared_PE.parameters.derived_parameters._
 
-class trigger_resolver extends Module
-  {
-
+class trigger_resolver(p:Entity) extends Module
+  with derived_parameters{
+  parameter_update(p)
   val io = IO(
     new Bundle {
-      val trigger = Input(new trigger_t)
+      val trigger = Input(new trigger_t(p))
       val predicates = Input(UInt(TIA_NUM_PREDICATES.W))
       val input_channel_empty_status = Input(UInt(TIA_NUM_INPUT_CHANNELS.W))
       val input_channel_tags = Input(Vec(TIA_NUM_INPUT_CHANNELS,UInt(TIA_TAG_WIDTH.W)))
@@ -94,8 +95,9 @@ class trigger_resolver extends Module
 }
 
 
-
+/*
 object trigger_resolver_Driver extends App
 {
   chisel3.Driver.execute(args, () => new trigger_resolver)
 }
+*/

@@ -1,11 +1,13 @@
 package cgra.fabric.Shared_PE.datapath
 
+import cgra.entity.Entity
+import cgra.fabric.Shared_PE.parameters.derived_parameters
 import chisel3._
 import chisel3.iotesters.PeekPokeTester
 import chisel3.util._
-import cgra.fabric.Shared_PE.parameters.derived_parameters._
 
-class operand_forwarding_unit extends Module{
+class operand_forwarding_unit(p:Entity) extends Module with derived_parameters{
+  parameter_update(p)
   val io = IO(
     new Bundle{
       val enable = Input(Bool())
@@ -41,7 +43,9 @@ class operand_forwarding_unit extends Module{
     }
   }
 }
+/*
 object ofuDriver extends App
 {
   chisel3.Driver.execute(args, () => new operand_forwarding_unit)
 }
+*/

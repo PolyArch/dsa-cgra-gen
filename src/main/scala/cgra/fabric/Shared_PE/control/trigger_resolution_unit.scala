@@ -1,18 +1,19 @@
 package cgra.fabric.Shared_PE.control
 
+import cgra.entity.Entity
+import cgra.fabric.Shared_PE.parameters.derived_parameters
 import chisel3._
 import chisel3.util._
-import cgra.fabric.Shared_PE.parameters.derived_parameters._
 
-class trigger_resolution_unit extends Module
-  {
+class trigger_resolution_unit(p:Entity) extends Module with derived_parameters{
+  parameter_update(p)
 
   val io = IO(
     new Bundle{
       val enable = Input(Bool())
       val execute = Input(Bool())
       val halted = Input(Bool())
-      val triggers = Vec(TIA_MAX_NUM_INSTRUCTIONS,Input(new trigger_t))
+      val triggers = Vec(TIA_MAX_NUM_INSTRUCTIONS,Input(new trigger_t(p)))
       val predicates = Input(UInt(TIA_NUM_PREDICATES.W))
       val input_channel_empty_status = Input(UInt(TIA_NUM_INPUT_CHANNELS.W))
       val input_channel_tags = Input(Vec(TIA_NUM_INPUT_CHANNELS,UInt(TIA_TAG_WIDTH.W)))
@@ -29,7 +30,7 @@ class trigger_resolution_unit extends Module
   val trigger_states = Wire(Vec(TIA_MAX_NUM_INSTRUCTIONS,Bool()))
 
   // Trigger Solvers
-  val trigger_resolvers = VecInit(Seq.fill(TIA_MAX_NUM_INSTRUCTIONS){ Module(new trigger_resolver()).io })
+  val trigger_resolvers = VecInit(Seq.fill(TIA_MAX_NUM_INSTRUCTIONS){ Module(new trigger_resolver(p)).io })
   for(i <- 0 until TIA_MAX_NUM_INSTRUCTIONS){
     trigger_resolvers(i).trigger := io.triggers(i)
     trigger_resolvers(i).input_channel_empty_status := io.input_channel_empty_status
@@ -39,15 +40,16 @@ class trigger_resolution_unit extends Module
     trigger_states(i) := trigger_resolvers(i).valid
   }
 
-  val trpe = Module(new trigger_resolution_priority_encoder).io
+  val trpe = Module(new trigger_resolution_priority_encoder(p)).io
   trpe.trigger_states := trigger_states
   halt_insensitive_triggered_instruction_valid := trpe.trigger_inst_valid
   io.triggered_instruction_index := trpe.triggered_inst_index
 
   io.triggered_instruction_valid := io.enable && io.execute && halt_insensitive_triggered_instruction_valid && !io.halted
 }
-
+/*
 object truDriver extends App
 {
   chisel3.Driver.execute(args, () => new trigger_resolution_unit)
 }
+*/

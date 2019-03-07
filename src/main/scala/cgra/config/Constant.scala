@@ -4,6 +4,7 @@ object Constant {
   val OUTPUT_TYPE = "OUTPUT"
   val INPUT_TYPE = "INPUT"
   val MMIO_TYPE = "MMIO_CONTROL"
+  val MULTI_TAG_PACKET_TYPE = "MULTI_TAG_PACKET_TYPE"
 
   val meaning_Index_Direction_Map = Map(
     0 -> "North",1 -> "East",2 -> "South",3 -> "West",

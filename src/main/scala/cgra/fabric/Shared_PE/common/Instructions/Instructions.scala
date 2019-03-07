@@ -46,25 +46,25 @@ trait Instructions {
   val TIA_OP_CLZ = 37
   val TIA_OP_CTZ = 38
   val TIA_OP_HALT = 39
-  val basic_insts = VecInit((TIA_OP_NOP to TIA_OP_HALT).map(x=>x.U))
+  val basic_insts = TIA_OP_NOP to TIA_OP_HALT
 
   // Scratchpad extensions.
   val TIA_OP_LSW = 40
   val TIA_OP_SSW = 41
-  val scratchpad_insts = VecInit((TIA_OP_LSW to TIA_OP_SSW).map(x=>x.U))
+  val scratchpad_insts = TIA_OP_LSW to TIA_OP_SSW
 
   // Load-store extensions.
   val TIA_OP_RLW = 42 // Not yet implemented.
   val TIA_OP_OLW = 43 // Not yet implemented.
   val TIA_OP_SW = 44 // Not yet implemented.
-  val load_store_inst = VecInit((TIA_OP_RLW to TIA_OP_SW).map(x=>x.U))
+  val load_store_inst = TIA_OP_RLW to TIA_OP_SW
 
   // Multiplication extensions.
   val TIA_OP_LMUL = 45
   val TIA_OP_SHMUL = 46
   val TIA_OP_UHMUL = 47
   val TIA_OP_MAC = 48 // Not yet implemented.
-  val integer_mult_insts = VecInit((TIA_OP_LMUL to TIA_OP_MAC).map(x=>x.U))
+  val integer_mult_insts = TIA_OP_LMUL to TIA_OP_MAC
 
   // Floating-point extensions.
   val TIA_OP_ITF = 49 // Not yet implemented.
@@ -81,11 +81,11 @@ trait Instructions {
   val TIA_OP_FSUB = 60 // Not yet implemented.
   val TIA_OP_FMUL = 61
   val TIA_OP_FMAC = 62 // Not yet implemented.
-  val float_point_insts = VecInit((TIA_OP_ITF to TIA_OP_FMAC).map(x=>x.U))
+  //val float_point_insts = VecInit((TIA_OP_ITF to TIA_OP_FMAC).map(x=>x.U))
 
   // Define Instruction Set
   val signed_insts_list = List(TIA_OP_ASR, TIA_OP_SGT, TIA_OP_SLT, TIA_OP_SGE, TIA_OP_SLE)
-  val signed_insts = VecInit(signed_insts_list.map(x=>x.U))
+  //val signed_insts = VecInit(signed_insts_list.map(x=>x.U))
 
   val unsigned_insts_list = List(
     TIA_OP_NOP, TIA_OP_MOV, TIA_OP_ADD, TIA_OP_SUB, TIA_OP_LSL, TIA_OP_LSR,
@@ -93,16 +93,16 @@ trait Instructions {
     TIA_OP_BAND, TIA_OP_BNAND, TIA_OP_BOR, TIA_OP_BNOR, TIA_OP_BXOR, TIA_OP_BXNOR,
     TIA_OP_LAND, TIA_OP_LNAND, TIA_OP_LOR, TIA_OP_LNOR, TIA_OP_LXOR, TIA_OP_LXNOR,
     TIA_OP_GB, TIA_OP_SB, TIA_OP_CB, TIA_OP_MB,TIA_OP_CLZ, TIA_OP_CTZ, TIA_OP_HALT)
-  val unsigned_insts = VecInit(unsigned_insts_list.map(x=>x.U))
+  //val unsigned_insts = VecInit(unsigned_insts_list.map(x=>x.U))
 
   val multi_insts_list = List(TIA_OP_LMUL,TIA_OP_SHMUL,TIA_OP_UHMUL,TIA_OP_MAC)
-  val multi_insts = VecInit(multi_insts_list.map(x=>x.U))
+  //val multi_insts = VecInit(multi_insts_list.map(x=>x.U))
 
   val float_insts_list = List(
     TIA_OP_ITF, TIA_OP_UTF, TIA_OP_FTI, TIA_OP_FEQ, TIA_OP_FNE,
     TIA_OP_FGT,TIA_OP_FLT, TIA_OP_FLE, TIA_OP_FGE, TIA_OP_FADD,
     TIA_OP_FSUB, TIA_OP_FMUL,TIA_OP_FMAC)
-  val float_insts = VecInit(float_insts_list.map(x=>x.U))
+  //val float_insts = VecInit(float_insts_list.map(x=>x.U))
 
 }
 

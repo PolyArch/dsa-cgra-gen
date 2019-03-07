@@ -1,18 +1,20 @@
 package cgra.fabric.Shared_PE.instruction
 
-import chisel3.{WireInit, _}
+import cgra.entity.Entity
+import cgra.fabric.Shared_PE.parameters.derived_parameters
+import chisel3._
 import chisel3.util._
-import cgra.fabric.Shared_PE.parameters.derived_parameters._
 
-class mm_instruction extends  Module
-  with inst_util{
+class mm_instruction(p:Entity) extends  Module
+  with derived_parameters{
+  parameter_update(p)
   val io = IO(new Bundle{
     val enable = Input(Bool())
-    val read = Output(new mm_instruction_t)
+    val read = Output(new mm_instruction_t(p))
     val write = Input(UInt(TIA_MM_INSTRUCTION_WIDTH.W))
   })
 
-  val instructions = Module(new instruction ).io
+  val instructions = Module(new instruction(p) ).io
 
   // enable
   instructions.enable := io.enable
@@ -20,12 +22,12 @@ class mm_instruction extends  Module
   // Write
   val non_imme_bits_r = new fieldRange(pum_r.high,0)
 
-  instructions.write := extractBits(io.write,non_imme_bits_r)
-  val ptm = RegEnable(extractBits(io.write,ptm_r),io.enable)
-  val ici = RegEnable(extractBits(io.write,ici_r),io.enable)
-  val ictb = RegEnable(extractBits(io.write,ictb_r),io.enable)
-  val ictv = RegEnable(extractBits(io.write,ictv_r),io.enable)
-  val immediate = RegEnable(extractBits(io.write,immediate_r),io.enable)
+  instructions.write := io.write(non_imme_bits_r.high,non_imme_bits_r.low)
+  val ptm = RegEnable(io.write(ptm_r.high,ptm_r.low),io.enable)
+  val ici = RegEnable(io.write(ici_r.high,ici_r.low),io.enable)
+  val ictb = RegEnable(io.write(ictb_r.high,ictb_r.low),io.enable)
+  val ictv = RegEnable(io.write(ictv_r.high,ictv_r.low),io.enable)
+  val immediate = RegEnable(io.write(immediate_r.high,immediate_r.low),io.enable)
   //val padding = RegEnable(extractBits(io.write,padding_r),io.enable)
 
   // read
@@ -49,24 +51,24 @@ class mm_instruction extends  Module
 
 }
 
-class instruction extends Module
-  with inst_util{
+class instruction(p:Entity) extends Module with derived_parameters {
+  parameter_update(p)
   val io = IO(new Bundle{
     val enable = Input(Bool())
-    val read = Output(new non_datapath_instruction_t)
+    val read = Output(new non_datapath_instruction_t(p))
     val write = Input(UInt((pum_r.high + 1).W))
   })
 
-  val vi = RegEnable(extractBits(io.write,vi_r),io.enable)
-  val op = RegEnable(extractBits(io.write,op_r),io.enable)
-  val st = RegEnable(extractBits(io.write,st_r),io.enable)
-  val si = RegEnable(extractBits(io.write,si_r),io.enable)
-  val dt = RegEnable(extractBits(io.write,dt_r),io.enable)
-  val di = RegEnable(extractBits(io.write,di_r),io.enable)
-  val oci = RegEnable(extractBits(io.write,oct_r),io.enable)
-  val oct = RegEnable(extractBits(io.write,oct_r),io.enable)
-  val icd = RegEnable(extractBits(io.write,icd_r),io.enable)
-  val pum = RegEnable(extractBits(io.write,pum_r),io.enable)
+  val vi = RegEnable(io.write(vi_r.high,vi_r.low),io.enable)
+  val op = RegEnable(io.write(op_r.high,op_r.low),io.enable)
+  val st = RegEnable(io.write(st_r.high,st_r.low),io.enable)
+  val si = RegEnable(io.write(si_r.high,si_r.low),io.enable)
+  val dt = RegEnable(io.write(dt_r.high,dt_r.low),io.enable)
+  val di = RegEnable(io.write(di_r.high,di_r.low),io.enable)
+  val oci = RegEnable(io.write(oci_r.high,oci_r.low),io.enable)
+  val oct = RegEnable(io.write(oct_r.high,oct_r.low),io.enable)
+  val icd = RegEnable(io.write(icd_r.high,icd_r.low),io.enable)
+  val pum = RegEnable(io.write(pum_r.high,pum_r.low),io.enable)
 
   io.read.vi := vi
   io.read.op := op
@@ -80,19 +82,28 @@ class instruction extends Module
   io.read.pum := pum
 }
 
-class mm_instruction_t extends datapath_instruction_t {
+class mm_instruction_t(p:Entity) extends datapath_instruction_t(p)
+  with derived_parameters {
+  parameter_update(p)
   val ptm = UInt(TIA_PTM_WIDTH.W)
   val ici = UInt(TIA_ICI_WIDTH.W)
   val ictb = UInt(TIA_ICTB_WIDTH.W)
   val ictv = UInt(TIA_ICTV_WIDTH.W)
   val padding = UInt(TIA_MM_INSTRUCTION_PADDING_WIDTH.W)
+
+  override def cloneType: mm_instruction_t.this.type = new mm_instruction_t(p).asInstanceOf[this.type]
 }
 
-class datapath_instruction_t extends non_datapath_instruction_t{
+class datapath_instruction_t(p:Entity) extends non_datapath_instruction_t(p){
+  parameter_update(p)
   val immediate = UInt(TIA_WORD_WIDTH.W)
+
+  override def cloneType: datapath_instruction_t.this.type = new datapath_instruction_t(p).asInstanceOf[this.type ]
 }
 
-class non_datapath_instruction_t extends Bundle {
+class non_datapath_instruction_t(p:Entity) extends Bundle
+  with derived_parameters {
+  parameter_update(p)
   val vi = Bool()
   val op = UInt(TIA_OP_WIDTH.W)
   val st = UInt(TIA_ST_WIDTH.W)
@@ -103,10 +114,15 @@ class non_datapath_instruction_t extends Bundle {
   val oct = UInt(TIA_OCT_WIDTH.W)
   val icd = UInt(TIA_ICD_WIDTH.W)
   val pum = UInt(TIA_PUM_WIDTH.W)
+
+  override def cloneType: non_datapath_instruction_t.this.type = new non_datapath_instruction_t(p).asInstanceOf[this.type]
 }
 
-class zero_mm_instruction extends Module{
-  val io = IO(Output(new mm_instruction_t))
+class zero_mm_instruction(p:Entity) extends Module  with derived_parameters {
+  parameter_update(p)
+
+  val io = IO(Output(new mm_instruction_t(p)))
+
   io.vi := 0.U
   io.op := 0.U(TIA_OP_WIDTH.W)
   io.st := 0.U(TIA_ST_WIDTH.W)
@@ -125,8 +141,9 @@ class zero_mm_instruction extends Module{
   io.padding := 0.U(TIA_MM_INSTRUCTION_PADDING_WIDTH.W)
 }
 
-class zero_datapath_instruction extends Module {
-  val io = IO(Output(new datapath_instruction_t))
+class zero_datapath_instruction(p:Entity) extends Module   with derived_parameters {
+  parameter_update(p)
+  val io = IO(Output(new datapath_instruction_t(p)))
   io.vi := 0.U
   io.op := 0.U
   io.st := 0.U
@@ -140,8 +157,10 @@ class zero_datapath_instruction extends Module {
   io.immediate := 0.U
 }
 
-class zero_non_datapath_instruction extends Module{
-  val io = IO(Output(new non_datapath_instruction_t))
+class zero_non_datapath_instruction(p:Entity) extends Module  with derived_parameters {
+  parameter_update(p)
+  val io = IO(Output(new non_datapath_instruction_t(p)))
+
   io.vi := 0.U
   io.op := 0.U(TIA_OP_WIDTH.W)
   io.st := 0.U(TIA_ST_WIDTH.W)
@@ -154,61 +173,8 @@ class zero_non_datapath_instruction extends Module{
   io.pum := 0.U(TIA_PUM_WIDTH.W)
 }
 
-trait inst_util {
-  def cat_inst_asOne(tbr_ins:mm_instruction_t):UInt = {
-    Cat(tbr_ins.padding,
-      tbr_ins.immediate,
-      tbr_ins.ictv,
-      tbr_ins.ictb,
-      tbr_ins.ici,
-      tbr_ins.ptm,
-      tbr_ins.pum,
-      tbr_ins.icd,
-      tbr_ins.oct,
-      tbr_ins.oci,
-      tbr_ins.di,
-      tbr_ins.dt,
-      tbr_ins.si,
-      tbr_ins.st,
-      tbr_ins.op,
-      tbr_ins.vi)
-  }
-
-  def extractBits(ori:UInt,fieldR:fieldRange):UInt =
-    ori(fieldR.high,fieldR.low)
-
-  def nextFieldRange(width:Int,lowFieldRange:fieldRange):fieldRange =
-    new fieldRange(width + lowFieldRange.high,lowFieldRange.high + 1)
-
-  class fieldRange(h:Int,l:Int){
-    val high:Int  = h
-    val low:Int = l
-  }
-  // ----- Instruction Structure -----
-  // Low
-  val vi_r = new fieldRange(0,0)
-  val op_r = nextFieldRange(TIA_OP_WIDTH,vi_r)
-  val st_r = nextFieldRange(TIA_ST_WIDTH,op_r)
-  val si_r = nextFieldRange(TIA_SI_WIDTH ,st_r)
-  val dt_r = nextFieldRange(TIA_DT_WIDTH,si_r)
-  val di_r = nextFieldRange(TIA_DI_WIDTH,dt_r)
-  val oci_r = nextFieldRange(TIA_OCI_WIDTH,di_r)
-  val oct_r = nextFieldRange(TIA_OCT_WIDTH,oci_r)
-  val icd_r = nextFieldRange(TIA_ICD_WIDTH,oct_r)
-  val pum_r = nextFieldRange(TIA_PUM_WIDTH,icd_r)
-  // ------ non immediate ------
-
-  val ptm_r = nextFieldRange(TIA_PTM_WIDTH,pum_r)
-  val ici_r = nextFieldRange(TIA_ICI_WIDTH,ptm_r)
-  val ictb_r = nextFieldRange(TIA_ICTB_WIDTH,ici_r)
-  val ictv_r = nextFieldRange(TIA_ICTV_WIDTH,ictb_r)
-
-  val immediate_r = nextFieldRange(TIA_IMMEDIATE_WIDTH,ictv_r)
-
-  val padding_r = nextFieldRange(TIA_MM_INSTRUCTION_PADDING_WIDTH,immediate_r)
-  // High
-}
-
+/*
 object mm_inst_Driver extends App {
   chisel3.Driver.execute(args, () => new mm_instruction)
 }
+*/

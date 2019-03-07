@@ -1,10 +1,12 @@
 package cgra.fabric.Shared_PE.datapath
 
+import cgra.entity.Entity
+import cgra.fabric.Shared_PE.parameters.derived_parameters
 import chisel3._
 import chisel3.util._
-import cgra.fabric.Shared_PE.parameters.derived_parameters._
 
-class destination_routing_unit extends Module{
+class destination_routing_unit(p:Entity) extends Module with derived_parameters{
+  parameter_update(p)
   val io = IO(new Bundle{
     val datapath_result = Input(UInt(TIA_WORD_WIDTH.W))
     val dt = Input(UInt(TIA_DT_WIDTH.W))

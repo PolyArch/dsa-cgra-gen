@@ -1,9 +1,13 @@
 package cgra.fabric.Shared_PE.control
+import cgra.entity.Entity
+import cgra.fabric.Shared_PE.parameters.derived_parameters
 import chisel3._
 import chisel3.util._
-import cgra.fabric.Shared_PE.parameters.derived_parameters._
 
-class trigger_resolution_priority_encoder extends Module{
+class trigger_resolution_priority_encoder(p:Entity) extends Module with derived_parameters{
+  parameter_update(p)
+
+
   val io = IO(
     new Bundle{
       val trigger_states = Input(Vec(TIA_MAX_NUM_INSTRUCTIONS,Bool()))

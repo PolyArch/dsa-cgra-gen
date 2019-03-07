@@ -2,10 +2,10 @@
 
 package cgra.fabric.Shared_PE.parameters
 
-import cgra.fabric.Shared_PE.common.Instructions.Instructions
+//import cgra.fabric.Shared_PE.common.Instructions.Instructions
 import chisel3.util.log2Ceil
 
-trait fixed_parameters extends Instructions{
+trait fixed_parameters {
 
   // Functional Unit
   val TIA_NUM_FU_TYPES:Int = 7

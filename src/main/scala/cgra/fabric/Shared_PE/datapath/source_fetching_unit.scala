@@ -1,10 +1,12 @@
 package cgra.fabric.Shared_PE.datapath
 
+import cgra.entity.Entity
+import cgra.fabric.Shared_PE.parameters.derived_parameters
 import chisel3._
 import chisel3.util._
-import cgra.fabric.Shared_PE.parameters.derived_parameters._
 
-class source_fetching_unit extends Module{
+class source_fetching_unit(p:Entity) extends Module with derived_parameters{
+  parameter_update(p)
   val io = IO(
     new Bundle{
       val st = Input(UInt(TIA_ST_WIDTH.W))
@@ -50,7 +52,9 @@ class source_fetching_unit extends Module{
     }
   }
 }
+/*
 object sfuDriver extends App
 {
   chisel3.Driver.execute(args, () => new source_fetching_unit)
 }
+*/

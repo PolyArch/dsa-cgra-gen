@@ -1,16 +1,18 @@
 package cgra.fabric.Shared_PE.common.datapath
 
-import cgra.fabric.Shared_PE.common.mmio.mmio_if
+import cgra.IO.mmio_if
+import cgra.entity.Entity
 import cgra.fabric.Shared_PE.mmio._
-import cgra.fabric.Shared_PE.parameters.derived_parameters._
+import cgra.fabric.Shared_PE.parameters.derived_parameters
 import chisel3._
 import chisel3.iotesters.PeekPokeTester
 
-class register_file extends Module{
+class register_file(p:Entity) extends Module with derived_parameters{
+  parameter_update(p)
   val io = IO(
     new Bundle{
       val enable = Input(Bool())
-      val host_interface = new mmio_if
+      val host_interface = mmio_if(TIA_MMIO_INDEX_WIDTH,TIA_MMIO_DATA_WIDTH)
 
       val read_indexes = Input(Vec(TIA_NUM_SOURCE,UInt(TIA_REGISTER_INDEX_WIDTH.W)))
       val read_data = Output(Vec(TIA_NUM_SOURCE,UInt(TIA_WORD_WIDTH.W)))
@@ -74,7 +76,7 @@ class regFileTester(m: register_file) extends PeekPokeTester(m){
   step(1)
   expect(mem.io.read_data(0),476)
 }
-
+/*
 object memMain extends App {
   iotesters.Driver.execute(args, () => new register_file) {
     c => new regFileTester(c)
@@ -85,3 +87,4 @@ object MemDriver extends App
 {
   chisel3.Driver.execute(args, () => new register_file)
 }
+*/

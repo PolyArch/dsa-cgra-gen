@@ -1,10 +1,13 @@
 package cgra.fabric.Shared_PE.control
 
+import cgra.entity.Entity
+import cgra.fabric.Shared_PE.parameters.derived_parameters
 import chisel3._
 import chisel3.util._
-import cgra.fabric.Shared_PE.parameters.derived_parameters._
 
-class predicate_unit extends Module{
+class predicate_unit(p:Entity) extends Module with derived_parameters{
+  parameter_update(p)
+
   val io = IO(
     new Bundle{
       val enable = Input(Bool())
@@ -44,7 +47,9 @@ class predicate_unit extends Module{
   }
   io.predicates := predicates
 }
+/*
 object predicateDriver extends App
 {
   chisel3.Driver.execute(args, () => new predicate_unit)
 }
+*/

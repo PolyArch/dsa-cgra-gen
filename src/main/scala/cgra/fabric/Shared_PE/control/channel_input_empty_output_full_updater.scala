@@ -1,9 +1,11 @@
 package cgra.fabric.Shared_PE.control
 
+import cgra.entity.Entity
+import cgra.fabric.Shared_PE.parameters.derived_parameters
 import chisel3._
-import cgra.fabric.Shared_PE.parameters.derived_parameters._
 
-class pessimistic_one_stage_input_channel_empty_status_updater extends Module{
+class pessimistic_one_stage_input_channel_empty_status_updater(p:Entity) extends Module with derived_parameters{
+  parameter_update(p)
   val io = IO(new Bundle{
     val input_channel_empty_status = Input(UInt(TIA_NUM_INPUT_CHANNELS.W))
     val downstream_icd = Input(UInt(TIA_ICD_WIDTH.W))
@@ -12,7 +14,8 @@ class pessimistic_one_stage_input_channel_empty_status_updater extends Module{
   io.updated_input_channel_empty_status := io.input_channel_empty_status | io.downstream_icd
 }
 
-class pessimistic_two_stage_output_channel_full_status_updater extends Module{
+class pessimistic_two_stage_output_channel_full_status_updater(p:Entity) extends Module with derived_parameters{
+  parameter_update(p)
   val io = IO(new Bundle{
     val output_channel_full_status = Input(UInt(TIA_NUM_OUTPUT_CHANNELS.W))
     val first_downstream_oci = Input(UInt(TIA_OCI_WIDTH.W))

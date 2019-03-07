@@ -42,13 +42,12 @@ object build_dedicated_pe extends Build {
       val sink_port = dedi_pe.Ports
         .find(p=>p.get("Sub_Net_Index") == s && p.get("Num_Sub_Net") == s_num && p.io == OUTPUT_TYPE).get
 
-      val word_width = source_ports.map(p=>p.get("Word_Width")).distinct
-      require(word_width.length == 1)
+      val word_width = source_ports.map(p=>p.get("Word_Width")).distinct.head
       val dp1 = Delay_Pipe();dedi_pe have dp1;val dp2 = Delay_Pipe();dedi_pe have dp2;
       val dp3 = Delay_Pipe();dedi_pe have dp3;
-      dp1 have("Word_Width",word_width.head);dp1 have("Max_Delay",6,1,18,2);dp1 forsyn;
-      dp2 have("Word_Width",word_width.head);dp2 have("Max_Delay",3,1,32,1);dp2 forsyn;
-      dp3 have("Word_Width",word_width.head);dp3 have("Max_Delay",3,1,32,1);dp3 forsyn;
+      dp1 have("Word_Width",word_width);dp1 have("Max_Delay",6,1,18,2);dp1 forsyn;
+      dp2 have("Word_Width",word_width);dp2 have("Max_Delay",3,1,32,1);dp2 forsyn;
+      dp3 have("Word_Width",word_width);dp3 have("Max_Delay",3,1,32,1);dp3 forsyn;
       dedi_pe.internal_entity_id_counter = assign_entity_id(dp1.Ports.toList)
       dedi_pe.internal_entity_id_counter = assign_entity_id(dp2.Ports.toList)
       dedi_pe.internal_entity_id_counter = assign_entity_id(dp3.Ports.toList)
@@ -64,13 +63,16 @@ object build_dedicated_pe extends Build {
         dedi_pe have(sp --> dp3_in_port)
       }
       val alu = Arithmetic_Logic_Unit();dedi_pe have alu
-      alu have("Word_Width",word_width.head);alu have("Instruction-Set",unsigned_insts_list);alu forsyn;
+      alu have("Word_Width",word_width)
+      if(word_width == 16) alu have("Instruction-Set",unsigned_insts_list)
+      else alu have("Instruction-Set",signed_insts_list)
+      alu forsyn;
       dedi_pe.internal_entity_id_counter = assign_entity_id(alu.Ports.toList)
       val alu_in_ports = alu.Ports.filter(p=>p.io == INPUT_TYPE && p.get("function") == "data")
       val alu_out_port = alu.Ports.find(p=>p.io == OUTPUT_TYPE).get
       dedi_pe have(dp1_out_port --> alu_in_ports.head)
       dedi_pe have(dp2_out_port --> alu_in_ports(1))
-      dedi_pe have(dp3_out_port --> alu_in_ports(2))
+      if(word_width == 16) dedi_pe have(dp3_out_port --> alu_in_ports(2))
       dedi_pe have(alu_out_port --> sink_port)
     }
   }
