@@ -15,14 +15,9 @@ object build_mux extends Build {
   mux.have("Word_Width",64,8,64,8)
 
   // Add Data Ports
-  mux.Ports +=
-    Port(INPUT_TYPE,true,true) +=
-    Port(INPUT_TYPE,true,true) +=
-    Port(INPUT_TYPE,true,true) +=
-    Port(INPUT_TYPE,true,true)
-  mux.Ports += Port(OUTPUT_TYPE,true,true)
+  mux have Port(INPUT_TYPE,true,true) * 4
+  mux have Port(OUTPUT_TYPE,true,true)
 
-  mux passdown_word_width
 
   // Generate IR
   mux.forsyn

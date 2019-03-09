@@ -25,11 +25,10 @@ case class Arithmetic_Logic_Unit() extends Entity
     have("control_width",config_width)
     // Add port
     Ports += Port(INPUT_TYPE,false,false) += Port(INPUT_TYPE,false,false) += Port(OUTPUT_TYPE,false,false)
-    if(contain_three_inst(inst_set)) Ports += Port(INPUT_TYPE,false,false)
+    if(contain_three_operands_inst(inst_set)) Ports += Port(INPUT_TYPE,false,false)
     Ports.foreach(p=>{p.have("function","data");p.have("Word_Width",word_width)})
     val config_port = Port(INPUT_TYPE,false,false);config_port have("Word_Width",config_width)
     config_port have("function","control");Ports += config_port
-    assign_index(Ports)
   }
 }
 
@@ -42,9 +41,9 @@ class Arithmetic_Logic_Unit_Hw(p:Entity) extends Module{
   val control_inst_map : Map[Int,Int] = p.get("control-opcode-map").asInstanceOf[Map[Int,Int]]
   val op_width : Int = p.get("control_width").asInstanceOf[Int]
 
-  val operand_index = p.Ports.filter(p=>p.io == INPUT_TYPE && p.get("function") == "data").map(p=>p.get("Index")).asInstanceOf[ListBuffer[Int]]
-  val control_index = p.Ports.find(p=>p.io == INPUT_TYPE && p.get("function") == "control").get.get("Index").asInstanceOf[Int]
-  val output_index = p.Ports.find(p=>p.io == OUTPUT_TYPE && p.get("function") == "data").get.get("Index").asInstanceOf[Int]
+  val operand_index = p.Ports.zipWithIndex.filter(p=>p._1.io == INPUT_TYPE && p._1.get("function") == "data").map(p=>p._2)
+  val control_index = p.Ports.zipWithIndex.find(p=>p._1.io == INPUT_TYPE && p._1.get("function") == "control").get._2
+  val output_index = p.Ports.zipWithIndex.find(p=>p._1.io == OUTPUT_TYPE && p._1.get("function") == "data").get._2
 
   val io = IO(get_io(p.Ports))
 
@@ -68,11 +67,11 @@ class Arithmetic_Logic_Unit_Hw(p:Entity) extends Module{
   // connect input
   operand0_unsigned <> io(operand_index.head)
   operand1_unsigned <> io(operand_index(1))
-  if(contain_three_inst(inst_list)) operand2_unsigned <> io(operand_index(2))
+  if(contain_three_operands_inst(inst_list)) operand2_unsigned <> io(operand_index(2))
   else operand2_unsigned := 0.U
   operand0_signed := io(operand_index.head).asUInt.asSInt()
   operand1_signed := io(operand_index(1)).asUInt.asSInt()
-  if(contain_three_inst(inst_list)) operand2_signed := io(operand_index(2)).asUInt.asSInt
+  if(contain_three_operands_inst(inst_list)) operand2_signed := io(operand_index(2)).asUInt.asSInt
   else operand2_signed := 0.S
   //default output
   result_signed := 0.S

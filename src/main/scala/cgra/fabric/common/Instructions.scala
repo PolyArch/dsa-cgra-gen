@@ -104,7 +104,7 @@ object Instructions {
     TIA_OP_FSUB, TIA_OP_FMUL,TIA_OP_FMAC)
   //val float_insts_hw = VecInit(float_insts_list.map(x=>x.U))
 
-  def contain_three_inst(inst:List[Int]) :Boolean = {
+  def contain_three_operands_inst(inst:List[Int]) :Boolean = {
     inst.contains(TIA_OP_SB)
   }
 

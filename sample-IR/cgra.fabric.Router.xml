@@ -1,14 +1,14 @@
 <Entity>
       
       <Current>
-        <Type>cgra.fabric.Router</Type><ID>123456</ID>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
       </Current>
       <Parameters><KeyValue>
-          <PKey DSE="false">default decomposer</PKey><PValue type="java.lang.Integer">1</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">output_decomposer</PKey><PValue type="scala.collection.immutable.$colon$colon">2 2 1 4</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">num_output</PKey><PValue type="java.lang.Integer">4</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">default_decomposer</PKey><PValue type="java.lang.Integer">1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">64</PValue>
         </KeyValue><KeyValue>
@@ -24,565 +24,69 @@
       
       <Ports><Entity>
       <Parent>
-        <Type>cgra.fabric.Router</Type><ID>123456</ID>
-      </Parent>
-      <Current>
-        <Type>cgra.entity.Port</Type><ID>0</ID>
-      </Current>
-      <Parameters><KeyValue>
-          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">0</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">2</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">0</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">0</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue></Parameters>
-      
-      <Sinks><SPPair><ID>20</ID><Port>-1</Port></SPPair><SPPair><ID>22</ID><Port>-1</Port></SPPair></Sinks>
-      
-      
-      
-    </Entity><Entity>
-      <Parent>
-        <Type>cgra.fabric.Router</Type><ID>123456</ID>
-      </Parent>
-      <Current>
-        <Type>cgra.entity.Port</Type><ID>1</ID>
-      </Current>
-      <Parameters><KeyValue>
-          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">1</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">2</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">1</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">0</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue></Parameters>
-      
-      <Sinks><SPPair><ID>23</ID><Port>-1</Port></SPPair><SPPair><ID>21</ID><Port>-1</Port></SPPair></Sinks>
-      
-      
-      
-    </Entity><Entity>
-      <Parent>
-        <Type>cgra.fabric.Router</Type><ID>123456</ID>
-      </Parent>
-      <Current>
-        <Type>cgra.entity.Port</Type><ID>2</ID>
-      </Current>
-      <Parameters><KeyValue>
-          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">0</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">2</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">2</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">1</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue></Parameters>
-      
-      <Sinks><SPPair><ID>20</ID><Port>-1</Port></SPPair><SPPair><ID>22</ID><Port>-1</Port></SPPair><SPPair><ID>21</ID><Port>-1</Port></SPPair></Sinks>
-      
-      
-      
-    </Entity><Entity>
-      <Parent>
-        <Type>cgra.fabric.Router</Type><ID>123456</ID>
-      </Parent>
-      <Current>
-        <Type>cgra.entity.Port</Type><ID>3</ID>
-      </Current>
-      <Parameters><KeyValue>
-          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">1</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">2</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">3</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">1</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue></Parameters>
-      
-      <Sinks><SPPair><ID>23</ID><Port>-1</Port></SPPair><SPPair><ID>21</ID><Port>-1</Port></SPPair></Sinks>
-      
-      
-      
-    </Entity><Entity>
-      <Parent>
-        <Type>cgra.fabric.Router</Type><ID>123456</ID>
-      </Parent>
-      <Current>
-        <Type>cgra.entity.Port</Type><ID>4</ID>
-      </Current>
-      <Parameters><KeyValue>
-          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">0</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">2</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">4</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">2</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue></Parameters>
-      
-      <Sinks><SPPair><ID>20</ID><Port>-1</Port></SPPair><SPPair><ID>22</ID><Port>-1</Port></SPPair></Sinks>
-      
-      
-      
-    </Entity><Entity>
-      <Parent>
-        <Type>cgra.fabric.Router</Type><ID>123456</ID>
-      </Parent>
-      <Current>
-        <Type>cgra.entity.Port</Type><ID>5</ID>
-      </Current>
-      <Parameters><KeyValue>
-          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">1</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">2</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">5</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">2</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue></Parameters>
-      
-      <Sinks><SPPair><ID>23</ID><Port>-1</Port></SPPair><SPPair><ID>21</ID><Port>-1</Port></SPPair></Sinks>
-      
-      
-      
-    </Entity><Entity>
-      <Parent>
-        <Type>cgra.fabric.Router</Type><ID>123456</ID>
-      </Parent>
-      <Current>
-        <Type>cgra.entity.Port</Type><ID>6</ID>
-      </Current>
-      <Parameters><KeyValue>
-          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">0</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">2</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">6</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">3</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue></Parameters>
-      
-      <Sinks><SPPair><ID>20</ID><Port>-1</Port></SPPair><SPPair><ID>22</ID><Port>-1</Port></SPPair></Sinks>
-      
-      
-      
-    </Entity><Entity>
-      <Parent>
-        <Type>cgra.fabric.Router</Type><ID>123456</ID>
-      </Parent>
-      <Current>
-        <Type>cgra.entity.Port</Type><ID>7</ID>
-      </Current>
-      <Parameters><KeyValue>
-          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">1</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">2</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">7</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">3</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue></Parameters>
-      
-      <Sinks><SPPair><ID>23</ID><Port>-1</Port></SPPair><SPPair><ID>21</ID><Port>-1</Port></SPPair></Sinks>
-      
-      
-      
-    </Entity><Entity>
-      <Parent>
-        <Type>cgra.fabric.Router</Type><ID>123456</ID>
-      </Parent>
-      <Current>
-        <Type>cgra.entity.Port</Type><ID>8</ID>
-      </Current>
-      <Parameters><KeyValue>
-          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">0</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">2</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">8</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">4</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue></Parameters>
-      
-      <Sinks><SPPair><ID>20</ID><Port>-1</Port></SPPair><SPPair><ID>22</ID><Port>-1</Port></SPPair></Sinks>
-      
-      
-      
-    </Entity><Entity>
-      <Parent>
-        <Type>cgra.fabric.Router</Type><ID>123456</ID>
-      </Parent>
-      <Current>
-        <Type>cgra.entity.Port</Type><ID>9</ID>
-      </Current>
-      <Parameters><KeyValue>
-          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">1</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">2</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">9</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">4</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue></Parameters>
-      
-      <Sinks><SPPair><ID>23</ID><Port>-1</Port></SPPair><SPPair><ID>21</ID><Port>-1</Port></SPPair></Sinks>
-      
-      
-      
-    </Entity><Entity>
-      <Parent>
-        <Type>cgra.fabric.Router</Type><ID>123456</ID>
-      </Parent>
-      <Current>
-        <Type>cgra.entity.Port</Type><ID>10</ID>
-      </Current>
-      <Parameters><KeyValue>
-          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">0</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">4</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">10</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">5</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue></Parameters>
-      
-      <Sinks><SPPair><ID>25</ID><Port>-1</Port></SPPair></Sinks>
-      
-      
-      
-    </Entity><Entity>
-      <Parent>
-        <Type>cgra.fabric.Router</Type><ID>123456</ID>
-      </Parent>
-      <Current>
-        <Type>cgra.entity.Port</Type><ID>11</ID>
-      </Current>
-      <Parameters><KeyValue>
-          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">1</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">4</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">11</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">5</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue></Parameters>
-      
-      <Sinks><SPPair><ID>26</ID><Port>-1</Port></SPPair></Sinks>
-      
-      
-      
-    </Entity><Entity>
-      <Parent>
-        <Type>cgra.fabric.Router</Type><ID>123456</ID>
-      </Parent>
-      <Current>
-        <Type>cgra.entity.Port</Type><ID>12</ID>
-      </Current>
-      <Parameters><KeyValue>
-          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">2</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">4</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">12</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">5</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue></Parameters>
-      
-      <Sinks><SPPair><ID>27</ID><Port>-1</Port></SPPair></Sinks>
-      
-      
-      
-    </Entity><Entity>
-      <Parent>
-        <Type>cgra.fabric.Router</Type><ID>123456</ID>
-      </Parent>
-      <Current>
-        <Type>cgra.entity.Port</Type><ID>13</ID>
-      </Current>
-      <Parameters><KeyValue>
-          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">3</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">4</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">13</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">5</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue></Parameters>
-      
-      <Sinks><SPPair><ID>28</ID><Port>-1</Port></SPPair></Sinks>
-      
-      
-      
-    </Entity><Entity>
-      <Parent>
-        <Type>cgra.fabric.Router</Type><ID>123456</ID>
-      </Parent>
-      <Current>
-        <Type>cgra.entity.Port</Type><ID>14</ID>
-      </Current>
-      <Parameters><KeyValue>
-          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">0</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">4</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">14</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">6</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue></Parameters>
-      
-      <Sinks><SPPair><ID>25</ID><Port>-1</Port></SPPair></Sinks>
-      
-      
-      
-    </Entity><Entity>
-      <Parent>
-        <Type>cgra.fabric.Router</Type><ID>123456</ID>
-      </Parent>
-      <Current>
-        <Type>cgra.entity.Port</Type><ID>15</ID>
-      </Current>
-      <Parameters><KeyValue>
-          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">1</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">4</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">15</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">6</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue></Parameters>
-      
-      <Sinks><SPPair><ID>26</ID><Port>-1</Port></SPPair></Sinks>
-      
-      
-      
-    </Entity><Entity>
-      <Parent>
-        <Type>cgra.fabric.Router</Type><ID>123456</ID>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
       </Parent>
       <Current>
         <Type>cgra.entity.Port</Type><ID>16</ID>
       </Current>
       <Parameters><KeyValue>
-          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">2</PValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">0</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">4</PValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">North</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">2</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">16</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">6</PValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">0</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
       
-      <Sinks><SPPair><ID>27</ID><Port>-1</Port></SPPair></Sinks>
+      <Sinks><SPPair><ID>56</ID><Port>0</Port></SPPair><SPPair><ID>38</ID><Port>20</Port></SPPair><SPPair><ID>64</ID><Port>0</Port></SPPair><SPPair><ID>36</ID><Port>20</Port></SPPair></Sinks>
       
       
       
     </Entity><Entity>
       <Parent>
-        <Type>cgra.fabric.Router</Type><ID>123456</ID>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
       </Parent>
       <Current>
         <Type>cgra.entity.Port</Type><ID>17</ID>
       </Current>
       <Parameters><KeyValue>
-          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">3</PValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">4</PValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">North</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">2</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">17</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">6</PValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">0</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
       
-      <Sinks><SPPair><ID>28</ID><Port>-1</Port></SPPair></Sinks>
+      <Sinks><SPPair><ID>37</ID><Port>20</Port></SPPair><SPPair><ID>72</ID><Port>0</Port></SPPair><SPPair><ID>48</ID><Port>0</Port></SPPair><SPPair><ID>39</ID><Port>20</Port></SPPair></Sinks>
       
       
       
     </Entity><Entity>
       <Parent>
-        <Type>cgra.fabric.Router</Type><ID>123456</ID>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
       </Parent>
       <Current>
         <Type>cgra.entity.Port</Type><ID>18</ID>
@@ -592,11 +96,507 @@
         </KeyValue><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">1</PValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">East</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">2</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">18</PValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">1</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      <Sinks><SPPair><ID>65</ID><Port>0</Port></SPPair><SPPair><ID>47</ID><Port>0</Port></SPPair><SPPair><ID>38</ID><Port>20</Port></SPPair><SPPair><ID>37</ID><Port>20</Port></SPPair><SPPair><ID>36</ID><Port>20</Port></SPPair><SPPair><ID>57</ID><Port>0</Port></SPPair></Sinks>
+      
+      
+      
+    </Entity><Entity>
+      <Parent>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
+      </Parent>
+      <Current>
+        <Type>cgra.entity.Port</Type><ID>19</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">1</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">East</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">2</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">1</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      <Sinks><SPPair><ID>73</ID><Port>0</Port></SPPair><SPPair><ID>49</ID><Port>0</Port></SPPair><SPPair><ID>37</ID><Port>20</Port></SPPair><SPPair><ID>39</ID><Port>20</Port></SPPair></Sinks>
+      
+      
+      
+    </Entity><Entity>
+      <Parent>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
+      </Parent>
+      <Current>
+        <Type>cgra.entity.Port</Type><ID>20</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">0</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">South</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">2</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">2</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      <Sinks><SPPair><ID>38</ID><Port>20</Port></SPPair><SPPair><ID>58</ID><Port>0</Port></SPPair><SPPair><ID>36</ID><Port>20</Port></SPPair><SPPair><ID>66</ID><Port>0</Port></SPPair></Sinks>
+      
+      
+      
+    </Entity><Entity>
+      <Parent>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
+      </Parent>
+      <Current>
+        <Type>cgra.entity.Port</Type><ID>21</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">1</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">South</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">2</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">2</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      <Sinks><SPPair><ID>50</ID><Port>0</Port></SPPair><SPPair><ID>74</ID><Port>0</Port></SPPair><SPPair><ID>37</ID><Port>20</Port></SPPair><SPPair><ID>39</ID><Port>20</Port></SPPair></Sinks>
+      
+      
+      
+    </Entity><Entity>
+      <Parent>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
+      </Parent>
+      <Current>
+        <Type>cgra.entity.Port</Type><ID>22</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">0</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">West</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">2</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">3</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      <Sinks><SPPair><ID>59</ID><Port>0</Port></SPPair><SPPair><ID>38</ID><Port>20</Port></SPPair><SPPair><ID>67</ID><Port>0</Port></SPPair><SPPair><ID>36</ID><Port>20</Port></SPPair></Sinks>
+      
+      
+      
+    </Entity><Entity>
+      <Parent>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
+      </Parent>
+      <Current>
+        <Type>cgra.entity.Port</Type><ID>23</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">1</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">West</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">2</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">3</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      <Sinks><SPPair><ID>37</ID><Port>20</Port></SPPair><SPPair><ID>75</ID><Port>0</Port></SPPair><SPPair><ID>39</ID><Port>20</Port></SPPair><SPPair><ID>51</ID><Port>0</Port></SPPair></Sinks>
+      
+      
+      
+    </Entity><Entity>
+      <Parent>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
+      </Parent>
+      <Current>
+        <Type>cgra.entity.Port</Type><ID>24</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">0</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">NorthEast</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">2</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">4</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      <Sinks><SPPair><ID>68</ID><Port>0</Port></SPPair><SPPair><ID>38</ID><Port>20</Port></SPPair><SPPair><ID>60</ID><Port>0</Port></SPPair><SPPair><ID>36</ID><Port>20</Port></SPPair></Sinks>
+      
+      
+      
+    </Entity><Entity>
+      <Parent>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
+      </Parent>
+      <Current>
+        <Type>cgra.entity.Port</Type><ID>25</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">1</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">NorthEast</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">2</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">4</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      <Sinks><SPPair><ID>76</ID><Port>0</Port></SPPair><SPPair><ID>52</ID><Port>0</Port></SPPair><SPPair><ID>37</ID><Port>20</Port></SPPair><SPPair><ID>39</ID><Port>20</Port></SPPair></Sinks>
+      
+      
+      
+    </Entity><Entity>
+      <Parent>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
+      </Parent>
+      <Current>
+        <Type>cgra.entity.Port</Type><ID>26</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">0</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">SouthEast</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">4</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">5</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      <Sinks><SPPair><ID>41</ID><Port>20</Port></SPPair><SPPair><ID>80</ID><Port>0</Port></SPPair></Sinks>
+      
+      
+      
+    </Entity><Entity>
+      <Parent>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
+      </Parent>
+      <Current>
+        <Type>cgra.entity.Port</Type><ID>27</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">1</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">SouthEast</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">4</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">5</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      <Sinks><SPPair><ID>85</ID><Port>0</Port></SPPair><SPPair><ID>42</ID><Port>20</Port></SPPair></Sinks>
+      
+      
+      
+    </Entity><Entity>
+      <Parent>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
+      </Parent>
+      <Current>
+        <Type>cgra.entity.Port</Type><ID>28</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">2</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">SouthEast</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">4</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">5</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      <Sinks><SPPair><ID>43</ID><Port>20</Port></SPPair><SPPair><ID>90</ID><Port>0</Port></SPPair></Sinks>
+      
+      
+      
+    </Entity><Entity>
+      <Parent>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
+      </Parent>
+      <Current>
+        <Type>cgra.entity.Port</Type><ID>29</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">3</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">SouthEast</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">4</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">5</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      <Sinks><SPPair><ID>95</ID><Port>0</Port></SPPair><SPPair><ID>44</ID><Port>20</Port></SPPair></Sinks>
+      
+      
+      
+    </Entity><Entity>
+      <Parent>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
+      </Parent>
+      <Current>
+        <Type>cgra.entity.Port</Type><ID>30</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">0</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">NorthWest</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">4</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">6</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      <Sinks><SPPair><ID>41</ID><Port>20</Port></SPPair><SPPair><ID>81</ID><Port>0</Port></SPPair></Sinks>
+      
+      
+      
+    </Entity><Entity>
+      <Parent>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
+      </Parent>
+      <Current>
+        <Type>cgra.entity.Port</Type><ID>31</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">1</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">NorthWest</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">4</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">6</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      <Sinks><SPPair><ID>86</ID><Port>0</Port></SPPair><SPPair><ID>42</ID><Port>20</Port></SPPair></Sinks>
+      
+      
+      
+    </Entity><Entity>
+      <Parent>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
+      </Parent>
+      <Current>
+        <Type>cgra.entity.Port</Type><ID>32</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">2</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">NorthWest</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">4</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">6</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      <Sinks><SPPair><ID>91</ID><Port>0</Port></SPPair><SPPair><ID>43</ID><Port>20</Port></SPPair></Sinks>
+      
+      
+      
+    </Entity><Entity>
+      <Parent>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
+      </Parent>
+      <Current>
+        <Type>cgra.entity.Port</Type><ID>33</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">3</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">NorthWest</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">4</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Port_Index</PKey><PValue type="java.lang.Integer">6</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      <Sinks><SPPair><ID>44</ID><Port>20</Port></SPPair><SPPair><ID>96</ID><Port>0</Port></SPPair></Sinks>
+      
+      
+      
+    </Entity><Entity>
+      <Parent>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
+      </Parent>
+      <Current>
+        <Type>cgra.entity.Port</Type><ID>34</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">0</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">SouthWest</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">1</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
@@ -607,27 +607,27 @@
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
       
-      <Sinks><SPPair><ID>24</ID><Port>-1</Port></SPPair></Sinks>
+      <Sinks><SPPair><ID>100</ID><Port>0</Port></SPPair><SPPair><ID>40</ID><Port>20</Port></SPPair></Sinks>
       
       
       
     </Entity><Entity>
       <Parent>
-        <Type>cgra.fabric.Router</Type><ID>123456</ID>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
       </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>19</ID>
+        <Type>cgra.entity.Port</Type><ID>35</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">0</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">Direction-8</PValue>
+        </KeyValue><KeyValue>
           <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">19</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
@@ -638,27 +638,27 @@
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
       
-      <Sinks><SPPair><ID>24</ID><Port>-1</Port></SPPair></Sinks>
+      <Sinks><SPPair><ID>101</ID><Port>0</Port></SPPair><SPPair><ID>40</ID><Port>20</Port></SPPair></Sinks>
       
       
       
     </Entity><Entity>
       <Parent>
-        <Type>cgra.fabric.Router</Type><ID>123456</ID>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
       </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>20</ID>
+        <Type>cgra.entity.Port</Type><ID>36</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">0</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">North</PValue>
+        </KeyValue><KeyValue>
           <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">2</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">OUTPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">20</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
@@ -668,28 +668,28 @@
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      <Sources><SPPair><ID>8</ID><Port>-1</Port></SPPair><SPPair><ID>2</ID><Port>-1</Port></SPPair><SPPair><ID>4</ID><Port>-1</Port></SPPair><SPPair><ID>6</ID><Port>-1</Port></SPPair><SPPair><ID>0</ID><Port>-1</Port></SPPair></Sources>
+      <Sources><SPPair><ID>20</ID><Port>0</Port></SPPair><SPPair><ID>22</ID><Port>0</Port></SPPair><SPPair><ID>61</ID><Port>5</Port></SPPair><SPPair><ID>16</ID><Port>0</Port></SPPair><SPPair><ID>18</ID><Port>0</Port></SPPair><SPPair><ID>24</ID><Port>0</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
       <Parent>
-        <Type>cgra.fabric.Router</Type><ID>123456</ID>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
       </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>21</ID>
+        <Type>cgra.entity.Port</Type><ID>37</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">North</PValue>
+        </KeyValue><KeyValue>
           <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">2</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">OUTPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">21</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
@@ -699,28 +699,28 @@
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      <Sources><SPPair><ID>2</ID><Port>-1</Port></SPPair><SPPair><ID>5</ID><Port>-1</Port></SPPair><SPPair><ID>7</ID><Port>-1</Port></SPPair><SPPair><ID>1</ID><Port>-1</Port></SPPair><SPPair><ID>9</ID><Port>-1</Port></SPPair><SPPair><ID>3</ID><Port>-1</Port></SPPair></Sources>
+      <Sources><SPPair><ID>23</ID><Port>0</Port></SPPair><SPPair><ID>53</ID><Port>6</Port></SPPair><SPPair><ID>17</ID><Port>0</Port></SPPair><SPPair><ID>25</ID><Port>0</Port></SPPair><SPPair><ID>19</ID><Port>0</Port></SPPair><SPPair><ID>18</ID><Port>0</Port></SPPair><SPPair><ID>21</ID><Port>0</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
       <Parent>
-        <Type>cgra.fabric.Router</Type><ID>123456</ID>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
       </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>22</ID>
+        <Type>cgra.entity.Port</Type><ID>38</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">0</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">East</PValue>
+        </KeyValue><KeyValue>
           <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">2</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">OUTPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">22</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
@@ -730,28 +730,28 @@
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      <Sources><SPPair><ID>8</ID><Port>-1</Port></SPPair><SPPair><ID>2</ID><Port>-1</Port></SPPair><SPPair><ID>4</ID><Port>-1</Port></SPPair><SPPair><ID>6</ID><Port>-1</Port></SPPair><SPPair><ID>0</ID><Port>-1</Port></SPPair></Sources>
+      <Sources><SPPair><ID>20</ID><Port>0</Port></SPPair><SPPair><ID>22</ID><Port>0</Port></SPPair><SPPair><ID>16</ID><Port>0</Port></SPPair><SPPair><ID>69</ID><Port>5</Port></SPPair><SPPair><ID>18</ID><Port>0</Port></SPPair><SPPair><ID>24</ID><Port>0</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
       <Parent>
-        <Type>cgra.fabric.Router</Type><ID>123456</ID>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
       </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>23</ID>
+        <Type>cgra.entity.Port</Type><ID>39</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">East</PValue>
+        </KeyValue><KeyValue>
           <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">2</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">OUTPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">23</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
@@ -761,28 +761,28 @@
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      <Sources><SPPair><ID>5</ID><Port>-1</Port></SPPair><SPPair><ID>7</ID><Port>-1</Port></SPPair><SPPair><ID>1</ID><Port>-1</Port></SPPair><SPPair><ID>9</ID><Port>-1</Port></SPPair><SPPair><ID>3</ID><Port>-1</Port></SPPair></Sources>
+      <Sources><SPPair><ID>77</ID><Port>5</Port></SPPair><SPPair><ID>23</ID><Port>0</Port></SPPair><SPPair><ID>17</ID><Port>0</Port></SPPair><SPPair><ID>25</ID><Port>0</Port></SPPair><SPPair><ID>19</ID><Port>0</Port></SPPair><SPPair><ID>21</ID><Port>0</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
       <Parent>
-        <Type>cgra.fabric.Router</Type><ID>123456</ID>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
       </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>24</ID>
+        <Type>cgra.entity.Port</Type><ID>40</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">0</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">South</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">OUTPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">24</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
@@ -792,28 +792,28 @@
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      <Sources><SPPair><ID>19</ID><Port>-1</Port></SPPair><SPPair><ID>18</ID><Port>-1</Port></SPPair></Sources>
+      <Sources><SPPair><ID>35</ID><Port>0</Port></SPPair><SPPair><ID>34</ID><Port>0</Port></SPPair><SPPair><ID>102</ID><Port>2</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
       <Parent>
-        <Type>cgra.fabric.Router</Type><ID>123456</ID>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
       </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>25</ID>
+        <Type>cgra.entity.Port</Type><ID>41</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">0</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">West</PValue>
+        </KeyValue><KeyValue>
           <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">4</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">OUTPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">25</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
@@ -823,28 +823,28 @@
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      <Sources><SPPair><ID>14</ID><Port>-1</Port></SPPair><SPPair><ID>10</ID><Port>-1</Port></SPPair></Sources>
+      <Sources><SPPair><ID>26</ID><Port>0</Port></SPPair><SPPair><ID>82</ID><Port>2</Port></SPPair><SPPair><ID>30</ID><Port>0</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
       <Parent>
-        <Type>cgra.fabric.Router</Type><ID>123456</ID>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
       </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>26</ID>
+        <Type>cgra.entity.Port</Type><ID>42</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">West</PValue>
+        </KeyValue><KeyValue>
           <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">4</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">OUTPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">26</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
@@ -854,28 +854,28 @@
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      <Sources><SPPair><ID>11</ID><Port>-1</Port></SPPair><SPPair><ID>15</ID><Port>-1</Port></SPPair></Sources>
+      <Sources><SPPair><ID>31</ID><Port>0</Port></SPPair><SPPair><ID>87</ID><Port>2</Port></SPPair><SPPair><ID>27</ID><Port>0</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
       <Parent>
-        <Type>cgra.fabric.Router</Type><ID>123456</ID>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
       </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>27</ID>
+        <Type>cgra.entity.Port</Type><ID>43</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">2</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">West</PValue>
+        </KeyValue><KeyValue>
           <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">4</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">OUTPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">27</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
@@ -885,28 +885,28 @@
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      <Sources><SPPair><ID>16</ID><Port>-1</Port></SPPair><SPPair><ID>12</ID><Port>-1</Port></SPPair></Sources>
+      <Sources><SPPair><ID>92</ID><Port>2</Port></SPPair><SPPair><ID>32</ID><Port>0</Port></SPPair><SPPair><ID>28</ID><Port>0</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
       <Parent>
-        <Type>cgra.fabric.Router</Type><ID>123456</ID>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
       </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>28</ID>
+        <Type>cgra.entity.Port</Type><ID>44</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">Sub_Net_Index</PKey><PValue type="java.lang.Integer">3</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
+          <PKey DSE="false">Direction</PKey><PValue type="java.lang.String">West</PValue>
+        </KeyValue><KeyValue>
           <PKey DSE="false">Num_Sub_Net</PKey><PValue type="java.lang.Integer">4</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">OUTPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">28</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
@@ -916,17 +916,17 @@
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      <Sources><SPPair><ID>17</ID><Port>-1</Port></SPPair><SPPair><ID>13</ID><Port>-1</Port></SPPair></Sources>
+      <Sources><SPPair><ID>29</ID><Port>0</Port></SPPair><SPPair><ID>97</ID><Port>2</Port></SPPair><SPPair><ID>33</ID><Port>0</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
       <Parent>
-        <Type>cgra.fabric.Router</Type><ID>123456</ID>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
       </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>29</ID>
+        <Type>cgra.entity.Port</Type><ID>45</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">Index_Width</PKey><PValue type="java.lang.Integer">16</PValue>
@@ -935,8 +935,6 @@
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">MMIO_CONTROL</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">29</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">false</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
@@ -949,198 +947,16 @@
       
       
     </Entity></Ports>
-      <Relationships><link><Source>0</Source><Sink>30</Sink></link><link><Source>2</Source><Sink>31</Sink></link><link><Source>4</Source><Sink>32</Sink></link><link><Source>6</Source><Sink>33</Sink></link><link><Source>8</Source><Sink>34</Sink></link><link><Source>35</Source><Sink>20</Sink></link><link><Source>1</Source><Sink>37</Sink></link><link><Source>3</Source><Sink>38</Sink></link><link><Source>5</Source><Sink>39</Sink></link><link><Source>7</Source><Sink>40</Sink></link><link><Source>9</Source><Sink>41</Sink></link><link><Source>2</Source><Sink>42</Sink></link><link><Source>43</Source><Sink>21</Sink></link><link><Source>0</Source><Sink>45</Sink></link><link><Source>2</Source><Sink>46</Sink></link><link><Source>4</Source><Sink>47</Sink></link><link><Source>6</Source><Sink>48</Sink></link><link><Source>8</Source><Sink>49</Sink></link><link><Source>50</Source><Sink>22</Sink></link><link><Source>1</Source><Sink>52</Sink></link><link><Source>3</Source><Sink>53</Sink></link><link><Source>5</Source><Sink>54</Sink></link><link><Source>7</Source><Sink>55</Sink></link><link><Source>9</Source><Sink>56</Sink></link><link><Source>57</Source><Sink>23</Sink></link><link><Source>18</Source><Sink>59</Sink></link><link><Source>19</Source><Sink>60</Sink></link><link><Source>61</Source><Sink>24</Sink></link><link><Source>10</Source><Sink>63</Sink></link><link><Source>14</Source><Sink>64</Sink></link><link><Source>65</Source><Sink>25</Sink></link><link><Source>11</Source><Sink>67</Sink></link><link><Source>15</Source><Sink>68</Sink></link><link><Source>69</Source><Sink>26</Sink></link><link><Source>12</Source><Sink>71</Sink></link><link><Source>16</Source><Sink>72</Sink></link><link><Source>73</Source><Sink>27</Sink></link><link><Source>13</Source><Sink>75</Sink></link><link><Source>17</Source><Sink>76</Sink></link><link><Source>77</Source><Sink>28</Sink></link></Relationships>
+      <Relationships><link><Source>18</Source><Sink>37</Sink></link><link><Source>16</Source><Sink>36</Sink></link><link><Source>17</Source><Sink>37</Sink></link><link><Source>16</Source><Sink>38</Sink></link><link><Source>17</Source><Sink>39</Sink></link><link><Source>18</Source><Sink>36</Sink></link><link><Source>19</Source><Sink>37</Sink></link><link><Source>18</Source><Sink>38</Sink></link><link><Source>19</Source><Sink>39</Sink></link><link><Source>20</Source><Sink>36</Sink></link><link><Source>21</Source><Sink>37</Sink></link><link><Source>20</Source><Sink>38</Sink></link><link><Source>21</Source><Sink>39</Sink></link><link><Source>22</Source><Sink>36</Sink></link><link><Source>23</Source><Sink>37</Sink></link><link><Source>22</Source><Sink>38</Sink></link><link><Source>23</Source><Sink>39</Sink></link><link><Source>24</Source><Sink>36</Sink></link><link><Source>25</Source><Sink>37</Sink></link><link><Source>24</Source><Sink>38</Sink></link><link><Source>25</Source><Sink>39</Sink></link><link><Source>26</Source><Sink>41</Sink></link><link><Source>27</Source><Sink>42</Sink></link><link><Source>28</Source><Sink>43</Sink></link><link><Source>29</Source><Sink>44</Sink></link><link><Source>30</Source><Sink>41</Sink></link><link><Source>31</Source><Sink>42</Sink></link><link><Source>32</Source><Sink>43</Sink></link><link><Source>33</Source><Sink>44</Sink></link><link><Source>34</Source><Sink>40</Sink></link><link><Source>35</Source><Sink>40</Sink></link><link><Source>18</Source><Sink>47</Sink></link><link><Source>17</Source><Sink>48</Sink></link><link><Source>19</Source><Sink>49</Sink></link><link><Source>21</Source><Sink>50</Sink></link><link><Source>23</Source><Sink>51</Sink></link><link><Source>25</Source><Sink>52</Sink></link><link><Source>53</Source><Sink>37</Sink></link><link><Source>16</Source><Sink>56</Sink></link><link><Source>18</Source><Sink>57</Sink></link><link><Source>20</Source><Sink>58</Sink></link><link><Source>22</Source><Sink>59</Sink></link><link><Source>24</Source><Sink>60</Sink></link><link><Source>61</Source><Sink>36</Sink></link><link><Source>16</Source><Sink>64</Sink></link><link><Source>18</Source><Sink>65</Sink></link><link><Source>20</Source><Sink>66</Sink></link><link><Source>22</Source><Sink>67</Sink></link><link><Source>24</Source><Sink>68</Sink></link><link><Source>69</Source><Sink>38</Sink></link><link><Source>17</Source><Sink>72</Sink></link><link><Source>19</Source><Sink>73</Sink></link><link><Source>21</Source><Sink>74</Sink></link><link><Source>23</Source><Sink>75</Sink></link><link><Source>25</Source><Sink>76</Sink></link><link><Source>77</Source><Sink>39</Sink></link><link><Source>26</Source><Sink>80</Sink></link><link><Source>30</Source><Sink>81</Sink></link><link><Source>82</Source><Sink>41</Sink></link><link><Source>27</Source><Sink>85</Sink></link><link><Source>31</Source><Sink>86</Sink></link><link><Source>87</Source><Sink>42</Sink></link><link><Source>28</Source><Sink>90</Sink></link><link><Source>32</Source><Sink>91</Sink></link><link><Source>92</Source><Sink>43</Sink></link><link><Source>29</Source><Sink>95</Sink></link><link><Source>33</Source><Sink>96</Sink></link><link><Source>97</Source><Sink>44</Sink></link><link><Source>34</Source><Sink>100</Sink></link><link><Source>35</Source><Sink>101</Sink></link><link><Source>102</Source><Sink>40</Sink></link></Relationships>
       <InternalEntities><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
+      </Parent>
       <Current>
-        <Type>cgra.fabric.common.Multiplexer</Type><ID>-1</ID>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>46</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">config_base</PKey><PValue type="java.lang.Integer">0</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">index_config_register</PKey><PValue type="java.lang.Integer">0</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">select2input</PKey><PValue type="scala.collection.mutable.HashMap">(2,2) (4,4) (1,1) (3,3) (0,0)</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">config_bound</PKey><PValue type="java.lang.Integer">2</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">RegisterControlled</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue></Parameters>
-      <Sources><SPPair><ID>8</ID><Port>4</Port></SPPair><SPPair><ID>2</ID><Port>1</Port></SPPair><SPPair><ID>4</ID><Port>2</Port></SPPair><SPPair><ID>6</ID><Port>3</Port></SPPair><SPPair><ID>0</ID><Port>0</Port></SPPair></Sources>
-      <Sinks><SPPair><ID>20</ID><Port>5</Port></SPPair></Sinks>
-      <Ports><Entity>
-      
-      <Current>
-        <Type>cgra.entity.Port</Type><ID>30</ID>
-      </Current>
-      <Parameters><KeyValue>
-          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">0</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue></Parameters>
-      
-      
-      
-      
-      
-    </Entity><Entity>
-      
-      <Current>
-        <Type>cgra.entity.Port</Type><ID>31</ID>
-      </Current>
-      <Parameters><KeyValue>
-          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">1</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue></Parameters>
-      
-      
-      
-      
-      
-    </Entity><Entity>
-      
-      <Current>
-        <Type>cgra.entity.Port</Type><ID>32</ID>
-      </Current>
-      <Parameters><KeyValue>
-          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">2</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue></Parameters>
-      
-      
-      
-      
-      
-    </Entity><Entity>
-      
-      <Current>
-        <Type>cgra.entity.Port</Type><ID>33</ID>
-      </Current>
-      <Parameters><KeyValue>
-          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">3</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue></Parameters>
-      
-      
-      
-      
-      
-    </Entity><Entity>
-      
-      <Current>
-        <Type>cgra.entity.Port</Type><ID>34</ID>
-      </Current>
-      <Parameters><KeyValue>
-          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">4</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue></Parameters>
-      
-      
-      
-      
-      
-    </Entity><Entity>
-      
-      <Current>
-        <Type>cgra.entity.Port</Type><ID>35</ID>
-      </Current>
-      <Parameters><KeyValue>
-          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">OUTPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">5</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
-        </KeyValue></Parameters>
-      
-      
-      
-      
-      
-    </Entity><Entity>
-      
-      <Current>
-        <Type>cgra.entity.Port</Type><ID>36</ID>
-      </Current>
-      <Parameters><KeyValue>
-          <PKey DSE="false">function</PKey><PValue type="java.lang.String">control</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">6</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">false</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">3</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">false</PValue>
-        </KeyValue></Parameters>
-      
-      
-      
-      
-      
-    </Entity></Ports>
-      
-      
-    </Entity><Entity>
-      
-      <Current>
-        <Type>cgra.fabric.common.Multiplexer</Type><ID>-1</ID>
-      </Current>
-      <Parameters><KeyValue>
-          <PKey DSE="false">config_base</PKey><PValue type="java.lang.Integer">3</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">index_config_register</PKey><PValue type="java.lang.Integer">0</PValue>
         </KeyValue><KeyValue>
@@ -1148,184 +964,184 @@
         </KeyValue><KeyValue>
           <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">config_bound</PKey><PValue type="java.lang.Integer">5</PValue>
+          <PKey DSE="false">config_bound</PKey><PValue type="java.lang.Integer">2</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">RegisterControlled</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      <Sources><SPPair><ID>2</ID><Port>5</Port></SPPair><SPPair><ID>5</ID><Port>2</Port></SPPair><SPPair><ID>7</ID><Port>3</Port></SPPair><SPPair><ID>1</ID><Port>0</Port></SPPair><SPPair><ID>9</ID><Port>4</Port></SPPair><SPPair><ID>3</ID><Port>1</Port></SPPair></Sources>
-      <Sinks><SPPair><ID>21</ID><Port>6</Port></SPPair></Sinks>
+      
+      
       <Ports><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>46</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>37</ID>
+        <Type>cgra.entity.Port</Type><ID>47</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">0</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      
+      <Sources><SPPair><ID>18</ID><Port>2</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>46</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>38</ID>
+        <Type>cgra.entity.Port</Type><ID>48</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">1</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      
+      <Sources><SPPair><ID>17</ID><Port>1</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>46</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>39</ID>
+        <Type>cgra.entity.Port</Type><ID>49</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">2</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      
+      <Sources><SPPair><ID>19</ID><Port>3</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>46</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>40</ID>
+        <Type>cgra.entity.Port</Type><ID>50</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">3</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      
+      <Sources><SPPair><ID>21</ID><Port>5</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>46</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>41</ID>
+        <Type>cgra.entity.Port</Type><ID>51</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">4</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      
+      <Sources><SPPair><ID>23</ID><Port>7</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>46</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>42</ID>
+        <Type>cgra.entity.Port</Type><ID>52</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">5</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      
+      <Sources><SPPair><ID>25</ID><Port>9</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>46</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>43</ID>
+        <Type>cgra.entity.Port</Type><ID>53</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">OUTPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">6</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
       
-      
+      <Sinks><SPPair><ID>37</ID><Port>20</Port></SPPair></Sinks>
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>46</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>44</ID>
+        <Type>cgra.entity.Port</Type><ID>54</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">control</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">7</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">false</PValue>
         </KeyValue><KeyValue>
@@ -1342,9 +1158,197 @@
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
+      </Parent>
       <Current>
-        <Type>cgra.fabric.common.Multiplexer</Type><ID>-1</ID>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>55</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">config_base</PKey><PValue type="java.lang.Integer">3</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">index_config_register</PKey><PValue type="java.lang.Integer">0</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">select2input</PKey><PValue type="scala.collection.mutable.HashMap">(2,2) (4,4) (1,1) (3,3) (0,0)</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">config_bound</PKey><PValue type="java.lang.Integer">5</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">RegisterControlled</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      
+      <Ports><Entity>
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>55</ID>
+      </Parent>
+      <Current>
+        <Type>cgra.entity.Port</Type><ID>56</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      <Sources><SPPair><ID>16</ID><Port>0</Port></SPPair></Sources>
+      
+      
+      
+      
+    </Entity><Entity>
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>55</ID>
+      </Parent>
+      <Current>
+        <Type>cgra.entity.Port</Type><ID>57</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      <Sources><SPPair><ID>18</ID><Port>2</Port></SPPair></Sources>
+      
+      
+      
+      
+    </Entity><Entity>
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>55</ID>
+      </Parent>
+      <Current>
+        <Type>cgra.entity.Port</Type><ID>58</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      <Sources><SPPair><ID>20</ID><Port>4</Port></SPPair></Sources>
+      
+      
+      
+      
+    </Entity><Entity>
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>55</ID>
+      </Parent>
+      <Current>
+        <Type>cgra.entity.Port</Type><ID>59</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      <Sources><SPPair><ID>22</ID><Port>6</Port></SPPair></Sources>
+      
+      
+      
+      
+    </Entity><Entity>
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>55</ID>
+      </Parent>
+      <Current>
+        <Type>cgra.entity.Port</Type><ID>60</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      <Sources><SPPair><ID>24</ID><Port>8</Port></SPPair></Sources>
+      
+      
+      
+      
+    </Entity><Entity>
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>55</ID>
+      </Parent>
+      <Current>
+        <Type>cgra.entity.Port</Type><ID>61</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">OUTPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
+        </KeyValue></Parameters>
+      
+      <Sinks><SPPair><ID>36</ID><Port>6</Port></SPPair></Sinks>
+      
+      
+      
+    </Entity><Entity>
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>55</ID>
+      </Parent>
+      <Current>
+        <Type>cgra.entity.Port</Type><ID>62</ID>
+      </Current>
+      <Parameters><KeyValue>
+          <PKey DSE="false">function</PKey><PValue type="java.lang.String">control</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">false</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">3</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">false</PValue>
+        </KeyValue></Parameters>
+      
+      
+      
+      
+      
+    </Entity></Ports>
+      
+      
+    </Entity><Entity>
+      <Parent>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
+      </Parent>
+      <Current>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>63</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">config_base</PKey><PValue type="java.lang.Integer">6</PValue>
@@ -1359,157 +1363,157 @@
         </KeyValue><KeyValue>
           <PKey DSE="false">RegisterControlled</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      <Sources><SPPair><ID>8</ID><Port>4</Port></SPPair><SPPair><ID>2</ID><Port>1</Port></SPPair><SPPair><ID>4</ID><Port>2</Port></SPPair><SPPair><ID>6</ID><Port>3</Port></SPPair><SPPair><ID>0</ID><Port>0</Port></SPPair></Sources>
-      <Sinks><SPPair><ID>22</ID><Port>5</Port></SPPair></Sinks>
+      
+      
       <Ports><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>63</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>45</ID>
+        <Type>cgra.entity.Port</Type><ID>64</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">0</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      
+      <Sources><SPPair><ID>16</ID><Port>0</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>63</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>46</ID>
+        <Type>cgra.entity.Port</Type><ID>65</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">1</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      
+      <Sources><SPPair><ID>18</ID><Port>2</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>63</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>47</ID>
+        <Type>cgra.entity.Port</Type><ID>66</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">2</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      
+      <Sources><SPPair><ID>20</ID><Port>4</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>63</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>48</ID>
+        <Type>cgra.entity.Port</Type><ID>67</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">3</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      
+      <Sources><SPPair><ID>22</ID><Port>6</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>63</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>49</ID>
+        <Type>cgra.entity.Port</Type><ID>68</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">4</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      
+      <Sources><SPPair><ID>24</ID><Port>8</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>63</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>50</ID>
+        <Type>cgra.entity.Port</Type><ID>69</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">OUTPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">5</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
       
-      
+      <Sinks><SPPair><ID>38</ID><Port>6</Port></SPPair></Sinks>
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>63</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>51</ID>
+        <Type>cgra.entity.Port</Type><ID>70</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">control</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">6</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">false</PValue>
         </KeyValue><KeyValue>
@@ -1526,9 +1530,11 @@
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
+      </Parent>
       <Current>
-        <Type>cgra.fabric.common.Multiplexer</Type><ID>-1</ID>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>71</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">config_base</PKey><PValue type="java.lang.Integer">9</PValue>
@@ -1543,157 +1549,157 @@
         </KeyValue><KeyValue>
           <PKey DSE="false">RegisterControlled</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      <Sources><SPPair><ID>5</ID><Port>2</Port></SPPair><SPPair><ID>7</ID><Port>3</Port></SPPair><SPPair><ID>1</ID><Port>0</Port></SPPair><SPPair><ID>9</ID><Port>4</Port></SPPair><SPPair><ID>3</ID><Port>1</Port></SPPair></Sources>
-      <Sinks><SPPair><ID>23</ID><Port>5</Port></SPPair></Sinks>
+      
+      
       <Ports><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>71</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>52</ID>
+        <Type>cgra.entity.Port</Type><ID>72</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">0</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      
+      <Sources><SPPair><ID>17</ID><Port>1</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>71</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>53</ID>
+        <Type>cgra.entity.Port</Type><ID>73</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">1</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      
+      <Sources><SPPair><ID>19</ID><Port>3</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>71</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>54</ID>
+        <Type>cgra.entity.Port</Type><ID>74</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">2</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      
+      <Sources><SPPair><ID>21</ID><Port>5</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>71</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>55</ID>
+        <Type>cgra.entity.Port</Type><ID>75</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">3</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      
+      <Sources><SPPair><ID>23</ID><Port>7</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>71</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>56</ID>
+        <Type>cgra.entity.Port</Type><ID>76</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">4</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      
+      <Sources><SPPair><ID>25</ID><Port>9</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>71</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>57</ID>
+        <Type>cgra.entity.Port</Type><ID>77</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">OUTPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">5</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
       
-      
+      <Sinks><SPPair><ID>39</ID><Port>6</Port></SPPair></Sinks>
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>71</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>58</ID>
+        <Type>cgra.entity.Port</Type><ID>78</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">control</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">6</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">false</PValue>
         </KeyValue><KeyValue>
@@ -1710,9 +1716,11 @@
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
+      </Parent>
       <Current>
-        <Type>cgra.fabric.common.Multiplexer</Type><ID>-1</ID>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>79</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">config_base</PKey><PValue type="java.lang.Integer">12</PValue>
@@ -1727,88 +1735,88 @@
         </KeyValue><KeyValue>
           <PKey DSE="false">RegisterControlled</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      <Sources><SPPair><ID>19</ID><Port>1</Port></SPPair><SPPair><ID>18</ID><Port>0</Port></SPPair></Sources>
-      <Sinks><SPPair><ID>24</ID><Port>2</Port></SPPair></Sinks>
+      
+      
       <Ports><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>79</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>59</ID>
+        <Type>cgra.entity.Port</Type><ID>80</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">0</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">64</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      
+      <Sources><SPPair><ID>26</ID><Port>10</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>79</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>60</ID>
+        <Type>cgra.entity.Port</Type><ID>81</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">1</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">64</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      
+      <Sources><SPPair><ID>30</ID><Port>14</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>79</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>61</ID>
+        <Type>cgra.entity.Port</Type><ID>82</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">OUTPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">2</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">64</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
       
-      
+      <Sinks><SPPair><ID>41</ID><Port>6</Port></SPPair></Sinks>
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>79</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>62</ID>
+        <Type>cgra.entity.Port</Type><ID>83</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">control</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">3</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">false</PValue>
         </KeyValue><KeyValue>
@@ -1825,9 +1833,11 @@
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
+      </Parent>
       <Current>
-        <Type>cgra.fabric.common.Multiplexer</Type><ID>-1</ID>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>84</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">config_base</PKey><PValue type="java.lang.Integer">14</PValue>
@@ -1842,88 +1852,88 @@
         </KeyValue><KeyValue>
           <PKey DSE="false">RegisterControlled</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      <Sources><SPPair><ID>14</ID><Port>1</Port></SPPair><SPPair><ID>10</ID><Port>0</Port></SPPair></Sources>
-      <Sinks><SPPair><ID>25</ID><Port>2</Port></SPPair></Sinks>
+      
+      
       <Ports><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>84</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>63</ID>
+        <Type>cgra.entity.Port</Type><ID>85</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">0</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      
+      <Sources><SPPair><ID>27</ID><Port>11</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>84</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>64</ID>
+        <Type>cgra.entity.Port</Type><ID>86</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">1</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      
+      <Sources><SPPair><ID>31</ID><Port>15</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>84</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>65</ID>
+        <Type>cgra.entity.Port</Type><ID>87</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">OUTPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">2</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
       
-      
+      <Sinks><SPPair><ID>42</ID><Port>6</Port></SPPair></Sinks>
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>84</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>66</ID>
+        <Type>cgra.entity.Port</Type><ID>88</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">control</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">3</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">false</PValue>
         </KeyValue><KeyValue>
@@ -1940,9 +1950,11 @@
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
+      </Parent>
       <Current>
-        <Type>cgra.fabric.common.Multiplexer</Type><ID>-1</ID>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>89</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">config_base</PKey><PValue type="java.lang.Integer">0</PValue>
@@ -1957,88 +1969,88 @@
         </KeyValue><KeyValue>
           <PKey DSE="false">RegisterControlled</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      <Sources><SPPair><ID>11</ID><Port>0</Port></SPPair><SPPair><ID>15</ID><Port>1</Port></SPPair></Sources>
-      <Sinks><SPPair><ID>26</ID><Port>2</Port></SPPair></Sinks>
+      
+      
       <Ports><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>89</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>67</ID>
+        <Type>cgra.entity.Port</Type><ID>90</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">0</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      
+      <Sources><SPPair><ID>28</ID><Port>12</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>89</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>68</ID>
+        <Type>cgra.entity.Port</Type><ID>91</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">1</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      
+      <Sources><SPPair><ID>32</ID><Port>16</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>89</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>69</ID>
+        <Type>cgra.entity.Port</Type><ID>92</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">OUTPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">2</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
       
-      
+      <Sinks><SPPair><ID>43</ID><Port>6</Port></SPPair></Sinks>
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>89</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>70</ID>
+        <Type>cgra.entity.Port</Type><ID>93</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">control</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">3</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">false</PValue>
         </KeyValue><KeyValue>
@@ -2055,9 +2067,11 @@
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
+      </Parent>
       <Current>
-        <Type>cgra.fabric.common.Multiplexer</Type><ID>-1</ID>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>94</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">config_base</PKey><PValue type="java.lang.Integer">2</PValue>
@@ -2072,88 +2086,88 @@
         </KeyValue><KeyValue>
           <PKey DSE="false">RegisterControlled</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      <Sources><SPPair><ID>16</ID><Port>1</Port></SPPair><SPPair><ID>12</ID><Port>0</Port></SPPair></Sources>
-      <Sinks><SPPair><ID>27</ID><Port>2</Port></SPPair></Sinks>
+      
+      
       <Ports><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>94</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>71</ID>
+        <Type>cgra.entity.Port</Type><ID>95</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">0</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      
+      <Sources><SPPair><ID>29</ID><Port>13</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>94</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>72</ID>
+        <Type>cgra.entity.Port</Type><ID>96</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">1</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      
+      <Sources><SPPair><ID>33</ID><Port>17</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>94</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>73</ID>
+        <Type>cgra.entity.Port</Type><ID>97</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">OUTPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">2</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
       
-      
+      <Sinks><SPPair><ID>44</ID><Port>6</Port></SPPair></Sinks>
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>94</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>74</ID>
+        <Type>cgra.entity.Port</Type><ID>98</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">control</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">3</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">false</PValue>
         </KeyValue><KeyValue>
@@ -2170,9 +2184,11 @@
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.Router</Type><ID>0</ID>
+      </Parent>
       <Current>
-        <Type>cgra.fabric.common.Multiplexer</Type><ID>-1</ID>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>99</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">config_base</PKey><PValue type="java.lang.Integer">4</PValue>
@@ -2187,88 +2203,88 @@
         </KeyValue><KeyValue>
           <PKey DSE="false">RegisterControlled</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      <Sources><SPPair><ID>17</ID><Port>1</Port></SPPair><SPPair><ID>13</ID><Port>0</Port></SPPair></Sources>
-      <Sinks><SPPair><ID>28</ID><Port>2</Port></SPPair></Sinks>
+      
+      
       <Ports><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>99</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>75</ID>
+        <Type>cgra.entity.Port</Type><ID>100</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">0</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      
+      <Sources><SPPair><ID>34</ID><Port>18</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>99</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>76</ID>
+        <Type>cgra.entity.Port</Type><ID>101</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">1</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
-      
+      <Sources><SPPair><ID>35</ID><Port>19</Port></SPPair></Sources>
       
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>99</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>77</ID>
+        <Type>cgra.entity.Port</Type><ID>102</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">data</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">OUTPUT</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">2</PValue>
-        </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">-1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">true</PValue>
         </KeyValue></Parameters>
       
-      
+      <Sinks><SPPair><ID>40</ID><Port>6</Port></SPPair></Sinks>
       
       
       
     </Entity><Entity>
-      
+      <Parent>
+        <Type>cgra.fabric.common.Multiplexer</Type><ID>99</ID>
+      </Parent>
       <Current>
-        <Type>cgra.entity.Port</Type><ID>78</ID>
+        <Type>cgra.entity.Port</Type><ID>103</ID>
       </Current>
       <Parameters><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">control</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">IO_Type</PKey><PValue type="java.lang.String">INPUT</PValue>
-        </KeyValue><KeyValue>
-          <PKey DSE="false">Index</PKey><PValue type="java.lang.Integer">3</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">false</PValue>
         </KeyValue><KeyValue>

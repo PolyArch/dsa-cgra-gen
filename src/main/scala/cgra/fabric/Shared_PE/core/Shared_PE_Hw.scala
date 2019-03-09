@@ -21,7 +21,7 @@ case class Shared_PE() extends Entity with derived_parameters{
   val execute_port = Port(INPUT_TYPE,false,false);execute_port.have("function","execute")
   val halted_port = Port(OUTPUT_TYPE,false,false);halted_port.have("function","halted")
   val chan_quies_port = Port(OUTPUT_TYPE,false,false);chan_quies_port.have("function","channel_quiescent")
-  Ports += enable_port;Ports += execute_port;Ports += halted_port;Ports += chan_quies_port
+  have(enable_port,execute_port,halted_port,chan_quies_port)
   Ports.foreach(p=>p.have("Word_Width",1))
   def forsyn : Unit = {
     parameter_update(this)
@@ -38,7 +38,6 @@ case class Shared_PE() extends Entity with derived_parameters{
     val output_channels = Port(MULTI_TAG_PACKET_TYPE,false,false);output_channels.have("IO Type",OUTPUT_TYPE)
     output_channels.have("tag_width",TIA_TAG_WIDTH);output_channels.have("word_width",TIA_WORD_WIDTH)
     output_channels.have("num_channel",TIA_NUM_OUTPUT_CHANNELS);Ports += output_channels
-    assign_index(Ports)
 
     // Component Config
     require(get("has_core_monitor") != None)
@@ -106,16 +105,16 @@ class Shared_PE_Hw(p:Entity) extends Module
   )
   */
   val io = IO(get_io(p.Ports))
-  val io_enable:Bool = io(p.Ports.find(p=>p.get("function") == "enable").get.get("Index").asInstanceOf[Int]).asInstanceOf[Bool]
-  val io_execute:Bool = io(p.Ports.find(p=>p.get("function") == "execute").get.get("Index").asInstanceOf[Int]).asInstanceOf[Bool]
-  val io_halted:Bool = io(p.Ports.find(p=>p.get("function") == "halted").get.get("Index").asInstanceOf[Int]).asInstanceOf[Bool]
-  val io_chan_quies:Bool = io(p.Ports.find(p=>p.get("function") == "channel_quiescent").get.get("Index").asInstanceOf[Int]).asInstanceOf[Bool]
+  val io_enable:Bool = io(p.Ports.zipWithIndex.find(p=>p._1.get("function") == "enable").get._2).asInstanceOf[Bool]
+  val io_execute:Bool = io(p.Ports.zipWithIndex.find(p=>p._1.get("function") == "execute").get._2).asInstanceOf[Bool]
+  val io_halted:Bool = io(p.Ports.zipWithIndex.find(p=>p._1.get("function") == "halted").get._2).asInstanceOf[Bool]
+  val io_chan_quies:Bool = io(p.Ports.zipWithIndex.find(p=>p._1.get("function") == "channel_quiescent").get._2).asInstanceOf[Bool]
   val io_hostinterface:mmio_if =
-    io(p.Ports.find(p=>p.get("function") == "control").get.get("Index").asInstanceOf[Int]).asInstanceOf[mmio_if]
-  val io_input_channel_links = io(p.Ports.find(p=>p.io == MULTI_TAG_PACKET_TYPE && p.get("IO Type") == INPUT_TYPE)
-    .get.get("Index").asInstanceOf[Int]).asInstanceOf[Vec[link_if_in]]
-  val io_output_channel_links = io(p.Ports.find(p=>p.io == MULTI_TAG_PACKET_TYPE && p.get("IO Type") == OUTPUT_TYPE)
-    .get.get("Index").asInstanceOf[Int]).asInstanceOf[Vec[link_if_out]]
+    io(p.Ports.zipWithIndex.find(p=>p._1.get("function") == "control").get._2).asInstanceOf[mmio_if]
+  val io_input_channel_links = io(p.Ports.zipWithIndex.find(p=>p._1.io == MULTI_TAG_PACKET_TYPE && p._1.get("IO Type") == INPUT_TYPE)
+    .get._2).asInstanceOf[Vec[link_if_in]]
+  val io_output_channel_links = io(p.Ports.zipWithIndex.find(p=>p._1.io == MULTI_TAG_PACKET_TYPE && p._1.get("IO Type") == OUTPUT_TYPE)
+    .get._2).asInstanceOf[Vec[link_if_out]]
 
   // --- Internal Logic and Wiring ---
 

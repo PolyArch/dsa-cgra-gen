@@ -7,137 +7,160 @@ import cgra.IO.IO_Interface._
 import cgra.IO.mmio_if
 import cgra.fabric.common._
 import cgra.config.Constant._
+import cgra.fabric.common.Instructions._
 
 case class Dedicated_PE() extends Entity
-  with WithRegisterFile
+  with WithControlRegisterFile
+  with SolveMultiInputOneOutput
   with HasDecomposedPorts
-  with WithWordWidth {
+  with WithWordWidth
+  with HasDirection{
   entity_type = this.getClass.getName
 
   def forsyn :Unit = {
-    // Find all delay pipe
-    val delay_pipes = Entities.filter(p=>p.entity_type == Delay_Pipe().entity_type)
-    for (delayP <- delay_pipes){
-      val dp_in_port = delayP.Ports.find(p=>p.io == INPUT_TYPE && p.get("function") == "data").get
-      val source_ports_id = Relationships.filter(_._2 == dp_in_port.entity_id).map(_._1)
-      val source_ports = source_ports_id.map(i=>Ports.find(_.entity_id == i).get)
-      val mux = Multiplexer()
-      this have mux
-      for (s <- source_ports){
-        val temp_port = Port(INPUT_TYPE,false,false)
-        temp_port.have("Word_Width",s.get("Word_Width").asInstanceOf[Int])
-        mux.Ports += temp_port
-        mux.Sources += s.entity_id -> -1
+    // Add control port
+    val control_port = Port(MMIO_TYPE,false,false)
+    control_port have ("function","control")
+    control_port have ("Index_Width",get("config_index_width"))
+    control_port have ("Word_Width",get("config_word_width"))
+    have(control_port)
+
+    // Get num of input and output
+    val num_input = get("num_input").asInstanceOf[Int]
+    val num_output = get("num_output").asInstanceOf[Int]
+    val default_decomposer = get("default_decomposer").asInstanceOf[Int]
+
+    // If decomposer is not defined
+    if(get("input_decomposer") == None) have("input_decomposer",List.fill[Int](num_input)(default_decomposer))
+    if(get("output_decomposer") == None) have("output_decomposer",List.fill[Int](num_output)(default_decomposer))
+
+    // Decomposer Ports
+    if(!directionAssigned) assign_direction(Ports.filter(p=>p.io == OUTPUT_TYPE))
+    if(!directionAssigned) assign_direction(Ports.filter(p=>p.io == INPUT_TYPE))
+    if(!hasDecomposed) decompose_all_Ports
+
+    // Get IO decomposer
+    val input_decomposer = get("input_decomposer").asInstanceOf[List[Int]]
+    val output_decomposer = get("output_decomposer").asInstanceOf[List[Int]]
+    require(input_decomposer.distinct.toSet == output_decomposer.distinct.toSet)
+
+    // Get Subnet Specfic Instructions
+    val subnet_specfic_inst = get("subnet-specific-inst").asInstanceOf[Map[Int,List[Int]]]
+
+    // Build Datapath
+    for (s_num <- input_decomposer.distinct){
+      // Extract Number of Subnet
+      val word_width = get("Word_Width").asInstanceOf[Int]/s_num
+      for (s <- 0 until s_num){
+        // Create ALU
+        val alu = Arithmetic_Logic_Unit()
+        have (alu);alu have("Word_Width",word_width)
+        alu have("Instruction-Set",subnet_specfic_inst(s_num));alu forsyn
+        val alu_in_ports = alu.Ports.zipWithIndex
+          .filter(p=>p._1.io == INPUT_TYPE && p._1.get("function") == "data")
+        val alu_out_port = alu.Ports.zipWithIndex
+          .find(p=>p._1.io == OUTPUT_TYPE).get
+
+        // Get connectted port
+        val source_ports = Ports.zipWithIndex
+          .filter(p=>p._1.get("Sub_Net_Index") == s && p._1.get("Num_Sub_Net") == s_num && p._1.io == INPUT_TYPE)
+        val sink_port = Ports.zipWithIndex
+          .find(p=>p._1.get("Sub_Net_Index") == s && p._1.get("Num_Sub_Net") == s_num && p._1.io == OUTPUT_TYPE).get
+        var num_operand = 2
+        val insts : List[Int]= subnet_specfic_inst(s_num)
+        if (contain_three_operands_inst(insts)) num_operand = 3
+        require(num_operand == alu_in_ports.length)
+
+        // Get delay pipe
+        val delay_pipes = List.fill[Delay_Pipe](num_operand)(Delay_Pipe())
+        delay_pipes.foreach(have(_))
+        delay_pipes.foreach(x=>x.have("Word_Width",word_width))
+        delay_pipes.foreach(x=>x.have("Max_Delay",6,1,32,1))
+        delay_pipes.foreach(_.forsyn)
+
+        // Connect delay pipe with input port
+        for (delay_pipe_i <- delay_pipes.zipWithIndex){
+          val delay_pipe = delay_pipe_i._1
+          val index = delay_pipe_i._2
+          val dp_in_port = delay_pipe.Ports.zipWithIndex
+            .find(p=>p._1.io == INPUT_TYPE && p._1.get("function")=="data").get
+          val dp_out_port = delay_pipe.Ports.zipWithIndex
+            .find(p=>p._1.io == OUTPUT_TYPE && p._1.get("function")=="data").get
+          for (sp <- source_ports){
+            have(sp._1 --> dp_in_port._1,sp._2 -> dp_in_port._2)
+          }
+          // delaypipe --> alu
+          have(dp_out_port._1 --> alu_in_ports(index)._1.asInstanceOf[Entity],dp_out_port._2 -> alu_in_ports(index)._2)
+        }
+        // alu --> output port
+        have(alu_out_port._1 --> sink_port._1.asInstanceOf[Entity],alu_out_port._2 -> sink_port._2)
       }
-      val temp_port = Port(OUTPUT_TYPE,false,false)
-      temp_port.have("Word_Width",dp_in_port.get("Word_Width").asInstanceOf[Int])
-      mux.Ports += temp_port
-      mux.Sinks += dp_in_port.entity_id -> 0
-      mux.forsyn
-      internal_entity_id_counter = mux.assign_entity_id(internal_entity_id_counter)
-      val mux_input_data_port = mux.Ports.filter(p=>p.io == INPUT_TYPE && p.get("function") == "data")
-      val mux_output_data_port = mux.Ports.filter(p=>p.io == OUTPUT_TYPE && p.get("function") == "data")
-      for (s <- 0 until source_ports.length){
-        mux.Sources(source_ports_id(s)) = mux_input_data_port(s).get("Index").asInstanceOf[Int]
-        Relationships -= source_ports_id(s)->dp_in_port.entity_id
-        Relationships += source_ports_id(s)->mux_input_data_port(s).entity_id
-      }
-      Relationships += mux_output_data_port.head.entity_id -> dp_in_port.entity_id
     }
 
-    // Arrange Register Control
+    // Solve Multi Input Conflict
+    solveMultiInputConflictwithMUX
+
     // Arrange the Register
-    val All_Register_Controlled_Entities = Entities.filter(e=>e.get("RegisterControlled").asInstanceOf[Boolean])
-    var pre_bound = -1;var pre_sec = 0
-    val config_width = get("register_file_width").asInstanceOf[Int]
-    val mux_config_sec = get("register_file_length").asInstanceOf[Int] - 1
-    for (reg_con_module <- All_Register_Controlled_Entities){
-      val range = reg_con_module.Ports.find(p=>p.get("function") == "control").getOrElse(
-        throw new Exception("Forget to add old.config port in Mux")
-      ).get("Word_Width").asInstanceOf[Int]
-      val current_config_encode = calaulate_config_location(config_width,range,pre_sec,pre_bound)
-      val curr_sec = current_config_encode._1;pre_sec = curr_sec
-      val curr_bound = current_config_encode._2;pre_bound = curr_bound
-      val curr_base = current_config_encode._3
-      reg_con_module.Parameters("index_config_register").value = curr_sec
-      reg_con_module.Parameters("config_base").value = curr_base
-      reg_con_module.Parameters("config_bound").value = curr_bound
-      pre_sec = curr_sec;pre_bound = curr_bound
-      require(pre_sec <= mux_config_sec)
-    }
+    arrange_register_config_bit
   }
 }
 
-class Dedicated_PE_Hw(p:Entity) extends Module {
-  val io = IO(get_io(p.Ports))
-  val register_file_width = p.get("register_file_width").asInstanceOf[Int]
-  val register_file_length = p.get("register_file_length").asInstanceOf[Int]
-  // --- Hardware ---
-  val config_registers = Reg(Vec(register_file_length, UInt(register_file_width.W)))
-  val ports = p.Ports
+class Dedicated_PE_Hw(p:Entity) extends typical_module(p)
 
-  // Internal Module
-  val mux_type : String= Multiplexer().entity_type;val alu_type: String = Arithmetic_Logic_Unit().entity_type
-  val delay_pipe_type : String= Delay_Pipe().entity_type
-  val internal_modules :List[MixedVec[Data]]= p.Entities.map(e=>{
-    e.entity_type match {
-      case `mux_type` => Module(new Multiplexer_Hw(e)).io
-      case `alu_type` => Module(new Arithmetic_Logic_Unit_Hw(e)).io
-      case `delay_pipe_type` => Module(new Delay_Pipe_Hw(e)).io
-    }
-  }).toList
-
-  // Connection
-  for (r <- p.Relationships){
-    val source_id = r._1
-    val sink_id = r._2
-
-    val source_port = p.Ports.find(p=>p.entity_id == source_id)
-    val source_entity_index = p.Entities.zipWithIndex.find(e=>e._1.Ports.map(p=>p.entity_id).contains(source_id))
-    val sink_port = p.Ports.find(p=>p.entity_id == sink_id)
-    val sink_entity_index = p.Entities.zipWithIndex.find(e=>e._1.Ports.map(p=>p.entity_id).contains(sink_id))
-
-    val source_io:Data = {
-      if (source_port isEmpty){
-        val source_entity = source_entity_index.get._1
-        val source_module_index = source_entity_index.get._2
-        val source_port_index = source_entity.Ports.find(p=>p.entity_id == source_id).get.get("Index").asInstanceOf[Int]
-        internal_modules(source_module_index)(source_port_index)
-      }else{
-        io(p.Ports.find(p=>p.entity_id == source_id).get.get("Index").asInstanceOf[Int])
-      }
-    }
-
-    val sink_io:Data = {
-      if (sink_port isEmpty){
-        val sink_entity = sink_entity_index.get._1
-        val sink_module_index = sink_entity_index.get._2
-        val sink_port_index = sink_entity.Ports.find(p=>p.entity_id == sink_id).get.get("Index").asInstanceOf[Int]
-        internal_modules(sink_module_index)(sink_port_index)
-      }else{
-        io(p.Ports.find(p=>p.entity_id == sink_id).get.get("Index").asInstanceOf[Int])
-      }
-    }
-    source_io <> sink_io
-  }
-
-  // Control
-  for (ei <- p.Entities.indices){
-    val config_port_index = p.Entities(ei).Ports.find(p=>p.get("function") == "control").get.get("Index").asInstanceOf[Int]
-    val config_sec = p.Entities(ei).get("index_config_register").asInstanceOf[Int]
-    val config_base = p.Entities(ei).get("config_base").asInstanceOf[Int]
-    val config_bound = p.Entities(ei).get("config_bound").asInstanceOf[Int]
-    internal_modules(ei)(config_port_index) := config_registers(config_sec)(config_bound,config_base)
-  }
-
-  // Update Control Register
-  val config_port_index = ports.find(p=>p.get("function") == "control").get.get("Index").asInstanceOf[Int]
-  val config_port = io(config_port_index).asInstanceOf[mmio_if]
-  when(config_port.write_req){
-    config_registers(config_port.write_index) := config_port.write_data
-  }
-  config_port.write_ack := true.B
-  config_port.read_ack := false.B
-  config_port.read_data := 0.U
-
+// Add mux based on the same sink ports
+/*
+val all_ports = Ports.toList ::: Entities.flatMap(_.Ports).toList
+val multi_sources_sink_port_entity_id : List[Int]= {
+  val sink_ports_id_unique = Relationships.map(_._2).distinct
+  val sinks_port_id = Relationships.map(_._2)
+  sink_ports_id_unique.filter(spi=>sinks_port_id.count(_==spi) > 1).toList
 }
+for (source_id <- multi_sources_sink_port_entity_id){
+  val sink_port = all_ports.find(_.entity_id == source_id).get
+  val all_entities_ports = Entities.map(_.Ports) :+ Ports
+  val sink_port_index = all_entities_ports.find(P=>P.contains(sink_port)).get.indexOf(sink_port)
+  val source_ports_id = Relationships.filter(_._2 == source_id).map(_._1)
+  val source_ports = source_ports_id.map(i=>all_ports.zipWithIndex.find(p=>p._1.entity_id == i).get)
+  val mux = Multiplexer();this have mux
+  for (s <- source_ports){
+    val temp_port:Port = Port(INPUT_TYPE,s._1.hasValid,s._1.hasReady)
+    mux have temp_port
+    have(s._1 --> temp_port,s._2 -> mux.Ports.indexOf(temp_port))
+  }
+  val temp_port = Port(OUTPUT_TYPE,sink_port.hasValid,sink_port.hasReady)
+  mux have temp_port
+  have (temp_port --> sink_port,mux.Ports.indexOf(temp_port) -> sink_port_index)
+}
+*/
+
+// Find all delay pipe
+/*
+val delay_pipes = Entities.filter(p=>p.entity_type == Delay_Pipe().entity_type)
+for (delayP <- delay_pipes){
+  val dp_in_port = delayP.Ports.find(p=>p.io == INPUT_TYPE && p.get("function") == "data").get
+  val dp_out_port = delayP.Ports.zipWithIndex.find(p=>p._1.io == OUTPUT_TYPE && p._1.get("function") == "data").get
+  val source_ports_id = Relationships.filter(_._2 == dp_in_port.entity_id).map(_._1)
+  val source_ports = source_ports_id.map(i=>Ports.zipWithIndex.find(p=>p._1.entity_id == i).get)
+  val mux = Multiplexer()
+  this have mux
+  for (s <- source_ports){
+    val temp_port:Port = Port(INPUT_TYPE,false,false)
+    temp_port.have("Word_Width",s._1.get("Word_Width").asInstanceOf[Int])
+    mux.have(temp_port)
+    mux.have(s._1 --> temp_port,s._2 -> mux.Ports.indexOf(temp_port))
+  }
+  val temp_port = Port(OUTPUT_TYPE,false,false)
+  temp_port.have("Word_Width",dp_out_port._1.get("Word_Width").asInstanceOf[Int])
+  mux have temp_port
+  mux have (temp_port --> dp_out_port._1,mux.Ports.indexOf(temp_port) -> dp_out_port._2)
+  mux.forsyn
+  val mux_input_data_port = mux.Ports.zipWithIndex.filter(p=>p._1.io == INPUT_TYPE && p._1.get("function") == "data")
+  val mux_output_data_port = mux.Ports.zipWithIndex.filter(p=>p._1.io == OUTPUT_TYPE && p._1.get("function") == "data")
+  for (s <- 0 until source_ports.length){
+    mux.Sources(source_ports_id(s)) = mux_input_data_port(s)._2
+    Relationships -= source_ports_id(s)->dp_in_port.entity_id
+    Relationships += source_ports_id(s)->mux_input_data_port(s)._1.entity_id
+  }
+  Relationships += mux_output_data_port.head._1.entity_id -> dp_in_port.entity_id
+}
+*/

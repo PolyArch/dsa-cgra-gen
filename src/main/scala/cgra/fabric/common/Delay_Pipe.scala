@@ -21,7 +21,6 @@ case class Delay_Pipe() extends Entity
     have ("config_width",config_width)
     config_port have("Word_Width",config_width);config_port have("function","control")
     Ports += config_port
-    assign_index(Ports)
   }
 }
 
@@ -33,9 +32,9 @@ class Delay_Pipe_Hw(p:Entity) extends Module{
   val data_width = p.get("Word_Width").asInstanceOf[Int]
   val max_delay = p.get("Max_Delay").asInstanceOf[Int]
   val config_width = p.get("config_width").asInstanceOf[Int]
-  val in_index = p.Ports.find(p=>p.get("function") == "data" && p.io == INPUT_TYPE).get.get("Index").asInstanceOf[Int]
-  val out_index = p.Ports.find(p=>p.get("function") == "data" && p.io == OUTPUT_TYPE).get.get("Index").asInstanceOf[Int]
-  val config_index = p.Ports.find(p=>p.get("function") == "control" && p.io == INPUT_TYPE).get.get("Index").asInstanceOf[Int]
+  val in_index = p.Ports.zipWithIndex.find(p=>p._1.get("function") == "data" && p._1.io == INPUT_TYPE).get._2
+  val out_index = p.Ports.zipWithIndex.find(p=>p._1.get("function") == "data" && p._1.io == OUTPUT_TYPE).get._2
+  val config_index = p.Ports.zipWithIndex.find(p=>p._1.get("function") == "control" && p._1.io == INPUT_TYPE).get._2
 
   val in_port = io(in_index).asInstanceOf[UInt]
   val out_port = io(out_index).asInstanceOf[UInt]

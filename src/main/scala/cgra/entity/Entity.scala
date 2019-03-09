@@ -25,15 +25,20 @@ case class PValue(v:Any) {
   var value : Any = v
 }
 
-trait Entity extends EntityUtil{
+object Entity {
+  private var counter = -1
+  def getNumOfInstances: Int = {counter+=1;counter}
+}
 
-  var parent_type : String = ""
+trait Entity extends EntityUtil{
+  var parent_type = ""
   var parent_id : Int = -1
-  var entity_type : String = ""
-  var entity_id : Int = -1
+  var entity_type = ""
+  var entity_id : Int = Entity.getNumOfInstances
 
   // Ports are special entity, Physical
-  val Ports : ListBuffer[Port] = new ListBuffer[Port]()
+  var port_index = 0
+  val Ports = new ListBuffer[Port]()
 
   // External Sources and Sinks, Virtual map to Physical Port Index
   val Sources : Map[Int,Int] = Map[Int,Int]()
@@ -44,16 +49,34 @@ trait Entity extends EntityUtil{
   //(Whether it is configured or not, bottom bound, upper bound)
 
   // Internal Relationship and Entities
-  val Relationships : ListBuffer[(Int,Int)] = new ListBuffer[(Int,Int)]()
-  val Entities : ListBuffer[Entity] = new ListBuffer[Entity]()
+  val Relationships = new ListBuffer[(Int,Int)]()
+  val Entities = new ListBuffer[Entity]()
 
   // Internal Parameter
   val Parameters : Map[String,PValue] = Map[String,PValue]()
 
   // Add Internal Entity or Relationship
-  def have(a:Entity):Unit = Entities += a
-  def have(ab:(Entity,Entity)) = Relationships += ab._1.entity_id -> ab._2.entity_id
-  def have(aabb:List[(Entity,Entity)]):Unit = aabb.foreach(have)
+  def have(a:Entity,as:Entity*):Unit = {
+    if(!a.have("Word_Width"))
+      a.have("Word_Width",get("Word_Width"))
+    a.parent_id = entity_id
+    a.parent_type = entity_type
+    Entities += a
+    as.foreach(a=>{
+      if(!a.have("Word_Width"))
+        a.have("Word_Width",get("Word_Width"))
+      a.parent_id = entity_id
+      a.parent_type = entity_type
+      Entities += a
+    })
+  }
+  def have(ab:(Entity,Entity),aibi:(Int,Int)) ={
+    Relationships += ab._1.entity_id -> ab._2.entity_id
+    ab._2.Sources(ab._1.entity_id) = aibi._1
+    ab._1.Sinks(ab._2.entity_id) = aibi._2
+  }
+  def have(aabb:List[(Entity,Entity)],aabbii:List[(Int,Int)]):Unit =
+    aabb.zipWithIndex.foreach(x=>have(x._1,aabbii(x._2)))
   def have(Key:String, Value:Any) :Unit = {
     if(!Parameters.isDefinedAt(Key)){
       Parameters += Key -> PValue(Value)
@@ -63,15 +86,31 @@ trait Entity extends EntityUtil{
       Parameters(Key).value = Value
   }
   def have(Key:String, DefaultValue:Int, lowerBound:Int, upperBound:Int, stride:Int):Unit={
-    val options:List[Int] = (lowerBound to upperBound by stride).toList
+    val options = (lowerBound to upperBound by stride).toList
     have(Key,DefaultValue,options)
   }
   def have(Key:String, Value:Int,options:List[Int]):Unit={
     have(Key,Value)
     DSE_Options += Key -> options
   }
-  def have(p:Port):Unit = {
+
+  val a = Array()
+  def have(p:Port,ps:Port*):Unit = {
+    if(!p.have("Word_Width"))
+      p.have("Word_Width",get("Word_Width"))
+    p.parent_type = entity_type
+    p.parent_id = entity_id
     Ports += p
+    ps.foreach(p=>{
+      if(!p.have("Word_Width"))
+        p.have("Word_Width",get("Word_Width"))
+      p.parent_type = entity_type
+      p.parent_id = entity_id
+      Ports += p
+    })
+  }
+  def have(p:ListBuffer[Port]):Unit={
+    p.foreach(x=>have(x))
   }
   def have(key:String):Boolean = Parameters.isDefinedAt(key)
   def get(key:String):Any = {
@@ -123,39 +162,13 @@ trait Entity extends EntityUtil{
   def forsyn: Unit
 
   // ------ Convenience method with Side effect------
-  // word width pass down
-  def passdown_word_width:Unit={
-    if(Entities nonEmpty)
-      Entities.foreach(x=>{
-        x.have("Word_Width",get("Word_Width"))
-        x.passdown_word_width
-      })
-    if(Ports nonEmpty)
-      Ports.foreach(x=>{x.have("Word_Width",get("Word_Width"));x.passdown_word_width})
-  }
-  // assign port index
-  def assign_index(p:ListBuffer[Port]) :Unit = {
-    for(index<- p.indices){
-      p(index).have("Index",index)
-    }
-  }
-  // assign entity_id
-  var internal_entity_id_counter = 0
-  def assign_entity_id(ll:List[Entity]) :Unit={
-    ll.foreach(x=>{x.entity_id = internal_entity_id_counter
-      internal_entity_id_counter += 1})
-  }
-  def assign_entity_id(n:Int) :Int={
-    internal_entity_id_counter = n
-    assign_entity_id(Ports.toList)
-    assign_entity_id(Entities.toList)
-    internal_entity_id_counter
-  }
   // Assign parent type and id offspring
+  /*
   def assign_parent : Unit ={
     Ports.foreach(p=>{p.parent_id = entity_id;p assign_parent;p.parent_type = entity_type})
     Entities.foreach(e=>{e.parent_id = entity_id;e.parent_type = entity_type;e.assign_parent})
   }
+  */
   // Check connection between port have same word width
   def check_port_connection : Unit = {
     Relationships.foreach(r=>{
