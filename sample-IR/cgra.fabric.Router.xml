@@ -8,6 +8,8 @@
         </KeyValue><KeyValue>
           <PKey DSE="false">num_output</PKey><PValue type="java.lang.Integer">4</PValue>
         </KeyValue><KeyValue>
+          <PKey DSE="false">config_index_width</PKey><PValue type="java.lang.Integer">4</PValue>
+        </KeyValue><KeyValue>
           <PKey DSE="false">default_decomposer</PKey><PValue type="java.lang.Integer">1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">64</PValue>
@@ -17,6 +19,8 @@
           <PKey DSE="false">input_decomposer</PKey><PValue type="scala.collection.immutable.$colon$colon">2 2 2 2 2 4 4 1 1</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">num_input</PKey><PValue type="java.lang.Integer">9</PValue>
+        </KeyValue><KeyValue>
+          <PKey DSE="false">config_word_width</PKey><PValue type="java.lang.Integer">16</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="true">register_file_width</PKey><PValue type="cgra.entity.PValue">16</PValue><POptions>4 8 16 32 64</POptions>
         </KeyValue></Parameters>
@@ -929,7 +933,7 @@
         <Type>cgra.entity.Port</Type><ID>45</ID>
       </Current>
       <Parameters><KeyValue>
-          <PKey DSE="false">Index_Width</PKey><PValue type="java.lang.Integer">16</PValue>
+          <PKey DSE="false">Index_Width</PKey><PValue type="java.lang.Integer">4</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">function</PKey><PValue type="java.lang.String">control</PValue>
         </KeyValue><KeyValue>
@@ -937,7 +941,7 @@
         </KeyValue><KeyValue>
           <PKey DSE="false">hasValid</PKey><PValue type="java.lang.Boolean">false</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">32</PValue>
+          <PKey DSE="false">Word_Width</PKey><PValue type="java.lang.Integer">16</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">hasReady</PKey><PValue type="java.lang.Boolean">false</PValue>
         </KeyValue></Parameters>

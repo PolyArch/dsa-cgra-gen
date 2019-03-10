@@ -30,6 +30,16 @@ trait WithWordWidth extends Entity {
 trait WithControlRegisterFile extends Entity {
   Parameters += "register_file_length" -> PValue(-1)
   Parameters += "register_file_width" -> PValue(-1)
+
+  // Add Control Port
+  def add_mmio_control : Unit = {
+    val control_port = Port(MMIO_TYPE,false,false)
+    control_port have ("function","control")
+    control_port have ("Index_Width",get("config_index_width"))
+    control_port have ("Word_Width",get("config_word_width"))
+    have(control_port)
+  }
+
   // Calculate old.config sec, basc and bound
   def calaulate_config_location(config_width:Int, control_width:Int, // range is control width
                                 previous_sec:Int, previous_bound:Int) :(Int,Int,Int)= {
@@ -74,6 +84,15 @@ trait HasDecomposedPorts extends Entity {
   Parameters += "input_decomposer" -> PValue(List())
   Parameters += "output_decomposer" -> PValue(List())
   var hasDecomposed : Boolean = false
+  def get_decomposer : Unit = {
+    // Get num of input and output
+    val num_input = get("num_input").asInstanceOf[Int]
+    val num_output = get("num_output").asInstanceOf[Int]
+    val default_decomposer = get("default_decomposer").asInstanceOf[Int]
+    // If decomposer is not defined
+    if(get("input_decomposer") == None) have("input_decomposer",List.fill[Int](num_input)(default_decomposer))
+    if(get("output_decomposer") == None) have("output_decomposer",List.fill[Int](num_output)(default_decomposer))
+  }
 
   def get_subnet_port(io:String,port_index:Int,subnet:Int):Port={
     Ports.find(p=>p.io == io && p.get("Port_Index").asInstanceOf[Int] == port_index &&
@@ -142,7 +161,26 @@ trait HasDecomposedPorts extends Entity {
   }
 }
 trait HasDirection extends Entity {
-  val directionAssigned : Boolean = false
+  var directionAssigned : Boolean = false
+
+  def assign_port_direction : Unit = {
+    assign_direction(Ports.filter(p=>p.io == OUTPUT_TYPE))
+    assign_direction(Ports.filter(p=>p.io == INPUT_TYPE))
+    directionAssigned = true
+  }
+
+  private def assign_direction(pss:ListBuffer[Port]):Unit={
+    if(pss.forall(p=>p.get("Port_Index")==None && p.get("Direction") == None)){
+      for (i <- pss.indices){
+        pss(i).have("Port_Index",i)
+      }
+    }
+    for (ps <- pss){
+      val index = ps.get("Port_Index")
+      ps.have("Direction",Index_Direction_Map(index.asInstanceOf[Int]))
+    }
+  }
+
 }
 trait SolveMultiInputOneOutput extends Entity {
   // Add mux based on the same sink ports
@@ -227,6 +265,7 @@ class typical_module(p:Entity) extends Module {
         io(p.Ports.zipWithIndex.find(p=>p._1.entity_id == sink_id).get._2)
       }
     }
+
     source_io <> sink_io
   }
 
