@@ -22,6 +22,12 @@ object IRreader extends App{
     Cgra(t_cgra)
   }
   val cgra = readCgra("/home/sihao/ss-cgra-gen/src/main/scala/cgra/cgra_3x3_new.yaml")
+
+  val input_vector_ports = cgra.vector_ports.filter(p => p._2.io_type == "in")
+  val output_vector_ports = cgra.vector_ports.filter(p => p._2.io_type == "out")
+
+
+
   println(cgra)
 }
 
@@ -48,6 +54,8 @@ class system {
   @BeanProperty var host_word_width : Int= -1
   @BeanProperty var num_test_data_memory_words : Int= -1
   @BeanProperty var test_data_memory_buffer_depth : Int= -1
+  @BeanProperty var input_ports : Array[String] = _
+  @BeanProperty var output_ports : Array[String] = _
 }
 
 class tile {
@@ -115,7 +123,7 @@ class shared_pe extends tile{
 
 class vector_port  extends tile{
   @BeanProperty var channel_buffer : Int = -1
-
+  @BeanProperty var io_type : String = ""
 }
 
 class connection {

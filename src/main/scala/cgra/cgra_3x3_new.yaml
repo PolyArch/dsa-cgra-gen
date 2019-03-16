@@ -7,6 +7,9 @@
 #
 
 system:
+  # IO
+  input_ports: [i1,i2]
+  output_ports: [o1,o2]
   # Data Information
   word_width: &word_width 64
   # Host bus information.
@@ -193,27 +196,28 @@ shared_pes:
 #     \_/ \___|\___|\__\___/|_|    |_|   \___/|_|   \__|
 vector_ports:
   default_vp: &default_vp
+    io_type: ""
     module_type: vector_port
     input_ports: [v1,v2,v3]
     output_ports: [v1,v2,v3]
     channel_buffer: 2
 
-  vector_port_1: &vec_in_1
+  vec_in_1: &vec_in_1
     <<: *default_vp
     io_type: in
     input_ports: [v1]
 
-  vector_port_2: &vec_in_2
+  vec_in_2: &vec_in_2
     <<: *default_vp
     io_type: in
     input_ports: [v1]
 
-  vector_port_3: &vec_out_1
+  vec_out_1: &vec_out_1
     <<: *default_vp
     io_type: out
     output_ports: [v1]
 
-  vector_port_4: &vec_out_2
+  vec_out_2: &vec_out_2
     <<: *default_vp
     io_type: out
     output_ports: [v1]
@@ -226,6 +230,13 @@ vector_ports:
 #            |_|                  |___/ |___/
 
 topology: [
+  #                  ------ Vector Port Connection ------
+  # Input -> Vector Port
+{source: {module: this,port: i1},sink: {module: vec_in_1,port: v1}},
+{source: {module: this,port: i2},sink: {module: vec_in_2,port: v1}},
+  # Vector Port -> Output
+{sink: {module: this,port: o1},source: {module: vec_out_1,port: v1}},
+{sink: {module: this,port: o2},source: {module: vec_out_2,port: v1}},
   #                  ------ Vector Port Connection ------
   # Input Vector Port 1 Connection
 {source: {module: vec_in_1,port: v1},sink: {module: router_2,port: north}},
