@@ -22,66 +22,67 @@ system:
 #    |_| \_\___/ \__,_|\__\___|_|
 #
 
-default_router: &default_router
-  type: router
-  input_ports: [north,south,east,west,northwest]
-  output_ports: [north,south,east,west,northeast,northwest,southeast,southwest]
-  decomposer: 1
-  inter_subnet_connection: []
+routers:
+  default: &default_router
+    module_type: router
+    input_ports: [north,south,east,west,northwest]
+    output_ports: [north,south,east,west,northeast,northwest,southeast,southwest]
+    decomposer: 1
+    inter_subnet_connection: []
 
-router_1: &router_1
-  <<: *default_router
+  router_1: &router_1
+    <<: *default_router
 
-router_2: &router_2
-  <<: *default_router
+  router_2: &router_2
+    <<: *default_router
 
-router_3: &router_3
-  <<: *default_router
+  router_3: &router_3
+    <<: *default_router
 
-router_4: &router_4
-  <<: *default_router
+  router_4: &router_4
+    <<: *default_router
 
-router_5: &router_5
-  <<: *default_router
+  router_5: &router_5
+    <<: *default_router
 
-router_6: &router_6
-  <<: *default_router
-  decomposer: 2
-  # Inter-Sub-Net-Communication [Optional]
-  inter_subnet_connection: [
+  router_6: &router_6
+    <<: *default_router
+    decomposer: 2
+    # Inter-Sub-Net-Communication [Optional]
+    inter_subnet_connection: [
     [source: {port: south, subnet: 1}, sink: {port: north,subnet: 0}],
     [source: {port: northeast,subnet: 0}, sink: {port: east,subnet: 1}]
-  ]
+    ]
 
-router_7: &router_7
-  <<: *default_router
+  router_7: &router_7
+    <<: *default_router
 
-router_8: &router_8
-  <<: *default_router
+  router_8: &router_8
+    <<: *default_router
 
-router_9: &router_9
-  <<: *default_router
+  router_9: &router_9
+    <<: *default_router
 
-router_10: &router_10
-  <<: *default_router
+  router_10: &router_10
+    <<: *default_router
 
-router_11: &router_11
-  <<: *default_router
+  router_11: &router_11
+    <<: *default_router
 
-router_12: &router_12
-  <<: *default_router
+  router_12: &router_12
+    <<: *default_router
 
-router_13: &router_13
-  <<: *default_router
+  router_13: &router_13
+    <<: *default_router
 
-router_14: &router_14
-  <<: *default_router
+  router_14: &router_14
+    <<: *default_router
 
-router_15: &router_15
-  <<: *default_router
+  router_15: &router_15
+    <<: *default_router
 
-router_16: &router_16
-  <<: *default_router
+  router_16: &router_16
+    <<: *default_router
 
 #   ____           _ _           _           _   ____  _____
 #  |  _ \  ___  __| (_) ___ __ _| |_ ___  __| | |  _ \| ____|
@@ -90,51 +91,53 @@ router_16: &router_16
 #  |____/ \___|\__,_|_|\___\__,_|\__\___|\__,_| |_|   |_____|
 #
 
-default_dedicated_pe: &default_dedicated_pe
-  type: dedicated_pe
-  # Input Output Capability
-  input_ports: [northwest,northeast,southwest,souteast]
-  output_ports: [southeast]
-  # Decomposability
-  decomposer: 1
-  # Timing [max_delay is functional when valid is false]
-  has_backpressure: {valid: true,max_delay: 16}
-  # Control
-  has_meta-reuse: {valid: false,num_reuse: 4}
-  # Instructions
-  instructions: [Sub,SDiv,Mul,Or,And]
+dedicated_pes:
+  default_dedicated_pe: &default_dedicated_pe
+    module_type: dedicated_pe
+    # Input Output Capability
+    input_ports: [northwest,northeast,southwest,souteast]
+    output_ports: [southeast]
+    # Decomposability
+    decomposer: 1
+    # Timing [max_delay is functional when valid is false]
+    has_backpressure: {valid: true,max_delay: 16}
+    # Control
+    has_metaReuse: {valid: false,num_reuse: 4}
+    # Instructions
+    instructions:
+      southeast: [Sub,SDiv,Mul,Or,And]
 
-dedicated_pe_1: &dedicated_pe_1
-  <<: *default_dedicated_pe
+  dedicated_pe_1: &dedicated_pe_1
+    <<: *default_dedicated_pe
 
-dedicated_pe_2: &dedicated_pe_2
-  <<: *default_dedicated_pe
-  output_ports: [southeast,southwest]
-  has_delaypipe: {functional: false,max_delay: 16}
-  instructions: {
-    southeast: [Sub,SDiv,Mul,Or,And],
-    southwest: [UDiv,FAdd]
-  }
+  dedicated_pe_2: &dedicated_pe_2
+    <<: *default_dedicated_pe
+    output_ports: [southeast,southwest]
+    has_delaypipe: {functional: false,max_delay: 16}
+    instructions: {
+      southeast: [Sub,SDiv,Mul,Or,And],
+      southwest: [UDiv,FAdd]
+    }
 
-dedicated_pe_3: &dedicated_pe_3
-  <<: *default_dedicated_pe
-  decomposer: 2
-  has_backpressure: false
+  dedicated_pe_3: &dedicated_pe_3
+    <<: *default_dedicated_pe
+    decomposer: 2
+    has_backpressure: false
 
-dedicated_pe_4: &dedicated_pe_4
-  <<: *default_dedicated_pe
+  dedicated_pe_4: &dedicated_pe_4
+    <<: *default_dedicated_pe
 
-dedicated_pe_5: &dedicated_pe_5
-  <<: *default_dedicated_pe
-  has_meta-reuse: {valid: true,num_reuse: 4}
-  instructions: [UGT,UGE,ULT,ULE]
+  dedicated_pe_5: &dedicated_pe_5
+    <<: *default_dedicated_pe
+    has_metaReuse: {valid: true,num_reuse: 4}
+    instructions: [UGT,UGE,ULT,ULE]
 
-dedicated_pe_6: &dedicated_pe_6
-  <<: *default_dedicated_pe
+  dedicated_pe_6: &dedicated_pe_6
+    <<: *default_dedicated_pe
 
-dedicated_pe_7: &dedicated_pe_7
-  <<: *default_dedicated_pe
-  instructions: [Max,Mix]
+  dedicated_pe_7: &dedicated_pe_7
+    <<: *default_dedicated_pe
+    instructions: [Max,Mix]
 
 #   ____  _                        _   ____  _____
 #  / ___|| |__   __ _ _ __ ___  __| | |  _ \| ____|
@@ -143,69 +146,72 @@ dedicated_pe_7: &dedicated_pe_7
 #  |____/|_| |_|\__,_|_|  \___|\__,_| |_|   |_____|
 #
 
-default_shared_pe: &default_shared_pe
-  # I/O
-  input_ports: [northwest,northeast,southwest,souteast]
-  output_ports: [northwest,northeast,southwest,souteast]
-  # Base architecture.
-  architecture: integer
-  device_word_width: 32
-  immediate_width: 32
-  mm_instruction_width: 128
-  num_instructions: 16
-  num_predicates: 8
-  num_registers: 8
-  # Instruction features.
-  has_multiplier: true
-  has_two_word_product_multiplier: true
-  has_scratchpad: false
-  num_scratchpad_words: 512
-  # Instruction memory microarchitecture.
-  latch_based_instruction_memory: false
-  ram_based_immediate_storage: false
-  # Channels.
-  channel_buffer_depth: 2 # Must be >= 2.
-  max_num_input_channels_to_check: 2
-  num_tags: 3
-  # Pipeline features.
-  has_speculative_predicate_unit: true
-  has_effective_queue_status: true
-  # Debugging and profiling features.
-  has_debug_monitor: true
-  has_performance_counters: true
+shared_pes:
+  default_shared_pe: &default_shared_pe
+    module_type: shared_pe
+    # I/O
+    input_ports: [northwest,northeast,southwest,souteast]
+    output_ports: [northwest,northeast,southwest,souteast]
+    # Base architecture.
+    architecture: integer
+    device_word_width: 32
+    immediate_width: 32
+    mm_instruction_width: 128
+    num_instructions: 16
+    num_predicates: 8
+    num_registers: 8
+    # Instruction features.
+    has_multiplier: true
+    has_two_word_product_multiplier: true
+    has_scratchpad: false
+    num_scratchpad_words: 512
+    # Instruction memory microarchitecture.
+    latch_based_instruction_memory: false
+    ram_based_immediate_storage: false
+    # Channels.
+    channel_buffer_depth: 2 # Must be >= 2.
+    max_num_input_channels_to_check: 2
+    num_tags: 3
+    # Pipeline features.
+    has_speculative_predicate_unit: true
+    has_effective_queue_status: true
+    # Debugging and profiling features.
+    has_debug_monitor: true
+    has_performance_counters: true
 
-shared_pe_1: &shared_pe_1
-  <<: *default_shared_pe
+  shared_pe_1: &shared_pe_1
+    <<: *default_shared_pe
 
-shared_pe_2: &shared_pe_2
-  <<: *default_shared_pe
+  shared_pe_2: &shared_pe_2
+    <<: *default_shared_pe
 
 #  __     __        _               ____            _
 #  \ \   / /__  ___| |_ ___  _ __  |  _ \ ___  _ __| |_
 #   \ \ / / _ \/ __| __/ _ \| '__| | |_) / _ \| '__| __|
 #    \ V /  __/ (__| || (_) | |    |  __/ (_) | |  | |_
 #     \_/ \___|\___|\__\___/|_|    |_|   \___/|_|   \__|
+vector_ports:
+  default_vp: &default_vp
+    module_type: vector_port
+    input_ports: [v1,v2,v3]
+    output_ports: [v1,v2,v3]
+    channel_buffer: 2
 
-default_vp: &default_vp
-  input_ports: [v1,v2,v3]
-  output_ports: [v1,v2,v3]
-  channel_buffer: 2
+  vector_port_in_1: &vec_in_1
+    <<: *default_vp
+    input_ports: [v1]
 
-vector_port_in_1: &vec_in_1
-  <<: *default_vp
-  input_ports: [v1]
+  vector_port_in_2: &vec_in_2
+    <<: *default_vp
+    input_ports: [v1]
 
-vector_port_in_2: &vec_in_2
-  <<: *default_vp
-  input_ports: [v1]
+  vector_port_out_1: &vec_out_1
+    <<: *default_vp
+    output_ports: [v1]
 
-vector_port_out_1: &vec_out_1
-  <<: *default_vp
-  output_ports: [v1]
-
-vector_port_out_2: &vec_out_2
-  <<: *default_vp
-  output_ports: [v1]
+  vector_port_out_2: &vec_out_2
+    <<: *default_vp
+    output_ports: [v1]
 
 #   _____                 _
 #  |_   _|__  _ __   ___ | | ___   __ _ _   _
@@ -217,148 +223,146 @@ vector_port_out_2: &vec_out_2
 topology: [
   #                  ------ Vector Port Connection ------
   # Input Vector Port 1 Connection
-  {source: {module: *vec_in_1,port: v1},sink: {module: *router_2,port: north}},
-  {source: {module: *vec_in_1,port: v2},sink: {module: *router_3,port: north}},
-  {source: {module: *vec_in_1,port: v3},sink: {module: *router_4,port: north}},
+{source: {module: *vec_in_1,port: v1},sink: {module: *router_2,port: north}},
+{source: {module: *vec_in_1,port: v2},sink: {module: *router_3,port: north}},
+{source: {module: *vec_in_1,port: v3},sink: {module: *router_4,port: north}},
   # Input Vector Port 2 Connection
-  {source: {module: *vec_in_2,port: v1},sink: {module: *router_1,port: west}},
-  {source: {module: *vec_in_2,port: v2},sink: {module: *router_5,port: west}},
-  {source: {module: *vec_in_2,port: v3},sink: {module: *router_9,port: west}},
+{source: {module: *vec_in_2,port: v1},sink: {module: *router_1,port: west}},
+{source: {module: *vec_in_2,port: v2},sink: {module: *router_5,port: west}},
+{source: {module: *vec_in_2,port: v3},sink: {module: *router_9,port: west}},
   # Output Vector Port 1 Connection
-  {source: {module: *router_8,port: east},sink: {module: *vec_out_1,port: v1}},
-  {source: {module: *router_12,port: east},sink: {module: *vec_out_1,port: v2}},
-  {source: {module: *router_16,port: east},sink: {module: *vec_out_1,port: v3}},
+{source: {module: *router_8,port: east},sink: {module: *vec_out_1,port: v1}},
+{source: {module: *router_12,port: east},sink: {module: *vec_out_1,port: v2}},
+{source: {module: *router_16,port: east},sink: {module: *vec_out_1,port: v3}},
   # Output Vector Port 2 Connection
-  {source: {module: *router_13,port: southeast},sink: {module: *vec_out_2,port: v1}},
-  {source: {module: *router_14,port: southeast},sink: {module: *vec_out_2,port: v2}},
-  {source: {module: *router_15,port: southeast},sink: {module: *vec_out_2,port: v3}},
-
+{source: {module: *router_13,port: southeast},sink: {module: *vec_out_2,port: v1}},
+{source: {module: *router_14,port: southeast},sink: {module: *vec_out_2,port: v2}},
+{source: {module: *router_15,port: southeast},sink: {module: *vec_out_2,port: v3}},
   #                  ------ Router Connection ------
   # Router 1 Connection
-  {source: {module: *router_1,port: east},sink: {module: *router_2,port: west}},
-  {source: {module: *router_1,port: south},sink: {module: *router_5,port: north}},
-  {source: {module: *router_1,port: southeast},sink: {module: *dedicated_pe_1,port: northwest}},
+{source: {module: *router_1,port: east},sink: {module: *router_2,port: west}},
+{source: {module: *router_1,port: south},sink: {module: *router_5,port: north}},
+{source: {module: *router_1,port: southeast},sink: {module: *dedicated_pe_1,port: northwest}},
   # Router 2 Connection
-  {source: {module: *router_2,port: west},sink: {module: *router_1,port: east}},
-  {source: {module: *router_2,port: southwest},sink: {module: *dedicated_pe_1,port: northeast}},
-  {source: {module: *router_2,port: south},sink: {module: *router_6,port: north}},
-  {source: {module: *router_2,port: southeast},sink: {module: *dedicated_pe_2,port: northwest}},
-  {source: {module: *router_2,port: east},sink: {module: *router_3,port: west}},
+{source: {module: *router_2,port: west},sink: {module: *router_1,port: east}},
+{source: {module: *router_2,port: southwest},sink: {module: *dedicated_pe_1,port: northeast}},
+{source: {module: *router_2,port: south},sink: {module: *router_6,port: north}},
+{source: {module: *router_2,port: southeast},sink: {module: *dedicated_pe_2,port: northwest}},
+{source: {module: *router_2,port: east},sink: {module: *router_3,port: west}},
   # Router 3 Connection
-  {source: {module: *router_3,port: west},sink: {module: *router_2,port: east}},
-  {source: {module: *router_3,port: southwest},sink: {module: *dedicated_pe_2,port: northeast}},
-  {source: {module: *router_3,port: south},sink: {module: *router_7,port: north}},
-  {source: {module: *router_3,port: southeast},sink: {module: *dedicated_pe_3,port: northwest}},
-  {source: {module: *router_3,port: east},sink: {module: *router_4,port: west}},
+{source: {module: *router_3,port: west},sink: {module: *router_2,port: east}},
+{source: {module: *router_3,port: southwest},sink: {module: *dedicated_pe_2,port: northeast}},
+{source: {module: *router_3,port: south},sink: {module: *router_7,port: north}},
+{source: {module: *router_3,port: southeast},sink: {module: *dedicated_pe_3,port: northwest}},
+{source: {module: *router_3,port: east},sink: {module: *router_4,port: west}},
   # Router 4 Connection
-  {source: {module: *router_4,port: west},sink: {module: *router_3,port: east}},
-  {source: {module: *router_4,port: southwest},sink: {module: *dedicated_pe_3,port: northeast}},
-  {source: {module: *router_4,port: south},sink: {module: *router_8,port: north}},
+{source: {module: *router_4,port: west},sink: {module: *router_3,port: east}},
+{source: {module: *router_4,port: southwest},sink: {module: *dedicated_pe_3,port: northeast}},
+{source: {module: *router_4,port: south},sink: {module: *router_8,port: north}},
   # Router 5 Connection
-  {source: {module: *router_5,port: north},sink: {module: *router_1,port: south}},
-  {source: {module: *router_5,port: northeast},sink: {module: *dedicated_pe_1,port: southwest}},
-  {source: {module: *router_5,port: east},sink: {module: *router_6,port: west}},
-  {source: {module: *router_5,port: southeast},sink: {module: *dedicated_pe_4,port: northwest}},
-  {source: {module: *router_5,port: south},sink: {module: *router_9,port: north}},
+{source: {module: *router_5,port: north},sink: {module: *router_1,port: south}},
+{source: {module: *router_5,port: northeast},sink: {module: *dedicated_pe_1,port: southwest}},
+{source: {module: *router_5,port: east},sink: {module: *router_6,port: west}},
+{source: {module: *router_5,port: southeast},sink: {module: *dedicated_pe_4,port: northwest}},
+{source: {module: *router_5,port: south},sink: {module: *router_9,port: north}},
   # Router 6 Connection
-  {source: {module: *router_6,port: west},sink: {module: *router_5,port: east}},
-  {source: {module: *router_6,port: northwest},sink: {module: *dedicated_pe_1,port: southeast}},
-  {source: {module: *router_6,port: north},sink: {module: *router_2,port: south}},
-  {source: {module: *router_6,port: northeast},sink: {module: *dedicated_pe_2,port: southwest}},
-  {source: {module: *router_6,port: east},sink: {module: *router_7,port: west}},
-  {source: {module: *router_6,port: southeast},sink: {module: *dedicated_pe_5,port: northwest}},
-  {source: {module: *router_6,port: south},sink: {module: *router_10,port: north}},
-  {source: {module: *router_6,port: southwest},sink: {module: *dedicated_pe_4,port: northeast}},
+{source: {module: *router_6,port: west},sink: {module: *router_5,port: east}},
+{source: {module: *router_6,port: northwest},sink: {module: *dedicated_pe_1,port: southeast}},
+{source: {module: *router_6,port: north},sink: {module: *router_2,port: south}},
+{source: {module: *router_6,port: northeast},sink: {module: *dedicated_pe_2,port: southwest}},
+{source: {module: *router_6,port: east},sink: {module: *router_7,port: west}},
+{source: {module: *router_6,port: southeast},sink: {module: *dedicated_pe_5,port: northwest}},
+{source: {module: *router_6,port: south},sink: {module: *router_10,port: north}},
+{source: {module: *router_6,port: southwest},sink: {module: *dedicated_pe_4,port: northeast}},
   # Router 7 Connection
-  {source: {module: *router_7,port: west},sink: {module: *router_6,port: east}},
-  {source: {module: *router_7,port: northwest},sink: {module: *dedicated_pe_2,port: southeast}},
-  {source: {module: *router_7,port: north},sink: {module: *router_3,port: south}},
-  {source: {module: *router_7,port: northeast},sink: {module: *dedicated_pe_3,port: southwest}},
-  {source: {module: *router_7,port: east},sink: {module: *router_8,port: west}},
-  {source: {module: *router_7,port: southeast},sink: {module: *shared_pe_1,port: northwest}},
-  {source: {module: *router_7,port: south},sink: {module: *router_11,port: north}},
-  {source: {module: *router_7,port: southwest},sink: {module: *dedicated_pe_5,port: northeast}},
+{source: {module: *router_7,port: west},sink: {module: *router_6,port: east}},
+{source: {module: *router_7,port: northwest},sink: {module: *dedicated_pe_2,port: southeast}},
+{source: {module: *router_7,port: north},sink: {module: *router_3,port: south}},
+{source: {module: *router_7,port: northeast},sink: {module: *dedicated_pe_3,port: southwest}},
+{source: {module: *router_7,port: east},sink: {module: *router_8,port: west}},
+{source: {module: *router_7,port: southeast},sink: {module: *shared_pe_1,port: northwest}},
+{source: {module: *router_7,port: south},sink: {module: *router_11,port: north}},
+{source: {module: *router_7,port: southwest},sink: {module: *dedicated_pe_5,port: northeast}},
   # Router 8 Connection
-  {source: {module: *router_8,port: west},sink: {module: *router_7,port: east}},
-  {source: {module: *router_8,port: northwest},sink: {module: *dedicated_pe_3,port: southeast}},
-  {source: {module: *router_8,port: north},sink: {module: *router_4,port: south}},
-  {source: {module: *router_8,port: south},sink: {module: *router_12,port: north}},
-  {source: {module: *router_8,port: southwest},sink: {module: *shared_pe_1,port: northeast}},
+{source: {module: *router_8,port: west},sink: {module: *router_7,port: east}},
+{source: {module: *router_8,port: northwest},sink: {module: *dedicated_pe_3,port: southeast}},
+{source: {module: *router_8,port: north},sink: {module: *router_4,port: south}},
+{source: {module: *router_8,port: south},sink: {module: *router_12,port: north}},
+{source: {module: *router_8,port: southwest},sink: {module: *shared_pe_1,port: northeast}},
   # Router 9 Connection
-  {source: {module: *router_9,port: north},sink: {module: *router_5,port: south}},
-  {source: {module: *router_9,port: northeast},sink: {module: *dedicated_pe_4,port: southwest}},
-  {source: {module: *router_9,port: east},sink: {module: *router_10,port: west}},
-  {source: {module: *router_9,port: southeast},sink: {module: *dedicated_pe_6,port: northwest}},
-  {source: {module: *router_9,port: south},sink: {module: *router_9,port: north}},
+{source: {module: *router_9,port: north},sink: {module: *router_5,port: south}},
+{source: {module: *router_9,port: northeast},sink: {module: *dedicated_pe_4,port: southwest}},
+{source: {module: *router_9,port: east},sink: {module: *router_10,port: west}},
+{source: {module: *router_9,port: southeast},sink: {module: *dedicated_pe_6,port: northwest}},
+{source: {module: *router_9,port: south},sink: {module: *router_9,port: north}},
   # Router 10 Connection
-  {source: {module: *router_10,port: west},sink: {module: *router_9,port: east}},
-  {source: {module: *router_10,port: northwest},sink: {module: *dedicated_pe_4,port: southeast}},
-  {source: {module: *router_10,port: north},sink: {module: *router_6,port: south}},
-  {source: {module: *router_10,port: northeast},sink: {module: *dedicated_pe_5,port: southwest}},
-  {source: {module: *router_10,port: east},sink: {module: *router_11,port: west}},
-  {source: {module: *router_10,port: southeast},sink: {module: *dedicated_pe_7,port: northwest}},
-  {source: {module: *router_10,port: south},sink: {module: *router_14,port: north}},
-  {source: {module: *router_10,port: southwest},sink: {module: *dedicated_pe_6,port: northeast}},
+{source: {module: *router_10,port: west},sink: {module: *router_9,port: east}},
+{source: {module: *router_10,port: northwest},sink: {module: *dedicated_pe_4,port: southeast}},
+{source: {module: *router_10,port: north},sink: {module: *router_6,port: south}},
+{source: {module: *router_10,port: northeast},sink: {module: *dedicated_pe_5,port: southwest}},
+{source: {module: *router_10,port: east},sink: {module: *router_11,port: west}},
+{source: {module: *router_10,port: southeast},sink: {module: *dedicated_pe_7,port: northwest}},
+{source: {module: *router_10,port: south},sink: {module: *router_14,port: north}},
+{source: {module: *router_10,port: southwest},sink: {module: *dedicated_pe_6,port: northeast}},
   # Router 11 Connection
-  {source: {module: *router_11,port: west},sink: {module: *router_10,port: east}},
-  {source: {module: *router_11,port: northwest},sink: {module: *dedicated_pe_5,port: southeast}},
-  {source: {module: *router_11,port: north},sink: {module: *router_7,port: south}},
-  {source: {module: *router_11,port: northeast},sink: {module: *shared_pe_1,port: southwest}},
-  {source: {module: *router_11,port: east},sink: {module: *router_12,port: west}},
-  {source: {module: *router_11,port: southeast},sink: {module: *shared_pe_2,port: northwest}},
-  {source: {module: *router_11,port: south},sink: {module: *router_15,port: north}},
-  {source: {module: *router_11,port: southwest},sink: {module: *dedicated_pe_7,port: northeast}},
+{source: {module: *router_11,port: west},sink: {module: *router_10,port: east}},
+{source: {module: *router_11,port: northwest},sink: {module: *dedicated_pe_5,port: southeast}},
+{source: {module: *router_11,port: north},sink: {module: *router_7,port: south}},
+{source: {module: *router_11,port: northeast},sink: {module: *shared_pe_1,port: southwest}},
+{source: {module: *router_11,port: east},sink: {module: *router_12,port: west}},
+{source: {module: *router_11,port: southeast},sink: {module: *shared_pe_2,port: northwest}},
+{source: {module: *router_11,port: south},sink: {module: *router_15,port: north}},
+{source: {module: *router_11,port: southwest},sink: {module: *dedicated_pe_7,port: northeast}},
   # Router 12 Connection
-  {source: {module: *router_12,port: west},sink: {module: *router_11,port: east}},
-  {source: {module: *router_12,port: northwest},sink: {module: *shared_pe_1,port: southeast}},
-  {source: {module: *router_12,port: north},sink: {module: *router_8,port: south}},
-  {source: {module: *router_12,port: south},sink: {module: *router_16,port: north}},
-  {source: {module: *router_12,port: southwest},sink: {module: *shared_pe_2,port: northeast}},
+{source: {module: *router_12,port: west},sink: {module: *router_11,port: east}},
+{source: {module: *router_12,port: northwest},sink: {module: *shared_pe_1,port: southeast}},
+{source: {module: *router_12,port: north},sink: {module: *router_8,port: south}},
+{source: {module: *router_12,port: south},sink: {module: *router_16,port: north}},
+{source: {module: *router_12,port: southwest},sink: {module: *shared_pe_2,port: northeast}},
   # Router 13 Connection
-  {source: {module: *router_13,port: north},sink: {module: *router_9,port: south}},
-  {source: {module: *router_13,port: northeast},sink: {module: *dedicated_pe_6,port: southwest}},
-  {source: {module: *router_13,port: east},sink: {module: *router_14,port: west}},
+{source: {module: *router_13,port: north},sink: {module: *router_9,port: south}},
+{source: {module: *router_13,port: northeast},sink: {module: *dedicated_pe_6,port: southwest}},
+{source: {module: *router_13,port: east},sink: {module: *router_14,port: west}},
   # Router 14 Connection
-  {source: {module: *router_14,port: west},sink: {module: *router_13,port: east}},
-  {source: {module: *router_14,port: northwest},sink: {module: *dedicated_pe_6,port: southeast}},
-  {source: {module: *router_14,port: north},sink: {module: *router_10,port: south}},
-  {source: {module: *router_14,port: northeast},sink: {module: *dedicated_pe_7,port: southwest}},
-  {source: {module: *router_14,port: east},sink: {module: *router_15,port: west}},
+{source: {module: *router_14,port: west},sink: {module: *router_13,port: east}},
+{source: {module: *router_14,port: northwest},sink: {module: *dedicated_pe_6,port: southeast}},
+{source: {module: *router_14,port: north},sink: {module: *router_10,port: south}},
+{source: {module: *router_14,port: northeast},sink: {module: *dedicated_pe_7,port: southwest}},
+{source: {module: *router_14,port: east},sink: {module: *router_15,port: west}},
   # Router 15 Connection
-  {source: {module: *router_15,port: west},sink: {module: *router_14,port: east}},
-  {source: {module: *router_15,port: northwest},sink: {module: *dedicated_pe_7,port: southeast}},
-  {source: {module: *router_15,port: north},sink: {module: *router_11,port: south}},
-  {source: {module: *router_15,port: northeast},sink: {module: *shared_pe_2,port: southwest}},
-  {source: {module: *router_15,port: east},sink: {module: *router_16,port: west}},
+{source: {module: *router_15,port: west},sink: {module: *router_14,port: east}},
+{source: {module: *router_15,port: northwest},sink: {module: *dedicated_pe_7,port: southeast}},
+{source: {module: *router_15,port: north},sink: {module: *router_11,port: south}},
+{source: {module: *router_15,port: northeast},sink: {module: *shared_pe_2,port: southwest}},
+{source: {module: *router_15,port: east},sink: {module: *router_16,port: west}},
   # Router 16 Connection
-  {source: {module: *router_16,port: west},sink: {module: *router_15,port: east}},
-  {source: {module: *router_16,port: northwest},sink: {module: *shared_pe_2,port: southeast}},
-  {source: {module: *router_16,port: north},sink: {module: *router_12,port: south}},
-
+{source: {module: *router_16,port: west},sink: {module: *router_15,port: east}},
+{source: {module: *router_16,port: northwest},sink: {module: *shared_pe_2,port: southeast}},
+{source: {module: *router_16,port: north},sink: {module: *router_12,port: south}},
   #                  ------ Processing Elements Connection ------
   # Processing Element 1
-  {source: {module: *dedicated_pe_1,port: southeast},sink: {module: *router_6,port: northwest}},
+{source: {module: *dedicated_pe_1,port: southeast},sink: {module: *router_6,port: northwest}},
   # Processing Element 2
-  {source: {module: *dedicated_pe_2,port: southwest},sink: {module: *router_6,port: northeast}},
-  {source: {module: *dedicated_pe_2,port: southeast},sink: {module: *router_7,port: northwest}},
+{source: {module: *dedicated_pe_2,port: southwest},sink: {module: *router_6,port: northeast}},
+{source: {module: *dedicated_pe_2,port: southeast},sink: {module: *router_7,port: northwest}},
   # Processing Element 3
-  {source: {module: *dedicated_pe_3,port: southeast},sink: {module: *router_8,port: northwest}},
+{source: {module: *dedicated_pe_3,port: southeast},sink: {module: *router_8,port: northwest}},
   # Processing Element 4
-  {source: {module: *dedicated_pe_4,port: southeast},sink: {module: *router_10,port: northwest}},
+{source: {module: *dedicated_pe_4,port: southeast},sink: {module: *router_10,port: northwest}},
   # Processing Element 5
-  {source: {module: *dedicated_pe_5,port: southeast},sink: {module: *router_11,port: northwest}},
+{source: {module: *dedicated_pe_5,port: southeast},sink: {module: *router_11,port: northwest}},
   # Processing Element 6
-  {source: {module: *dedicated_pe_6,port: southeast},sink: {module: *router_14,port: northwest}},
+{source: {module: *dedicated_pe_6,port: southeast},sink: {module: *router_14,port: northwest}},
   # Processing Element 7
-  {source: {module: *dedicated_pe_7,port: southeast},sink: {module: *router_15,port: northwest}},
+{source: {module: *dedicated_pe_7,port: southeast},sink: {module: *router_15,port: northwest}},
   # Shared PE 1
-  {source: {module: *shared_pe_1,port: northwest},sink: {module: *router_7,port: southeast}},
-  {source: {module: *shared_pe_1,port: northeast},sink: {module: *router_8,port: southwest}},
-  {source: {module: *shared_pe_1,port: southwest},sink: {module: *router_11,port: northeast}},
-  {source: {module: *shared_pe_1,port: southeast},sink: {module: *router_12,port: northwest}},
+{source: {module: *shared_pe_1,port: northwest},sink: {module: *router_7,port: southeast}},
+{source: {module: *shared_pe_1,port: northeast},sink: {module: *router_8,port: southwest}},
+{source: {module: *shared_pe_1,port: southwest},sink: {module: *router_11,port: northeast}},
+{source: {module: *shared_pe_1,port: southeast},sink: {module: *router_12,port: northwest}},
   # Shared PE 2
-  {source: {module: *shared_pe_2,port: northwest},sink: {module: *router_11,port: southeast}},
-  {source: {module: *shared_pe_2,port: northeast},sink: {module: *router_12,port: southwest}},
-  {source: {module: *shared_pe_2,port: southwest},sink: {module: *router_15,port: northeast}},
-  {source: {module: *shared_pe_2,port: southeast},sink: {module: *router_16,port: northwest}}
+{source: {module: *shared_pe_2,port: northwest},sink: {module: *router_11,port: southeast}},
+{source: {module: *shared_pe_2,port: northeast},sink: {module: *router_12,port: southwest}},
+{source: {module: *shared_pe_2,port: southwest},sink: {module: *router_15,port: northeast}},
+{source: {module: *shared_pe_2,port: southeast},sink: {module: *router_16,port: northwest}}
 ]
