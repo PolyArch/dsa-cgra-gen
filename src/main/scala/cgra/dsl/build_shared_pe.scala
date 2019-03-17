@@ -1,8 +1,8 @@
 package cgra.dsl
 
 import cgra.build.Build
-import cgra.fabric.Shared_PE.common.Instructions.Instructions
-import cgra.fabric.Shared_PE.core.Shared_PE
+import cgra.fabric.XmlV.Shared_PE.common.Instructions.Instructions
+import cgra.fabric.XmlV.Shared_PE.core.Shared_PE
 
 object build_shared_pe extends Build
   with Instructions{

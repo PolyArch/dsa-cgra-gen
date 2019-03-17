@@ -1,14 +1,13 @@
 package cgra.IO
-/*
+
 import chisel3._
 import chisel3.util._
 import cgra.config.Constant._
 import cgra.entity.Port
-import cgra.fabric.Shared_PE.common.interconnect.{link_if_in, link_if_out}
+import cgra.fabric.XmlV.Shared_PE.common.interconnect.{link_if_in, link_if_out}
 import scala.collection.mutable.ListBuffer
-*/
+
 object IO_Interface {
-  /*
   def get_io(p:ListBuffer[Port]) = {
     p.map(x=>{
       x.Parameters("IO_Type").v match {
@@ -89,13 +88,10 @@ object IO_Interface {
       }
     }).toList
   }
-  */
 }
-/*
+
 case class mmio_if(index_width:Int,word_width:Int) extends Bundle {
-
   // DEVICE that store data, **use Flipped(new mmio_if) for those who consume data (like ALU)
-
   val read_req = Input(Bool())
   val read_ack = Output(Bool())
   val read_index = Input(UInt(index_width.W))
@@ -106,4 +102,3 @@ case class mmio_if(index_width:Int,word_width:Int) extends Bundle {
   val write_index = Input(UInt(index_width.W))
   val write_data = Input(UInt(word_width.W))
 }
-*/

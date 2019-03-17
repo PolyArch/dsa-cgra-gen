@@ -3,7 +3,7 @@ package cgra.entity
 import cgra.IO.IO_Interface.get_io
 import cgra.IO.mmio_if
 import cgra.config.Constant._
-import cgra.fabric.common._
+import cgra.fabric.XmlV.common._
 import chisel3.util.MixedVec
 import chisel3._
 
@@ -213,9 +213,8 @@ trait SolveMultiInputOneOutput extends Entity {
 }
 
 // --------------   Hardware Generation  --------------
-
 class typical_module(p:Entity) extends Module {
-  val io = IO(get_io(p.Ports))
+  val io  = IO(MixedVec(get_io(p.Ports)))
   val register_file_width = p.get("register_file_width").asInstanceOf[Int]
   val register_file_length = p.get("register_file_length").asInstanceOf[Int]
 
@@ -287,4 +286,6 @@ class typical_module(p:Entity) extends Module {
   config_port.write_ack := true.B
   config_port.read_ack := false.B
   config_port.read_data := 0.U
+
+  def get_prop = p
 }

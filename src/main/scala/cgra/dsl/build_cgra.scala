@@ -1,7 +1,7 @@
 package cgra.dsl
 
 import cgra.build.Build
-import cgra.fabric.{Dedicated_PE, Router}
+import cgra.fabric.XmlV._
 
 class build_cgra extends Build{
 

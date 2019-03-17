@@ -1,7 +1,7 @@
 package cgra.dsl
 
 import cgra.config.Constant._
-import cgra.fabric.common._
+import cgra.fabric.XmlV.common._
 import cgra.build.Build
 import cgra.entity.Port
 import chisel3.util.log2Ceil

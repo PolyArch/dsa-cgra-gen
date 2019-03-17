@@ -2,9 +2,9 @@ package cgra.dsl
 
 import cgra.build.Build
 import cgra.entity.Port
-import cgra.fabric.Dedicated_PE
+import cgra.fabric.XmlV.Dedicated_PE
 import cgra.config.Constant._
-import cgra.fabric.common.Instructions._
+import cgra.fabric.XmlV.common.Instructions._
 
 object build_dedicated_pe extends Build {
 

@@ -4,15 +4,11 @@ import org.yaml.snakeyaml.Yaml
 import org.yaml.snakeyaml.constructor.Constructor
 import java.io.{File, FileInputStream}
 import java.util
-
-import scala.collection.JavaConversions._
 import scala.beans.BeanProperty
-import scala.collection.mutable
 import scala.collection.mutable._
 import Convertor._
-import cgra.IR.IRreader.cgra
+import chisel3.experimental.RawModule
 
-import scala.collection.JavaConversions.asScalaBuffer
 
 object IRreader extends App{
   def readCgra(filename:String): Cgra = {
@@ -21,12 +17,12 @@ object IRreader extends App{
     val t_cgra = yaml.load(input).asInstanceOf[CgraYAML]
     Cgra(t_cgra)
   }
-  val cgra = readCgra("/home/sihao/ss-cgra-gen/src/main/scala/cgra/cgra_3x3_new.yaml")
+  val cgra = readCgra("/home/sihao/ss-cgra-gen/sample-IR/cgra_3x3_new.yaml")
 
-  val input_vector_ports = cgra.vector_ports.filter(p => p._2.io_type == "in")
-  val output_vector_ports = cgra.vector_ports.filter(p => p._2.io_type == "out")
-
-
+  chisel3.Driver.execute(args,()=>
+    Class.forName("cgra.fabric.YamlV." + cgra.system.module_type+"_Hw")
+      .getConstructor(classOf[Cgra])
+      .newInstance(cgra).asInstanceOf[RawModule])
 
   println(cgra)
 }
@@ -50,6 +46,7 @@ class CgraYAML {
 }
 
 class system {
+  @BeanProperty var module_type : String = ""
   @BeanProperty var word_width : Int = -1
   @BeanProperty var host_word_width : Int= -1
   @BeanProperty var num_test_data_memory_words : Int= -1
@@ -95,7 +92,6 @@ class dedicated_pe extends tile {
 
 class shared_pe extends tile{
   @BeanProperty var architecture : String = ""
-  @BeanProperty var device_word_width : Int = -1
   @BeanProperty var immediate_width: Int = -1
   @BeanProperty var mm_instruction_width: Int =  -1
   @BeanProperty var num_instructions : Int = -1

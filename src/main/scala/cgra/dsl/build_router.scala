@@ -3,7 +3,7 @@ package cgra.dsl
 import cgra.config.Constant._
 import cgra.build.Build
 import cgra.entity.Port
-import cgra.fabric._
+import cgra.fabric.XmlV._
 
 object build_router extends Build {
   // Create Module
