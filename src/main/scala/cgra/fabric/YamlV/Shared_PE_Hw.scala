@@ -1,18 +1,25 @@
 package cgra.fabric.YamlV
 
+import cgra.IO.ReqAckConf_if
 import cgra.IR.shared_pe
-import cgra.config.system.word_width
+import cgra.config.derived_system._
+import cgra.config.system
 import chisel3._
 import chisel3.util._
 
-class Shared_PE_Hw(p:shared_pe) extends Module
+class Shared_PE_Hw(name_p:(String,shared_pe)) extends Module
   with Has_IO{
+  private val module_name = name_p._1
+  private val p = name_p._2
   private val num_input = p.getInput_ports.length
   private val num_output = p.getOutput_ports.length
+  private val data_word_width = system.data_word_width
+
+  // ------ Define Input Output
   val io = IO(new Bundle{
-    val in = Flipped(Vec(num_input,DecoupledIO(UInt(word_width.W))))
-    val out = Vec(num_output,DecoupledIO(UInt(word_width.W)))
-})
+    val in = Flipped(Vec(num_input,ReqAckConf_if(data_word_width)))
+    val out = Vec(num_output,ReqAckConf_if(data_word_width))
+  })
 
   def get_port (io_t:String,name:String) = {
     io_t match {
@@ -23,10 +30,8 @@ class Shared_PE_Hw(p:shared_pe) extends Module
 
 
   // ----- Test
-  for (i <- 0 until num_input)
-    io.in(i).ready := false.B
-  for (o <- 0 until num_output){
-    io.out(o).bits := 0.U
-    io.out(o).valid := false.B
-  }
+
+  for(i <- 0 until num_input)
+    io.in(i) <> io.out(i)
+
 }

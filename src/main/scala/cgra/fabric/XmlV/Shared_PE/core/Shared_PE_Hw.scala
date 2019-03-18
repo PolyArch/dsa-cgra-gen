@@ -35,11 +35,11 @@ case class Shared_PE() extends Entity with derived_parameters{
     control_port have ("Word_Width",TIA_MMIO_DATA_WIDTH)
     // Add input channel
     val input_channels = Port(MULTI_TAG_PACKET_TYPE,false,false);input_channels.have("IO Type",INPUT_TYPE)
-    input_channels.have("tag_width",TIA_TAG_WIDTH);input_channels.have("word_width",TIA_WORD_WIDTH)
+    input_channels.have("tag_width",TIA_TAG_WIDTH);input_channels.have("device_word_width",TIA_WORD_WIDTH)
     input_channels.have("num_channel",TIA_NUM_INPUT_CHANNELS);Ports += input_channels
     // Add output channel
     val output_channels = Port(MULTI_TAG_PACKET_TYPE,false,false);output_channels.have("IO Type",OUTPUT_TYPE)
-    output_channels.have("tag_width",TIA_TAG_WIDTH);output_channels.have("word_width",TIA_WORD_WIDTH)
+    output_channels.have("tag_width",TIA_TAG_WIDTH);output_channels.have("device_word_width",TIA_WORD_WIDTH)
     output_channels.have("num_channel",TIA_NUM_OUTPUT_CHANNELS);Ports += output_channels
 
     // Component Config
@@ -51,7 +51,7 @@ case class Shared_PE() extends Entity with derived_parameters{
     require(get("has_scratchpad") != None)
 
     // Require all necessary parameters is defined
-    require(get("word_width") != None)
+    require(get("device_word_width") != None)
     require(get("num_registers")!= None)
     require(get("spm_depth")!= None)
     // Memory-mapped instruction representation.

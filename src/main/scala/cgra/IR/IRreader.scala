@@ -8,6 +8,7 @@ import scala.beans.BeanProperty
 import scala.collection.mutable._
 import Convertor._
 import chisel3.experimental.RawModule
+import cgra.config.system.data_word_width
 
 
 object IRreader extends App{
@@ -18,13 +19,10 @@ object IRreader extends App{
     Cgra(t_cgra)
   }
   val cgra = readCgra("/home/sihao/ss-cgra-gen/sample-IR/cgra_3x3_new.yaml")
-
   chisel3.Driver.execute(args,()=>
-    Class.forName("cgra.fabric.YamlV." + cgra.system.module_type+"_Hw")
+    Class.forName("cgra.fabric.YamlV."+cgra.system.module_type+"_Hw")
       .getConstructor(classOf[Cgra])
       .newInstance(cgra).asInstanceOf[RawModule])
-
-  println(cgra)
 }
 
 case class Cgra (t:CgraYAML) {
@@ -47,7 +45,7 @@ class CgraYAML {
 
 class system {
   @BeanProperty var module_type : String = ""
-  @BeanProperty var word_width : Int = -1
+  @BeanProperty var data_word_width : Int = -1
   @BeanProperty var host_word_width : Int= -1
   @BeanProperty var num_test_data_memory_words : Int= -1
   @BeanProperty var test_data_memory_buffer_depth : Int= -1
@@ -61,15 +59,22 @@ class tile {
   @BeanProperty var output_ports : List[String] = Nil
 }
 
-class subnet_connection {
-  class port_subnet {
-    var port : String = ""
-    var subnet : Int = -1
+class port_subnet {
+  var port : String = ""
+  var subnet : Int = -1
+  override def equals(o: Any): Boolean = {
+    o match {
+      case o:port_subnet => this.port == o.port && this.subnet == o.subnet
+      case _ => false
+    }
   }
+}
+class subnet_connection {
   var source : port_subnet = new port_subnet
   var sink : port_subnet = new port_subnet
 }
-class router extends tile{
+class router extends tile
+  with register_configured{
   @BeanProperty var decomposer : Int = -1
   @BeanProperty var inter_subnet_connection : List[subnet_connection] = _
 }
@@ -82,15 +87,15 @@ class metaReuse {
   var valid : Boolean = _
   var num_reuse : Int = -1
 }
-class dedicated_pe extends tile {
+class dedicated_pe extends tile
+  with register_configured{
   @BeanProperty var decomposer : Int = -1
   @BeanProperty var has_backpressure : backpressure = new backpressure
   @BeanProperty var has_metaReuse : metaReuse = new metaReuse
   @BeanProperty var instructions : Map[String,List[String]] = _
-
 }
 
-class shared_pe extends tile{
+class shared_pe extends tile {
   @BeanProperty var architecture : String = ""
   @BeanProperty var immediate_width: Int = -1
   @BeanProperty var mm_instruction_width: Int =  -1
@@ -129,4 +134,14 @@ class connection {
   }
   @BeanProperty var source : port_location = new port_location
   @BeanProperty var sink : port_location = new port_location
+}
+
+// For the use of configuration
+
+trait register_configured {
+  var module_id : Int = -1
+  @BeanProperty var config_input_port : String = ""
+  @BeanProperty var config_output_port : String = ""
+  var config_register_file_idx_width : Int = -1
+  val config_register_file_data_width : Int = data_word_width
 }

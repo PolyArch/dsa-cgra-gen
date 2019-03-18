@@ -1,6 +1,8 @@
 package cgra.fabric.YamlV
 
+import cgra.IO.ReqAckConf_if
 import cgra.IR._
+import cgra.config.derived_system._
 import cgra.config.system
 import cgra.config.system.update_system
 import chisel3._
@@ -16,34 +18,34 @@ class Cgra_Hw(cgra:Cgra) extends Module
   private val output_ports = system.output_ports
   private val num_input : Int = input_ports.length
   private val num_output : Int = output_ports.length
-  private val word_width : Int = system.word_width
+  private val data_word_width : Int = system.data_word_width
   private val AllModules : Map[String,Any] = Map[String,Any]()
   private val topology = cgra.topology
 
   // ------ Input Output ------
   val io = IO(new Bundle{
-    val in = Flipped(Vec(num_input,DecoupledIO(UInt(word_width.W))))
-    val out = Vec(num_output,DecoupledIO(UInt(word_width.W)))
+    val in = Flipped(Vec(num_input,ReqAckConf_if(data_word_width)))
+    val out = Vec(num_output,ReqAckConf_if(data_word_width))
   })
 
   // ------ Vector Ports ------
-  private val vector_ports = delete_useless_port(cgra.vector_ports)
-  val vector_ports_hw = vector_ports map (iv=> iv._1 -> Module(new VectorPort_Hw(iv._2)))
+  private val vector_ports = delete_useless_port(cgra.vector_ports).filter(p => !p._1.startsWith("default"))
+  val vector_ports_hw = vector_ports map (iv=> iv._1 -> Module(new VectorPort_Hw(iv)))
   AllModules ++= vector_ports_hw
 
   // ------ Routers ------
-  private val routers = delete_useless_port(cgra.routers)
-  val routers_hw = routers map (r =>r._1 -> Module(new Router_Hw(r._2)))
+  private val routers = delete_useless_port(cgra.routers).filter(p => !p._1.startsWith("default"))
+  val routers_hw = routers map (r =>r._1 -> Module(new Router_Hw(r)))
   AllModules ++= routers_hw
 
   // ------ Dedicated PE ------
-  private val dedicated_pes = delete_useless_port(cgra.dedicated_pes)
-  val dedicated_pes_hw = dedicated_pes map (dp => dp._1 -> Module(new Dedicated_PE_Hw(dp._2)))
+  private val dedicated_pes = delete_useless_port(cgra.dedicated_pes).filter(p => !p._1.startsWith("default"))
+  val dedicated_pes_hw = dedicated_pes map (dp => dp._1 -> Module(new Dedicated_PE_Hw(dp)))
   AllModules ++= dedicated_pes_hw
 
   // ------ Shared PE ------
-  private val shared_pes = delete_useless_port(cgra.shared_pes)
-  val shared_pes_hw = shared_pes map (sp => sp._1 -> Module(new Shared_PE_Hw(sp._2)))
+  private val shared_pes = delete_useless_port(cgra.shared_pes).filter(p => !p._1.startsWith("default"))
+  val shared_pes_hw = shared_pes map (sp => sp._1 -> Module(new Shared_PE_Hw(sp)))
   AllModules ++= shared_pes_hw
 
   // ------ Topology ------
@@ -71,8 +73,7 @@ class Cgra_Hw(cgra:Cgra) extends Module
       val sink_port = c.sink.port
       val source_mod = get_module(source_module_name)
       val sink_mod = get_module(sink_module_name)
-      println(source_module_name + "-port-" + source_port + "--> " +
-        sink_module_name + "-port-" + sink_port)
+      //println(source_module_name + "-port-" + source_port + "--> " + sink_module_name + "-port-" + sink_port)
       if (source_mod == this)
         source_mod.get_port("in",source_port) <> sink_mod.get_port("in",sink_port)
       else if (sink_mod == this)

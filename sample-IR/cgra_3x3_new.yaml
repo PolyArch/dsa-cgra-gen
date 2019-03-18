@@ -13,7 +13,7 @@ system:
   input_ports: [i1,i2]
   output_ports: [o1,o2]
   # Data Information
-  word_width: &word_width 64
+  data_word_width: 64
   # Host bus information.
   host_word_width: 32 # Fixed, for now.
   # Test memory system.
@@ -31,12 +31,16 @@ routers:
   default: &default_router
     module_type: router
     input_ports: [north,south,east,west,northwest]
+    config_input_port: north
+    config_output_port: south
     output_ports: [north,south,east,west,northeast,northwest,southeast,southwest]
     decomposer: 1
     inter_subnet_connection: []
 
   router_1: &router_1
     <<: *default_router
+    config_input_port: west
+    config_output_port: south
 
   router_2: &router_2
     <<: *default_router
@@ -83,19 +87,27 @@ routers:
     <<: *default_router
     input_ports: [north,south,east,west,northwest,southwest]
 
-
   router_13: &router_13
     <<: *default_router
+    config_input_port: north
+    config_output_port: south
+
 
   router_14: &router_14
     <<: *default_router
+    config_input_port: north
+    config_output_port: south
 
   router_15: &router_15
     <<: *default_router
     input_ports: [north,south,east,west,northwest,northeast]
+    config_input_port: north
+    config_output_port: south
 
   router_16: &router_16
     <<: *default_router
+    config_input_port: north
+    config_output_port: south
 
 #   ____           _ _           _           _   ____  _____
 #  |  _ \  ___  __| (_) ___ __ _| |_ ___  __| | |  _ \| ____|
@@ -107,6 +119,9 @@ routers:
 dedicated_pes:
   default_dedicated_pe: &default_dedicated_pe
     module_type: dedicated_pe
+    # Config
+    config_input_port: northwest
+    config_output_port: southeast
     # Input Output Capability
     input_ports: [northwest,northeast,southwest,southeast]
     output_ports: [southeast]
@@ -118,23 +133,24 @@ dedicated_pes:
     has_metaReuse: {valid: false,num_reuse: 4}
     # Instructions
     instructions:
-      southeast: [Sub,SDiv,Mul,Or,And]
+      southeast: [Sub,Div,Mul,BOr,BAnd]
 
   dedicated_pe_1: &dedicated_pe_1
     <<: *default_dedicated_pe
+    has_backpressure: {valid: false,max_delay: 16}
 
   dedicated_pe_2: &dedicated_pe_2
     <<: *default_dedicated_pe
     output_ports: [southeast,southwest]
-    has_delaypipe: {functional: false,max_delay: 16}
     instructions: {
-      southeast: [Sub,SDiv,Mul,Or,And],
-      southwest: [UDiv,FAdd]
+      southeast: [Sub,Div,Mul,BOr,BAnd],
+      southwest: [Div,Add]
     }
 
   dedicated_pe_3: &dedicated_pe_3
     <<: *default_dedicated_pe
     decomposer: 2
+    has_backpressure: {valid: false,max_delay: 16}
 
   dedicated_pe_4: &dedicated_pe_4
     <<: *default_dedicated_pe
@@ -143,7 +159,7 @@ dedicated_pes:
     <<: *default_dedicated_pe
     has_metaReuse: {valid: true,num_reuse: 4}
     instructions:
-      southeast: [UGT,UGE,ULT,ULE]
+      southeast: [GT,GE,LT,LE]
 
   dedicated_pe_6: &dedicated_pe_6
     <<: *default_dedicated_pe
@@ -151,7 +167,7 @@ dedicated_pes:
   dedicated_pe_7: &dedicated_pe_7
     <<: *default_dedicated_pe
     instructions:
-      southeast: [Max,Mix]
+      southeast: [LShf,Mod]
 
 #   ____  _                        _   ____  _____
 #  / ___|| |__   __ _ _ __ ___  __| | |  _ \| ____|
@@ -319,7 +335,7 @@ topology: [
 {source: {module: router_9,port: northeast},sink: {module: dedicated_pe_4,port: southwest}},
 {source: {module: router_9,port: east},sink: {module: router_10,port: west}},
 {source: {module: router_9,port: southeast},sink: {module: dedicated_pe_6,port: northwest}},
-{source: {module: router_9,port: south},sink: {module: router_9,port: north}},
+{source: {module: router_9,port: south},sink: {module: router_13,port: north}},
   # Router 10 Connection
 {source: {module: router_10,port: west},sink: {module: router_9,port: east}},
 {source: {module: router_10,port: northwest},sink: {module: dedicated_pe_4,port: southeast}},

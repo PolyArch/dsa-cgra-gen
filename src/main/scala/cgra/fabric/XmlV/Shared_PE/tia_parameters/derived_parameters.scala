@@ -75,7 +75,7 @@ trait derived_parameters extends fixed_parameters
     TIA_HAS_SCRATCHPAD = p.get("has_scratchpad").asInstanceOf[Boolean]
 
     // --------------  Knob  --------------------
-    TIA_WORD_WIDTH = p.get("word_width").asInstanceOf[Int]
+    TIA_WORD_WIDTH = p.get("device_word_width").asInstanceOf[Int]
     TIA_NUM_REGISTERS = p.get("num_registers").asInstanceOf[Int]
     TIA_SPM_DEPTH = p.get("spm_depth").asInstanceOf[Int]
 

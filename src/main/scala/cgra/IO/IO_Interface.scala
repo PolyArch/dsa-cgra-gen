@@ -78,7 +78,7 @@ object IO_Interface {
         case MULTI_TAG_PACKET_TYPE =>
           val num_channel = x.Parameters("num_channel").value.asInstanceOf[Int]
           val tag_width = x.Parameters("tag_width").value.asInstanceOf[Int]
-          val word_width = x.Parameters("word_width").value.asInstanceOf[Int]
+          val word_width = x.Parameters("device_word_width").value.asInstanceOf[Int]
           x.Parameters("IO Type").value.toString match {
             case INPUT_TYPE =>
               Vec(num_channel,new link_if_in(tag_width,word_width))
@@ -101,4 +101,20 @@ case class mmio_if(index_width:Int,word_width:Int) extends Bundle {
   val write_ack = Output(Bool())
   val write_index = Input(UInt(index_width.W))
   val write_data = Input(UInt(word_width.W))
+}
+
+case class ReqAckConf_if(ww:Int) extends Bundle {
+  val valid = Output(Bool())
+  val bits = Output(UInt(ww.W))
+  val ready = Input(Bool())
+  val config = Output(Bool())
+
+  override def cloneType: ReqAckConf_if.this.type = ReqAckConf_if(ww).asInstanceOf[this.type]
+}
+
+case class ReqAckConf_t(ww:Int) extends Bundle{
+  val valid : Bool = Bool()
+  val bits : UInt = UInt(ww.W)
+  val ready : Bool = Bool()
+  val config : Bool = Bool()
 }

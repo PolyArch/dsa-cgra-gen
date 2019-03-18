@@ -1,9 +1,26 @@
 package cgra.IR
 
 import java.util
-
+import chisel3.util.log2Ceil
+import scala.beans.BeanProperty
 import scala.collection.mutable._
 import scala.collection.JavaConversions._
+import cgra.config.encoding.update_encoding
+
+object global_var {
+  @BeanProperty var module_id = -1
+  @BeanProperty var module_id_width : Int = -1
+  @BeanProperty var module_id_list : ListBuffer[Int] = new ListBuffer[Int]()
+  def get_new_id = {
+    module_id += 1
+    module_id_list += module_id
+    module_id_width = log2Ceil(module_id_list.length)
+    update_encoding
+    module_id
+  }
+}
+
+import global_var.get_new_id
 
 object Convertor {
   // ------ Common ------
@@ -80,6 +97,9 @@ object Convertor {
       temp.toList
     }
     val temp = new router
+    temp.module_id = get_new_id
+    temp.config_input_port = c.get("config_input_port").toString
+    temp.config_output_port = c.get("config_output_port").toString
     temp.module_type = c.get("module_type").toString
     temp.input_ports = c.get("input_ports").asInstanceOf[util.ArrayList[String]]
     temp.output_ports = c.get("output_ports").asInstanceOf[util.ArrayList[String]]
@@ -124,7 +144,10 @@ object Convertor {
       temp
     }
     val temp = new dedicated_pe
+    temp.module_id = get_new_id
     temp.module_type = c.get("module_type").toString
+    temp.config_input_port = c.get("config_input_port").toString
+    temp.config_output_port = c.get("config_output_port").toString
     temp.input_ports = c.get("input_ports").asInstanceOf[util.ArrayList[String]]
     temp.output_ports = c.get("output_ports").asInstanceOf[util.ArrayList[String]]
     temp.decomposer = c.get("decomposer").asInstanceOf[Int]

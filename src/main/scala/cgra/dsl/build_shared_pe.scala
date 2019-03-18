@@ -18,7 +18,7 @@ object build_shared_pe extends Build
 
 
   // Require all necessary parameters is defined
-  shared_pe have("word_width",32)
+  shared_pe have("device_word_width",32)
   shared_pe have("num_registers",8)
   shared_pe have("spm_depth",1024)
   // Memory-mapped instruction representation.
