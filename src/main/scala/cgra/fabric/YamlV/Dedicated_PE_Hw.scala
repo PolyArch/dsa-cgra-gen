@@ -44,8 +44,6 @@ class Dedicated_PE_Hw(name_p:(String,dedicated_pe)) extends Module with Has_IO
   private val all_out_port_subnet: ListBuffer[port_subnet] = new ListBuffer[port_subnet]()
   private val inter_subnet_connection : ListBuffer[subnet_connection] = new ListBuffer[subnet_connection]()
 
-
-
   // Generate Port-Subnet Connection
   for (subnet <- 0 until decomposer){
     for (in <- input_ports;out <- output_ports){

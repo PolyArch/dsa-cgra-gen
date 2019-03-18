@@ -10,6 +10,7 @@ import cgra.config.encoding._
 
 import scala.math._
 import scala.collection.mutable.ListBuffer
+import scala.util.Random
 
 class Router_Hw(name_p:(String,router)) extends Module  with Has_IO
   with Decomposable{
@@ -18,7 +19,7 @@ class Router_Hw(name_p:(String,router)) extends Module  with Has_IO
   private val p = name_p._2
   private val num_input = p.getInput_ports.length
   private val num_output = p.getOutput_ports.length
-  private val decomposer = p.decomposer
+  private val decomposer : Int = p.decomposer
   private val input_ports = p.input_ports
   private val output_ports = p.output_ports
   private val data_word_width = system.data_word_width
@@ -29,9 +30,31 @@ class Router_Hw(name_p:(String,router)) extends Module  with Has_IO
     val out = Vec(num_output,ReqAckConf_if(data_word_width))
   })
 
+  // Config Wiring
+  private val config_input_port = p.config_input_port
+  private val config_output_port = p.config_output_port
+  val config_enable : Bool= io.in(input_ports.indexOf(config_input_port)).config
+
+
   // ------ Function
   val decomposed_input_ports = decompose("in",io.in)
   val decomposed_output_ports = decompose("out",io.out)
+
+  // ------ Test
+  /*
+  val r = new Random()
+  for(d <- 0 until decomposer;i <- 0 until num_input){
+    decomposed_input_ports(d)(i).ready :=
+      decomposed_output_ports(d)(r.nextInt(num_output)).ready ^ decomposed_output_ports(d)(r.nextInt(num_input)).ready
+  }
+  for(d <- 0 until decomposer;o <- 0 until num_output){
+    decomposed_output_ports(d)(o).bits :=
+      decomposed_input_ports(d)(r.nextInt(num_input)).bits - decomposed_input_ports(d)(r.nextInt(num_input)).bits
+    decomposed_output_ports(d)(o).valid :=
+      decomposed_input_ports(d)(r.nextInt(num_input)).valid - decomposed_input_ports(d)(r.nextInt(num_input)).valid
+  }
+  */
+
   private val all_in_port_subnet: ListBuffer[port_subnet] = new ListBuffer[port_subnet]()
   private val all_out_port_subnet: ListBuffer[port_subnet] = new ListBuffer[port_subnet]()
   private val inter_subnet_connection : ListBuffer[subnet_connection] = new ListBuffer[subnet_connection]()
@@ -118,13 +141,10 @@ class Router_Hw(name_p:(String,router)) extends Module  with Has_IO
   config_wire := config_register_file.reduce(Cat(_,_))(config_width - 1,0)
 
   // Update Config Register when configured in config port
-  private val config_input_port = p.config_input_port
-  private val config_output_port = p.config_output_port
   println("module name = " + module_name)
   println("config_input_port = " + config_input_port + ", config_output_port = " + config_output_port)
   println("input_ports = " + input_ports)
   val config_device_word : UInt= io.in(input_ports.indexOf(config_input_port)).bits
-  val config_enable : Bool= io.in(input_ports.indexOf(config_input_port)).config
   val config_module_id = config_device_word(config_module_id_high,config_module_id_low)
   val module_id_match : Bool = config_module_id === p.module_id.U
   val config_idx = config_device_word(config_idx_high,config_idx_low)
@@ -180,6 +200,7 @@ class Router_Hw(name_p:(String,router)) extends Module  with Has_IO
               }
               ports(idx_port).bits := bitsreg
               ports(idx_port).valid := validreg
+              ports(idx_port).config := io.in(input_ports.indexOf(config_input_port)).config
             }
           }else{
             // Update Output Port (non-config port)
@@ -194,6 +215,7 @@ class Router_Hw(name_p:(String,router)) extends Module  with Has_IO
     }
     decomposed_ports
   }
+
 }
 
 class Multiplexer {
