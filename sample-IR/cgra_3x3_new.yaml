@@ -40,22 +40,33 @@ routers:
   router_1: &router_1
     <<: *default_router
     config_input_port: west
-    config_output_port: south
+    config_output_port: southeast
 
   router_2: &router_2
     <<: *default_router
+    config_input_port: north
+    config_output_port: east
+
 
   router_3: &router_3
     <<: *default_router
+    config_input_port: west
+    config_output_port: southwest
+
 
   router_4: &router_4
     <<: *default_router
+    config_output_port: southwest
 
   router_5: &router_5
     <<: *default_router
+    config_input_port: east
+    config_output_port: southeast
 
   router_6: &router_6
     <<: *default_router
+    config_input_port: northwest
+    config_output_port: west
     input_ports: [north,south,east,west,northwest,northeast]
     decomposer: 2
     # Inter-Sub-Net-Communication [Optional]
@@ -66,25 +77,37 @@ routers:
 
   router_7: &router_7
     <<: *default_router
+    config_input_port: northwest
+    config_output_port: southwest
     input_ports: [north,south,east,west,northwest,southeast]
 
   router_8: &router_8
     <<: *default_router
+    config_input_port: northwest
+    config_output_port: southwest
     input_ports: [north,south,east,west,northwest,southwest]
 
 
   router_9: &router_9
     <<: *default_router
+    config_input_port: east
+    config_output_port: southeast
 
   router_10: &router_10
     <<: *default_router
+    config_input_port: northwest
+    config_output_port: west
 
   router_11: &router_11
     <<: *default_router
+    config_input_port: northwest
+    config_output_port: southwest
     input_ports: [north,south,east,west,northwest,northeast,southeast]
 
   router_12: &router_12
     <<: *default_router
+    config_input_port: northwest
+    config_output_port: southwest
     input_ports: [north,south,east,west,northwest,southwest]
 
   router_13: &router_13
@@ -95,18 +118,19 @@ routers:
 
   router_14: &router_14
     <<: *default_router
-    config_input_port: north
-    config_output_port: south
+    config_input_port: northwest
+    config_output_port: west
+
 
   router_15: &router_15
     <<: *default_router
     input_ports: [north,south,east,west,northwest,northeast]
-    config_input_port: north
+    config_input_port: northwest
     config_output_port: south
 
   router_16: &router_16
     <<: *default_router
-    config_input_port: north
+    config_input_port: northwest
     config_output_port: south
 
 #   ____           _ _           _           _   ____  _____
@@ -142,6 +166,7 @@ dedicated_pes:
   dedicated_pe_2: &dedicated_pe_2
     <<: *default_dedicated_pe
     output_ports: [southeast,southwest]
+    config_input_port: northeast
     instructions: {
       southeast: [Sub,Div,Mul,BOr,BAnd],
       southwest: [Div,Add]
@@ -149,14 +174,17 @@ dedicated_pes:
 
   dedicated_pe_3: &dedicated_pe_3
     <<: *default_dedicated_pe
+    config_input_port: northeast
     decomposer: 2
     has_backpressure: {valid: false,max_delay: 16}
 
   dedicated_pe_4: &dedicated_pe_4
     <<: *default_dedicated_pe
 
+
   dedicated_pe_5: &dedicated_pe_5
     <<: *default_dedicated_pe
+    config_input_port: northeast
     has_metaReuse: {valid: true,num_reuse: 4}
     instructions:
       southeast: [GT,GE,LT,LE]
@@ -166,8 +194,9 @@ dedicated_pes:
 
   dedicated_pe_7: &dedicated_pe_7
     <<: *default_dedicated_pe
+    config_input_port: northeast
     instructions:
-      southeast: [LShf,Mod]
+      southeast: [LShf,Div]
 
 #   ____  _                        _   ____  _____
 #  / ___|| |__   __ _ _ __ ___  __| | |  _ \| ____|

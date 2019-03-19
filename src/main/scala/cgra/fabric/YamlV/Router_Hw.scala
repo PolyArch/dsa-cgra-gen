@@ -184,15 +184,17 @@ class Router_Hw(name_p:(String,router)) extends Module  with Has_IO
           for (subnet <- 0 until decomposer){
             decomposed_ports(subnet)(idx_port).ready := readyreg(subnet)
           }
-          val bitsreg = RegInit(0.U(data_word_width.W))
+          val bitsreg = Reg(UInt(data_word_width.W))
           bitsreg := decomposed_ports.map(vp=>vp(idx_port).bits).reduce(Cat(_,_))
-          val validreg = RegInit(false.B)
+          val validreg = Reg(Bool())
           validreg := decomposed_ports.map(vp=>vp(idx_port).valid).reduce(_ && _)
 
           // If this port is an output config port
           if (idx_port == output_ports.indexOf(config_output_port)){
             // Then when configured, connect directly with input config port
             when (config_enable){
+              for (subnet <- 0 until decomposer)
+                readyreg(subnet) := false.B
               ports(idx_port) <> io.in(input_ports.indexOf(config_input_port))
             }otherwise{ // Otherwise perform as a data port
               for (subnet <- 0 until decomposer) {

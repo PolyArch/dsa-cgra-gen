@@ -11,6 +11,7 @@ import scala.collection.mutable.ListBuffer
 import cgra.config.fullinst._
 
 import scala.math.ceil
+import scala.util.Random
 
 class Dedicated_PE_Hw(name_p:(String,dedicated_pe)) extends Module with Has_IO
   with Decomposable{
@@ -136,16 +137,21 @@ class Dedicated_PE_Hw(name_p:(String,dedicated_pe)) extends Module with Has_IO
       delay_pipe_hw.io.in.valid :=
         MuxLookup(config_wire(m.config_high,m.config_low),0.U,select2source_valid)
       // Connect Delay pipe with alu
-      alu_hw.io.in(idx_operand).bits := delay_pipe_hw.io.out.bits
-      alu_hw.io.in(idx_operand).valid := delay_pipe_hw.io.out.valid
-      delay_pipe_hw.io.out.ready := alu_hw.io.in(idx_operand).ready
+      alu_hw.io.in(idx_operand) <> delay_pipe_hw.io.out
       // Connect Delay Pipe with Control Wiring
       delay_pipe_hw.io.delay := config_wire(delay_pipe.config_high,delay_pipe.config_low)
     }
     // Connect Alu to Output Port
-    decomposed_output_ports(out_port_sub.subnet)(output_ports.indexOf(out_port_sub.port)).bits := alu_hw.io.out.bits
-    decomposed_output_ports(out_port_sub.subnet)(output_ports.indexOf(out_port_sub.port)).valid := alu_hw.io.out.valid
-    alu_hw.io.out.ready := decomposed_output_ports(out_port_sub.subnet)(output_ports.indexOf(out_port_sub.port)).ready
+    decomposed_output_ports(out_port_sub.subnet)(output_ports.indexOf(out_port_sub.port)) <> alu_hw.io.out
+    // Test
+    /*
+    val r = new Random()
+    decomposed_output_ports(out_port_sub.subnet)(output_ports.indexOf(out_port_sub.port)).bits :=
+      decomposed_input_ports(r.nextInt(decomposer))(r.nextInt(num_input)).bits / decomposed_input_ports(r.nextInt(decomposer))(r.nextInt(num_input)).bits
+    decomposed_output_ports(out_port_sub.subnet)(output_ports.indexOf(out_port_sub.port)).valid :=
+      decomposed_input_ports(r.nextInt(decomposer))(r.nextInt(num_input)).valid ^ decomposed_input_ports(r.nextInt(decomposer))(r.nextInt(num_input)).valid
+    alu_hw.io.out.ready := decomposed_output_ports(r.nextInt(decomposer))(r.nextInt(num_output)).ready
+    */
     // Connect Alu Config (Opcode)
     alu_hw.io.opcode := config_wire(alu.config_high,alu.config_low)
   }
@@ -226,13 +232,13 @@ class Dedicated_PE_Hw(name_p:(String,dedicated_pe)) extends Module with Has_IO
       case "out" =>
         for(idx_port <- 0 until num_ports){
           // Connect Decomposed Port to Output Register
-          val readyreg = Reg(Vec(decomposer,Bool()))
+          val readyreg = Wire(Vec(decomposer,Bool()))
           for (subnet <- 0 until decomposer){
             decomposed_ports(subnet)(idx_port).ready := readyreg(subnet)
           }
-          val bitsreg = RegInit(0.U(data_word_width.W))
+          val bitsreg = Wire(UInt(data_word_width.W))
           bitsreg := decomposed_ports.map(vp=>vp(idx_port).bits).reduce(Cat(_,_))
-          val validreg = RegInit(false.B)
+          val validreg = Wire(Bool())
           validreg := decomposed_ports.map(vp=>vp(idx_port).valid).reduce(_ && _)
 
           // If this port is an output config port
@@ -240,9 +246,9 @@ class Dedicated_PE_Hw(name_p:(String,dedicated_pe)) extends Module with Has_IO
             // Then when configured, connect directly with input config port
             ports(idx_port).config := io.in(input_ports.indexOf(config_input_port)).config
             when (config_enable){
-              ports(idx_port).bits := io.in(input_ports.indexOf(config_input_port)).bits
-              ports(idx_port).valid := io.in(input_ports.indexOf(config_input_port)).valid
-              io.in(input_ports.indexOf(config_input_port)).ready := ports(idx_port).ready
+              for (subnet <- 0 until decomposer)
+                readyreg(subnet) := false.B
+              ports(idx_port) <> io.in(input_ports.indexOf(config_input_port))
             }otherwise{ // Otherwise perform as a data port
               for (subnet <- 0 until decomposer) {
                 readyreg(subnet) := ports(idx_port).ready

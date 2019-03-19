@@ -32,6 +32,6 @@ class Shared_PE_Hw(name_p:(String,shared_pe)) extends Module
   // ----- Test
 
   for(i <- 0 until num_input)
-    io.in(i) <> io.out(i)
+    io.in(i) <> io.out(num_input - 1 - i)
 
 }
