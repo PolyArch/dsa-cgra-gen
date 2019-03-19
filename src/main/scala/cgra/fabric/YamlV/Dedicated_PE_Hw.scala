@@ -153,7 +153,7 @@ class Dedicated_PE_Hw(name_p:(String,dedicated_pe)) extends Module with Has_IO
   // Connect Ready Signal
   all_source_port_subnet.foreach(s=>{
     val connect_muxes = all_muxes.filter(m=>m.sources.contains(s))
-    val combined_ready = connect_muxes.map(cm=>{
+    val combined_ready : ListBuffer[Bool] = connect_muxes.map(cm=>{
       val target_delaypipe = all_delaypipes.find(d=>d.sink == cm.sink && d.operand == cm.operand).get
       Mux(config_wire(cm.config_high,cm.config_low) === cm.sources.indexOf(s).U,
         all_delaypipes_hw(all_delaypipes.indexOf(target_delaypipe)).io.in.ready,
@@ -209,7 +209,7 @@ class Dedicated_PE_Hw(name_p:(String,dedicated_pe)) extends Module with Has_IO
   def decompose(io_type:String,ports: Vec[ReqAckConf_if]) : List[Vec[DecoupledIO[UInt]]] = {
     val num_ports = ports.length
     val sub_word_width = data_word_width / decomposer
-    val decomposed_ports =
+    val decomposed_ports : List[Vec[DecoupledIO[UInt]]] =
       List.fill[Vec[DecoupledIO[UInt]]](decomposer)(Wire(Vec(num_ports,DecoupledIO(UInt(sub_word_width.W)))))
 
     io_type match{

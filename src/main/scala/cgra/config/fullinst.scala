@@ -33,13 +33,13 @@ object fullinst {
     "XorR"     -> instruction_prop(1,1,1)
   )
   val inst_operation : Map[String,(UInt*) => UInt]= Map(
-    "Add"      -> ((ops:Seq[UInt]) =>ops.head + ops(1)),
-    "Sub"      -> ((ops:Seq[UInt]) =>ops.head - ops(1)),
-    "Mul"      -> ((ops:Seq[UInt]) =>ops.head * ops(1)),
-    "Div"      -> ((ops:Seq[UInt]) =>ops.head / ops(1)),
-    "BOr"      -> ((ops:Seq[UInt]) =>ops.head | ops(1)),
-    "BAnd"     -> ((ops:Seq[UInt]) =>ops.head & ops(1)),
-    "BXor"     -> ((ops:Seq[UInt]) =>ops.head ^ ops(1)),
+    "Add"      -> ((ops:Seq[UInt]) => ops.head  + ops(1)),
+    "Sub"      -> ((ops:Seq[UInt]) => ops.head  - ops(1)),
+    "Mul"      -> ((ops:Seq[UInt]) => ops.head  * ops(1)),
+    "Div"      -> ((ops:Seq[UInt]) => ops.head  / ops(1)),
+    "BOr"      -> ((ops:Seq[UInt]) => ops.head  | ops(1)),
+    "BAnd"     -> ((ops:Seq[UInt]) => ops.head  & ops(1)),
+    "BXor"     -> ((ops:Seq[UInt]) => ops.head  ^ ops(1)),
     "BNot"     -> ((ops:Seq[UInt]) => (~ops.head).asUInt()),
     "LNot"     -> ((ops:Seq[UInt]) => !ops.head),
     "LAnd"     -> ((ops:Seq[UInt]) => ops.head =/= 0.U && ops(1) =/= 0.U),
@@ -59,33 +59,6 @@ object fullinst {
     "AndR"     -> ((ops:Seq[UInt]) => ops.head.andR()),
     "OrR"      -> ((ops:Seq[UInt]) => ops.head.orR()),
     "XorR"     -> ((ops:Seq[UInt]) => ops.head.xorR())
-    /*
-    "Sub"      -> ((a:UInt,b:UInt)        =>    a - b),
-    "Mul"      -> ((a:UInt,b:UInt)        =>    a * b),
-    "Div"      -> ((a:UInt,b:UInt)        =>    a / b),
-    "BOr"      -> ((a:UInt,b:UInt)        =>    a | b),
-    "BAnd"     -> ((a:UInt,b:UInt)        =>    a & b),
-    "BXor"     -> ((a:UInt,b:UInt)        =>    a ^ b),
-    "BNot"     -> ((a:UInt)               =>    (~a).asUInt()),
-    "LNot"     -> ((a:UInt)               =>    !a),
-    "LAnd"     -> ((a:UInt,b:UInt)        =>    a =/= 0.U && b =/= 0.U),
-    "LOr"      -> ((a:UInt,b:UInt)        =>    a =/= 0.U || b =/= 0.U),
-    "ExtractB" -> ((a:UInt,b:UInt)        =>    a(b)),
-    "LShf"     -> ((a:UInt,b:UInt)        =>    (a << b).asUInt()),
-    "RShf"     -> ((a:UInt,b:UInt)        =>    (a >> b).asUInt()),
-    "Cat"      -> ((x:UInt,y:UInt)        =>    Cat(x,y)),
-    "Mux"      -> ((c:UInt,x:UInt,y:UInt) =>    Mux(c =/= 0.U,x,y)),
-    "EQ"       -> ((x:UInt,y:UInt)        =>    x === y),
-    "NQ"       -> ((x:UInt,y:UInt)        =>    x =/= y),
-    "Mod"      -> ((x:UInt,y:UInt)        =>    x % y),
-    "GT"       -> ((x:UInt,y:UInt)        =>    x > y),
-    "GE"       -> ((x:UInt,y:UInt)        =>    x >= y),
-    "LT"       -> ((x:UInt,y:UInt)        =>    x < y),
-    "LE"       -> ((x:UInt,y:UInt)        =>    x <= y),
-    "AndR"     -> ((x:UInt)               =>    x.andR),
-    "OrR"      -> ((x:UInt)               =>    x.orR),
-    "XorR"     -> ((x:UInt)               =>    x.xorR)
-    */
   )
 }
 case class instruction_prop(numOperands:Int,latency:Int,Throughput:Int)
