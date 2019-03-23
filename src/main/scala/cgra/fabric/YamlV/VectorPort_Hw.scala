@@ -12,8 +12,8 @@ class VectorPort_Hw(name_p:(String,vector_port)) extends Module
   with Has_IO{
   private val module_name = name_p._1
   private val p = name_p._2
-  private val num_input = p.getInput_ports.length
-  private val num_output = p.getOutput_ports.length
+  private val num_input = p.input_ports.length
+  private val num_output = p.output_ports.length
   private val data_word_width = system.data_word_width
 
   val io = IO(new Bundle{
@@ -30,8 +30,7 @@ class VectorPort_Hw(name_p:(String,vector_port)) extends Module
     for (i <- 0 until num_vector)
       io.out(i) <>  vector_registers(i)
     vector_registers(distribute_counter) <> io.in.head
-  }
-  else{
+  }else{
     for (i <- 0 until num_vector)
       vector_registers(i) <> io.in(i)
     io.out.head <> vector_registers(distribute_counter)
@@ -41,19 +40,8 @@ class VectorPort_Hw(name_p:(String,vector_port)) extends Module
 
   def get_port (io_t:String,name:String) = {
     io_t match {
-      case "in" => io.in(p.input_ports.indexOf(name))
-      case "out" => io.out(p.output_ports.indexOf(name))
+      case "in"   => io.in(p.input_ports.indexOf(name))
+      case "out"  => io.out(p.output_ports.indexOf(name))
     }
   }
-
-  // ----- Test
-  /*
-  for (i <- 0 until num_input)
-    io.in(i).ready := false.B
-  for (o <- 0 until num_output){
-    io.out(o).config := false.B
-    io.out(o).bits := 0.U
-    io.out(o).valid := false.B
-  }
-  */
 }

@@ -4,59 +4,68 @@ import org.yaml.snakeyaml.Yaml
 import org.yaml.snakeyaml.constructor.Constructor
 import java.io.{File, FileInputStream}
 import java.util
+
 import scala.beans.BeanProperty
 import scala.collection.mutable._
-import Convertor._
+import IRconvertor._
 import chisel3.experimental.RawModule
 import cgra.config.system.data_word_width
+import cgra.fabric.YamlV.Cgra_Hw
+import chisel3.core.Module
+
+import scala.collection.JavaConverters._
+import scala.collection.convert.WrapAsJava
+import scala.collection.mutable
 
 
-object IRreader extends App{
-  def readCgra(filename:String): Cgra = {
+object IRreader {
+  def readCgra(filename:String) = {
     val input = new FileInputStream(new File(filename))
-    val yaml = new Yaml(new Constructor(classOf[CgraYAML]))
-    val t_cgra = yaml.load(input).asInstanceOf[CgraYAML]
-    Cgra(t_cgra)
+    val yaml = new Yaml()
+    val j_cgra = yaml.load(input).asInstanceOf[util.Map[String,Any]]
+    val s_cgra = JavaMap2ScalaMap(j_cgra)
+    s_cgra += "description_filename" -> filename
+    s_cgra += "config_filename" -> filename.replace("yaml","xml")
+    s_cgra
   }
-  val cgra = readCgra("/home/sihao/ss-cgra-gen/sample-IR/cgra_3x3_new.yaml")
-  chisel3.Driver.execute(args,()=>
-    Class.forName("cgra.fabric.YamlV."+cgra.system.module_type+"_Hw")
-      .getConstructor(classOf[Cgra])
-      .newInstance(cgra).asInstanceOf[RawModule])
 }
 
-case class Cgra (t:CgraYAML) {
-  val vector_ports : Map[String,vector_port] = t.vector_ports
-  val dedicated_pes : Map[String,dedicated_pe] = t.dedicated_pes
-  val topology : List[connection] = t.topology
-  val shared_pes : Map[String,shared_pe] = t.shared_pes
-  val routers : Map[String,router] = t.routers
-  val system : system = t.system
+case class Cgra (t:Map[String,Any]) {
+   var description_filename : String = t("description_filename") toString
+   var config_filename : String = t("config_filename") toString
+   val system : system = t("system").asInstanceOf[Map[String,Any]]
+   val vector_ports : Map[String,vector_port] = t("vector_ports").asInstanceOf[Map[String,Any]]
+   val dedicated_pes : Map[String,dedicated_pe] = t("dedicated_pes").asInstanceOf[Map[String,Any]]
+   val shared_pes : Map[String,shared_pe] = t("shared_pes").asInstanceOf[Map[String,Any]]
+   val routers : Map[String,router] = t("routers").asInstanceOf[Map[String,Any]]
+   val topology : List[connection] = t("topology").asInstanceOf[List[Map[String,Any]]]
 }
 
+/*
 class CgraYAML {
-  @BeanProperty var system : system = _
-  @BeanProperty var routers :       util.LinkedHashMap[String,Any] = _
-  @BeanProperty var dedicated_pes : util.LinkedHashMap[String,Any] = _
-  @BeanProperty var shared_pes :    util.LinkedHashMap[String,Any] = _
-  @BeanProperty var vector_ports :  util.LinkedHashMap[String,Any] = _
-  @BeanProperty var topology :      util.ArrayList[Any] = _
+   var system : system = _
+   var routers :       util.LinkedHashMap[String,Any] = _
+   var dedicated_pes : util.LinkedHashMap[String,Any] = _
+   var shared_pes :    util.LinkedHashMap[String,Any] = _
+   var vector_ports :  util.LinkedHashMap[String,Any] = _
+   var topology :      util.ArrayList[Any] = _
 }
+*/
 
 class system {
-  @BeanProperty var module_type : String = ""
-  @BeanProperty var data_word_width : Int = -1
-  @BeanProperty var host_word_width : Int= -1
-  @BeanProperty var num_test_data_memory_words : Int= -1
-  @BeanProperty var test_data_memory_buffer_depth : Int= -1
-  @BeanProperty var input_ports : Array[String] = _
-  @BeanProperty var output_ports : Array[String] = _
+   var module_type : String = ""
+   var data_word_width : Int = -1
+   var host_word_width : Int= -1
+   var num_test_data_memory_words : Int= -1
+   var test_data_memory_buffer_depth : Int= -1
+   var input_ports : List[String] = _
+   var output_ports : List[String] = _
 }
 
 class tile {
-  @BeanProperty var module_type : String = ""
-  @BeanProperty var input_ports : List[String] = Nil
-  @BeanProperty var output_ports : List[String] = Nil
+   var module_type : String = ""
+   var input_ports : List[String] = Nil
+   var output_ports : List[String] = Nil
 }
 
 class port_subnet {
@@ -75,8 +84,8 @@ class subnet_connection {
 }
 class router extends tile
   with register_configured{
-  @BeanProperty var decomposer : Int = -1
-  @BeanProperty var inter_subnet_connection : List[subnet_connection] = _
+   var decomposer : Int = -1
+   var inter_subnet_connection : List[subnet_connection] = _
 }
 
 class backpressure {
@@ -89,42 +98,43 @@ class metaReuse {
 }
 class dedicated_pe extends tile
   with register_configured{
-  @BeanProperty var decomposer : Int = -1
-  @BeanProperty var has_backpressure : backpressure = new backpressure
-  @BeanProperty var has_metaReuse : metaReuse = new metaReuse
-  @BeanProperty var instructions : Map[String,List[String]] = _
+   var decomposer : Int = -1
+   var has_backpressure : backpressure = new backpressure
+   var has_metaReuse : metaReuse = new metaReuse
+   var instructions : Map[String,List[String]] = _
 }
 
-class shared_pe extends tile {
-  @BeanProperty var architecture : String = ""
-  @BeanProperty var immediate_width: Int = -1
-  @BeanProperty var mm_instruction_width: Int =  -1
-  @BeanProperty var num_instructions : Int = -1
-  @BeanProperty var num_predicates: Int = -1
-  @BeanProperty var num_registers: Int = -1
+class shared_pe extends tile
+  with register_configured{
+   var architecture : String = ""
+   var immediate_width: Int = -1
+   var mm_instruction_width: Int =  -1
+   var num_instructions : Int = -1
+   var num_predicates: Int = -1
+   var num_registers: Int = -1
   // Instruction features.
-  @BeanProperty var has_multiplier: Boolean = _
-  @BeanProperty var has_two_word_product_multiplier: Boolean = _
-  @BeanProperty var has_scratchpad: Boolean = _
-  @BeanProperty var num_scratchpad_words: Int = -1
+   var has_multiplier: Boolean = _
+   var has_two_word_product_multiplier: Boolean = _
+   var has_scratchpad: Boolean = _
+   var num_scratchpad_words: Int = -1
   // Instruction memory microarchitecture.
-  @BeanProperty var latch_based_instruction_memory: Boolean = _
-  @BeanProperty var ram_based_immediate_storage: Boolean = _
+   var latch_based_instruction_memory: Boolean = _
+   var ram_based_immediate_storage: Boolean = _
   // Channels.
-  @BeanProperty var channel_buffer_depth: Int = -1 // Must be >= 2.
-  @BeanProperty var max_num_input_channels_to_check: Int = -1
-  @BeanProperty var num_tags: Int = -1
+   var channel_buffer_depth: Int = -1 // Must be >= 2.
+   var max_num_input_channels_to_check: Int = -1
+   var num_tags: Int = -1
   // Pipeline features.
-  @BeanProperty var has_speculative_predicate_unit: Boolean = _
-  @BeanProperty var has_effective_queue_status: Boolean = _
+   var has_speculative_predicate_unit: Boolean = _
+   var has_effective_queue_status: Boolean = _
   // Debugging and profiling features.
-  @BeanProperty var has_debug_monitor: Boolean = _
-  @BeanProperty var has_performance_counters: Boolean = _
+   var has_debug_monitor: Boolean = _
+   var has_performance_counters: Boolean = _
 }
 
 class vector_port  extends tile{
-  @BeanProperty var channel_buffer : Int = -1
-  @BeanProperty var io_type : String = ""
+   var channel_buffer : Int = -1
+   var io_type : String = ""
 }
 
 class connection {
@@ -132,16 +142,16 @@ class connection {
     var module : String = ""
     var port : String = ""
   }
-  @BeanProperty var source : port_location = new port_location
-  @BeanProperty var sink : port_location = new port_location
+   var source : port_location = new port_location
+   var sink : port_location = new port_location
 }
 
 // For the use of configuration
 
 trait register_configured {
   var module_id : Int = -1
-  @BeanProperty var config_input_port : String = ""
-  @BeanProperty var config_output_port : String = ""
+   var config_input_port : String = ""
+   var config_output_port : String = ""
   var config_register_file_idx_width : Int = -1
   val config_register_file_data_width : Int = data_word_width
 }

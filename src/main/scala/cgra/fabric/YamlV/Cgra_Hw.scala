@@ -7,12 +7,16 @@ import cgra.config.system
 import cgra.config.system.update_system
 import chisel3._
 import chisel3.util._
+import cgra.IR.IRconvertor._
 
 import scala.collection.mutable._
+import scala.xml.Elem
 
 class Cgra_Hw(cgra:Cgra) extends Module
-  with Has_IO{
+  with Has_IO
+  with Reconfigurable {
   // ------ System Parameter ------
+  val hw_desc : Cgra = cgra
   update_system(cgra.system)
   private val input_ports = system.input_ports
   private val output_ports = system.output_ports
@@ -20,7 +24,7 @@ class Cgra_Hw(cgra:Cgra) extends Module
   private val num_output : Int = output_ports.length
   private val data_word_width : Int = system.data_word_width
   private val AllModules : Map[String,Any] = Map[String,Any]()
-  private val topology = cgra.topology
+  private val topology:List[connection] = cgra.topology
 
   // ------ Input Output ------
   val io = IO(new Bundle{
@@ -29,27 +33,30 @@ class Cgra_Hw(cgra:Cgra) extends Module
   })
 
   // ------ Vector Ports ------
-  private val vector_ports = delete_useless_port(cgra.vector_ports).filter(p => !p._1.startsWith("default"))
+  private val vector_ports = cgra.vector_ports.filter(p => !p._1.startsWith("default"))
   val vector_ports_hw = vector_ports map (iv=> iv._1 -> Module(new VectorPort_Hw(iv)))
   AllModules ++= vector_ports_hw
 
   // ------ Routers ------
-  private val routers = delete_useless_port(cgra.routers).filter(p => !p._1.startsWith("default"))
-  val routers_hw = routers map (r =>r._1 -> Module(new Router_Hw(r)))
+  private val routers = cgra.routers.filter(p => !p._1.startsWith("default"))
+  val routers_hw : Map[String,Router_Hw] = routers map (r =>r._1 -> Module(new Router_Hw(r)))
   AllModules ++= routers_hw
 
   // ------ Dedicated PE ------
-  private val dedicated_pes = delete_useless_port(cgra.dedicated_pes).filter(p => !p._1.startsWith("default"))
-  val dedicated_pes_hw = dedicated_pes map (dp => dp._1 -> Module(new Dedicated_PE_Hw(dp)))
+  private val dedicated_pes = cgra.dedicated_pes.filter(p => !p._1.startsWith("default"))
+  val dedicated_pes_hw : Map[String,Dedicated_PE_Hw] = dedicated_pes map (dp => dp._1 -> Module(new Dedicated_PE_Hw(dp)))
   AllModules ++= dedicated_pes_hw
 
   // ------ Shared PE ------
-  private val shared_pes = delete_useless_port(cgra.shared_pes).filter(p => !p._1.startsWith("default"))
-  val shared_pes_hw = shared_pes map (sp => sp._1 -> Module(new Shared_PE_Hw(sp)))
+  private val shared_pes = cgra.shared_pes.filter(p => !p._1.startsWith("default"))
+  val shared_pes_hw : Map[String,Shared_PE_Hw] = shared_pes map (sp => sp._1 -> Module(new Shared_PE_Hw(sp)))
   AllModules ++= shared_pes_hw
 
   // ------ Topology ------
   connect_all(AllModules,topology)
+
+  // ------ Output Config ------
+  scala.xml.XML.save(cgra.config_filename,config2XML,"UTF-8",false,null)
 
   // ------ Util ------
   def get_port (io_t:String,name:String) = {
@@ -92,5 +99,13 @@ class Cgra_Hw(cgra:Cgra) extends Module
       mod.output_ports = mod.output_ports intersect connected_source_port
     })
     mods
+  }
+
+  def config2XML : Elem = {
+    <CGRA>
+      <Routers>{routers_hw.map(r=>r._2.asInstanceOf[Reconfigurable].config2XML)}</Routers>
+      <Dedicated_PEs>{dedicated_pes_hw.map(r=>r._2.asInstanceOf[Reconfigurable].config2XML)}</Dedicated_PEs>
+      <Shared_PEs>{shared_pes_hw.map(r=>r._2.asInstanceOf[Reconfigurable].config2XML)}</Shared_PEs>
+    </CGRA>
   }
 }

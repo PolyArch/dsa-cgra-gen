@@ -12,15 +12,17 @@ import cgra.config.fullinst._
 
 import scala.math.ceil
 import scala.util.Random
+import scala.xml.Elem
 
 class Dedicated_PE_Hw(name_p:(String,dedicated_pe)) extends Module with Has_IO
-  with Decomposable{
+  with Decomposable
+  with Reconfigurable {
 
   // Extract Parameter
   private val module_name = name_p._1
   private val p = name_p._2
-  private val num_input = p.getInput_ports.length
-  private val num_output = p.getOutput_ports.length
+  private val num_input = p.input_ports.length
+  private val num_output = p.output_ports.length
   private val decomposer = p.decomposer
   private val input_ports = p.input_ports
   private val output_ports = p.output_ports
@@ -66,27 +68,29 @@ class Dedicated_PE_Hw(name_p:(String,dedicated_pe)) extends Module with Has_IO
   val all_sink_port_subnet : ListBuffer[port_subnet] = inter_subnet_connection.map(i=>i.sink).distinct
   val all_source_port_subnet : ListBuffer[port_subnet] = inter_subnet_connection.map(i=>i.source).distinct
   val all_muxes : ListBuffer[Multiplexer] = new ListBuffer[Multiplexer]()
-  val all_delaypipes : ListBuffer[delay_pipe] = new ListBuffer[delay_pipe]()
-  val all_alus : ListBuffer[alu] = new ListBuffer[alu]()
+  val all_delaypipes : ListBuffer[Delay_Pipe] = new ListBuffer[Delay_Pipe]()
+  val all_alus : ListBuffer[Alu] = new ListBuffer[Alu]()
   for (output_port_subnet <- all_sink_port_subnet){
     val insts = instructions(output_port_subnet.port)
     val num_operand = get_num_max_operand(insts)
     for (m <- 0 until num_operand){
       val mux = new Multiplexer
-      val delaypipe = new delay_pipe
+      val delaypipe = new Delay_Pipe
       all_muxes += mux;all_delaypipes += delaypipe
       delaypipe.operand = m
       delaypipe.sink = output_port_subnet
       delaypipe.pipe_word_width = data_word_width / decomposer
-      delaypipe.max_delay = if(p.has_backpressure.valid) 0 else p.has_backpressure.max_delay
+      delaypipe.has_backpressure = p.has_backpressure.valid
+      delaypipe.max_delay = p.has_backpressure.max_delay
       mux.operand = m
       mux.sink = output_port_subnet
       mux.sources = inter_subnet_connection.filter(i=>i.sink == output_port_subnet).map(s=>s.source) toList
     }
-    val alu = new alu;all_alus += alu
+    val alu = new Alu;all_alus += alu
     alu.max_num_operand = num_operand
     alu.alu_word_width = data_word_width / decomposer
     alu.inst = insts
+    alu.has_backpressure = p.has_backpressure.valid
     alu.sink = output_port_subnet
   }
 
@@ -136,7 +140,7 @@ class Dedicated_PE_Hw(name_p:(String,dedicated_pe)) extends Module with Has_IO
         MuxLookup(config_wire(m.config_high,m.config_low),0.U,select2source_bits)
       delay_pipe_hw.io.in.valid :=
         MuxLookup(config_wire(m.config_high,m.config_low),0.U,select2source_valid)
-      // Connect Delay pipe with alu
+      // Connect Delay pipe with Alu
       alu_hw.io.in(idx_operand) <> delay_pipe_hw.io.out
       // Connect Delay Pipe with Control Wiring
       delay_pipe_hw.io.delay := config_wire(delay_pipe.config_high,delay_pipe.config_low)
@@ -273,27 +277,63 @@ class Dedicated_PE_Hw(name_p:(String,dedicated_pe)) extends Module with Has_IO
     val subnet_word_width = data_word_width / decomposer
     insts.map(i=>insts_prop(i).numOperands) max
   }
+
+  // ------ Print Configuration
+  def config2XML : Elem = {
+    <Dedicated_PE>
+      <Module_Name>{module_name}</Module_Name>
+      <Module_ID>{p.module_id}</Module_ID>
+      <Input_Ports>{input_ports.zipWithIndex.map(p=>{<Index>{p._2}</Index><Port>{p._1}</Port>})}</Input_Ports>
+      <Output_Ports>{output_ports.zipWithIndex.map(p=>{<Index>{p._2}</Index><Port>{p._1}</Port>})}</Output_Ports>
+      <Length_Register_File>{num_idx}</Length_Register_File>
+      <Width_Register_File>{config_width_per_idx}</Width_Register_File>
+      <MUXes>{all_muxes.map(b=>b.config2XML)}</MUXes>
+      <Delay_Pipes>{all_delaypipes.map(d=>d.config2XML)}</Delay_Pipes>
+      <Alues>{all_alus.map(a=>a.config2XML)}</Alues>
+    </Dedicated_PE>
+  }
 }
 
-class delay_pipe {
+class Delay_Pipe extends Reconfigurable {
   var config_high : Int = -1
   var config_low : Int = -1
   var max_delay : Int = -1
   var pipe_word_width : Int = -1
   var sink : port_subnet = new port_subnet
   var operand : Int = -1
+  var has_backpressure : Boolean = false
+  def config2XML : Elem = {
+    <Delay_Pipe>
+      <Config_High_Bit>{config_high}</Config_High_Bit>
+      <Config_Low_Bit>{config_low}</Config_Low_Bit>
+      <Max_Delay>{max_delay}</Max_Delay>
+      <Idx_Operand>{operand}</Idx_Operand>
+    </Delay_Pipe>
+  }
 }
 
-class alu {
+class Alu extends Reconfigurable {
   var config_high : Int = -1
   var config_low : Int = -1
   var sink : port_subnet = new port_subnet
   var max_num_operand: Int = -1
   var inst : List[String] = Nil
   var alu_word_width : Int = -1
+  var has_backpressure : Boolean = false
+  def config2XML : Elem = {
+    <Alu>
+      <Config_High_Bit>{config_high}</Config_High_Bit>
+      <Config_Low_Bit>{config_low}</Config_Low_Bit>
+      <Num_Operands>{max_num_operand}</Num_Operands>
+      <Opcodes>
+        {inst.zipWithIndex.map(i=>{<Select>{i._2}</Select><Opcode>{i._1}</Opcode>})}
+      </Opcodes>
+      <Sink><Port>{sink.port}</Port><Subnet>{sink.subnet}</Subnet></Sink>
+    </Alu>
+  }
 }
 
-class delay_pipe_hw(p:delay_pipe) extends Module{
+class delay_pipe_hw(p:Delay_Pipe) extends Module{
   val io = IO(new Bundle{
     val in = new Bundle {
       val bits = Input(UInt(p.pipe_word_width.W))
@@ -308,23 +348,30 @@ class delay_pipe_hw(p:delay_pipe) extends Module{
     val delay = Input(UInt((1 max log2Ceil(1 max p.max_delay)).W))
   })
   if (p.max_delay > 0){
-    val fifo_bits = Reg(Vec(p.max_delay,UInt(p.pipe_word_width.W)))
-    val fifo_valid = Reg(Vec(p.max_delay,Bool()))
-    val head = RegInit(0.U(log2Ceil(p.max_delay).W))
-    val tail = RegInit(0.U(log2Ceil(p.max_delay).W))
-    io.out.bits := fifo_bits(head)
-    io.out.valid := fifo_valid(head)
-    fifo_bits(tail) := io.in.bits
-    fifo_valid(tail) := io.in.valid
-    io.in.ready := io.out.ready
-    head := head + 1.U
-    tail := head + io.delay
+    if(p.has_backpressure){
+      val queue_in : DecoupledIO[UInt] = Wire(DecoupledIO(UInt(p.pipe_word_width.W)))
+      queue_in <> io.in
+      val queue_out = Queue(queue_in,p.max_delay)
+      io.out <> queue_out
+    }else{
+      val fifo_bits = Reg(Vec(p.max_delay,UInt(p.pipe_word_width.W)))
+      val fifo_valid = Reg(Vec(p.max_delay,Bool()))
+      val head = RegInit(0.U(log2Ceil(p.max_delay).W))
+      val tail = RegInit(0.U(log2Ceil(p.max_delay).W))
+      io.out.bits := fifo_bits(head)
+      io.out.valid := fifo_valid(head)
+      fifo_bits(tail) := io.in.bits
+      fifo_valid(tail) := io.in.valid
+      io.in.ready := io.out.ready
+      head := head + 1.U
+      tail := head + 1.U + io.delay
+    }
   }else{
     io.out <> io.in
   }
 }
 
-class alu_hw(p:alu) extends Module{
+class alu_hw(p:Alu) extends Module{
   val io = IO(new Bundle{
     val in = Vec(p.max_num_operand,new Bundle {
       val bits = Input(UInt(p.alu_word_width.W))
@@ -368,9 +415,37 @@ class alu_hw(p:alu) extends Module{
     result
   }
 
-  // TODO: Directly connect ready and valid
-  io.out.valid := io.in.map(p=>p.valid).reduce(_ && _)
-  for (i <- 0 until p.max_num_operand){
-    io.in(i).ready := io.out.ready
+  // TODO: Backpressure
+  if (!p.has_backpressure){
+    io.out.valid := io.in.map(p=>p.valid).reduce(_ && _)
+    for (i <- 0 until p.max_num_operand){
+      io.in(i).ready := io.out.ready
+    }
+  }else{
+    val simulated_alu_latency = RegInit(0.U(1 max log2Ceil(inst_props.map(i=>i.latency) max)))
+
+    // Restart
+    when(io.out.ready && io.in.map(p=>p.valid).reduce(_ && _) && simulated_alu_latency === 0.U){
+      for (idx_opcode <- p.inst.indices){
+        when(io.opcode === idx_opcode.U){
+          simulated_alu_latency := inst_props(idx_opcode).latency.U
+        }
+      }
+    }
+
+    // Counting Down
+    when(simulated_alu_latency =/= 0.U){
+      simulated_alu_latency := simulated_alu_latency - 1.U
+      io.out.valid := false.B
+      for (i <- 0 until p.max_num_operand){
+        io.in(i).ready := false.B
+      }
+    }.otherwise{ // Finished
+      io.out.valid := true.B
+      for (i <- 0 until p.max_num_operand){
+        io.in(i).ready := true.B
+      }
+    }
   }
+
 }

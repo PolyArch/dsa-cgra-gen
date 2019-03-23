@@ -1,7 +1,6 @@
 package cgra.config
 
-import derived_system._
-import system._
+import cgra.config.system._
 import cgra.IR.global_var.module_id_width
 
 object encoding {

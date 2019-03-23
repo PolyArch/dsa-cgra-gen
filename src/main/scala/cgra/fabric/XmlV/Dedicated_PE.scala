@@ -77,10 +77,10 @@ case class Dedicated_PE() extends Entity
           for (sp <- source_ports){
             have(sp._1 --> dp_in_port._1,sp._2 -> dp_in_port._2)
           }
-          // delaypipe --> alu
+          // delaypipe --> Alu
           have(dp_out_port._1 --> alu_in_ports(index)._1.asInstanceOf[Entity],dp_out_port._2 -> alu_in_ports(index)._2)
         }
-        // alu --> output port
+        // Alu --> output port
         have(alu_out_port._1 --> sink_port._1.asInstanceOf[Entity],alu_out_port._2 -> sink_port._2)
       }
     }

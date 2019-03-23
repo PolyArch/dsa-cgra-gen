@@ -11,14 +11,16 @@ import cgra.config.encoding._
 import scala.math._
 import scala.collection.mutable.ListBuffer
 import scala.util.Random
+import scala.xml.Elem
 
 class Router_Hw(name_p:(String,router)) extends Module  with Has_IO
-  with Decomposable{
+  with Decomposable
+  with Reconfigurable {
   // ------ Extract Parameter
   private val module_name = name_p._1
   private val p = name_p._2
-  private val num_input = p.getInput_ports.length
-  private val num_output = p.getOutput_ports.length
+  private val num_input = p.input_ports.length
+  private val num_output = p.output_ports.length
   private val decomposer : Int = p.decomposer
   private val input_ports = p.input_ports
   private val output_ports = p.output_ports
@@ -218,12 +220,38 @@ class Router_Hw(name_p:(String,router)) extends Module  with Has_IO
     decomposed_ports
   }
 
+  def config2XML : Elem = {
+    <Router>
+      <Module_Name>{module_name}</Module_Name>
+      <Module_ID>{p.module_id}</Module_ID>
+      <Input_Ports>{input_ports.zipWithIndex.map(p=>{<Index>{p._2}</Index><Port>{p._1}</Port>})}</Input_Ports>
+      <Output_Ports>{output_ports.zipWithIndex.map(p=>{<Index>{p._2}</Index><Port>{p._1}</Port>})}</Output_Ports>
+      <Length_Register_File>{num_idx}</Length_Register_File>
+      <Width_Register_File>{config_width_per_idx}</Width_Register_File>
+      <MUXes>{all_muxes.map(b=>b.config2XML)}</MUXes>
+    </Router>
+  }
 }
 
-class Multiplexer {
+class Multiplexer extends Reconfigurable {
   var config_high : Int = -1
   var config_low : Int = -1
   var sources : List[port_subnet] = Nil
   var sink : port_subnet = new port_subnet
   var operand : Int = -1
+  def config2XML : Elem = {
+    <MUX>
+      <Config_High_Bit>{config_high}</Config_High_Bit>
+      <Config_Low_Bit>{config_low}</Config_Low_Bit>
+      <Sources>
+        {sources.zipWithIndex.map(s=>{
+        <Source>
+          <Select>{s._2}</Select><Port>{s._1.port}</Port><Subnet>{s._1.subnet}</Subnet>
+        </Source>
+      })}
+      </Sources>
+      <Sink><Port>{sink.port}</Port><Subnet>{sink.subnet}</Subnet></Sink>
+      <Idx_Operand>{operand}</Idx_Operand>
+    </MUX>
+  }
 }

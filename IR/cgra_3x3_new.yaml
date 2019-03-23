@@ -8,7 +8,7 @@
 
 system:
   # Type
-  module_type: Cgra
+  module_type: Cgra_Hw
   # IO
   input_ports: [i1,i2]
   output_ports: [o1,o2]
