@@ -1,21 +1,11 @@
 package cgra.IR
 
 import org.yaml.snakeyaml.Yaml
-import org.yaml.snakeyaml.constructor.Constructor
 import java.io.{File, FileInputStream}
 import java.util
-
-import scala.beans.BeanProperty
 import scala.collection.mutable._
 import IRconvertor._
-import chisel3.experimental.RawModule
 import cgra.config.system.data_word_width
-import cgra.fabric.YamlV.Cgra_Hw
-import chisel3.core.Module
-
-import scala.collection.JavaConverters._
-import scala.collection.convert.WrapAsJava
-import scala.collection.mutable
 
 
 object IRreader {

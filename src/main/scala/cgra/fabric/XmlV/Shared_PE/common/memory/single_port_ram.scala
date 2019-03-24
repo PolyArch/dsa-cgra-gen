@@ -21,8 +21,3 @@ class single_port_ram(data_width:Int,depth:Int) extends Module{
   }
   io.read_data := mem.read(io.index, io.read_enable)
 }
-
-object ramDriver extends App
-{
-  chisel3.Driver.execute(args, () => new single_port_ram(64,1024))
-}

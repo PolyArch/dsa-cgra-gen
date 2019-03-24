@@ -26,6 +26,8 @@ def javacOptionsVersion(scalaVersion: String): Seq[String] = {
 
 name := "ss-cgra-gen"
 
+mainClass in (Compile, run) := Some("CgraGen")
+
 version := "0.0.1"
 
 scalaVersion := "2.12.8"
@@ -43,8 +45,8 @@ val defaultVersions = Map(
   "chisel-iotesters" -> "1.3-031419-SNAPSHOT"
 )
 
-libraryDependencies ++= (Seq("chisel3","chisel-iotesters").map {
-  dep: String => "edu.berkeley.cs" %% dep % sys.props.getOrElse(dep + "Version", defaultVersions(dep)) })
+libraryDependencies ++= Seq("chisel3","chisel-iotesters").map{dep: String =>"edu.berkeley.cs" %% dep % sys.props.getOrElse(dep + "Version", defaultVersions(dep))}
+libraryDependencies += "org.yaml" % "snakeyaml" % "1.8"
 
 scalacOptions ++= scalacOptionsVersion(scalaVersion.value)
 
