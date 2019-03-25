@@ -1,0 +1,55 @@
+Information: Propagating switching activity (low effort zero delay simulation). (PWR-6)
+Warning: Design has unannotated primary inputs. (PWR-414)
+Warning: Design has unannotated sequential cell outputs. (PWR-415)
+ 
+****************************************
+Report : power
+        -analysis_effort low
+Design : Cgra_Hw
+Version: P-2019.03
+Date   : Sun Mar 24 11:52:24 2019
+****************************************
+
+
+Library(s) Used:
+
+    um28nphhlogl30hsh140f_ffgbc0p99vn40c (File: /home/sihao/Synopsys/UMC_28nm/UltraHighDensity/LogicLibrary/30nm/HPC_plus/HVT/liberty/ccs/um28nphhlogl30hsh140f_ffgbc0p99vn40c.db)
+
+
+Operating Conditions: FFGBC0P99VN40C   Library: um28nphhlogl30hsh140f_ffgbc0p99vn40c
+Wire Load Model Mode: enclosed
+
+Design        Wire Load Model            Library
+------------------------------------------------
+
+
+Global Operating Voltage = 0.99 
+Power-specific unit information :
+    Voltage Units = 1V
+    Capacitance Units = 1.000000pf
+    Time Units = 1ns
+    Dynamic Power Units = 1mW    (derived from V,C,T units)
+    Leakage Power Units = 1nW
+
+
+  Cell Internal Power  =  62.8567 mW   (88%)
+  Net Switching Power  =   8.6853 mW   (12%)
+                         ---------
+Total Dynamic Power    =  71.5419 mW  (100%)
+
+Cell Leakage Power     =  84.9529 uW
+
+
+                 Internal         Switching           Leakage            Total
+Power Group      Power            Power               Power              Power   (   %    )  Attrs
+--------------------------------------------------------------------------------------------------
+io_pad             0.0000            0.0000            0.0000            0.0000  (   0.00%)
+memory             0.0000            0.0000            0.0000            0.0000  (   0.00%)
+black_box          0.0000            0.0000            0.0000            0.0000  (   0.00%)
+clock_network      0.0000            0.0000            0.0000            0.0000  (   0.00%)
+register          57.4954            1.0162        4.7324e+04           58.5588  (  81.76%)
+sequential         0.0000            0.0000            0.0000            0.0000  (   0.00%)
+combinational      5.3615            7.6691        3.7629e+04           13.0682  (  18.24%)
+--------------------------------------------------------------------------------------------------
+Total             62.8568 mW         8.6853 mW     8.4953e+04 nW        71.6269 mW
+1

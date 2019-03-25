@@ -152,7 +152,7 @@ dedicated_pes:
     # Decomposability
     decomposer: 1
     # Timing [max_delay is functional when valid is false]
-    has_backpressure: {valid: true,max_delay: 16}
+    has_backpressure: {valid: true,max_delay: 4}
     # Control
     has_metaReuse: {valid: false,num_reuse: 4}
     # Instructions
@@ -161,7 +161,7 @@ dedicated_pes:
 
   dedicated_pe_1: &dedicated_pe_1
     <<: *default_dedicated_pe
-    has_backpressure: {valid: false,max_delay: 16}
+    has_backpressure: {valid: false,max_delay: 3}
 
   dedicated_pe_2: &dedicated_pe_2
     <<: *default_dedicated_pe
@@ -176,7 +176,7 @@ dedicated_pes:
     <<: *default_dedicated_pe
     config_input_port: northeast
     decomposer: 2
-    has_backpressure: {valid: false,max_delay: 16}
+    has_backpressure: {valid: false,max_delay: 3}
 
   dedicated_pe_4: &dedicated_pe_4
     <<: *default_dedicated_pe

@@ -1,0 +1,25 @@
+ 
+****************************************
+Report : clock_gating
+        -nosplit
+Design : Cgra_Hw
+Version: P-2019.03
+Date   : Sun Mar 24 19:25:50 2019
+****************************************
+
+
+
+                             Clock Gating Summary
+          ------------------------------------------------------------
+          |    Number of Clock gating elements    |        0         |
+          |                                       |                  |
+          |    Number of Gated registers          |     0 (0.00%)    |
+          |                                       |                  |
+          |    Number of Ungated registers        | 22562 (100.00%)  |
+          |                                       |                  |
+          |    Total number of registers          |    22562         |
+          ------------------------------------------------------------
+
+
+
+1

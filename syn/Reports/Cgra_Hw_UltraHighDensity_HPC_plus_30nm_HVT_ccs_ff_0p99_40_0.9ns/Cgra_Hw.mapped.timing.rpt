@@ -1,0 +1,460 @@
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -nets
+        -max_paths 1
+        -transition_time
+Design : Cgra_Hw
+Version: P-2019.03
+Date   : Sun Mar 24 14:33:27 2019
+****************************************
+
+ # A fanout number of 1000 was used for high fanout net computations.
+
+Operating Conditions: FFGBC0P99VN40C   Library: um28nphhlogl30hsh140f_ffgbc0p99vn40c
+Wire Load Model Mode: enclosed
+
+  Startpoint: Dedicated_PE_Hw_4_all_delaypipes_hw_1_Queue/R_81395
+              (rising edge-triggered flip-flop clocked by ideal_clock1)
+  Endpoint: Dedicated_PE_Hw_4_div_31_R_79586
+            (rising edge-triggered flip-flop clocked by ideal_clock1)
+  Path Group: ideal_clock1
+  Path Type: max
+
+Attributes:
+    d - dont_touch
+    u - dont_use
+   mo - map_only
+   so - size_only
+    i - ideal_net or ideal_network
+  inf - infeasible path
+
+  Point                                       Fanout     Trans      Incr       Path      Attributes
+  ---------------------------------------------------------------------------------------------------------
+  clock ideal_clock1 (rise edge)                                    0.00       0.00
+  clock network delay (ideal)                                       0.00       0.00
+  Dedicated_PE_Hw_4_all_delaypipes_hw_1_Queue/R_81395/CK (STH_FSDPQO_F4_8)     0.00     0.00 #     0.00 r
+  Dedicated_PE_Hw_4_all_delaypipes_hw_1_Queue/R_81395/Q (STH_FSDPQO_F4_8)     0.02     0.02     0.02 f
+  Dedicated_PE_Hw_4_all_delaypipes_hw_1_Queue/n2518 (net)     2     0.00       0.02 f
+  Dedicated_PE_Hw_4_all_delaypipes_hw_1_Queue/U3508/X (STH_NR2_T_12)     0.01     0.01     0.04 r
+  Dedicated_PE_Hw_4_all_delaypipes_hw_1_Queue/n1555 (net)     2     0.00       0.04 r
+  Dedicated_PE_Hw_4_all_delaypipes_hw_1_Queue/U2709/X (STH_INV_N250_15)     0.01     0.01     0.05 f
+  Dedicated_PE_Hw_4_all_delaypipes_hw_1_Queue/n2194 (net)    29     0.00       0.05 f
+  Dedicated_PE_Hw_4_all_delaypipes_hw_1_Queue/U856/X (STH_NR2_T_1)     0.01     0.01     0.06 r
+  Dedicated_PE_Hw_4_all_delaypipes_hw_1_Queue/n88 (net)     1       0.00       0.06 r
+  Dedicated_PE_Hw_4_all_delaypipes_hw_1_Queue/U855/X (STH_AOI21_MM_2)     0.01     0.01     0.07 f
+  Dedicated_PE_Hw_4_all_delaypipes_hw_1_Queue/n87 (net)     1       0.00       0.07 f
+  Dedicated_PE_Hw_4_all_delaypipes_hw_1_Queue/U364/X (STH_ND2_T_1P5)     0.01     0.01     0.08 r
+  Dedicated_PE_Hw_4_all_delaypipes_hw_1_Queue/n270 (net)     1      0.00       0.08 r
+  Dedicated_PE_Hw_4_all_delaypipes_hw_1_Queue/U345/X (STH_NR2_T_2)     0.01     0.01     0.09 f
+  Dedicated_PE_Hw_4_all_delaypipes_hw_1_Queue/n26 (net)     1       0.00       0.09 f
+  Dedicated_PE_Hw_4_all_delaypipes_hw_1_Queue/U344/X (STH_ND3_MM_8)     0.01     0.01     0.10 r
+  Dedicated_PE_Hw_4_all_delaypipes_hw_1_Queue/io_deq_bits[1] (net)     2     0.00     0.10 r
+  Dedicated_PE_Hw_4_all_delaypipes_hw_1_Queue/io_deq_bits[1] (Queue_2)     0.00     0.10 r
+  Dedicated_PE_Hw_4_all_delaypipes_hw_1_io_out_bits[1] (net)        0.00       0.10 r
+  U19095/X (STH_INV_N250_6)                               0.02      0.02       0.12 f
+  n72783 (net)                                 10                   0.00       0.12 f
+  U33303/X (STH_INV_N250_9)                               0.02      0.02       0.13 r
+  n83579 (net)                                 38                   0.00       0.13 r
+  U21702/X (STH_INV_N250_3)                               0.02      0.01       0.15 f
+  n8426 (net)                                   7                   0.00       0.15 f
+  U28108/X (STH_NR2_T_2)                                  0.02      0.02       0.16 r
+  n20912 (net)                                  3                   0.00       0.16 r
+  U21703/X (STH_NR2_T_4)                                  0.01      0.01       0.18 f
+  n25928 (net)                                  1                   0.00       0.18 f
+  U70979/X (STH_EO2_V2_8)                                 0.02      0.03       0.20 f
+  n83055 (net)                                 17                   0.00       0.20 f
+  U59994/X (STH_OAI21_T_8)                                0.01      0.02       0.22 r
+  n20872 (net)                                  2                   0.00       0.22 r
+  U59519/X (STH_ND2_T_5)                                  0.02      0.02       0.23 f
+  n11635 (net)                                  2                   0.00       0.23 f
+  U59518/X (STH_NR2_T_3)                                  0.01      0.01       0.25 r
+  n20832 (net)                                  1                   0.00       0.25 r
+  U74377/X (STH_ND2_T_4)                                  0.01      0.01       0.26 f
+  n21055 (net)                                  3                   0.00       0.26 f
+  U63973/X (STH_NR2_T_5)                                  0.02      0.02       0.28 r
+  n20830 (net)                                  1                   0.00       0.28 r
+  U70084/X (STH_NR3_T_16)                                 0.01      0.01       0.29 f
+  n59933 (net)                                 11                   0.00       0.29 f
+  U19524/X (STH_NR2_T_1)                                  0.01      0.01       0.30 r
+  n59923 (net)                                  2                   0.00       0.30 r
+  U56193/X (STH_INV_N250_2)                               0.01      0.01       0.31 f
+  n26718 (net)                                  1                   0.00       0.31 f
+  U18881/X (STH_OAI21_T_1P5)                              0.01      0.01       0.32 r
+  n11466 (net)                                  1                   0.00       0.32 r
+  U59486/X (STH_NR2_T_3)                                  0.01      0.01       0.34 f
+  n11465 (net)                                  1                   0.00       0.34 f
+  U59485/X (STH_OAI22_MM_8)                               0.02      0.02       0.35 r
+  n80590 (net)                                  7                   0.00       0.35 r
+  U71248/X (STH_DEL_L4V1_4)                               0.01      0.04       0.39 r
+  n26601 (net)                                  5                   0.00       0.39 r
+  U58580/X (STH_NR3_T_2)                                  0.01      0.01       0.40 f
+  n26304 (net)                                  1                   0.00       0.40 f
+  U22393/X (STH_NR2_T_3)                                  0.01      0.01       0.41 r
+  n26303 (net)                                  1                   0.00       0.41 r
+  U21668/X (STH_NR2_T_3)                                  0.01      0.01       0.42 f
+  n7834 (net)                                   1                   0.00       0.42 f
+  U91361/X (STH_NR3_T_4)                                  0.01      0.01       0.43 r
+  n89659 (net)                                  1                   0.00       0.43 r
+  U21046/X (STH_ND2_T_8)                                  0.02      0.02       0.45 f
+  n60068 (net)                                 12                   0.00       0.45 f
+  U66630/X (STH_INV_N250_8)                               0.01      0.01       0.45 r
+  n9636 (net)                                   5                   0.00       0.45 r
+  U29707/X (STH_NR2_T_8)                                  0.01      0.01       0.46 f
+  n20400 (net)                                  3                   0.00       0.46 f
+  U29706/X (STH_NR2_T_4)                                  0.01      0.01       0.47 r
+  n11478 (net)                                  2                   0.00       0.47 r
+  U21378/X (STH_INV_N250_2)                               0.01      0.01       0.48 f
+  n86395 (net)                                  1                   0.00       0.48 f
+  U27508/X (STH_NR2_T_3)                                  0.01      0.01       0.48 r
+  n11488 (net)                                  1                   0.00       0.48 r
+  U30516/X (STH_AOI21_MM_4)                               0.01      0.01       0.50 f
+  n25230 (net)                                  1                   0.00       0.50 f
+  U30373/X (STH_ND2_T_4)                                  0.01      0.01       0.51 r
+  n25229 (net)                                  1                   0.00       0.51 r
+  U22026/X (STH_OAI22_MM_8)                               0.02      0.02       0.52 f
+  n24584 (net)                                  6                   0.00       0.52 f
+  U71190/X (STH_NR3_T_4)                                  0.01      0.01       0.53 r
+  n25054 (net)                                  1                   0.00       0.53 r
+  U27465/X (STH_NR2_T_4)                                  0.01      0.01       0.54 f
+  n10076 (net)                                  1                   0.00       0.54 f
+  U38889/X (STH_NR2_T_6)                                  0.01      0.01       0.55 r
+  n7871 (net)                                   2                   0.00       0.55 r
+  U58535/X (STH_NR2_T_6)                                  0.01      0.01       0.56 f
+  n22400 (net)                                  2                   0.00       0.56 f
+  U27338/X (STH_NR2_T_6)                                  0.01      0.01       0.57 r
+  n10892 (net)                                  2                   0.00       0.57 r
+  U19141/X (STH_ND2_T_0P8)                                0.01      0.01       0.59 f
+  n20662 (net)                                  1                   0.00       0.59 f
+  U24672/X (STH_NR2_T_2)                                  0.02      0.01       0.60 r
+  n86364 (net)                                  1                   0.00       0.60 r
+  U43108/X (STH_NR3_T_8)                                  0.01      0.01       0.61 f
+  n60418 (net)                                 12                   0.00       0.61 f
+  U27448/X (STH_ND2_T_1)                                  0.01      0.01       0.63 r
+  n60275 (net)                                  2                   0.00       0.63 r
+  U30954/X (STH_INV_N250_2)                               0.01      0.01       0.64 f
+  n8199 (net)                                   3                   0.00       0.64 f
+  U59260/X (STH_NR2_T_2)                                  0.01      0.01       0.65 r
+  n10882 (net)                                  1                   0.00       0.65 r
+  U58177/X (STH_AOI21_MM_4)                               0.01      0.02       0.67 f
+  n9817 (net)                                   5                   0.00       0.67 f
+  U18076/X (STH_NR2_T_2)                                  0.01      0.01       0.68 r
+  n11730 (net)                                  1                   0.00       0.68 r
+  U27793/X (STH_AOI21_MM_4)                               0.02      0.01       0.69 f
+  n12333 (net)                                  1                   0.00       0.69 f
+  U59693/X (STH_OAI21_T_8)                                0.01      0.01       0.70 r
+  n22252 (net)                                  2                   0.00       0.70 r
+  U71090/X (STH_INV_N250_12)                              0.01      0.01       0.71 f
+  n20406 (net)                                  3                   0.00       0.71 f
+  U25518/X (STH_ND2_T_6)                                  0.01      0.01       0.72 r
+  n87099 (net)                                  1                   0.00       0.72 r
+  U63752/X (STH_ND2_T_16)                                 0.02      0.01       0.73 f
+  n11463 (net)                                  5                   0.00       0.73 f
+  U58914/X (STH_NR2_T_12)                                 0.01      0.01       0.74 r
+  n12053 (net)                                  2                   0.00       0.74 r
+  U58878/X (STH_INV_N250_24)                              0.01      0.01       0.76 f
+  n73241 (net)                                 11                   0.00       0.76 f
+  U17955/X (STH_ND2_T_4)                                  0.01      0.01       0.76 r
+  n10242 (net)                                  1                   0.00       0.76 r
+  U20638/X (STH_ND2_T_4)                                  0.01      0.01       0.78 f
+  n89969 (net)                                  1                   0.00       0.78 f
+  U20655/X (STH_NR2_T_8)                                  0.01      0.01       0.79 r
+  n9815 (net)                                  11                   0.00       0.79 r
+  U18474/X (STH_ND2_T_1P75)                               0.01      0.01       0.80 f
+  n88743 (net)                                  3                   0.00       0.80 f
+  U57995/X (STH_INV_N150_2)                               0.01      0.01       0.81 r
+  n9303 (net)                                   2                   0.00       0.81 r
+  U21992/X (STH_NR2_T_1P5)                                0.01      0.01       0.81 f
+  n21864 (net)                                  1                   0.00       0.81 f
+  U71512/X (STH_NR2_T_2)                                  0.01      0.01       0.83 r
+  n21863 (net)                                  1                   0.00       0.83 r
+  U20343/X (STH_OAI21_MM_8)                               0.01      0.01       0.84 f
+  n20384 (net)                                  1                   0.00       0.84 f
+  U58681/X (STH_AOI21_T_8)                                0.01      0.01       0.85 r
+  n20495 (net)                                  5                   0.00       0.85 r
+  U20267/X (STH_NR2_T_4)                                  0.01      0.01       0.86 f
+  n23423 (net)                                  1                   0.00       0.86 f
+  U71323/X (STH_OAI21_MM_8)                               0.02      0.01       0.87 r
+  n60885 (net)                                  1                   0.00       0.87 r
+  U59388/X (STH_NR2_T_12)                                 0.01      0.01       0.88 f
+  n20421 (net)                                  1                   0.00       0.88 f
+  U71102/X (STH_NR2_T_16)                                 0.03      0.02       0.90 r
+  n61429 (net)                                 20                   0.00       0.90 r
+  U91623/X (STH_INV_N250_32)                              0.01      0.01       0.91 f
+  n12069 (net)                                 13                   0.00       0.91 f
+  U24642/X (STH_NR2_T_0P8)                                0.01      0.01       0.92 r
+  n61225 (net)                                  1                   0.00       0.92 r
+  U45488/X (STH_INV_N250_1)                               0.01      0.01       0.93 f
+  n17794 (net)                                  1                   0.00       0.93 f
+  U42132/X (STH_ND2_T_1P75)                               0.01      0.01       0.94 r
+  n88685 (net)                                  1                   0.00       0.94 r
+  U18016/X (STH_NR2_T_3)                                  0.01      0.01       0.95 f
+  n10073 (net)                                  1                   0.00       0.95 f
+  U27522/X (STH_NR3_T_8)                                  0.02      0.01       0.96 r
+  n20577 (net)                                 15                   0.00       0.96 r
+  U30208/X (STH_ND2_T_1P75)                               0.02      0.02       0.98 f
+  n11132 (net)                                  4                   0.00       0.98 f
+  U17130/X (STH_ND2_T_1P75)                               0.01      0.01       0.99 r
+  n10257 (net)                                  1                   0.00       0.99 r
+  U21054/X (STH_OAI21_T_3)                                0.01      0.01       1.01 f
+  n17862 (net)                                  2                   0.00       1.01 f
+  U20508/X (STH_AOI21_MM_4)                               0.01      0.01       1.02 r
+  n21343 (net)                                  1                   0.00       1.02 r
+  U59012/X (STH_ND2_T_8)                                  0.01      0.01       1.04 f
+  n25440 (net)                                  3                   0.00       1.04 f
+  U19679/X (STH_INV_N250_12)                              0.01      0.01       1.04 r
+  n16627 (net)                                  4                   0.00       1.04 r
+  U17351/X (STH_ND2_T_2)                                  0.01      0.01       1.05 f
+  n87910 (net)                                  1                   0.00       1.05 f
+  U38189/X (STH_NR2_T_4)                                  0.01      0.01       1.06 r
+  n87242 (net)                                  1                   0.00       1.06 r
+  U17264/X (STH_NR2_T_4)                                  0.01      0.01       1.07 f
+  n7275 (net)                                   1                   0.00       1.07 f
+  U27543/X (STH_NR2_T_6)                                  0.01      0.01       1.08 r
+  n20641 (net)                                  1                   0.00       1.08 r
+  U20248/X (STH_NR2_T_16)                                 0.01      0.01       1.10 f
+  n21150 (net)                                  7                   0.00       1.10 f
+  U63997/X (STH_INV_N250_32)                              0.01      0.01       1.11 r
+  n20568 (net)                                 13                   0.00       1.11 r
+  U75802/X (STH_NR3_T_0P65)                               0.01      0.01       1.11 f
+  n9571 (net)                                   1                   0.00       1.11 f
+  U17201/X (STH_INV_N250_1)                               0.01      0.01       1.12 r
+  n86562 (net)                                  1                   0.00       1.12 r
+  U59195/X (STH_ND2_T_3)                                  0.01      0.01       1.14 f
+  n88086 (net)                                  1                   0.00       1.14 f
+  U63654/X (STH_NR3_T_8)                                  0.02      0.02       1.15 r
+  n62443 (net)                                 15                   0.00       1.15 r
+  U60006/X (STH_NR2_T_1)                                  0.02      0.01       1.17 f
+  n20608 (net)                                  3                   0.00       1.17 f
+  U16418/X (STH_INV_N250_0P8)                             0.01      0.01       1.18 r
+  n21371 (net)                                  1                   0.00       1.18 r
+  U16910/X (STH_ND2_T_0P8)                                0.01      0.01       1.19 f
+  n11661 (net)                                  1                   0.00       1.19 f
+  U59526/X (STH_AOI21_MM_2)                               0.01      0.01       1.20 r
+  n11660 (net)                                  1                   0.00       1.20 r
+  U58421/X (STH_ND2_T_2)                                  0.01      0.01       1.21 f
+  n9488 (net)                                   1                   0.00       1.21 f
+  U60058/X (STH_AOI21_MM_4)                               0.01      0.01       1.22 r
+  n62717 (net)                                  5                   0.00       1.22 r
+  U60055/X (STH_NR2_T_3)                                  0.01      0.01       1.23 f
+  n88745 (net)                                  1                   0.00       1.23 f
+  U73961/X (STH_NR3_T_3)                                  0.01      0.01       1.24 r
+  n63043 (net)                                  3                   0.00       1.24 r
+  U21570/X (STH_NR2_T_3)                                  0.01      0.01       1.25 f
+  n63150 (net)                                  3                   0.00       1.25 f
+  U20836/X (STH_ND2_T_1P5)                                0.01      0.01       1.26 r
+  n26615 (net)                                  1                   0.00       1.26 r
+  U19346/X (STH_AOI21_MM_4)                               0.01      0.01       1.27 f
+  n26413 (net)                                  1                   0.00       1.27 f
+  U30470/X (STH_NR2_T_4)                                  0.01      0.01       1.28 r
+  n89512 (net)                                  1                   0.00       1.28 r
+  U30339/X (STH_ND2_T_6)                                  0.02      0.01       1.30 f
+  n25972 (net)                                  2                   0.00       1.30 f
+  U71347/X (STH_OAI21_T_8)                                0.02      0.01       1.31 r
+  n88289 (net)                                  3                   0.00       1.31 r
+  U19519/X (STH_INV_N250_12)                              0.01      0.01       1.32 f
+  n73248 (net)                                  3                   0.00       1.32 f
+  U70034/X (STH_NR2_T_8)                                  0.01      0.01       1.33 r
+  n8906 (net)                                   9                   0.00       1.33 r
+  U15698/X (STH_ND2_T_0P8)                                0.02      0.01       1.35 f
+  n12661 (net)                                  1                   0.00       1.35 f
+  U21596/X (STH_NR2_T_2)                                  0.02      0.02       1.36 r
+  n8922 (net)                                   1                   0.00       1.36 r
+  U22305/X (STH_NR2_T_6)                                  0.01      0.01       1.37 f
+  n22358 (net)                                  8                   0.00       1.37 f
+  U15994/X (STH_NR2_T_1P5)                                0.02      0.01       1.39 r
+  n63998 (net)                                  3                   0.00       1.39 r
+  U15913/X (STH_INV_N250_1P5)                             0.01      0.01       1.40 f
+  n8309 (net)                                   2                   0.00       1.40 f
+  U19766/X (STH_ND3_S_2)                                  0.01      0.01       1.41 r
+  n9688 (net)                                   1                   0.00       1.41 r
+  U19476/X (STH_ND2_T_1P5)                                0.01      0.01       1.42 f
+  n9686 (net)                                   1                   0.00       1.42 f
+  U20817/X (STH_ND2_T_2)                                  0.01      0.01       1.43 r
+  n10720 (net)                                  3                   0.00       1.43 r
+  U19479/X (STH_ND2_T_2)                                  0.01      0.01       1.44 f
+  n9305 (net)                                   1                   0.00       1.44 f
+  U19115/X (STH_ND2_T_3P5)                                0.01      0.01       1.45 r
+  n63661 (net)                                  2                   0.00       1.45 r
+  U70161/X (STH_AOI21_MM_4)                               0.02      0.01       1.46 f
+  n16445 (net)                                  1                   0.00       1.46 f
+  U20896/X (STH_OAI22_MM_8)                               0.02      0.02       1.48 r
+  n25601 (net)                                  5                   0.00       1.48 r
+  U15323/X (STH_ND2_T_5)                                  0.02      0.02       1.50 f
+  n21612 (net)                                  1                   0.00       1.50 f
+  U22952/X (STH_NR2_T_12)                                 0.01      0.01       1.51 r
+  n19717 (net)                                  3                   0.00       1.51 r
+  U25492/X (STH_INV_N250_4)                               0.01      0.01       1.53 f
+  n20233 (net)                                  2                   0.00       1.53 f
+  U30122/X (STH_ND2_T_6)                                  0.01      0.01       1.54 r
+  n16267 (net)                                 12                   0.00       1.54 r
+  U25422/X (STH_INV_N250_6)                               0.01      0.01       1.55 f
+  n18489 (net)                                  6                   0.00       1.55 f
+  U15068/X (STH_ND2_T_1)                                  0.01      0.01       1.56 r
+  n9887 (net)                                   1                   0.00       1.56 r
+  U58419/X (STH_ND3_MM_3)                                 0.02      0.02       1.57 f
+  n9884 (net)                                   1                   0.00       1.57 f
+  U21400/X (STH_NR2_T_4)                                  0.02      0.02       1.59 r
+  n65898 (net)                                 13                   0.00       1.59 r
+  U27670/X (STH_NR2_T_0P5)                                0.02      0.02       1.60 f
+  n17950 (net)                                  3                   0.00       1.60 f
+  U53007/X (STH_AOI21_T_0P5)                              0.01      0.02       1.62 r
+  n64826 (net)                                  1                   0.00       1.62 r
+  U26764/X (STH_INV_N250_1)                               0.01      0.01       1.63 f
+  n18225 (net)                                  1                   0.00       1.63 f
+  U26692/X (STH_NR2_T_1P5)                                0.01      0.01       1.64 r
+  n17948 (net)                                  2                   0.00       1.64 r
+  U26674/X (STH_NR2_T_1)                                  0.01      0.01       1.65 f
+  n9654 (net)                                   1                   0.00       1.65 f
+  U40715/X (STH_NR2_T_1)                                  0.01      0.01       1.66 r
+  n12528 (net)                                  2                   0.00       1.66 r
+  U14319/X (STH_NR2_T_1)                                  0.01      0.01       1.67 f
+  n11279 (net)                                  1                   0.00       1.67 f
+  U58950/X (STH_NR2_T_1P5)                                0.01      0.01       1.68 r
+  n86913 (net)                                  1                   0.00       1.68 r
+  U37390/X (STH_ND2_T_1P5)                                0.01      0.01       1.69 f
+  n89638 (net)                                  1                   0.00       1.69 f
+  U29710/X (STH_ND2_T_2)                                  0.01      0.01       1.70 r
+  n9486 (net)                                   1                   0.00       1.70 r
+  U62361/X (STH_ND2_T_4)                                  0.01      0.01       1.71 f
+  n86964 (net)                                  1                   0.00       1.71 f
+  U62379/X (STH_ND2_T_8)                                  0.01      0.01       1.72 r
+  n20763 (net)                                  1                   0.00       1.72 r
+  U70937/X (STH_ND2_T_16)                                 0.03      0.02       1.74 f
+  n73236 (net)                                 11                   0.00       1.74 f
+  U13976/X (STH_DEL_L4V1_2)                               0.01      0.05       1.79 f
+  n20714 (net)                                  2                   0.00       1.79 f
+  U77126/X (STH_AOI21_T_8)                                0.01      0.01       1.80 r
+  n9670 (net)                                   4                   0.00       1.80 r
+  U21505/X (STH_NR2_T_12)                                 0.01      0.01       1.81 f
+  n8677 (net)                                  11                   0.00       1.81 f
+  U13789/X (STH_INV_N250_3)                               0.01      0.01       1.82 r
+  n66325 (net)                                  5                   0.00       1.82 r
+  U32506/X (STH_NR2_T_1P5)                                0.01      0.01       1.83 f
+  n66331 (net)                                  2                   0.00       1.83 f
+  U22962/X (STH_NR2_T_1P5)                                0.01      0.01       1.84 r
+  n9269 (net)                                   2                   0.00       1.84 r
+  U22961/X (STH_INV_N250_2)                               0.01      0.01       1.85 f
+  n66539 (net)                                  2                   0.00       1.85 f
+  U32430/X (STH_NR2_T_1)                                  0.01      0.01       1.86 r
+  n66402 (net)                                  2                   0.00       1.86 r
+  U20776/X (STH_NR3_T_2)                                  0.01      0.01       1.87 f
+  n66432 (net)                                  2                   0.00       1.87 f
+  U33988/X (STH_NR3_T_2)                                  0.01      0.01       1.89 r
+  n86546 (net)                                  1                   0.00       1.89 r
+  U21139/X (STH_NR3_T_3)                                  0.01      0.01       1.90 f
+  n9939 (net)                                   6                   0.00       1.90 f
+  U58716/X (STH_NR2_T_1)                                  0.02      0.02       1.91 r
+  n67493 (net)                                  3                   0.00       1.91 r
+  U35868/X (STH_AOI21_MM_2)                               0.02      0.02       1.93 f
+  n67677 (net)                                  4                   0.00       1.93 f
+  U49841/X (STH_EO2_F_0P5)                                0.02      0.03       1.96 f
+  n67679 (net)                                  1                   0.00       1.96 f
+  U26116/X (STH_ND2_T_0P5)                                0.01      0.01       1.97 r
+  n67680 (net)                                  1                   0.00       1.97 r
+  U66170/X (STH_ND3_T_0P65)                               0.01      0.02       1.99 f
+  n67684 (net)                                  1                   0.00       1.99 f
+  U12818/X (STH_ND2_T_0P8)                                0.01      0.01       2.00 r
+  n67685 (net)                                  1                   0.00       2.00 r
+  U21930/X (STH_ND2_T_0P5)                                0.01      0.01       2.01 f
+  n12688 (net)                                  1                   0.00       2.01 f
+  U26047/X (STH_INV_N250_1)                               0.01      0.01       2.02 r
+  n12687 (net)                                  1                   0.00       2.02 r
+  U77333/X (STH_AOI21_MM_4)                               0.01      0.01       2.03 f
+  n9322 (net)                                   1                   0.00       2.03 f
+  U23396/X (STH_ND2_T_3P5)                                0.01      0.01       2.04 r
+  n69552 (net)                                  6                   0.00       2.04 r
+  U12228/X (STH_NR2_T_1P5)                                0.02      0.01       2.05 f
+  n69519 (net)                                  3                   0.00       2.05 f
+  U22178/X (STH_NR3_T_1P5)                                0.02      0.02       2.07 r
+  n12420 (net)                                  2                   0.00       2.07 r
+  U21019/X (STH_ND2_T_1)                                  0.01      0.02       2.09 f
+  n26738 (net)                                  2                   0.00       2.09 f
+  U59712/X (STH_ND2_T_1P75)                               0.01      0.01       2.10 r
+  n12421 (net)                                  1                   0.00       2.10 r
+  U21016/X (STH_NR2_T_3)                                  0.01      0.01       2.11 f
+  n13595 (net)                                  1                   0.00       2.11 f
+  U59945/X (STH_NR2_T_3)                                  0.01      0.01       2.12 r
+  n21878 (net)                                  1                   0.00       2.12 r
+  U70166/X (STH_ND2_T_6)                                  0.01      0.01       2.13 f
+  n69256 (net)                                  5                   0.00       2.13 f
+  U20336/X (STH_ND2_T_4)                                  0.01      0.01       2.14 r
+  n19869 (net)                                  1                   0.00       2.14 r
+  U20003/X (STH_NR2_T_4)                                  0.01      0.01       2.15 f
+  n17819 (net)                                  1                   0.00       2.15 f
+  U58218/X (STH_AOI21_T_8)                                0.01      0.01       2.16 r
+  n12735 (net)                                  3                   0.00       2.16 r
+  U36685/X (STH_INV_N250_8)                               0.01      0.01       2.17 f
+  n73265 (net)                                  2                   0.00       2.17 f
+  U11618/X (STH_INV_N250_6)                               0.01      0.01       2.17 r
+  n67851 (net)                                  1                   0.00       2.17 r
+  U19826/X (STH_INV_N250_10)                              0.01      0.01       2.18 f
+  n12152 (net)                                  3                   0.00       2.18 f
+  U24569/X (STH_NR2_T_6)                                  0.01      0.01       2.19 r
+  n86310 (net)                                  1                   0.00       2.19 r
+  U11730/X (STH_INV_N250_8)                               0.01      0.01       2.20 f
+  n20010 (net)                                  1                   0.00       2.20 f
+  U58303/X (STH_NR2_T_16)                                 0.01      0.01       2.22 r
+  n10552 (net)                                 20                   0.00       2.22 r
+  U11381/X (STH_INV_N250_16)                              0.01      0.01       2.23 f
+  n13343 (net)                                 14                   0.00       2.23 f
+  U57912/X (STH_NR2_T_1)                                  0.01      0.01       2.24 r
+  n23711 (net)                                  1                   0.00       2.24 r
+  U71782/X (STH_INV_N250_2)                               0.02      0.01       2.25 f
+  n23561 (net)                                  1                   0.00       2.25 f
+  U39823/X (STH_ND2_T_6)                                  0.01      0.01       2.27 r
+  n70835 (net)                                 12                   0.00       2.27 r
+  U21058/X (STH_NR2_T_1P5)                                0.02      0.01       2.28 f
+  n70832 (net)                                  3                   0.00       2.28 f
+  U21844/X (STH_NR2_T_1P5)                                0.01      0.01       2.29 r
+  n24993 (net)                                  1                   0.00       2.29 r
+  U58525/X (STH_INV_N250_2)                               0.01      0.01       2.30 f
+  n23307 (net)                                  1                   0.00       2.30 f
+  U21843/X (STH_NR2_T_1P5)                                0.01      0.01       2.30 r
+  n87012 (net)                                  1                   0.00       2.30 r
+  U58110/X (STH_NR2_T_1P5)                                0.01      0.01       2.31 f
+  n20922 (net)                                  2                   0.00       2.31 f
+  U36621/X (STH_NR2_T_1P5)                                0.01      0.01       2.32 r
+  n7833 (net)                                   1                   0.00       2.32 r
+  U58065/X (STH_NR3_T_3)                                  0.01      0.01       2.33 f
+  n88005 (net)                                  1                   0.00       2.33 f
+  U58242/X (STH_OAI21_MM_4)                               0.01      0.01       2.34 r
+  n26667 (net)                                  2                   0.00       2.34 r
+  U58239/X (STH_ND2_T_4)                                  0.02      0.01       2.36 f
+  n12132 (net)                                  3                   0.00       2.36 f
+  U20007/X (STH_ND2_T_8)                                  0.01      0.01       2.37 r
+  n72384 (net)                                  3                   0.00       2.37 r
+  U20145/X (STH_INV_N250_16)                              0.01      0.01       2.38 f
+  n72810 (net)                                  8                   0.00       2.38 f
+  U71182/X (STH_INV_N250_4)                               0.01      0.01       2.39 r
+  n72255 (net)                                  4                   0.00       2.39 r
+  U39652/X (STH_INV_N250_12)                              0.01      0.01       2.40 f
+  n8018 (net)                                  13                   0.00       2.40 f
+  U80170/X (STH_INV_N250_4)                               0.01      0.01       2.41 r
+  n8019 (net)                                   8                   0.00       2.41 r
+  U57115/X (STH_NR3_T_0P65)                               0.01      0.01       2.42 f
+  n89787 (net)                                  1                   0.00       2.42 f
+  U36571/X (STH_NR2_T_0P8)                                0.01      0.01       2.42 r
+  n20897 (net)                                  1                   0.00       2.42 r
+  U10483/X (STH_ND2_T_0P5)                                0.01      0.01       2.43 f
+  n20896 (net)                                  1                   0.00       2.43 f
+  U36562/X (STH_OAI22_T_0P75)                             0.02      0.02       2.45 r
+  n82778 (net)                                  1                   0.00       2.45 r
+  Dedicated_PE_Hw_4_div_31_R_79586/D (STH_FSDPQO_F4_8)     0.02     0.00       2.45 r
+  data arrival time                                                            2.45
+
+  clock ideal_clock1 (rise edge)                                    0.90       0.90
+  clock network delay (ideal)                                       0.00       0.90
+  Dedicated_PE_Hw_4_div_31_R_79586/CK (STH_FSDPQO_F4_8)             0.00       0.90 r
+  library setup time                                               -0.02       0.88
+  data required time                                                           0.88
+  ---------------------------------------------------------------------------------------------------------
+  data required time                                                           0.88
+  data arrival time                                                           -2.45
+  ---------------------------------------------------------------------------------------------------------
+  slack (VIOLATED)                                                            -1.58
+
+
+1

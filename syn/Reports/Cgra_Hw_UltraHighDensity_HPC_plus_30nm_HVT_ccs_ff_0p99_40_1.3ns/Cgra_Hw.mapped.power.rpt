@@ -1,0 +1,64 @@
+Information: Propagating switching activity (low effort zero delay simulation). (PWR-6)
+Warning: Design has unannotated primary inputs. (PWR-414)
+Warning: Design has unannotated sequential cell outputs. (PWR-415)
+ 
+****************************************
+Report : power
+        -analysis_effort low
+Design : Cgra_Hw
+Version: P-2019.03
+Date   : Sun Mar 24 19:29:15 2019
+****************************************
+
+
+Library(s) Used:
+
+    um28nphhlogl30hsh140f_ffgbc0p99vn40c (File: /home/sihao/Synopsys/UMC_28nm/UltraHighDensity/LogicLibrary/30nm/HPC_plus/HVT/liberty/ccs/um28nphhlogl30hsh140f_ffgbc0p99vn40c.db)
+
+
+Operating Conditions: FFGBC0P99VN40C   Library: um28nphhlogl30hsh140f_ffgbc0p99vn40c
+Wire Load Model Mode: enclosed
+
+Design        Wire Load Model            Library
+------------------------------------------------
+Shared_PE_Hw_0         ZeroWLM           um28nphhlogl30hsh140f_ffgbc0p99vn40c
+Shared_PE_Hw_1         ZeroWLM           um28nphhlogl30hsh140f_ffgbc0p99vn40c
+alu_hw_5_DW_cmp_0      ZeroWLM           um28nphhlogl30hsh140f_ffgbc0p99vn40c
+alu_hw_0_DW01_add_1    ZeroWLM           um28nphhlogl30hsh140f_ffgbc0p99vn40c
+alu_hw_1_0_DW01_add_1  ZeroWLM           um28nphhlogl30hsh140f_ffgbc0p99vn40c
+alu_hw_4_DW01_add_1    ZeroWLM           um28nphhlogl30hsh140f_ffgbc0p99vn40c
+alu_hw_7_DW01_add_1    ZeroWLM           um28nphhlogl30hsh140f_ffgbc0p99vn40c
+alu_hw_1_DW01_add_1    ZeroWLM           um28nphhlogl30hsh140f_ffgbc0p99vn40c
+alu_hw_1_1_DW01_add_1  ZeroWLM           um28nphhlogl30hsh140f_ffgbc0p99vn40c
+
+
+Global Operating Voltage = 0.99 
+Power-specific unit information :
+    Voltage Units = 1V
+    Capacitance Units = 1.000000pf
+    Time Units = 1ns
+    Dynamic Power Units = 1mW    (derived from V,C,T units)
+    Leakage Power Units = 1nW
+
+
+  Cell Internal Power  =  40.2801 mW   (82%)
+  Net Switching Power  =   9.0171 mW   (18%)
+                         ---------
+Total Dynamic Power    =  49.2971 mW  (100%)
+
+Cell Leakage Power     = 112.5463 uW
+
+
+                 Internal         Switching           Leakage            Total
+Power Group      Power            Power               Power              Power   (   %    )  Attrs
+--------------------------------------------------------------------------------------------------
+io_pad             0.0000            0.0000            0.0000            0.0000  (   0.00%)
+memory             0.0000            0.0000            0.0000            0.0000  (   0.00%)
+black_box          0.0000            0.0000            0.0000            0.0000  (   0.00%)
+clock_network      0.0000            0.0000            0.0000            0.0000  (   0.00%)
+register          34.8752            0.6727        4.1533e+04           35.5893  (  72.03%)
+sequential         0.0000            0.0000            0.0000            0.0000  (   0.00%)
+combinational      5.4049            8.3443        7.1013e+04           13.8202  (  27.97%)
+--------------------------------------------------------------------------------------------------
+Total             40.2801 mW         9.0170 mW     1.1255e+05 nW        49.4094 mW
+1

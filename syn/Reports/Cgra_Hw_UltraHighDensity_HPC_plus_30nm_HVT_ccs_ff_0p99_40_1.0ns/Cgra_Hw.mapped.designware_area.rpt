@@ -1,0 +1,57 @@
+ 
+****************************************
+Report : area
+Design : Cgra_Hw
+Version: P-2019.03
+Date   : Sun Mar 24 11:52:08 2019
+****************************************
+
+Library(s) Used:
+
+    um28nphhlogl30hsh140f_ffgbc0p99vn40c (File: /home/sihao/Synopsys/UMC_28nm/UltraHighDensity/LogicLibrary/30nm/HPC_plus/HVT/liberty/ccs/um28nphhlogl30hsh140f_ffgbc0p99vn40c.db)
+
+Number of ports:                         8134
+Number of nets:                        179746
+Number of cells:                       171773
+Number of combinational cells:         143483
+Number of sequential cells:             25048
+Number of macros/black boxes:               0
+Number of buf/inv:                      37878
+Number of references:                     204
+
+Combinational area:              98781.647123
+Buf/Inv area:                    15169.391860
+Noncombinational area:           83783.109839
+Macro/Black Box area:                0.000000
+Net Interconnect area:      undefined  (No wire load specified)
+
+Total cell area:                182564.756962
+Total area:                 undefined
+
+Area of detected synthetic parts
+--------------------------------
+  No DW parts to report!
+
+Estimated area of ungrouped synthetic parts
+-------------------------------------------
+                                        Estimated  Perc. of
+  Module               Implem.  Count        Area cell area
+  -------------------- -------  ----- ----------- ---------
+  DP_OP_141J3_122_1099     str      1     15.1200      0.0%
+  DP_OP_142J3_123_1099     str      1     15.1200      0.0%
+  DP_OP_277J2_122_75       str      1     15.1200      0.0%
+  DP_OP_278J2_123_75       str      1     15.1200      0.0%
+  DP_OP_279J2_124_75       str      1     15.1200      0.0%
+  DP_OP_280J2_125_75       str      1     15.1200      0.0%
+  DW01_add             apparch      6   1026.4797      0.6%
+  DW01_inc             apparch     28     43.0802      0.0%
+  DW_cmp               apparch     13    277.6646      0.2%
+  DW_div_uns              cla3      1  61444.7910     33.7%
+  -------------------- -------  ----- ----------- ---------
+  DP_OP Subtotal:                   6     90.7200      0.0%
+  Total:                           54  62882.7355     34.4%
+
+Subtotal of datapath(DP_OP) cell area:  90.7200  0.0%  (estimated)
+Total synthetic cell area:              62882.7355  34.4%  (estimated)
+
+1

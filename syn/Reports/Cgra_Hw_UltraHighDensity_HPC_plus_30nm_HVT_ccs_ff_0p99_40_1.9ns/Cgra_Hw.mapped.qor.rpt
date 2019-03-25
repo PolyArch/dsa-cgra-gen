@@ -1,0 +1,85 @@
+Information: Updating design information... (UID-85)
+Warning: Design 'Cgra_Hw' contains 1 high-fanout nets. A fanout number of 1000 will be used for delay calculations involving these nets. (TIM-134)
+ 
+****************************************
+Report : qor
+Design : Cgra_Hw
+Version: P-2019.03
+Date   : Mon Mar 25 04:27:22 2019
+****************************************
+
+
+  Timing Path Group 'ideal_clock1'
+  -----------------------------------
+  Levels of Logic:             832.00
+  Critical Path Length:          8.99
+  Critical Path Slack:          -7.03
+  Critical Path Clk Period:      1.90
+  Total Negative Slack:       -697.19
+  No. of Violating Paths:      193.00
+  Worst Hold Violation:         -0.05
+  Total Hold Violation:         -2.75
+  No. of Hold Violations:       58.00
+  -----------------------------------
+
+
+  Cell Count
+  -----------------------------------
+  Hierarchical Cell Count:         76
+  Hierarchical Port Count:      20789
+  Leaf Cell Count:             144253
+  Buf/Inv Cell Count:           37761
+  Buf Cell Count:                   0
+  Inv Cell Count:               37761
+  CT Buf/Inv Cell Count:            0
+  Combinational Cell Count:    121691
+  Sequential Cell Count:        22562
+  Macro Count:                      0
+  -----------------------------------
+
+
+  Area
+  -----------------------------------
+  Combinational Area:   109803.287187
+  Noncombinational Area: 72220.846017
+  Buf/Inv Area:          13866.719828
+  Total Buffer Area:             0.00
+  Total Inverter Area:       13866.72
+  Macro/Black Box Area:      0.000000
+  Net Area:                  0.000000
+  -----------------------------------
+  Cell Area:            182024.133204
+  Design Area:          182024.133204
+
+
+  Design Rules
+  -----------------------------------
+  Total Number of Nets:        167049
+  Nets With Violations:             0
+  Max Trans Violations:             0
+  Max Cap Violations:               0
+  -----------------------------------
+
+
+  Hostname: pyrito
+
+  Compile CPU Statistics
+  -----------------------------------------
+  Resource Sharing:                    0.00
+  Logic Optimization:                  0.00
+  Mapping Optimization:                0.00
+  -----------------------------------------
+  Overall Compile Time:             1193.38
+  Overall Compile Wall Clock Time:  1194.83
+
+  --------------------------------------------------------------------
+
+  Design  WNS: 7.03  TNS: 697.19  Number of Violating Paths: 193
+
+
+  Design (Hold)  WNS: 0.05  TNS: 2.75  Number of Violating Paths: 58
+
+  --------------------------------------------------------------------
+
+
+1

@@ -1,0 +1,29 @@
+ 
+****************************************
+Report : multibit banking
+Design : Cgra_Hw
+Version: P-2019.03
+Date   : Sun Mar 24 11:52:09 2019
+****************************************
+
+Total number of sequential cells:                                25048
+    Number of single-bit flip-flops:                             25048
+    Number of single-bit latches:                                    0
+    Number of multi-bit flip-flops:                                  0
+    Number of multi-bit latches:                                     0
+
+Total number of single-bit equivalent sequential cells:          25048
+    (A) Single-bit flip-flops:                                   25048
+    (B) Single-bit latches:                                          0
+    (C) Multi-bit flip-flops:                                        0
+    (D) Multi-bit latches:                                           0
+
+Sequential cells banking ratio ((C + D) / (A + B + C + D)):       0.00%
+Flip-Flop cells banking ratio  ((C) / (A + C)):                   0.00%
+
+Multi-bit Register Decomposition:
+--------------------------------------------------------------------------------
+Bit-Width Reference                 Number of instances    Single-bit Equivalent
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+1

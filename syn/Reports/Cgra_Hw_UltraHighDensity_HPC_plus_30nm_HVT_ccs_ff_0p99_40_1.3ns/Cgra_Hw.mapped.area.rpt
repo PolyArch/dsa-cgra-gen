@@ -1,0 +1,30 @@
+ 
+****************************************
+Report : area
+Design : Cgra_Hw
+Version: P-2019.03
+Date   : Sun Mar 24 19:29:03 2019
+****************************************
+
+Library(s) Used:
+
+    um28nphhlogl30hsh140f_ffgbc0p99vn40c (File: /home/sihao/Synopsys/UMC_28nm/UltraHighDensity/LogicLibrary/30nm/HPC_plus/HVT/liberty/ccs/um28nphhlogl30hsh140f_ffgbc0p99vn40c.db)
+
+Number of ports:                        21059
+Number of nets:                        189213
+Number of cells:                       168689
+Number of combinational cells:         123410
+Number of sequential cells:             22562
+Number of macros/black boxes:               0
+Number of buf/inv:                      38211
+Number of references:                      30
+
+Combinational area:             111159.383184
+Buf/Inv area:                    14109.143826
+Noncombinational area:           72224.206017
+Macro/Black Box area:                0.000000
+Net Interconnect area:      undefined  (No wire load specified)
+
+Total cell area:                183383.589201
+Total area:                 undefined
+1
