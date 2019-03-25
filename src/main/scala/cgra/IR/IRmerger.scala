@@ -20,13 +20,11 @@ object IRmerger {
     pw.write("/*\n")
     for (line <- irLines) pw.write(line + "\n")
     pw.write("*/\n")
-    pw.write("----------\n") // Print split line
     // print cgra file
     for (line <- hwLines) pw.write(line + "\n")
     pw.close
 
     // Rename
     val merged = tempFile.renameTo(hwFile)
-    println(merged)
   }
 }
