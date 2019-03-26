@@ -1,0 +1,209 @@
+package cgra.fabric.Shared_PE_component.tia_parameters
+
+import cgra.fabric.Shared_PE_component.common.Instructions.Instructions
+import cgra.fabric.Shared_PE_component.parameters._
+import chisel3.util.log2Ceil
+
+import scala.math.max
+import cgra.fabric.Shared_PE_component.tia_parameters.fixed_parameters._
+
+trait initial_parameters extends  Instructions{
+
+  // -------------------- Component Config ----------------
+  var TIA_HAS_CORE_MONITOR:Boolean = false
+  var TIA_HAS_CORE_PERFORMANCE_COUNTERS:Boolean = false
+  var TIA_HAS_MULTIPLIER:Boolean = false
+
+  var TIA_SOFTWARE_ROUTER:Boolean = false
+  var TIA_SWITCH_ROUTER:Boolean = false
+
+  var TIA_HAS_SCRATCHPAD:Boolean = false
+
+  // -------------------- Knob Start ----------------------
+
+  var TIA_WORD_WIDTH:Int = 1
+  var TIA_NUM_REGISTERS = 1
+  var TIA_SPM_DEPTH = 1
+
+  // Memory-mapped instruction representation.
+  var TIA_MM_INSTRUCTION_WIDTH = 1
+  // Maximum number of instructions per PE.
+  var TIA_MAX_NUM_INSTRUCTIONS = 1
+
+  // Number of input and output channels.
+  var TIA_NUM_INPUT_CHANNELS = 1
+  var TIA_NUM_OUTPUT_CHANNELS = 1
+  var TIA_INPUT_CHANNELS : List[String] = Nil
+  var TIA_OUTPUT_CHANNELS : List[String] = Nil
+
+  // Instruction
+  var Instructions : List[String] = Nil
+
+  // Instruction immediates.
+  var TIA_IMMEDIATE_WIDTH = 1
+
+  // How many input channels we can dequeue in a single cycle.
+  //var TIA_MAX_NUM_INPUT_CHANNELS_TO_DEQUEUE = TIA_NUM_INPUT_CHANNELS // TODO: remove.
+
+  // Number of predicates to store state.
+  var TIA_NUM_PREDICATES = 1
+
+  // Tags for inter-PE/ME channels.
+  var TIA_NUM_TAGS = 1
+
+  // Maximum number of input channels upon which an instruction can depend.
+  var TIA_MAX_NUM_INPUT_CHANNELS_TO_CHECK = 1
+
+  // --- Interconnect ---
+
+  // Number of physical planes.
+  var TIA_NUM_PHYSICAL_PLANES = 1
+
+  // Generic channel FIFO depth.
+  var TIA_CHANNEL_BUFFER_FIFO_DEPTH = 1
+
+  // Link buffer FIFO depth.
+  var TIA_LINK_BUFFER_FIFO_DEPTH = 1
+
+  // Memory link buffer FIFO depth.
+  var TIA_MEMORY_LINK_BUFFER_FIFO_DEPTH = 1
+
+  // --- Memory ---
+
+  var TIA_NUM_DATA_MEMORY_WORDS = 1
+
+  // --- Scratchpad ---
+  var TIA_NUM_SCRATCHPAD_WORDS_IF_ENABLED = 1
+
+
+  // -------------------- Knob End ----------------------
+
+
+  var TIA_SPM_INDEX_WIDTH:Int = log2Ceil(TIA_SPM_DEPTH)
+
+  // Index widths.
+  var TIA_INSTRUCTION_INDEX_WIDTH = log2Ceil(TIA_MAX_NUM_INSTRUCTIONS)
+  var TIA_REGISTER_INDEX_WIDTH = log2Ceil(TIA_NUM_REGISTERS)
+
+  // --- Triggered Instruction Field Widths ---
+
+  var TIA_TRUE_PTM_WIDTH = TIA_NUM_PREDICATES
+  var TIA_FALSE_PTM_WIDTH = TIA_NUM_PREDICATES
+  var TIA_PTM_WIDTH = TIA_TRUE_PTM_WIDTH + TIA_FALSE_PTM_WIDTH
+  var TIA_SINGLE_ICI_WIDTH = log2Ceil(TIA_NUM_INPUT_CHANNELS + 1)
+  var TIA_ICI_WIDTH = TIA_MAX_NUM_INPUT_CHANNELS_TO_CHECK * TIA_SINGLE_ICI_WIDTH
+  var TIA_TAG_WIDTH = log2Ceil(TIA_NUM_TAGS)
+  var TIA_ICTB_WIDTH = TIA_MAX_NUM_INPUT_CHANNELS_TO_CHECK
+  var TIA_ICTV_WIDTH = TIA_MAX_NUM_INPUT_CHANNELS_TO_CHECK * TIA_TAG_WIDTH
+  var TIA_OP_WIDTH = log2Ceil(TIA_NUM_OPS)
+  var TIA_SINGLE_ST_WIDTH = log2Ceil(TIA_NUM_SOURCE_TYPES)
+
+  var TIA_ST_WIDTH = TIA_NUM_SOURCE * TIA_SINGLE_ST_WIDTH
+  var TIA_SINGLE_SI_WIDTH = log2Ceil(max(TIA_NUM_REGISTERS, TIA_NUM_INPUT_CHANNELS))
+  var TIA_SI_WIDTH = TIA_NUM_SOURCE * TIA_SINGLE_SI_WIDTH
+  var TIA_DT_WIDTH = log2Ceil(TIA_NUM_DESTINATION_TYPES)
+  var TIA_DI_WIDTH = log2Ceil(max(max(TIA_NUM_REGISTERS, TIA_NUM_OUTPUT_CHANNELS), TIA_NUM_PREDICATES))
+  var TIA_OCI_WIDTH = TIA_NUM_OUTPUT_CHANNELS
+  var TIA_OCT_WIDTH = TIA_TAG_WIDTH
+  var TIA_ICD_WIDTH = TIA_NUM_INPUT_CHANNELS
+  var TIA_TRUE_PUM_WIDTH = TIA_TRUE_PTM_WIDTH
+  var TIA_FALSE_PUM_WIDTH = TIA_FALSE_PTM_WIDTH
+  var TIA_PUM_WIDTH = TIA_TRUE_PUM_WIDTH + TIA_FALSE_PUM_WIDTH
+  var TIA_NON_IMMEDIATE_INSTRUCTION_WIDTH = (1 + TIA_PTM_WIDTH
+    + TIA_ICI_WIDTH
+    + TIA_ICTB_WIDTH
+    + TIA_ICTV_WIDTH
+    + TIA_OP_WIDTH
+    + TIA_ST_WIDTH
+    + TIA_SI_WIDTH
+    + TIA_DT_WIDTH
+    + TIA_DI_WIDTH
+    + TIA_OCI_WIDTH
+    + TIA_OCT_WIDTH
+    + TIA_ICD_WIDTH
+    + TIA_PUM_WIDTH)
+  var TIA_PHY_INSTRUCTION_WIDTH = TIA_NON_IMMEDIATE_INSTRUCTION_WIDTH + TIA_IMMEDIATE_WIDTH
+  var TIA_MM_INSTRUCTION_PADDING_WIDTH = TIA_MM_INSTRUCTION_WIDTH - TIA_PHY_INSTRUCTION_WIDTH
+
+  // Exposed count widths.
+  var TIA_CHANNEL_BUFFER_COUNT_WIDTH = log2Ceil(TIA_CHANNEL_BUFFER_FIFO_DEPTH) + 1
+
+  // Channel index widths.
+  var TIA_INPUT_CHANNEL_INDEX_WIDTH = log2Ceil(TIA_NUM_INPUT_CHANNELS)
+  var TIA_OUTPUT_CHANNEL_INDEX_WIDTH = log2Ceil(TIA_NUM_OUTPUT_CHANNELS)
+
+  // --- debug monitor--------------------------------------------------------------------------------------
+
+  // Set in knob parameters
+  var TIA_NUM_CORE_MONITOR_WORDS:Int = 1
+  if(TIA_HAS_CORE_MONITOR)
+    TIA_NUM_CORE_MONITOR_WORDS = TIA_NUM_CORE_MONITOR_REGISTERS_IF_ENABLED + TIA_NUM_REGISTERS
+  else
+    TIA_NUM_CORE_MONITOR_WORDS = 1
+
+  // --- Core Performance Counters ---
+
+  // Set in knob parameters.
+  var TIA_NUM_CORE_PERFORMANCE_COUNTERS:Int = 1
+  if(TIA_HAS_CORE_PERFORMANCE_COUNTERS) TIA_NUM_CORE_PERFORMANCE_COUNTERS = TIA_NUM_CORE_PERFORMANCE_COUNTERS_IF_ENABLED
+  else TIA_NUM_CORE_PERFORMANCE_COUNTERS = 1
+
+  // --- Register File and Instruction Memory ---
+
+  // MMIO address space words.
+  var TIA_NUM_REGISTER_FILE_WORDS = TIA_NUM_REGISTERS
+  var TIA_NUM_INSTRUCTION_MEMORY_WORDS = TIA_MAX_NUM_INSTRUCTIONS * TIA_MM_INSTRUCTION_WIDTH / TIA_MMIO_DATA_WIDTH
+
+  // --- Scratchpad ---
+
+  // Set in knob parameters.
+  var TIA_NUM_SCRATCHPAD_WORDS:Int = 1
+  if(TIA_HAS_SCRATCHPAD) TIA_NUM_SCRATCHPAD_WORDS = TIA_NUM_SCRATCHPAD_WORDS_IF_ENABLED
+  else TIA_NUM_SCRATCHPAD_WORDS = 1
+
+  // --- Core Memory Map ---
+
+  // Memory map of an individual PE.
+  var TIA_CORE_MONITOR_BASE_INDEX = 1
+
+  var TIA_CORE_MONITOR_BOUND_INDEX:Int = 1
+  if (TIA_HAS_CORE_MONITOR) TIA_CORE_MONITOR_BOUND_INDEX = TIA_NUM_CORE_MONITOR_WORDS
+  else TIA_CORE_MONITOR_BOUND_INDEX = 1
+  var TIA_CORE_PERFORMANCE_COUNTERS_BASE_INDEX = TIA_CORE_MONITOR_BOUND_INDEX
+
+  var TIA_CORE_PERFORMANCE_COUNTERS_BOUND_INDEX:Int = 1
+  if (TIA_HAS_CORE_PERFORMANCE_COUNTERS) TIA_CORE_PERFORMANCE_COUNTERS_BOUND_INDEX = TIA_CORE_PERFORMANCE_COUNTERS_BASE_INDEX + TIA_NUM_CORE_PERFORMANCE_COUNTERS
+  else TIA_CORE_PERFORMANCE_COUNTERS_BOUND_INDEX = TIA_CORE_MONITOR_BOUND_INDEX
+
+  var TIA_CORE_REGISTER_FILE_BASE_INDEX = TIA_CORE_PERFORMANCE_COUNTERS_BOUND_INDEX
+  var TIA_CORE_REGISTER_FILE_BOUND_INDEX = TIA_CORE_REGISTER_FILE_BASE_INDEX + TIA_NUM_REGISTER_FILE_WORDS
+
+  var TIA_CORE_INSTRUCTION_MEMORY_BASE_INDEX = TIA_CORE_REGISTER_FILE_BOUND_INDEX
+  var TIA_CORE_INSTRUCTION_MEMORY_BOUND_INDEX = TIA_CORE_INSTRUCTION_MEMORY_BASE_INDEX + TIA_NUM_INSTRUCTION_MEMORY_WORDS
+
+  var TIA_CORE_SCRATCHPAD_MEMORY_BASE_INDEX = TIA_CORE_INSTRUCTION_MEMORY_BOUND_INDEX
+  var TIA_CORE_SCRATCHPAD_MEMORY_BOUND_INDEX:Int = 1
+  if (TIA_HAS_SCRATCHPAD) TIA_CORE_SCRATCHPAD_MEMORY_BOUND_INDEX = TIA_CORE_SCRATCHPAD_MEMORY_BASE_INDEX + TIA_NUM_SCRATCHPAD_WORDS
+  else TIA_CORE_SCRATCHPAD_MEMORY_BOUND_INDEX = TIA_CORE_SCRATCHPAD_MEMORY_BASE_INDEX
+
+  // Core address space size.
+  var TIA_NUM_CORE_ADDRESS_SPACE_WORDS = TIA_NUM_CORE_MONITOR_WORDS
+  + TIA_NUM_CORE_PERFORMANCE_COUNTERS
+  + TIA_NUM_REGISTER_FILE_WORDS
+  + TIA_NUM_INSTRUCTION_MEMORY_WORDS
+  + TIA_NUM_SCRATCHPAD_WORDS
+
+  // --- Interconnect ---
+
+  // Router memory words.
+  var TIA_ROUTER_SETTING_MEMORY_WORDS:Int = 1
+  if(TIA_SOFTWARE_ROUTER) TIA_ROUTER_SETTING_MEMORY_WORDS = 0
+  else if (TIA_SWITCH_ROUTER) TIA_ROUTER_SETTING_MEMORY_WORDS = 1 + TIA_NUM_PHYSICAL_PLANES
+  else TIA_ROUTER_SETTING_MEMORY_WORDS = 0
+
+  // Physical plane index width.
+  var TIA_PHYSICAL_PLANE_INDEX_WIDTH = log2Ceil(TIA_NUM_PHYSICAL_PLANES) + 1
+  
+}
+
+

@@ -215,6 +215,7 @@ shared_pes:
     architecture: integer
     immediate_width: 32
     mm_instruction_width: 128
+    instructions: [Sub,Div,Mul,BOr,BAnd]
     num_instructions: 16
     num_predicates: 8
     num_registers: 8
@@ -223,6 +224,7 @@ shared_pes:
     has_two_word_product_multiplier: true
     has_scratchpad: false
     num_scratchpad_words: 512
+    spm_depth: 8
     # Instruction memory microarchitecture.
     latch_based_instruction_memory: false
     ram_based_immediate_storage: false
@@ -236,6 +238,12 @@ shared_pes:
     # Debugging and profiling features.
     has_debug_monitor: true
     has_performance_counters: true
+    has_software_router: false
+    has_switch_router: true
+    num_physical_planes: 1
+    memory_link_buffer_fifo_depth: 4
+    num_data_memory_words: 32786
+    num_scratchpad_words_if_enabled: 512
 
   shared_pe_1: &shared_pe_1
     <<: *default_shared_pe

@@ -2,6 +2,8 @@ package cgra.IR
 
 import scala.io.Source
 import java.io._
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 object IRmerger {
   def mergeIRwithCgra(irFileName:String,cgraFileName:String)={
@@ -11,8 +13,11 @@ object IRmerger {
     val irLines = Source.fromFile(irFile).getLines()
     val hwLines = Source.fromFile(hwFile).getLines
 
+    // Timestamp
+    val tp : String = DateTimeFormatter.ofPattern("yyMMdd_HHmmss").format(LocalDateTime.now)
+
     // Create Temp File
-    val tempFile = new File(cgraFileName +".tmp")
+    val tempFile = new File(cgraFileName.split("\\.").head + "_" + tp +".v")
     val pw = new PrintWriter(tempFile)
 
     // ------- Merge Togather
@@ -23,8 +28,5 @@ object IRmerger {
     // print cgra file
     for (line <- hwLines) pw.write(line + "\n")
     pw.close
-
-    // Rename
-    val merged = tempFile.renameTo(hwFile)
   }
 }

@@ -188,11 +188,14 @@ object IRconvertor {
     temp.immediate_width = c("immediate_width").asInstanceOf[Int]
     temp.mm_instruction_width = c("mm_instruction_width").asInstanceOf[Int]
     temp.num_instructions = c("num_instructions").asInstanceOf[Int]
+    temp.instructions = c("instructions").asInstanceOf[List[String]]
     temp.num_predicates = c("num_predicates").asInstanceOf[Int]
     temp.num_registers = c("num_registers").asInstanceOf[Int]
+    temp.num_physical_planes = c("num_physical_planes").asInstanceOf[Int]
     temp.has_multiplier = c("has_multiplier").asInstanceOf[Boolean]
     temp.has_two_word_product_multiplier = c("has_two_word_product_multiplier").asInstanceOf[Boolean]
     temp.has_scratchpad = c("has_scratchpad").asInstanceOf[Boolean]
+    temp.spm_depth = c("spm_depth").asInstanceOf[Int]
     temp.num_scratchpad_words = c("num_scratchpad_words").asInstanceOf[Int]
     temp.latch_based_instruction_memory = c("latch_based_instruction_memory").asInstanceOf[Boolean]
     temp.ram_based_immediate_storage = c("ram_based_immediate_storage").asInstanceOf[Boolean]
@@ -201,8 +204,13 @@ object IRconvertor {
     temp.num_tags = c("num_tags").asInstanceOf[Int]
     temp.has_speculative_predicate_unit = c("has_speculative_predicate_unit").asInstanceOf[Boolean]
     temp.has_effective_queue_status = c("has_effective_queue_status").asInstanceOf[Boolean]
+    temp.has_software_router = c("has_software_router").asInstanceOf[Boolean]
+    temp.has_switch_router = c("has_switch_router").asInstanceOf[Boolean]
     temp.has_debug_monitor = c("has_debug_monitor").asInstanceOf[Boolean]
     temp.has_performance_counters = c("has_performance_counters").asInstanceOf[Boolean]
+    temp.memory_link_buffer_fifo_depth = c("memory_link_buffer_fifo_depth").asInstanceOf[Int]
+    temp.num_data_memory_words = c("num_data_memory_words").asInstanceOf[Int]
+    temp.num_scratchpad_words_if_enabled = c("num_scratchpad_words_if_enabled").asInstanceOf[Int]
     (name,temp)
   }
 }

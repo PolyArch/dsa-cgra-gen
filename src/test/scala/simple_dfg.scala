@@ -3,7 +3,7 @@ import chisel3._
 import chisel3.iotesters.PeekPokeTester
 import chisel3.util._
 import cgra.IR.IRreader._
-import cgra.fabric.YamlV.Cgra_Hw
+import cgra.fabric.Cgra_Hw
 
 import scala.xml.XML
 
