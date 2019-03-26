@@ -1,7 +1,6 @@
 package cgra.fabric.Shared_PE_component.tia_parameters
 
 import cgra.fabric.Shared_PE_component.common.Instructions.Instructions
-import cgra.fabric.Shared_PE_component.parameters._
 import chisel3.util.log2Ceil
 
 import scala.math.max
