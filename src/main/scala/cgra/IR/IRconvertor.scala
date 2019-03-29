@@ -54,6 +54,8 @@ object IRconvertor {
     asScalaBuffer(a).toList
   }
 
+  /*
+
   // ------ System ------
   implicit def convert2system(c:Map[String,Any]):system={
     val temp = new system
@@ -127,6 +129,7 @@ object IRconvertor {
     temp.config_input_port = c("config_input_port").toString
     temp.config_output_port = c("config_output_port").toString
     temp.module_type = c("module_type").toString
+    temp.num_configurations = c("num_configurations").asInstanceOf[Int]
     temp.input_ports = c("input_ports").asInstanceOf[List[String]]
     temp.output_ports = c("output_ports").asInstanceOf[List[String]]
     temp.decomposer = c("decomposer").asInstanceOf[Int]
@@ -166,6 +169,7 @@ object IRconvertor {
     temp.module_id = get_new_id
     temp.module_type = c("module_type").toString
     temp.config_input_port = c("config_input_port").toString
+    temp.num_configurations = c("num_configurations").asInstanceOf[Int]
     temp.config_output_port = c("config_output_port").toString
     temp.input_ports = c("input_ports").asInstanceOf[List[String]]
     temp.output_ports = c("output_ports").asInstanceOf[List[String]]
@@ -213,4 +217,5 @@ object IRconvertor {
     temp.num_scratchpad_words_if_enabled = c("num_scratchpad_words_if_enabled").asInstanceOf[Int]
     (name,temp)
   }
+  */
 }

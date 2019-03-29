@@ -5,32 +5,32 @@ import chisel3.util._
 
 object fullinst {
   val insts_prop = Map(
-    "Add"      -> instruction_prop(2,1,1),
-    "Sub"      -> instruction_prop(2,1,1),
-    "Mul"      -> instruction_prop(2,1,1),
-    "Div"      -> instruction_prop(2,1,1),
-    "BOr"      -> instruction_prop(2,1,1),
-    "BAnd"     -> instruction_prop(2,1,1),
-    "BXor"     -> instruction_prop(2,1,1),
-    "BNot"     -> instruction_prop(1,1,1),
-    "LNot"     -> instruction_prop(1,1,1),
-    "LAnd"     -> instruction_prop(2,1,1),
-    "LOr"      -> instruction_prop(2,1,1),
-    "ExtractB" -> instruction_prop(2,1,1),
-    "LShf"     -> instruction_prop(2,1,1),
-    "RShf"     -> instruction_prop(2,1,1),
-    "Cat"      -> instruction_prop(2,1,1),
-    "Mux"      -> instruction_prop(3,1,1),
-    "EQ"       -> instruction_prop(2,1,1),
-    "NQ"       -> instruction_prop(2,1,1),
-    "Mod"      -> instruction_prop(2,1,1),
-    "GT"       -> instruction_prop(2,1,1),
-    "GE"       -> instruction_prop(2,1,1),
-    "LT"       -> instruction_prop(2,1,1),
-    "LE"       -> instruction_prop(2,1,1),
-    "AndR"     -> instruction_prop(1,1,1),
-    "OrR"      -> instruction_prop(1,1,1),
-    "XorR"     -> instruction_prop(1,1,1)
+    "Add"      -> inst_prop(2,1,1),
+    "Sub"      -> inst_prop(2,1,1),
+    "Mul"      -> inst_prop(2,1,1),
+    "Div"      -> inst_prop(2,1,1),
+    "BOr"      -> inst_prop(2,1,1),
+    "BAnd"     -> inst_prop(2,1,1),
+    "BXor"     -> inst_prop(2,1,1),
+    "BNot"     -> inst_prop(1,1,1),
+    "LNot"     -> inst_prop(1,1,1),
+    "LAnd"     -> inst_prop(2,1,1),
+    "LOr"      -> inst_prop(2,1,1),
+    "ExtractB" -> inst_prop(2,1,1),
+    "LShf"     -> inst_prop(2,1,1),
+    "RShf"     -> inst_prop(2,1,1),
+    "Cat"      -> inst_prop(2,1,1),
+    "Mux"      -> inst_prop(3,1,1),
+    "EQ"       -> inst_prop(2,1,1),
+    "NQ"       -> inst_prop(2,1,1),
+    "Mod"      -> inst_prop(2,1,1),
+    "GT"       -> inst_prop(2,1,1),
+    "GE"       -> inst_prop(2,1,1),
+    "LT"       -> inst_prop(2,1,1),
+    "LE"       -> inst_prop(2,1,1),
+    "AndR"     -> inst_prop(1,1,1),
+    "OrR"      -> inst_prop(1,1,1),
+    "XorR"     -> inst_prop(1,1,1)
   )
   val inst_operation : Map[String,(UInt*) => UInt]= Map(
     "Add"      -> ((ops:Seq[UInt]) => ops.head  + ops(1)),
@@ -61,4 +61,4 @@ object fullinst {
     "XorR"     -> ((ops:Seq[UInt]) => ops.head.xorR())
   )
 }
-case class instruction_prop(numOperands:Int,latency:Int,Throughput:Int)
+case class inst_prop(numOperands:Int, latency:Int, Throughput:Int)

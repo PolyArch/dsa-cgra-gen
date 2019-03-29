@@ -9,13 +9,13 @@ source -echo -verbose ./dc_script/lib_setup_umc28.tcl
 # Copyright (C) 2007-2017 Synopsys, Inc. All rights reserved.
 ##########################################################################################
 
-set DESIGN_NAME "Cgra_Hw" ;#  The name of the top-level design
-set DESIGN_FILE_NAME $DESIGN_NAME
+set DESIGN_NAME "Dedicated_PE_Hw" ;#  The name of the top-level design
+set DESIGN_FILE_NAME "Dedicated_PE_Shar_Dyna_8"
 
-set Period 2.0 ;#ns 1/Period = frequency (GHz)
+set Period 0.8 ;#ns 1/Period = frequency (GHz)
 
-set REPORTS_DIR ./Reports/${DESIGN_NAME}_${MajorFeature}_${DesignDirection}_${Process}_${VT}_${modelType}_${cellType}_${voltage}_${temperature}_${Period}ns
-set RESULTS_DIR ./Results/${DESIGN_NAME}_${MajorFeature}_${DesignDirection}_${Process}_${VT}_${modelType}_${cellType}_${voltage}_${temperature}_${Period}ns
+set REPORTS_DIR ./Reports/${DESIGN_NAME}_${DESIGN_FILE_NAME}_${MajorFeature}_${DesignDirection}_${Process}_${VT}_${modelType}_${cellType}_${voltage}_${temperature}_${Period}ns
+set RESULTS_DIR ./Results/${DESIGN_NAME}_${DESIGN_FILE_NAME}_${MajorFeature}_${DesignDirection}_${Process}_${VT}_${modelType}_${cellType}_${voltage}_${temperature}_${Period}ns
 
 set RTL_SOURCE_DIR "/home/sihao/ss-cgra-gen/verilog-output/"
 set RTL_SOURCE_FILES  ${RTL_SOURCE_DIR}${DESIGN_FILE_NAME}.v      ;# Enter the list of source RTL files if reading from RTL

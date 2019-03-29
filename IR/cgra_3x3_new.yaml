@@ -35,6 +35,7 @@ routers:
     config_output_port: south
     output_ports: [north,south,east,west,northeast,northwest,southeast,southwest]
     decomposer: 1
+    num_configurations: 8
     inter_subnet_connection: []
 
   router_1: &router_1
@@ -155,6 +156,11 @@ dedicated_pes:
     has_backpressure: {valid: true,max_delay: 16}
     # Control
     has_metaReuse: {valid: false,num_reuse: 4}
+    # Register File
+    has_register_file: true
+    register_file_length:
+    # Shared Instruction
+    num_configurations: 8
     # Instructions
     instructions:
       southeast: [Sub,BOr,BAnd,Add]
@@ -262,7 +268,7 @@ vector_ports:
     module_type: vector_port
     input_ports: [v1,v2,v3]
     output_ports: [v1,v2,v3]
-    channel_buffer: 2
+    channel_buffer: 1
 
   vec_in_1: &vec_in_1
     <<: *default_vp

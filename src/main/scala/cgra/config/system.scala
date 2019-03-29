@@ -1,7 +1,8 @@
 package cgra.config
 
-import cgra.IR.system
 import cgra.config.encoding.update_encoding
+
+import scala.collection.mutable
 
 object system {
   var data_word_width : Int = -1
@@ -10,13 +11,14 @@ object system {
   var test_data_memory_buffer_depth : Int= -1
   var input_ports : List[String] = Nil
   var output_ports : List[String] = Nil
-  def update_system (p:system) = {
-    data_word_width = p.data_word_width
-    host_word_width = p.host_word_width
-    num_test_data_memory_words = p.num_test_data_memory_words
-    test_data_memory_buffer_depth = p.test_data_memory_buffer_depth
-    input_ports = p.input_ports
-    output_ports = p.output_ports
+  def update_system (pp:Any) = {
+    val p : mutable.Map[String,Any] = pp.asInstanceOf[mutable.Map[String,Any]]
+    data_word_width = p("data_word_width").asInstanceOf[Int]
+    host_word_width = p("host_word_width").asInstanceOf[Int]
+    num_test_data_memory_words = p("num_test_data_memory_words").asInstanceOf[Int]
+    test_data_memory_buffer_depth = p("test_data_memory_buffer_depth").asInstanceOf[Int]
+    input_ports = p("input_ports").asInstanceOf[List[String]]
+    output_ports = p("output_ports").asInstanceOf[List[String]]
     update_encoding
   }
 }

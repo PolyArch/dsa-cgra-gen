@@ -20,18 +20,20 @@ object IRreader {
   }
 }
 
+/*
+
 case class Cgra (t:Map[String,Any]) {
   var description_filename : String = t("description_filename") toString
   var config_filename : String = t("config_filename") toString
   val system : system = t("system").asInstanceOf[Map[String,Any]]
   val vector_ports : Map[String,vector_port] = t("vector_ports").asInstanceOf[Map[String,Any]]
-  val dedicated_pes : Map[String,dedicated_pe] = t("dedicated_pes").asInstanceOf[Map[String,Any]]
-  val shared_pes : Map[String,shared_pe] = t("shared_pes").asInstanceOf[Map[String,Any]]
+  val dedicated_pes : Map[String,dedicated_pe] = if(t.isDefinedAt("dedicated_pes")) t("dedicated_pes").asInstanceOf[Map[String,Any]] else null
+  val shared_pes : Map[String,shared_pe] = if(t.isDefinedAt("shared_pes")) t("shared_pes").asInstanceOf[Map[String,Any]] else null
   val routers : Map[String,router] = t("routers").asInstanceOf[Map[String,Any]]
   val topology : List[connection] = t("topology").asInstanceOf[List[Map[String,Any]]]
 }
 
-/*
+
 class CgraYAML {
    var system : system = _
    var routers :       util.LinkedHashMap[String,Any] = _
@@ -41,6 +43,8 @@ class CgraYAML {
    var topology :      util.ArrayList[Any] = _
 }
 */
+
+/*
 
 class system {
   var module_type : String = ""
@@ -52,11 +56,7 @@ class system {
   var output_ports : List[String] = _
 }
 
-class tile {
-  var module_type : String = ""
-  var input_ports : List[String] = Nil
-  var output_ports : List[String] = Nil
-}
+
 
 class port_subnet {
   var port : String = ""
@@ -73,7 +73,8 @@ class subnet_connection {
   var sink : port_subnet = new port_subnet
 }
 class router extends tile
-  with register_configured{
+  with register_configured
+  with static_shared{
   var decomposer : Int = -1
   var inter_subnet_connection : List[subnet_connection] = _
 }
@@ -87,11 +88,52 @@ class metaReuse {
   var num_reuse : Int = -1
 }
 class dedicated_pe extends tile
-  with register_configured{
+  with register_configured
+  with static_shared{
   var decomposer : Int = -1
   var has_backpressure : backpressure = new backpressure
   var has_metaReuse : metaReuse = new metaReuse
   var instructions : Map[String,List[String]] = _
+}
+
+
+
+class vector_port  extends tile{
+  var channel_buffer : Int = -1
+  var io_type : String = ""
+}
+
+class connection {
+  class port_location {
+    var module : String = ""
+    var port : String = ""
+  }
+  var source : port_location = new port_location
+  var sink : port_location = new port_location
+}
+
+// For the use of configuration
+
+
+
+trait static_shared {
+  var num_configurations : Int = -1
+}
+
+*/
+
+class tile {
+  var module_type : String = ""
+  var input_ports : List[String] = Nil
+  var output_ports : List[String] = Nil
+}
+
+trait register_configured {
+  var module_id : Int = -1
+  var config_input_port : String = ""
+  var config_output_port : String = ""
+  var config_register_file_idx_width : Int = -1
+  val config_register_file_data_width : Int = data_word_width
 }
 
 class shared_pe extends tile
@@ -128,28 +170,4 @@ class shared_pe extends tile
   var has_debug_monitor: Boolean = _
   var has_switch_router : Boolean = _
   var has_performance_counters: Boolean = _
-}
-
-class vector_port  extends tile{
-  var channel_buffer : Int = -1
-  var io_type : String = ""
-}
-
-class connection {
-  class port_location {
-    var module : String = ""
-    var port : String = ""
-  }
-  var source : port_location = new port_location
-  var sink : port_location = new port_location
-}
-
-// For the use of configuration
-
-trait register_configured {
-  var module_id : Int = -1
-  var config_input_port : String = ""
-  var config_output_port : String = ""
-  var config_register_file_idx_width : Int = -1
-  val config_register_file_data_width : Int = data_word_width
 }

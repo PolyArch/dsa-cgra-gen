@@ -1,4 +1,3 @@
-import cgra.IR.Cgra
 import chisel3._
 import chisel3.iotesters.PeekPokeTester
 import chisel3.util._
@@ -6,7 +5,7 @@ import cgra.IR.IRreader._
 import cgra.fabric.Cgra_Hw
 
 import scala.xml.XML
-
+/*
 class simple_dfg_tester(cgra_Hw: Cgra_Hw) extends PeekPokeTester(cgra_Hw){
   val cgra_description = cgra_Hw.hw_desc
   val cgra_configuration = XML.loadFile(cgra_Hw.hw_desc.config_filename)
@@ -22,3 +21,4 @@ object simple_dfg extends App{
     c => new simple_dfg_tester(c)
   }
 }
+*/

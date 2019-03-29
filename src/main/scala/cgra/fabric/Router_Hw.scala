@@ -1,7 +1,6 @@
 package cgra.fabric
 
 import cgra.IO.ReqAckConf_if
-import cgra.IR.{port_subnet, router, subnet_connection}
 import cgra.config.encoding._
 import cgra.config.system
 import chisel3._
@@ -11,6 +10,7 @@ import scala.collection.mutable.ListBuffer
 import scala.math._
 import scala.xml.Elem
 
+/*
 class Router_Hw(name_p:(String,router)) extends Module  with Has_IO
   with Decomposable
   with Reconfigurable {
@@ -136,21 +136,42 @@ class Router_Hw(name_p:(String,router)) extends Module  with Has_IO
   val config_data_high : Int = config_width_per_idx - 1
   val config_data_low = 0
 
-  // ------ Create Config Register File and Connect to Config Wire
-  val config_register_file = RegInit(VecInit(Seq.fill(num_idx)(0.U(config_width_per_idx.W))))
-  config_wire := config_register_file.reduce(Cat(_,_))(config_width - 1,0)
 
-  // Update Config Register when configured in config port
-  println("module name = " + module_name)
-  println("config_input_port = " + config_input_port + ", config_output_port = " + config_output_port)
-  println("input_ports = " + input_ports)
-  val config_device_word : UInt= io.in(input_ports.indexOf(config_input_port)).bits
-  val config_module_id = config_device_word(config_module_id_high,config_module_id_low)
-  val module_id_match : Bool = config_module_id === p.module_id.U
-  val config_idx = config_device_word(config_idx_high,config_idx_low)
-  val config_data = config_device_word(config_data_high,config_data_low)
-  when(config_enable && module_id_match){
-    config_register_file(config_idx) := config_data
+  if(p.num_configurations > 1){
+    val num_conf = p.num_configurations
+    val conf_counter = RegInit(0.U(log2Ceil(num_conf).W));conf_counter := conf_counter + 1.U
+    val multi_config_register_file = RegInit(VecInit(Seq.fill(num_conf)(VecInit(Seq.fill(num_idx)(0.U(config_width_per_idx.W))))))
+    val conf_select : Array[(UInt,UInt)] = new Array(num_conf)
+    for (i <- 0 until num_conf) conf_select(i) = i.U -> multi_config_register_file(i).reduce(Cat(_,_))(config_width - 1,0)
+    config_wire := MuxLookup(conf_counter,0.U,conf_select)
+    println("module name = " + module_name)
+    println("config_input_port = " + config_input_port + ", config_output_port = " + config_output_port)
+    println("input_ports = " + input_ports)
+    val config_device_word : UInt= io.in(input_ports.indexOf(config_input_port)).bits
+    val config_module_id = config_device_word(config_module_id_high,config_module_id_low)
+    val module_id_match : Bool = config_module_id === p.module_id.U
+    val config_idx = config_device_word(config_idx_high,config_idx_low)
+    val config_data = config_device_word(config_data_high,config_data_low)
+    when(config_enable && module_id_match){
+      multi_config_register_file(conf_counter)(config_idx) := config_data
+    }
+  }else{
+    // ------ Create Config Register File and Connect to Config Wire
+    val config_register_file = RegInit(VecInit(Seq.fill(num_idx)(0.U(config_width_per_idx.W))))
+    config_wire := config_register_file.reduce(Cat(_,_))(config_width - 1,0)
+
+    // Update Config Register when configured in config port
+    println("module name = " + module_name)
+    println("config_input_port = " + config_input_port + ", config_output_port = " + config_output_port)
+    println("input_ports = " + input_ports)
+    val config_device_word : UInt= io.in(input_ports.indexOf(config_input_port)).bits
+    val config_module_id = config_device_word(config_module_id_high,config_module_id_low)
+    val module_id_match : Bool = config_module_id === p.module_id.U
+    val config_idx = config_device_word(config_idx_high,config_idx_low)
+    val config_data = config_device_word(config_data_high,config_data_low)
+    when(config_enable && module_id_match){
+      config_register_file(config_idx) := config_data
+    }
   }
 
   // ------ Utility
@@ -253,3 +274,4 @@ class Multiplexer extends Reconfigurable {
     </MUX>
   }
 }
+*/

@@ -1,18 +1,21 @@
 package cgra.fabric
 
 import cgra.IO.{ReqAckConf_if, ReqAckConf_t}
-import cgra.IR.vector_port
 import cgra.config.system
 import chisel3._
 import chisel3.util._
 
+import scala.collection.mutable
 
-class VectorPort_Hw(name_p:(String,vector_port)) extends Module
-  with Has_IO{
-  private val module_name = name_p._1
-  private val p = name_p._2
-  private val num_input = p.input_ports.length
-  private val num_output = p.output_ports.length
+
+class VectorPort_Hw(pp:(String,Any)) extends Module{
+  val p:mutable.Map[String,Any] = pp._2.asInstanceOf[mutable.Map[String,Any]]
+  private val module_name = pp._1
+  private val input_ports : List[String] = p("input_ports").asInstanceOf[List[String]]
+  private val output_ports : List[String] = p("output_ports").asInstanceOf[List[String]]
+  private val num_input = input_ports.length
+  private val num_output = output_ports.length
+  private val channel_buffer : Int = p("channel_buffer").asInstanceOf[Int]
   private val data_word_width = system.data_word_width
 
   val io = IO(new Bundle{
@@ -34,8 +37,8 @@ class VectorPort_Hw(name_p:(String,vector_port)) extends Module
         in_config_decoup.valid := (io.in.head.valid && (i.U === distribute_counter))
         io_in_decoup.ready <> io.in.head.ready; in_config_decoup.ready <> io.in.head.ready
 
-        val bit_decoup = Queue(io_in_decoup,p.channel_buffer)
-        val config_decoup = Queue(in_config_decoup,p.channel_buffer)
+        val bit_decoup = Queue(io_in_decoup,channel_buffer)
+        val config_decoup = Queue(in_config_decoup,channel_buffer)
 
         io.out(i).bits <> bit_decoup.bits
         io.out(i).config <> config_decoup.bits
@@ -53,14 +56,5 @@ class VectorPort_Hw(name_p:(String,vector_port)) extends Module
     distribute_counter := distribute_counter + 1.U
   }else{
     io.out.head <> io.in.head
-  }
-
-
-
-  def get_port (io_t:String,name:String) = {
-    io_t match {
-      case "in"   => io.in(p.input_ports.indexOf(name))
-      case "out"  => io.out(p.output_ports.indexOf(name))
-    }
   }
 }

@@ -20,7 +20,6 @@ import chisel3._
 import chisel3.util._
 
 class Shared_PE_Hw(name_p:(String,shared_pe)) extends Module
-  with Has_IO
   with Reconfigurable {
   private val module_name = name_p._1
   private val p = name_p._2

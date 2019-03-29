@@ -7,11 +7,21 @@ import chisel3.util._
 import scala.xml.Elem
 
 trait Has_IO {
-  def get_port(io_t:String,name:String) : ReqAckConf_if
-}
-
-trait Decomposable {
-  def decompose(io_type:String,ports: Vec[ReqAckConf_if]) : List[Vec[DecoupledIO[UInt]]]
+  val input_ports : List[String]
+  val output_ports : List[String]
+  val io :chisel3.Bundle{val input_ports:Vec[Vec[ReqAckConf_if]];val output_ports:Vec[Vec[ReqAckConf_if]]}
+  def get_port(io_t:String,name:String) : Vec[ReqAckConf_if]= {
+    io_t match {
+      case "in" => io.input_ports(input_ports.indexOf(name))
+      case "out" => io.output_ports(output_ports.indexOf(name))
+    }
+  }
+  def get_port(io_t:String,name:String,subnet:Int) : ReqAckConf_if={
+    io_t match {
+      case "in" => io.input_ports(input_ports.indexOf(name))(subnet)
+      case "out" => io.output_ports(output_ports.indexOf(name))(subnet)
+    }
+  }
 }
 
 trait Reconfigurable {

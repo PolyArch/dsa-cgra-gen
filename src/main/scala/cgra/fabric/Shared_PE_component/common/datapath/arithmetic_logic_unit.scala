@@ -1,6 +1,8 @@
 
 package cgra.fabric.Shared_PE_component.common.datapath
 
+import cgra.config.fullinst.{inst_operation, insts_prop}
+import cgra.config.inst_prop
 import cgra.fabric.Shared_PE_component.common.Instructions.Instructions
 import cgra.fabric.Shared_PE_component.datapath.floatpoint._
 import cgra.fabric.Shared_PE_component.tia_parameters.derived_parameters._
@@ -8,11 +10,12 @@ import cgra.fabric.Shared_PE_component.tia_parameters.fixed_parameters._
 import chisel3._
 import chisel3.util._
 
+import scala.collection.mutable.ListBuffer
+
 class arithmetic_logic_unit extends Module
   with Instructions{
-
-  val word_width = TIA_WORD_WIDTH
-  val inst_list = Instructions
+  val word_width : Int = TIA_WORD_WIDTH
+  val inst_list : List[String] = Instructions
   val op_width = log2Ceil(inst_list.length)
 
   val io = IO(
@@ -23,143 +26,28 @@ class arithmetic_logic_unit extends Module
     }
   )
 
-  // Connect result with output
-  val op:UInt = Wire(UInt(op_width.W))
-  op := io.opcode
-
-  // Signed operand
-  val operand0_signed = Wire(SInt(word_width.W))
-  val operand1_signed = Wire(SInt(word_width.W))
-  val operand2_signed = Wire(SInt(word_width.W))
-  // Unsigned operand
-  val operand0_unsigned = Wire(UInt(word_width.W))
-  val operand1_unsigned = Wire(UInt(word_width.W))
-  val operand2_unsigned = Wire(UInt(word_width.W))
-  //Signed Result
-  val result_signed = Wire(SInt(word_width.W))
-  val result_unsigned = Wire(UInt(word_width.W))
-  result_signed := 0.S;result_unsigned := 0.U
-
-  // connect input
-  operand0_unsigned <> io.operands(0)
-  operand1_unsigned <> io.operands(1)
-  operand2_unsigned <> io.operands(2)
-  operand0_signed := io.operands(0).asSInt()
-  operand1_signed := io.operands(1).asSInt()
-  operand2_signed := io.operands(2).asSInt()
-
-  //default output
-  result_signed := 0.S
-  result_unsigned := 0.U
-
-  // generate signed result
-  if (inst_list.intersect(signed_insts_list).nonEmpty){
-    if (inst_list.contains(TIA_OP_ASR)) when(op === TIA_OP_ASR.U){result_signed := operand0_signed >> operand1_unsigned}
-    if (inst_list.contains(TIA_OP_SGT)) when(op === TIA_OP_SGT.U){result_signed := (operand0_signed > operand1_signed).asSInt()}
-    if (inst_list.contains(TIA_OP_SLT)) when(op === TIA_OP_SLT.U){result_signed := (operand0_signed < operand1_signed).asSInt()}
-    if (inst_list.contains(TIA_OP_SGE)) when(op === TIA_OP_SGE.U){result_signed := (operand0_signed >= operand1_signed).asSInt()}
-    if (inst_list.contains(TIA_OP_SLE)) when(op === TIA_OP_SLE.U){result_signed := (operand0_signed <= operand1_signed).asSInt()}
+  val operation_func = inst_list.map(f=>inst_operation(f))
+  val inst_props = inst_list.map(f=>insts_prop(f))
+  val result_buffer : Vec[UInt] = Wire(Vec(inst_list.length,UInt(word_width.W)))
+  for (idx_opcode <- inst_list.indices){
+    val op_func = operation_func(idx_opcode)
+    val inst_prop = inst_props(idx_opcode)
+    val result = alu_result(inst_prop,op_func)
+    result_buffer(idx_opcode) := result
   }
 
+  io.result := result_buffer(io.opcode)
 
-  // generate unsigned result
-  val logical_operand0_unsigned:Bool = operand0_unsigned =/= 0.U
-  val logical_operand1_unsigned:Bool = operand1_unsigned =/= 0.U
-  val logical_operand2_unsigned:Bool = operand2_unsigned =/= 0.U
-  if (inst_list.intersect(unsigned_insts_list).nonEmpty){
-    if (inst_list.contains(TIA_OP_NOP)) when(op ===TIA_OP_NOP.U){result_unsigned := 0.U}
-    if (inst_list.contains(TIA_OP_MOV)) when(op ===TIA_OP_MOV.U){result_unsigned := operand0_unsigned}
-    if (inst_list.contains(TIA_OP_ADD)) when(op ===TIA_OP_ADD.U){result_unsigned := operand0_unsigned + operand1_unsigned}
-    if (inst_list.contains(TIA_OP_SUB)) when(op ===TIA_OP_SUB.U){result_unsigned := operand0_unsigned - operand1_unsigned}
-    if (inst_list.contains(TIA_OP_LSL)) when(op ===TIA_OP_LSL.U){result_unsigned := operand0_unsigned << operand1_unsigned(18,0)}
-    if (inst_list.contains(TIA_OP_LSR)) when(op ===TIA_OP_LSR.U){result_unsigned := operand0_unsigned >> operand1_unsigned}
-    if (inst_list.contains(TIA_OP_EQ)) when(op ===TIA_OP_EQ.U){result_unsigned := operand0_unsigned === operand1_unsigned}
-    if (inst_list.contains(TIA_OP_NE)) when(op ===TIA_OP_NE.U){result_unsigned := operand0_unsigned =/= operand1_unsigned}
-    if (inst_list.contains(TIA_OP_UGT)) when(op ===TIA_OP_UGT.U){result_unsigned := operand0_unsigned > operand1_unsigned}
-    if (inst_list.contains(TIA_OP_ULT)) when(op ===TIA_OP_ULT.U) {result_unsigned := operand0_unsigned < operand1_unsigned}
-    if (inst_list.contains(TIA_OP_UGE)) when(op ===TIA_OP_UGE.U){result_unsigned := operand0_unsigned >= operand1_unsigned}
-    if (inst_list.contains(TIA_OP_ULE)) when(op ===TIA_OP_ULE.U){result_unsigned := operand0_unsigned <= operand1_unsigned}
-    if (inst_list.contains(TIA_OP_BAND)) when(op ===TIA_OP_BAND.U){result_unsigned := operand0_unsigned & operand1_unsigned}
-    if (inst_list.contains(TIA_OP_BNAND)) when(op ===TIA_OP_BNAND.U){result_unsigned := ~(operand0_unsigned & operand1_unsigned)}
-    if (inst_list.contains(TIA_OP_BOR)) when(op ===TIA_OP_BOR.U){result_unsigned := operand0_unsigned | operand1_unsigned}
-    if (inst_list.contains(TIA_OP_BNOR)) when(op ===TIA_OP_BNOR.U){result_unsigned := ~(operand0_unsigned | operand1_unsigned)}
-    if (inst_list.contains(TIA_OP_BXOR)) when(op ===TIA_OP_BXOR.U){result_unsigned := operand0_unsigned ^ operand1_unsigned}
-    if (inst_list.contains(TIA_OP_BXNOR)) when(op ===TIA_OP_BXNOR.U){result_unsigned := ~(operand0_unsigned ^ operand1_unsigned)}
-    if (inst_list.contains(TIA_OP_LAND)) when(op ===TIA_OP_LAND.U){result_unsigned := logical_operand0_unsigned && logical_operand1_unsigned}
-    if (inst_list.contains(TIA_OP_LNAND)) when(op ===TIA_OP_LNAND.U){result_unsigned := !(logical_operand0_unsigned && logical_operand1_unsigned)}
-    if (inst_list.contains(TIA_OP_LOR)) when(op ===TIA_OP_LOR.U){result_unsigned := logical_operand0_unsigned || logical_operand1_unsigned}
-    if (inst_list.contains(TIA_OP_LNOR)) when(op ===TIA_OP_LNOR.U){result_unsigned := !(logical_operand0_unsigned || logical_operand1_unsigned)}
-    if (inst_list.contains(TIA_OP_LXOR)) when(op ===TIA_OP_LXOR.U){result_unsigned := !logical_operand0_unsigned ^ !logical_operand1_unsigned}
-    if (inst_list.contains(TIA_OP_LXNOR)) when(op ===TIA_OP_LXNOR.U){result_unsigned := !(!logical_operand0_unsigned ^ !logical_operand1_unsigned)}
-    if (inst_list.contains(TIA_OP_GB)) when(op ===TIA_OP_GB.U){result_unsigned := operand0_unsigned(operand1_unsigned)}
-    if (inst_list.contains(TIA_OP_SB)) when(op ===TIA_OP_SB.U){
-      when(logical_operand2_unsigned){
-        result_unsigned := operand0_unsigned | (1.U << operand1_unsigned(18,0)).asUInt
-      }.otherwise {
-        result_unsigned := operand0_unsigned & (~(1.U << operand1_unsigned(18,0))).asUInt
-      }
+  // Util
+  def alu_result (inst_prop:inst_prop, func:(UInt*) => UInt) : UInt ={
+    val num_op = inst_prop.numOperands
+    val result:UInt = num_op match {
+      case 1 => func(io.operands(0))
+      case 2 => func(io.operands(0),io.operands(1))
+      case 3 => func(io.operands(0),io.operands(1),io.operands(2))
     }
-    if (inst_list.contains(TIA_OP_CB)) when(op ===TIA_OP_CB.U){result_unsigned := operand0_unsigned & (~(1.U << operand1_unsigned(18,0))).asUInt}
-    if (inst_list.contains(TIA_OP_MB)) when(op ===TIA_OP_MB.U){result_unsigned := operand0_unsigned | (1.U << operand1_unsigned(18,0)).asUInt}
-    if (inst_list.contains(TIA_OP_CLZ)) when(op ===TIA_OP_CLZ.U){
-      when(operand0_unsigned === 0.U){
-        result_unsigned := word_width.U
-      }.otherwise{
-        result_unsigned := PriorityEncoder(Reverse(operand0_unsigned))
-      }
-    }
-    if (inst_list.contains(TIA_OP_CTZ)) when(op ===TIA_OP_CTZ.U){
-      when(operand0_unsigned === 0.U) {
-        result_unsigned := word_width.U
-      }.otherwise{
-        result_unsigned := PriorityEncoder(operand0_unsigned)
-      }
-    }
-    if (inst_list.contains(TIA_OP_HALT)) when(op ===TIA_OP_HALT.U){
-      result_unsigned := 0.U
-    }
+    result
   }
-
-  // generate float point result
-  val fpResult = Wire(UInt(word_width.W))
-  fpResult := 0.U
-  if(inst_list.intersect(float_insts_list).nonEmpty)
-    {
-      if (inst_list.contains(TIA_OP_FADD)){
-        val fpAdder = Module(new FPAdd(word_width))
-        fpAdder.io.a := io.operands(0)
-        fpAdder.io.b := io.operands(1)
-        when(op === TIA_OP_FADD.U){
-          fpResult := fpAdder.io.res
-        }
-      }
-      if (inst_list.contains(TIA_OP_FMUL)){
-        val fpMultiplier = Module(new FPMult(word_width))
-        fpMultiplier.io.a := io.operands(0)
-        fpMultiplier.io.b := io.operands(1)
-        when(op === TIA_OP_FMUL.U){
-          fpResult := fpMultiplier.io.res
-        }
-      }
-    }
-
-  when(VecInit(unsigned_insts_list.map(x=>x.U)).exists(_ === op)){
-    io.result := result_unsigned
-  } .elsewhen( VecInit(signed_insts_list.map(_.U)).exists( _ === op)){
-    io.result := result_signed.asUInt()
-  } .elsewhen(VecInit(float_insts_list.map(_.U)).exists(_ === op)){
-    io.result := fpResult
-  } .otherwise {
-    io.result := 0.U
-  }
-
-  printf(p"opcode = ${io.opcode}\n")
-  printf(p"operand 0 = ${io.operands(0)}\n")
-  printf(p"operand 1 = ${io.operands(1)}\n")
-  printf(p"operand 2 = ${io.operands(2)}\n")
-  printf(p"result = ${io.result}\n")
-  printf("-----------------------------------\n")
-
 }
 /*
 object AluDriver extends App
