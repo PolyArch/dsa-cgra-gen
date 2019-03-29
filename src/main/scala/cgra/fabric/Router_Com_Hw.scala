@@ -27,7 +27,8 @@ class Router_Com_Hw(pp:(String,Any)) extends Module
   catch{case _:Throwable => List("north","south","east","west","northeast","northwest","southeast","southwest")}
   val protocol : String = try{p("protocol").toString}
   catch {case _:Throwable => "Data"}
-  val back_pressure_fifo_depth : Int = try p("back_pressure_fifo_depth").asInstanceOf[Int] catch{case _:Throwable => 1}
+  val back_pressure_fifo_depth : Int = if(protocol.contains("Ready")){
+    try p("back_pressure_fifo_depth").asInstanceOf[Int] catch{case _:Throwable => 1}}else{0}
   val isDecomposed : Boolean = try {p("isDecomposed").asInstanceOf[Boolean]}catch{case _:Throwable => false}
   val decomposer : Int = if(isDecomposed){try{p("decomposer").asInstanceOf[Int]}
   catch{case _:Throwable => 1}}else{1}
@@ -186,88 +187,72 @@ class Router_Com_Hw(pp:(String,Any)) extends Module
   }
 
   // ------ Create Hardware
-  if(protocol.contains("Ready")){
-    val output_interface = Wire(Vec(all_MUXes.length,DecoupledIO(UInt(decomped_data_word_width.W))))
-    // Forward
-    for (mux_idx <- all_MUXes.indices){
-      val out_bridge = output_interface(mux_idx)
-      val mux = all_MUXes(mux_idx)
-      val out_port_name = mux.sink.split("_").head;val out_port_idx:Int=output_ports.indexOf(out_port_name)
-      val subnet : Int = mux.sink.split("_")(1).toInt
-      // Add Backpressure FIFO
-      val queue_out = Queue(out_bridge,back_pressure_fifo_depth)
-      io.output_ports(out_port_idx)(subnet).bits := queue_out.bits
-      io.output_ports(out_port_idx)(subnet).valid := queue_out.valid
-      io.output_ports(out_port_idx)(subnet).ready <> queue_out.ready
-      // Get source index
-      val sources = mux.sources
-      val current_input_ports = sources.map(ps=>{
-        val port = ps.split("_").head;val port_idx = input_ports.indexOf(port)
-        val subnet = ps.split("_")(1).toInt
-        io.input_ports(port_idx)(subnet)
-      }).zipWithIndex
-      val select_wire : UInt = config_register_files(subnet)(mux.config_high,mux.config_low)
+  val muxes_out_interface = Wire(Vec(all_MUXes.length,DecoupledIO(UInt(decomped_data_word_width.W))))
+  for (mux_idx <- all_MUXes.indices){
+    val mux_out = muxes_out_interface(mux_idx)
+    val mux = all_MUXes(mux_idx)
+    val out_port_name = mux.sink.split("_").head;val out_port_idx:Int=output_ports.indexOf(out_port_name)
+    val subnet : Int = mux.sink.split("_")(1).toInt
+    // Get source index
+    val sources = mux.sources
+    val current_input_ports = sources.map(ps=>{
+      val port = ps.split("_").head;val port_idx = input_ports.indexOf(port)
+      val subnet = ps.split("_")(1).toInt
+      io.input_ports(port_idx)(subnet)
+    }).zipWithIndex
+    val select_wire : UInt = config_register_files(subnet)(mux.config_high,mux.config_low)
+    // Connect Data
+    if(protocol.contains("Data")){
       val bits_select = current_input_ports.map(p =>  p._2.U -> p._1.bits)
-      val valid_select = current_input_ports.map(p=>  p._2.U -> p._1.valid)
-      out_bridge.bits := MuxLookup(select_wire,0.U,bits_select)
-      out_bridge.valid := MuxLookup(select_wire,false.B,valid_select)
+      mux_out.bits := MuxLookup(select_wire,0.U,bits_select)
+      io.output_ports(out_port_idx)(subnet).bits := mux_out.bits
     }
-    // Backward
-    for (in_port_subnet <- input_ports_subnet){
-      val in_port_subnet_idx = input_ports_subnet.indexOf(in_port_subnet)
-      val connected_output_lookup : Array[(Array[Boolean],Int)] =
-        IO_LookUpTable.zipWithIndex.filter(p=>p._1(in_port_subnet_idx))
-      val connect_MUXes : Array[MUX] = connected_output_lookup.map(_._2).map(all_MUXes)
-      val connect_select_wire : Array[UInt] = connect_MUXes.map(m=>{
-        val subnet = m.sink.split("_")(1).toInt;config_register_files(subnet)(m.config_high,m.config_low)
-      })
-      val connect_bridges : Array[DecoupledIO[UInt]] = connect_MUXes.map(m=>all_MUXes.indexOf(m)).map(output_interface)
-      val connect_select_value : Array[Int] = connect_MUXes.map(m=>m.sources.indexOf(in_port_subnet))
+    // Connect Valid
+    if(protocol.contains("Valid")){
+      val valid_select = current_input_ports.map(p=>  p._2.U -> p._1.valid)
+      mux_out.valid := MuxLookup(select_wire,false.B,valid_select)
+    }else{
+      mux_out.valid := DontCare
+    }
+    // Connect Ready
+    if(protocol.contains("Ready")){
+      for (in_port_subnet <- input_ports_subnet){
+        val in_port_subnet_idx = input_ports_subnet.indexOf(in_port_subnet)
+        val connected_output_lookup : Array[(Array[Boolean],Int)] =
+          IO_LookUpTable.zipWithIndex.filter(p=>p._1(in_port_subnet_idx))
+        val connect_MUXes : Array[MUX] = connected_output_lookup.map(_._2).map(all_MUXes)
+        val connect_select_wire : Array[UInt] = connect_MUXes.map(m=>{
+          val subnet = m.sink.split("_")(1).toInt;config_register_files(subnet)(m.config_high,m.config_low)
+        })
+        val connect_bridges : Array[DecoupledIO[UInt]] = connect_MUXes.map(m=>all_MUXes.indexOf(m)).map(muxes_out_interface)
+        val connect_select_value : Array[Int] = connect_MUXes.map(m=>m.sources.indexOf(in_port_subnet))
 
-      val back_pressure_signal : Bool = (for(m_idx <- connect_MUXes.indices)
-        yield Mux(connect_select_wire(m_idx) === connect_select_value(m_idx).U,connect_bridges(m_idx).ready,true.B))
-        .reduce(_&&_)
-      val in_port_name :String = in_port_subnet.split("_").head;val in_port_idx : Int = input_ports.indexOf(in_port_name)
-      val subnet : Int = in_port_subnet.split("_")(1).toInt
-      io.input_ports(in_port_idx)(subnet).ready := back_pressure_signal
+        val back_pressure_signal : Bool = (for(m_idx <- connect_MUXes.indices)
+          yield Mux(connect_select_wire(m_idx) === connect_select_value(m_idx).U,connect_bridges(m_idx).ready,true.B))
+          .reduce(_&&_)
+        val in_port_name :String = in_port_subnet.split("_").head;val in_port_idx : Int = input_ports.indexOf(in_port_name)
+        val subnet : Int = in_port_subnet.split("_")(1).toInt
+        io.input_ports(in_port_idx)(subnet).ready := back_pressure_signal
+      }
+    }else{
+      mux_out.ready := DontCare
     }
-  }else if(protocol.contains("Valid")){
-    // Forward
-    for (mux_idx <- all_MUXes.indices){
-      val mux = all_MUXes(mux_idx)
-      val out_port_name = mux.sink.split("_").head;val out_port_idx:Int=output_ports.indexOf(out_port_name)
-      val subnet : Int = mux.sink.split("_")(1).toInt
-      // Get source index
-      val sources = mux.sources
-      val current_input_ports = sources.map(ps=>{
-        val port = ps.split("_").head;val port_idx = input_ports.indexOf(port)
-        val subnet = ps.split("_")(1).toInt
-        io.input_ports(port_idx)(subnet)
-      }).map(p=>p.asInstanceOf[has_bits_io with has_valid_io]).zipWithIndex
-      val select_wire : UInt = config_register_files(subnet)(mux.config_high,mux.config_low)
-      val bits_select = current_input_ports.map(p =>  p._2.U -> p._1.bits)
-      val valid_select = current_input_ports.map(p=>  p._2.U -> p._1.valid)
-      val out_bridge = io.output_ports(out_port_idx)(subnet).asInstanceOf[has_bits_io with has_valid_io]
-      out_bridge.bits := MuxLookup(select_wire,0.U,bits_select)
-      out_bridge.valid := MuxLookup(select_wire,false.B,valid_select)
-    }
-  }else{
-    // Forward
-    for (mux_idx <- all_MUXes.indices){
-      val mux = all_MUXes(mux_idx)
-      val out_port_name = mux.sink.split("_").head;val out_port_idx:Int=output_ports.indexOf(out_port_name)
-      val subnet : Int = mux.sink.split("_")(1).toInt
-      // Get source index
-      val sources = mux.sources
-      val current_input_ports = sources.map(ps=>{
-        val port = ps.split("_").head;val port_idx = input_ports.indexOf(port)
-        val subnet = ps.split("_")(1).toInt
-        io.input_ports(port_idx)(subnet)
-      }).zipWithIndex
-      val select_wire : UInt = config_register_files(subnet)(mux.config_high,mux.config_low)
-      val bits_select = current_input_ports.map(p =>  p._2.U -> p._1.bits)
-      val out_bridge = io.output_ports(out_port_idx)(subnet)
-      out_bridge.bits := MuxLookup(select_wire,0.U,bits_select)
+    // Add Backpressure FIFO
+    if(back_pressure_fifo_depth > 0){
+      val queue_out = Queue(mux_out,back_pressure_fifo_depth)
+      if(protocol.contains("Data"))
+        io.output_ports(out_port_idx)(subnet).bits := queue_out.bits
+      if(protocol.contains("Valid"))
+        io.output_ports(out_port_idx)(subnet).valid := queue_out.valid
+      if(protocol.contains("Ready"))
+        io.output_ports(out_port_idx)(subnet).ready <> queue_out.ready
+    }else{
+      if(protocol.contains("Data"))
+        io.output_ports(out_port_idx)(subnet).bits := mux_out.bits
+      if(protocol.contains("Valid"))
+        io.output_ports(out_port_idx)(subnet).valid := mux_out.valid
+      if(protocol.contains("Ready"))
+        io.output_ports(out_port_idx)(subnet).ready <> mux_out.ready
     }
   }
 
@@ -344,9 +329,9 @@ object tester_router extends App{
   p += "protocol" -> "Data_Valid_Ready"
   p += "back_pressure_fifo_depth" -> 2
   p += "isDecomposed" -> true
-  p += "decomposer" -> 8
+  p += "decomposer" -> 1
   p += "isShared" -> true
-  p += "shared_slot_size" -> 4
+  p += "shared_slot_size" -> 32
   //p += "inter_subnet_connection" -> List("south_1 <-> north_0","northwest_0 <-> east _1")
   chisel3.Driver.execute(args,()=>{new Router_Com_Hw("test",p)})
 }

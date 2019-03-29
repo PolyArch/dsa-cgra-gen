@@ -117,6 +117,10 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
     pre_high_bit = alu.config_high
     config_register_files_width = (1 + pre_high_bit) max config_register_files_width
   }
+  // Initialize Hardware when Configuration computation is ready
+  val muxes_out_interface = Wire(Vec(all_MUXes.length,DecoupledIO(UInt(decomped_data_word_width.W))))
+  val all_alu_hw = all_ALUs.map(a=>Module(new alu_hw(a)).io)
+  val all_dp_hw = all_Delay_Channels.map(d=>Module(new delay_pipe_hw(d)).io)
   val config_register_files : Vec[UInt] = RegInit(VecInit(Seq.fill(decomposer)(0.U(config_register_files_width.W))))
 
   // ------- Config Wire
@@ -196,39 +200,49 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
     }
   }
 
-  // ------- Create Hardware
+  // ------- Create Hardware  New Version
   // Create Register File
   val register_file : Vec[UInt] = if(isShared){
     RegInit(VecInit(Seq.fill(register_file_size)(0.U(data_word_width.W))))
   }else{
-    RegInit(VecInit(Seq.fill(1)(0.U(1.W)))) // if not shared, create a 1 bit flip-flop, just for grammar check
+    RegInit(VecInit(Seq.fill(1)(0.U(1.W)))) // if not shared, create a small 1 bit flip-flop, just for grammar check
   }
-  // Connect Hardware TODO: Seperate Code for each protocol
-  if(protocol.contains("Ready")){
-    val output_interface = Wire(Vec(all_MUXes.length,DecoupledIO(UInt(decomped_data_word_width.W))))
-    val all_alu_hw = all_ALUs.map(a=>Module(new alu_hw(a)).io)
-    // Forward
-    for (subnet <- 0 until decomposer){
-      // ALU -> Output
-      val alu = all_ALUs.find(a=>a.subnet == subnet).get
-      val alu_hw = all_alu_hw(all_ALUs.indexOf(alu))
-      alu_hw.in.foreach(gc_port(_,protocol));gc_port(alu_hw.out,protocol)
-      alu_hw.opcode := config_register_files(subnet)(alu.config_high,alu.config_low)
-      for (output_port <- output_ports){
-        val port_idx = output_ports.indexOf(output_port)
+  // Create Datapath for each subnet
+  for (subnet <- 0 until decomposer){
+    // --- Extract ALU; GC port; connect config wire
+    val alu = all_ALUs.find(a=>a.subnet == subnet).get
+    val alu_hw = all_alu_hw(all_ALUs.indexOf(alu))
+    alu_hw.in.foreach(gc_port(_,protocol));gc_port(alu_hw.out,protocol)
+    alu_hw.opcode := config_register_files(subnet)(alu.config_high,alu.config_low)
+    // Forward: ALU -> Output // TODO: write to Register
+    for (output_port <- output_ports){
+      val port_idx = output_ports.indexOf(output_port)
+      if(protocol.contains("Data"))
         io.output_ports(port_idx)(subnet).bits := alu_hw.out.bits
+      if(protocol.contains("Valid"))
         io.output_ports(port_idx)(subnet).valid := alu_hw.out.valid
-      }
-      for (operand_idx <- 0 until max_num_operand){
-        // Delay Pipe -> ALU
-        val dp = all_Delay_Channels.find(d=>d.subnet == subnet && d.operand == operand_idx).get
-        val dp_hw = Module(new delay_pipe_hw(dp)).io
-        gc_port(dp_hw.in,protocol);gc_port(dp_hw.out,protocol)
-        dp_hw.delay := config_register_files(subnet)(dp.config_high,dp.config_low)
-        alu_hw.in(operand_idx) <> dp_hw.out
-        // IN -> MUX
-        val mux = all_MUXes.find(m=>m.operand == operand_idx && m.subnet == subnet).get
-        val sources = mux.sources
+    }
+    // Backward: Output -> ALU TODO: register feed back
+    if(protocol.contains("Ready")){
+      val backpressure_signal = (for(output <- output_ports)
+        yield io.output_ports(output_ports.indexOf(output))(subnet).ready).reduce(_&&_)
+      alu_hw.out.ready := backpressure_signal
+    }
+    // --- Create datapath for each operand
+    for (operand_idx <- 0 until max_num_operand){
+      // Extract Delay Pipe; GC port; connect config wire
+      val dp = all_Delay_Channels.find(d=>d.subnet == subnet && d.operand == operand_idx).get
+      val dp_hw = all_dp_hw(all_Delay_Channels.indexOf(dp))
+      gc_port(dp_hw.in,protocol);gc_port(dp_hw.out,protocol)
+      dp_hw.delay := config_register_files(subnet)(dp.config_high,dp.config_low)
+      // Extract MUX
+      val mux = all_MUXes.find(m=>m.operand == operand_idx && m.subnet == subnet).get
+      val mux_out = muxes_out_interface(all_MUXes.indexOf(mux))
+      val sources = mux.sources
+      val select_wire : UInt = config_register_files(subnet)(mux.config_high,mux.config_low)
+      // ----- Pass Down Data
+      if(protocol.contains("Data")){
+        // Input / Register (Shared)  -> MUX
         val select_bits = sources.map(s=>{
           if(s.startsWith("reg")){
             val reg_idx = s.split("_")(1).toInt
@@ -237,6 +251,15 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
             val port_name = s.split("_").head;val port_idx = input_ports.indexOf(port_name)
             io.input_ports(port_idx)(subnet).bits
           }}).zipWithIndex.map(p=> p._2.U -> p._1)
+        // MUX -> Delay Pipe
+        mux_out.bits := MuxLookup(select_wire,0.U,select_bits)
+        dp_hw.in.bits := mux_out.bits
+        // Delay Pipe -> ALU
+        alu_hw.in(operand_idx).bits := dp_hw.out.bits
+      }else{mux_out.bits := DontCare}
+      // ----- Pass down valid
+      if(protocol.contains("Valid")){
+        // Input / Register (Shared)  -> MUX
         val select_valid = sources.map(s=>{
           if(s.startsWith("reg")){
             true.B
@@ -244,26 +267,24 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
             val port_name = s.split("_").head;val port_idx = input_ports.indexOf(port_name)
             io.input_ports(port_idx)(subnet).valid
           }}).zipWithIndex.map(p=> p._2.U -> p._1)
-        val select_wire : UInt = config_register_files(subnet)(mux.config_high,mux.config_low)
-        //MUX -> Delay Pipe
-        val dp_bridge = output_interface(all_MUXes.indexOf(mux))
-        dp_hw.in.bits := dp_bridge.bits
-        dp_hw.in.valid := dp_bridge.valid
-        dp_bridge.ready := dp_hw.in.ready
-        dp_bridge.bits := MuxLookup(select_wire,0.U,select_bits)
-        dp_bridge.valid := MuxLookup(select_wire,false.B,select_valid)
-      }
+        // MUX -> Delay Pipe
+        mux_out.valid := MuxLookup(select_wire,false.B,select_valid)
+        dp_hw.in.valid := mux_out.valid
+        // Delay Pipe -> ALU
+        alu_hw.in(operand_idx).valid := dp_hw.out.valid
+      }else{mux_out.valid := DontCare}
+      // ----- Pass Back Ready
+      if(protocol.contains("Ready")){
+        // Delay Pipe <- ALU
+        dp_hw.out.ready := alu_hw.in(operand_idx).ready
+        // MUX <- Delay Pipe
+        mux_out.ready := dp_hw.in.ready
+      }else{mux_out.ready := DontCare}
     }
-    // Backward
-    // Alu -> Output
-    for (subnet <- 0 until decomposer){
-      val alu = all_ALUs.find(a=>a.subnet == subnet).get
-      val alu_hw = all_alu_hw(all_ALUs.indexOf(alu))
-      val backpressure_signal = (for(output <- output_ports)
-        yield io.output_ports(output_ports.indexOf(output))(subnet).ready).reduce(_&&_)
-      alu_hw.out.ready := backpressure_signal
-    }
-    // MUX -> DelayPipe
+  }
+  // ----- Pass Back Ready
+  if(protocol.contains("Ready")){
+    // Input <- MUX
     for(input_subnet <- input_ports_subnet){
       val port_name = input_subnet.split("_").head;val port_idx = input_ports.indexOf(port_name)
       val subnet = input_subnet.split("_")(1).toInt
@@ -274,92 +295,15 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
         val mux = m._1;val m_subnet = mux.subnet
         config_register_files(m_subnet)(mux.config_high,mux.config_low)
       })
-      val connect_bridges = connect_MUXes.map(_._2).map(output_interface)
+      val connect_bridges = connect_MUXes.map(_._2).map(muxes_out_interface)
       val backpressure_signal : Bool = (for(m_idx <- connect_MUXes.indices)
         yield Mux(connect_select_wire(m_idx) === connect_select_value(m_idx).U,connect_bridges(m_idx).ready,true.B))
         .reduce(_&&_)
       io.input_ports(port_idx)(subnet).ready := backpressure_signal
     }
-  }else if(protocol.contains("Valid")){
-    // Forward
-    for (subnet <- 0 until decomposer){
-      // ALU -> Output
-      val alu = all_ALUs.find(a=>a.subnet == subnet).get
-      val alu_hw = Module(new alu_hw(alu)).io
-      alu_hw.in.foreach(gc_port(_,protocol));gc_port(alu_hw.out,protocol)
-      alu_hw.opcode := config_register_files(subnet)(alu.config_high,alu.config_low)
-      for (output_port <- output_ports){
-        val port_idx = output_ports.indexOf(output_port)
-        io.output_ports(port_idx)(subnet).bits := alu_hw.out.bits
-        io.output_ports(port_idx)(subnet).valid := alu_hw.out.valid
-      }
-      for (operand_idx <- 0 until max_num_operand){
-        // Delay Pipe -> ALU
-        val dp = all_Delay_Channels.find(d=>d.subnet == subnet && d.operand == operand_idx).get
-        val dp_hw = Module(new delay_pipe_hw(dp)).io
-        gc_port(dp_hw.in,protocol);gc_port(dp_hw.out,protocol)
-        dp_hw.delay := config_register_files(subnet)(dp.config_high,dp.config_low)
-        alu_hw.in(operand_idx) <> dp_hw.out
-        // IN -> MUX
-        val mux = all_MUXes.find(m=>m.operand == operand_idx && m.subnet == subnet).get
-        val sources = mux.sources
-        val select_bits = sources.map(s=>{
-          if(s.startsWith("reg")){
-            val reg_idx = s.split("_")(1).toInt
-            register_file(reg_idx)((subnet + 1) * decomped_data_word_width - 1,subnet * decomped_data_word_width)
-          }else{
-            val port_name = s.split("_").head;val port_idx = input_ports.indexOf(port_name)
-            io.input_ports(port_idx)(subnet).bits
-          }}).zipWithIndex.map(p=> p._2.U -> p._1)
-        val select_valid = sources.map(s=>{
-          if(s.startsWith("reg")){
-            true.B
-          }else{
-            val port_name = s.split("_").head;val port_idx = input_ports.indexOf(port_name)
-            io.input_ports(port_idx)(subnet).valid
-          }}).zipWithIndex.map(p=> p._2.U -> p._1)
-        val select_wire : UInt = config_register_files(subnet)(mux.config_high,mux.config_low)
-        //MUX -> Delay Pipe
-        dp_hw.in.bits := MuxLookup(select_wire,0.U,select_bits)
-        dp_hw.in.valid := MuxLookup(select_wire,false.B,select_valid)
-      }
-    }
   }else{
-    // Forward
-    for (subnet <- 0 until decomposer){
-      // ALU -> Output
-      val alu = all_ALUs.find(a=>a.subnet == subnet).get
-      val alu_hw = Module(new alu_hw(alu)).io
-      alu_hw.in.foreach(gc_port(_,protocol));gc_port(alu_hw.out,protocol)
-      alu_hw.opcode := config_register_files(subnet)(alu.config_high,alu.config_low)
-      for (output_port <- output_ports){
-        val port_idx = output_ports.indexOf(output_port)
-        io.output_ports(port_idx)(subnet).bits := alu_hw.out.bits
-        io.output_ports(port_idx)(subnet).valid := alu_hw.out.valid
-      }
-      for (operand_idx <- 0 until max_num_operand){
-        // Delay Pipe -> ALU
-        val dp = all_Delay_Channels.find(d=>d.subnet == subnet && d.operand == operand_idx).get
-        val dp_hw = Module(new delay_pipe_hw(dp)).io
-        gc_port(dp_hw.in,protocol);gc_port(dp_hw.out,protocol)
-        dp_hw.delay := config_register_files(subnet)(dp.config_high,dp.config_low)
-        alu_hw.in(operand_idx) <> dp_hw.out
-        // IN -> MUX
-        val mux = all_MUXes.find(m=>m.operand == operand_idx && m.subnet == subnet).get
-        val sources = mux.sources
-        val select_bits = sources.map(s=>{
-          if(s.startsWith("reg")){
-            val reg_idx = s.split("_")(1).toInt
-            register_file(reg_idx)((subnet + 1) * decomped_data_word_width - 1,subnet * decomped_data_word_width)
-          }else{
-            val port_name = s.split("_").head;val port_idx = input_ports.indexOf(port_name)
-            io.input_ports(port_idx)(subnet).bits
-          }}).zipWithIndex.map(p=> p._2.U -> p._1)
-        val select_wire : UInt = config_register_files(subnet)(mux.config_high,mux.config_low)
-        //MUX -> Delay Pipe
-        dp_hw.in.bits := MuxLookup(select_wire,0.U,select_bits)
-      }
-    }
+    for(mux_out <- muxes_out_interface)
+      mux_out.ready := DontCare
   }
 
   def get_num_max_operand(insts:List[String]):Int = {
@@ -433,6 +377,7 @@ class delay_pipe_hw(p:Delay_Pipe) extends Module{
   gc_port(io.out,p.protocol)
   if (p.max_delay > 0){
     if(p.protocol.contains("Ready")){
+      // Delay FIFO
       val queue_in : DecoupledIO[UInt] = Wire(DecoupledIO(UInt(p.pipe_word_width.W)))
       queue_in.bits := io.in.bits
       queue_in.valid := io.in.valid
@@ -441,28 +386,30 @@ class delay_pipe_hw(p:Delay_Pipe) extends Module{
       io.out.bits := queue_out.bits
       io.out.valid := queue_out.valid
       io.out.ready <> queue_out.ready
-    }else if (p.protocol.contains("Valid")){
-      val fifo_bits = Reg(Vec(p.max_delay,UInt(p.pipe_word_width.W)))
-      val fifo_valid = Reg(Vec(p.max_delay,Bool()))
+    }else if (p.protocol.contains("Data")){
+      // Dalay Pipe
       val head = RegInit(0.U(log2Ceil(p.max_delay).W))
       val tail = RegInit(0.U(log2Ceil(p.max_delay).W))
-      io.out.bits := fifo_bits(head)
-      io.out.valid := fifo_valid(head)
-      fifo_bits(tail) := io.in.bits
-      fifo_valid(tail) := io.in.valid
       head := head + 1.U
       tail := head + 1.U + io.delay
-    }else{
+      // Connect Data
       val fifo_bits = Reg(Vec(p.max_delay,UInt(p.pipe_word_width.W)))
-      val head = RegInit(0.U(log2Ceil(p.max_delay).W))
-      val tail = RegInit(0.U(log2Ceil(p.max_delay).W))
       io.out.bits := fifo_bits(head)
       fifo_bits(tail) := io.in.bits
-      head := head + 1.U
-      tail := head + 1.U + io.delay
+      // Connect Valid
+      if(p.protocol.contains("Valid")){
+        val fifo_valid = Reg(Vec(p.max_delay,Bool()))
+        io.out.valid := fifo_valid(head)
+        fifo_valid(tail) := io.in.valid
+      }
     }
   }else{
-    io.out <> io.in
+    if(p.protocol.contains("Data"))
+      io.out.bits <> io.in.bits
+    if(p.protocol.contains("Valid"))
+      io.out.valid <> io.in.valid
+    if(p.protocol.contains("Ready"))
+      io.out.ready <> io.in.ready
   }
 }
 
@@ -475,41 +422,25 @@ class alu_hw(p:Alu) extends Module{
   // GC useless port
   io.in.foreach(ap=>gc_port(ap,p.protocol))
   gc_port(io.out,p.protocol)
-
+  // Collect Inst. Function
   val operation_func = p.inst.map(f=>inst_operation(f))
-  val inst_props = p.inst.map(f=>insts_prop(f))
-
+  // Collect Inst. Properties
+  val inst_props : List[inst_prop] = p.inst.map(f=>insts_prop(f))
+  // Initialize Result Buffer
   val result_buffer : Vec[UInt] = Wire(Vec(p.inst.length,UInt(p.alu_word_width.W)))
-
+  // Compute Result
   for (idx_opcode <- p.inst.indices){
     val op_func = operation_func(idx_opcode)
     val inst_prop = inst_props(idx_opcode)
     val result = alu_result(inst_prop,op_func)
     result_buffer(idx_opcode) := result
   }
-
+  // Output Result
   io.out.bits := result_buffer(io.opcode)
 
-  // Util
-  def alu_result (inst_prop:inst_prop, func:(UInt*) => UInt) : UInt ={
-    val num_op = inst_prop.numOperands
-    val result:UInt = num_op match {
-      case 1 => func(io.in(0).bits)
-      case 2 => func(io.in(0).bits,io.in(1).bits)
-      case 3 => func(io.in(0).bits,io.in(1).bits,io.in(2).bits)
-    }
-    result
-  }
-
-  // TODO: Backpressure
-  if (!p.protocol.contains("Ready")){
-    io.out.valid := io.in.map(p=>p.valid).reduce(_ && _)
-    for (i <- 0 until p.max_num_operand){
-      io.in(i).ready := io.out.ready
-    }
-  }else{
+  // TODO: This is a fake latency
+  if (p.protocol.contains("Ready")){
     val simulated_alu_latency = RegInit(0.U(1 max log2Ceil(inst_props.map(i=>i.latency) max)))
-
     // Restart
     when(io.out.ready && io.in.map(p=>p.valid).reduce(_ && _) && simulated_alu_latency === 0.U){
       for (idx_opcode <- p.inst.indices){
@@ -518,9 +449,8 @@ class alu_hw(p:Alu) extends Module{
         }
       }
     }
-
     // Counting Down
-    when(simulated_alu_latency =/= 0.U){
+    when(simulated_alu_latency =/= 1.U){
       simulated_alu_latency := simulated_alu_latency - 1.U
       io.out.valid := false.B
       for (i <- 0 until p.max_num_operand){
@@ -533,7 +463,20 @@ class alu_hw(p:Alu) extends Module{
       }
     }
   }
+  if(p.protocol.contains("Valid")){
+    io.out.valid := io.in.map(p=>p.valid).reduce(_ && _)
+  }
 
+  // Util
+  def alu_result (inst_prop:inst_prop, func:(UInt*) => UInt) : UInt ={
+    val num_op = inst_prop.numOperands
+    val result:UInt = num_op match {
+      case 1 => func(io.in(0).bits)
+      case 2 => func(io.in(0).bits,io.in(1).bits)
+      case 3 => func(io.in(0).bits,io.in(1).bits,io.in(2).bits)
+    }
+    result
+  }
 }
 
 object tester_pe extends App{
