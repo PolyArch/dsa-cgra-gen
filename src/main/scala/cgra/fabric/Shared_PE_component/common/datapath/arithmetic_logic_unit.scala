@@ -49,9 +49,3 @@ class arithmetic_logic_unit extends Module
     result
   }
 }
-/*
-object AluDriver extends App
-{
-  chisel3.Driver.execute(args, () => new arithmetic_logic_unit(64,List(1,3,4,6,7,9,10)))
-}
-*/

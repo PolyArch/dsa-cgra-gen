@@ -6,12 +6,13 @@ import cgra.IR.global_var.get_new_id
 import cgra.config.encoding.{config_module_id_high, config_module_id_low}
 import cgra.config.fullinst._
 import cgra.config.{inst_prop, system}
+import cgra.fabric.common.Multiplexer
 import chisel3._
 import chisel3.util._
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
-import scala.math.ceil
+import cgra.fabric.common._
 import scala.xml.Elem
 
 class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
@@ -36,6 +37,9 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
   val isShared : Boolean = try{p("isShared").asInstanceOf[Boolean]}catch{case _:Throwable => false}
   val shared_slot_size : Int = if(isShared){try{p("shared_slot_size").asInstanceOf[Int]}
   catch{case _:Throwable => 32}}else{0}
+  val output_select_mode : String = if(output_ports.length >1){
+    try{p("output_select_mode")toString}catch{case _: Throwable => "Universal"}
+  }else{"Universal"}
   val register_file_size : Int = if(isShared){try{p("register_file_size").asInstanceOf[Int]}
   catch{case _:Throwable => 8}}else{0}
   val data_word_width : Int = try {if(use_global) system.data_word_width else p("data_word_width").asInstanceOf[Int]}
@@ -74,14 +78,14 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
   var config_register_files_width : Int = -1
   val instruction_properties = instructions.map(p=>insts_prop(p))
   val max_num_operand : Int = instruction_properties.map(i=>i.numOperands) max
-  val all_MUXes : Array[MUX] = new Array[MUX](decomposer * max_num_operand);var mux_c = 0
-  val all_Delay_Channels : Array[Delay_Pipe] = new Array[Delay_Pipe](decomposer * max_num_operand);var dp_c = 0
-  val all_ALUs : Array[Alu] = new Array[Alu](decomposer);var alu_c = 0
+  val all_MUXes : Array[Multiplexer] = new Array[Multiplexer](decomposer * max_num_operand);var mux_c = 0
+  val all_Delay_Channels : Array[Delay_FIFO] = new Array[Delay_FIFO](decomposer * max_num_operand);var dp_c = 0
+  val all_ALUs : Array[Arithmetic_Logic_Unit] = new Array[Arithmetic_Logic_Unit](decomposer);var alu_c = 0
   for(subnet <- 0 until decomposer){
     var pre_high_bit : Int = -1
     for (operand_idx <- 0 until max_num_operand){
       // ------ Add MUX
-      val mux : MUX = new MUX;all_MUXes(mux_c) = mux;mux_c += 1
+      val mux : Multiplexer = new Multiplexer;all_MUXes(mux_c) = mux;mux_c += 1
       mux.operand = operand_idx
       mux.subnet = subnet
       mux.sources = input_ports_subnet.filter(s=>s.endsWith(subnet.toString))
@@ -96,7 +100,7 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
       mux.config_high = mux.config_low + log2Ceil(num_source) - 1
       pre_high_bit = mux.config_high
       // ------ Add Delay Pipe
-      val dp : Delay_Pipe = new Delay_Pipe;all_Delay_Channels(dp_c) = dp;dp_c += 1
+      val dp : Delay_FIFO = new Delay_FIFO;all_Delay_Channels(dp_c) = dp;dp_c += 1
       dp.operand = operand_idx;dp.subnet = subnet
       dp.pipe_word_width = decomped_data_word_width
       dp.max_delay = delay_fifo_depth
@@ -105,22 +109,42 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
       dp.protocol = protocol
       pre_high_bit = dp.config_high
     }
-    // ------ Add Alu
-    val alu : Alu = new Alu;all_ALUs(alu_c) = alu;alu_c +=1
+    // ------ Add Arithmetic_Logic_Unit
+    val alu : Arithmetic_Logic_Unit = new Arithmetic_Logic_Unit;all_ALUs(alu_c) = alu;alu_c +=1
     alu.max_num_operand = max_num_operand
     alu.subnet = subnet
     alu.inst = instructions
     alu.alu_word_width = decomped_data_word_width
     alu.protocol = protocol
-    alu.config_low = pre_high_bit + 1
-    alu.config_high = alu.config_low + log2Ceil(instructions.length) - 1
-    pre_high_bit = alu.config_high
+    alu.opcode_config_low = pre_high_bit + 1
+    alu.opcode_config_high = alu.opcode_config_low + log2Ceil(instructions.length) - 1
+    pre_high_bit = alu.opcode_config_high
+    if(output_select_mode=="Individual"){
+      val temp : ListBuffer[String] = alu.sink.to[ListBuffer]
+      for(output_port <- output_ports)
+        temp += output_port
+      alu.sink = temp.toList
+    }else if(output_select_mode=="Universal"){
+      alu.sink = List("Universal Output")
+    }
+    if(isShared){
+      val temp : ListBuffer[String] = alu.sink.to[ListBuffer]
+      for(reg_idx <- 0 until register_file_size)
+        temp += "reg_" + subnet + "_"+ reg_idx
+      alu.sink = temp.toList
+    }
+    val num_alu_output = alu.sink.length
+    if(num_alu_output > 1){
+      alu.output_select_config_low = pre_high_bit + 1
+      alu.output_select_config_high = alu.output_select_config_low + log2Ceil(num_alu_output) - 1
+      pre_high_bit = alu.output_select_config_high
+    }
     config_register_files_width = (1 + pre_high_bit) max config_register_files_width
   }
   // Initialize Hardware when Configuration computation is ready
   val muxes_out_interface = Wire(Vec(all_MUXes.length,DecoupledIO(UInt(decomped_data_word_width.W))))
-  val all_alu_hw = all_ALUs.map(a=>Module(new alu_hw(a)).io)
-  val all_dp_hw = all_Delay_Channels.map(d=>Module(new delay_pipe_hw(d)).io)
+  val all_alu_hw = all_ALUs.map(a=>Module(new Arithmetic_Logic_Unit_Hw(a)).io)
+  val all_dp_hw = all_Delay_Channels.map(d=>Module(new Delay_FIFO_Hw(d)).io)
   val config_register_files : Vec[UInt] = RegInit(VecInit(Seq.fill(decomposer)(0.U(config_register_files_width.W))))
 
   // ------- Config Wire
@@ -173,13 +197,17 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
   // Specift Config Data Wiring
   var config_data_high : Int = config_slot_low - 1
   var config_data_low : Int = 0
-  require(config_data_high + 1 > config_register_files_width,"Write Config Data / Instruction should be wider than Config Register")
+  require(config_data_high + 1 >= config_register_files_width,"Write Config Data / Instruction " +
+    s"should be wider than Config Register, now we have $config_register_files_width bit config reg," +
+    s"but incoming config data is just ${1+config_data_high} bit wide")
   val config_data_wire : UInt = Wire(UInt((config_data_high + 1).W))
   config_data_wire := in_config_wire.bits(config_data_high,config_data_low)
   if(isShared){
     // Create Slot File
-    val config_slot_files = RegInit(VecInit(Seq.fill(decomposer)(VecInit(Seq.fill(shared_slot_size)(0.U(config_register_files_width.W))))))
-    val config_slot_counter =RegInit(VecInit(Seq.fill(decomposer)(0.U(log2Ceil(shared_slot_size).W))))
+    val config_slot_files =
+      RegInit(VecInit(Seq.fill(decomposer)(VecInit(Seq.fill(shared_slot_size)(0.U(config_register_files_width.W))))))
+    val config_slot_counter =
+      RegInit(VecInit(Seq.fill(decomposer)(0.U(log2Ceil(shared_slot_size).W))))
     config_slot_counter.zipWithIndex.foreach(c => {
       val counter = c._1;val subnet = c._2
       when(config_slot_files(subnet)(counter) === 0.U){
@@ -202,10 +230,10 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
 
   // ------- Create Hardware  New Version
   // Create Register File
-  val register_file : Vec[UInt] = if(isShared){
-    RegInit(VecInit(Seq.fill(register_file_size)(0.U(data_word_width.W))))
+  val register_file : Vec[Vec[UInt]] = if(isShared){
+    RegInit(VecInit(Seq.fill(decomposer)(VecInit(Seq.fill(register_file_size)(0.U(decomped_data_word_width.W))))))
   }else{
-    RegInit(VecInit(Seq.fill(1)(0.U(1.W)))) // if not shared, create a small 1 bit flip-flop, just for grammar check
+    RegInit(VecInit(Seq.fill(1)(VecInit(Seq.fill(1)(0.U(1.W)))))) // if not shared, create a small 1 bit flip-flop, just for grammar check
   }
   // Create Datapath for each subnet
   for (subnet <- 0 until decomposer){
@@ -213,21 +241,70 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
     val alu = all_ALUs.find(a=>a.subnet == subnet).get
     val alu_hw = all_alu_hw(all_ALUs.indexOf(alu))
     alu_hw.in.foreach(gc_port(_,protocol));gc_port(alu_hw.out,protocol)
-    alu_hw.opcode := config_register_files(subnet)(alu.config_high,alu.config_low)
-    // Forward: ALU -> Output // TODO: write to Register
-    for (output_port <- output_ports){
-      val port_idx = output_ports.indexOf(output_port)
-      if(protocol.contains("Data"))
-        io.output_ports(port_idx)(subnet).bits := alu_hw.out.bits
-      if(protocol.contains("Valid"))
-        io.output_ports(port_idx)(subnet).valid := alu_hw.out.valid
+    alu_hw.opcode := config_register_files(subnet)(alu.opcode_config_high,alu.opcode_config_low)
+    val alu_sinks : List[String] = alu.sink
+    val alu_output_select_wire = if(alu_sinks.length > 1)
+      Wire(UInt(log2Ceil(alu.sink.length).W))else
+      Wire(UInt(1.W)) // Not used, just for grammar check
+    // ------ ALU -> Output port / Register File
+    if(alu_sinks.length > 1){
+      alu_output_select_wire := config_register_files(subnet)(alu.output_select_config_high,alu.output_select_config_low)
+      // Write to Output Port
+      if(alu_sinks.contains("Universal Output")){
+        val selected_all_output_port : Bool = alu_output_select_wire === alu_sinks.indexOf("Universal Output").U
+        if(protocol.contains("Data"))
+          io.output_ports.foreach(ps=>ps(subnet).bits := Mux(selected_all_output_port,alu_hw.out.bits,0.U))
+        if(protocol.contains("Valid"))
+          io.output_ports.foreach(ps=>ps(subnet).valid := Mux(selected_all_output_port,alu_hw.out.valid,false.B))
+        if(protocol.contains("Ready")){
+          val output_backpressure_signal = (for(output <- output_ports)
+            yield io.output_ports(output_ports.indexOf(output))(subnet).ready).reduce(_&&_)
+          alu_hw.out.ready := Mux(selected_all_output_port,output_backpressure_signal,true.B)
+        }
+      }else{
+        for(output_port <- output_ports){
+          val port_idx = output_ports.indexOf(output_port)
+          val selected_this_output_port : Bool = alu_output_select_wire === alu_sinks.indexOf(output_port).U
+          if(protocol.contains("Data"))
+            io.output_ports(port_idx)(subnet).bits := Mux(selected_this_output_port,alu_hw.out.bits,0.U)
+          if(protocol.contains("Valid"))
+            io.output_ports(port_idx)(subnet).valid := Mux(selected_this_output_port,alu_hw.out.valid,false.B)
+          if(protocol.contains("Ready"))
+            alu_hw.out.ready := Mux(selected_this_output_port,io.output_ports(port_idx)(subnet).ready,true.B)
+        }
+      }
+      // Write to Register File
+      if(isShared){
+        val all_target_regs = alu_sinks.filter(a=>a.startsWith("reg"))
+        for(target_reg <- all_target_regs){
+          val reg_subnet : Int = target_reg.split("_")(1).toInt
+          val reg_idx : Int = target_reg.split("_")(2).toInt
+          val select_this_reg : Bool = if(protocol.contains("Valid"))
+            alu_output_select_wire === alu_sinks.indexOf(target_reg).U && alu_hw.out.valid
+          else alu_output_select_wire === alu_sinks.indexOf(target_reg).U
+          when(select_this_reg){
+            register_file(reg_subnet)(reg_idx) := alu_hw.out.bits
+          }
+        }
+      }
+    }else{ // Universal Output and Not Shared
+      alu_output_select_wire := DontCare
+      // Forward: ALU -> Output
+      for (output_port <- output_ports){
+        val port_idx = output_ports.indexOf(output_port)
+        if(protocol.contains("Data"))
+          io.output_ports(port_idx)(subnet).bits := alu_hw.out.bits
+        if(protocol.contains("Valid"))
+          io.output_ports(port_idx)(subnet).valid := alu_hw.out.valid
+      }
+      // Backward: Output -> ALU
+      if(protocol.contains("Ready")){
+        val backpressure_signal = (for(output <- output_ports)
+          yield io.output_ports(output_ports.indexOf(output))(subnet).ready).reduce(_&&_)
+        alu_hw.out.ready := backpressure_signal
+      }
     }
-    // Backward: Output -> ALU TODO: register feed back
-    if(protocol.contains("Ready")){
-      val backpressure_signal = (for(output <- output_ports)
-        yield io.output_ports(output_ports.indexOf(output))(subnet).ready).reduce(_&&_)
-      alu_hw.out.ready := backpressure_signal
-    }
+
     // --- Create datapath for each operand
     for (operand_idx <- 0 until max_num_operand){
       // Extract Delay Pipe; GC port; connect config wire
@@ -246,7 +323,7 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
         val select_bits = sources.map(s=>{
           if(s.startsWith("reg")){
             val reg_idx = s.split("_")(1).toInt
-            register_file(reg_idx)((subnet + 1) * decomped_data_word_width - 1,subnet * decomped_data_word_width)
+            register_file(subnet)(reg_idx)
           }else{
             val port_name = s.split("_").head;val port_idx = input_ports.indexOf(port_name)
             io.input_ports(port_idx)(subnet).bits
@@ -326,194 +403,18 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
   }
 }
 
-class Delay_Pipe extends Reconfigurable {
-  var config_high : Int = -1
-  var config_low : Int = -1
-  var max_delay : Int = -1
-  var pipe_word_width : Int = -1
-  var sink : String = ""
-  var subnet : Int = -1
-  var operand : Int = -1
-  var protocol : String = ""
-  def config2XML : Elem = {
-    <Delay_Pipe>
-      <Config_High_Bit>{config_high}</Config_High_Bit>
-      <Config_Low_Bit>{config_low}</Config_Low_Bit>
-      <Max_Delay>{max_delay}</Max_Delay>
-      <Idx_Operand>{operand}</Idx_Operand>
-    </Delay_Pipe>
-  }
-}
-
-class Alu extends Reconfigurable {
-  var config_high : Int = -1
-  var config_low : Int = -1
-  var sink : String = ""
-  var subnet : Int = -1
-  var max_num_operand: Int = -1
-  var inst : List[String] = Nil
-  var alu_word_width : Int = -1
-  var protocol : String = ""
-  def config2XML : Elem = {
-    <Alu>
-      <Config_High_Bit>{config_high}</Config_High_Bit>
-      <Config_Low_Bit>{config_low}</Config_Low_Bit>
-      <Num_Operands>{max_num_operand}</Num_Operands>
-      <Opcodes>
-        {inst.zipWithIndex.map(i=>{<Select>{i._2}</Select><Opcode>{i._1}</Opcode>})}
-      </Opcodes>
-      <Sink>{sink}</Sink>
-    </Alu>
-  }
-}
-
-class delay_pipe_hw(p:Delay_Pipe) extends Module{
-  val io = IO(new Bundle{
-    val in = Flipped(ReqAckConf_if(p.pipe_word_width))
-    val out = ReqAckConf_if(p.pipe_word_width)
-    val delay = Input(UInt((1 max log2Ceil(1 max p.max_delay)).W))
-  })
-  gc_port(io.in,p.protocol)
-  gc_port(io.out,p.protocol)
-  if (p.max_delay > 0){
-    if(p.protocol.contains("Ready")){
-      // Delay FIFO
-      val queue_in : DecoupledIO[UInt] = Wire(DecoupledIO(UInt(p.pipe_word_width.W)))
-      queue_in.bits := io.in.bits
-      queue_in.valid := io.in.valid
-      queue_in.ready <> io.in.ready
-      val queue_out = Queue(queue_in,p.max_delay)
-      io.out.bits := queue_out.bits
-      io.out.valid := queue_out.valid
-      io.out.ready <> queue_out.ready
-    }else if (p.protocol.contains("Data")){
-      // Dalay Pipe
-      val head = RegInit(0.U(log2Ceil(p.max_delay).W))
-      val tail = RegInit(0.U(log2Ceil(p.max_delay).W))
-      head := head + 1.U
-      tail := head + 1.U + io.delay
-      // Connect Data
-      val fifo_bits = Reg(Vec(p.max_delay,UInt(p.pipe_word_width.W)))
-      io.out.bits := fifo_bits(head)
-      fifo_bits(tail) := io.in.bits
-      // Connect Valid
-      if(p.protocol.contains("Valid")){
-        val fifo_valid = Reg(Vec(p.max_delay,Bool()))
-        io.out.valid := fifo_valid(head)
-        fifo_valid(tail) := io.in.valid
-      }
-    }
-  }else{
-    if(p.protocol.contains("Data"))
-      io.out.bits <> io.in.bits
-    if(p.protocol.contains("Valid"))
-      io.out.valid <> io.in.valid
-    if(p.protocol.contains("Ready"))
-      io.out.ready <> io.in.ready
-  }
-}
-
-class alu_hw(p:Alu) extends Module{
-  val io = IO(new Bundle{
-    val in = Flipped(Vec(p.max_num_operand,ReqAckConf_if(p.alu_word_width)))
-    val out = ReqAckConf_if(p.alu_word_width)
-    val opcode = Input(UInt(log2Ceil(p.inst.length).W))
-  })
-  // GC useless port
-  io.in.foreach(ap=>gc_port(ap,p.protocol))
-  gc_port(io.out,p.protocol)
-  // Collect Inst. Function
-  val operation_func = p.inst.map(f=>inst_operation(f))
-  // Collect Inst. Properties
-  val inst_props : List[inst_prop] = p.inst.map(f=>insts_prop(f))
-  // Initialize Result Buffer
-  val result_buffer : Vec[UInt] = Wire(Vec(p.inst.length,UInt(p.alu_word_width.W)))
-  // Compute Result
-  for (idx_opcode <- p.inst.indices){
-    val op_func = operation_func(idx_opcode)
-    val inst_prop = inst_props(idx_opcode)
-    val result = alu_result(inst_prop,op_func)
-    result_buffer(idx_opcode) := result
-  }
-  // Output Result
-  io.out.bits := result_buffer(io.opcode)
-
-  // TODO: This is a fake latency
-  if (p.protocol.contains("Ready")){
-    val simulated_alu_latency = RegInit(0.U(1 max log2Ceil(inst_props.map(i=>i.latency) max)))
-    // Restart
-    when(io.out.ready && io.in.map(p=>p.valid).reduce(_ && _) && simulated_alu_latency === 0.U){
-      for (idx_opcode <- p.inst.indices){
-        when(io.opcode === idx_opcode.U){
-          simulated_alu_latency := inst_props(idx_opcode).latency.U
-        }
-      }
-    }
-    // Counting Down
-    when(simulated_alu_latency =/= 1.U){
-      simulated_alu_latency := simulated_alu_latency - 1.U
-      io.out.valid := false.B
-      for (i <- 0 until p.max_num_operand){
-        io.in(i).ready := false.B
-      }
-    }.otherwise{ // Finished
-      io.out.valid := true.B
-      for (i <- 0 until p.max_num_operand){
-        io.in(i).ready := true.B
-      }
-    }
-  }
-  if(p.protocol.contains("Valid")){
-    io.out.valid := io.in.map(p=>p.valid).reduce(_ && _)
-  }
-
-  // Util
-  def alu_result (inst_prop:inst_prop, func:(UInt*) => UInt) : UInt ={
-    val num_op = inst_prop.numOperands
-    val result:UInt = num_op match {
-      case 1 => func(io.in(0).bits)
-      case 2 => func(io.in(0).bits,io.in(1).bits)
-      case 3 => func(io.in(0).bits,io.in(1).bits,io.in(2).bits)
-    }
-    result
-  }
-}
-
 object tester_pe extends App{
-  // Knob Parameters
-  /*
-  val module_name = name_p._1
-  val module_id : Int = p("module_id").asInstanceOf[Int]
-  private val p = name_p._2.asInstanceOf[mutable.Map[String,Any]]
-  val use_global : Boolean = try{p("use_global").asInstanceOf[Boolean]}
-  catch {case _: Throwable => false}
-  val input_ports : List[String] = try{p("input_ports").asInstanceOf[List[String]]}
-  catch{case _:Throwable => List("northeast","southeast","northwest","southwest")}
-  val output_ports : List[String] = try{p("output_ports").asInstanceOf[List[String]]}
-  catch{case _:Throwable => List("southeast")}
-  val protocol : String = try{p("protocol").toString}
-  catch {case _:Throwable => "Data"}
-  val delay_fifo_depth : Int = try p("delay_fifo_depth").asInstanceOf[Int] catch{case _:Throwable => 1}
-  val isDecomposed : Boolean = try {p("isDecomposed").asInstanceOf[Boolean]}catch{case _:Throwable => false}
-  val decomposer : Int = if(isDecomposed){try{p("decomposer").asInstanceOf[Int]}
-  val isShared : Boolean = try{p("isShared").asInstanceOf[Boolean]}catch{case _:Throwable => false}
-  val shared_slot_size : Int = if(isShared){try{p("shared_slot_size").asInstanceOf[Int]}
-  val register_file_size : Int = if(isShared){try{p("register_file_size").asInstanceOf[Int]}
-  val execute_model : String = if(isShared){try{p("execute_model").toString}catch{case _:Throwable=>"update"}}else{""}
-  val data_word_width : Int = try {if(use_global) system.data_word_width else p("data_word_width").asInstanceOf[Int]}
-  val config_input_port : String = try p("config_input_port").toString catch{case _:Throwable => input_ports.head}
-  val config_output_port : String = try p("config_output_port").toString catch{case _:Throwable => output_ports.head}
-  private val instructions = p("instructions").asInstanceOf[List[String]]
-   */
   system.data_word_width = 64
   val p : mutable.Map[String,Any] = mutable.Map[String,Any]()
   p += "module_name" -> "PE_Test"
   p += "module_id" -> {get_new_id;get_new_id;get_new_id;get_new_id;get_new_id;get_new_id;get_new_id;get_new_id}
+  // p += "output_ports" -> List("south","north","east")
+  // p += "output_select_mode" -> "Individual"
   p += "protocol" -> "Data_Valid_Ready"
   p += "delay_fifo_depth" -> 4
   p += "isDecomposed" -> true
-  p += "decomposer" -> 8
-  p += "isShared" -> true
+  p += "decomposer" -> 4
+  p += "isShared" -> false
   p += "shared_slot_size" -> 32
   p += "register_file_size" -> 8
   p += "instructions" -> List("Add","Sub","BOr","BAnd")
