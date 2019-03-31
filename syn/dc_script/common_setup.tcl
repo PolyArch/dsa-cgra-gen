@@ -9,8 +9,8 @@ source -echo -verbose ./dc_script/lib_setup_umc28.tcl
 # Copyright (C) 2007-2017 Synopsys, Inc. All rights reserved.
 ##########################################################################################
 
-set DESIGN_NAME "Router_Com_Hw" ;#  The name of the top-level design
-set DESIGN_FILE_NAME "Router_Shar_Stat_1_slot32"
+set DESIGN_NAME "Decomp_Adapter_Hw" ;#  The name of the top-level design
+set DESIGN_FILE_NAME "Decomp_Adapter_Hw"
 
 set Period 0.8 ;#ns 1/Period = frequency (GHz)
 

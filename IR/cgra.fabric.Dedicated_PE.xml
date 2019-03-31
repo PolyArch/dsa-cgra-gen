@@ -6,7 +6,7 @@
       <Parameters><KeyValue>
           <PKey DSE="false">output_decomposer</PKey><PValue type="scala.collection.immutable.$colon$colon">2 4</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">num_output</PKey><PValue type="java.lang.Integer">2</PValue>
+          <PKey DSE="false">num_alu_output</PKey><PValue type="java.lang.Integer">2</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">subnet-2-insts</PKey><PValue type="scala.collection.immutable.$colon$colon">5 9 11 13 15</PValue>
         </KeyValue><KeyValue>

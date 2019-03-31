@@ -6,13 +6,13 @@ import cgra.IR.global_var.get_new_id
 import cgra.config.encoding.{config_module_id_high, config_module_id_low}
 import cgra.config.fullinst._
 import cgra.config.{inst_prop, system}
-import cgra.fabric.common.Multiplexer
 import chisel3._
 import chisel3.util._
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
-import cgra.fabric.common._
+import cgra.fabric.common.datapath._
+
 import scala.xml.Elem
 
 class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
@@ -30,7 +30,7 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
   catch{case _:Throwable => List("southeast")}
   val protocol : String = try{p("protocol").toString}
   catch {case _:Throwable => "Data"}
-  val delay_fifo_depth : Int = try p("delay_fifo_depth").asInstanceOf[Int] catch{case _:Throwable => 1}
+  val delay_fifo_depth : Int = try p("delay_fifo_depth").asInstanceOf[Int] catch{case _:Throwable => 0}
   val isDecomposed : Boolean = try {p("isDecomposed").asInstanceOf[Boolean]}catch{case _:Throwable => false}
   val decomposer : Int = if(isDecomposed){try{p("decomposer").asInstanceOf[Int]}
   catch{case _:Throwable => 1}}else{1}
@@ -54,8 +54,8 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
   val num_output : Int = output_ports.length
   val input_ports_subnet : List[String] = (for(subnet<- 0 until decomposer;port<-input_ports) yield port + "_" + subnet).toList
   val output_ports_subnet : List[String] = (for(subnet<- 0 until decomposer;port<-output_ports) yield port + "_" + subnet).toList
-  val input_ports_type : List[String] = input_ports.map(p=>{if(p == config_input_port) protocol + "_Config" else protocol})
-  val output_ports_type : List[String] = output_ports.map(p=>{if(p == config_output_port) protocol + "_Config" else protocol})
+  val input_ports_protocol : List[String] = input_ports.map(p=>{if(p == config_input_port) protocol + "Config" else protocol})
+  val output_ports_protocol : List[String] = output_ports.map(p=>{if(p == config_output_port) protocol + "Config" else protocol})
 
   // ------ Define Input Output
   val io = IO(new Bundle{
@@ -64,12 +64,12 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
   })
   // Connect Useless Port with DontCare
   for(p_idx <- input_ports.indices;subnet <- 0 until decomposer){
-    val port_type : String = input_ports_type(p_idx)
+    val port_type : String = input_ports_protocol(p_idx)
     val port : ReqAckConf_if = io.input_ports(p_idx)(subnet)
     gc_port(port,port_type)
   }
   for(p_idx <- output_ports.indices; subnet <- 0 until decomposer){
-    val port_type = output_ports_type(p_idx)
+    val port_type = output_ports_protocol(p_idx)
     val port = io.output_ports(p_idx)(subnet)
     gc_port(port,port_type)
   }
@@ -104,10 +104,12 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
       dp.operand = operand_idx;dp.subnet = subnet
       dp.pipe_word_width = decomped_data_word_width
       dp.max_delay = delay_fifo_depth
-      dp.config_low = pre_high_bit + 1
-      dp.config_high = dp.config_low + log2Ceil(delay_fifo_depth) - 1
+      if(dp.max_delay > 0){
+        dp.config_low = pre_high_bit + 1
+        dp.config_high = dp.config_low + log2Ceil(1 + dp.max_delay) - 1
+        pre_high_bit = dp.config_high
+      }
       dp.protocol = protocol
-      pre_high_bit = dp.config_high
     }
     // ------ Add Arithmetic_Logic_Unit
     val alu : Arithmetic_Logic_Unit = new Arithmetic_Logic_Unit;all_ALUs(alu_c) = alu;alu_c +=1
@@ -311,7 +313,11 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
       val dp = all_Delay_Channels.find(d=>d.subnet == subnet && d.operand == operand_idx).get
       val dp_hw = all_dp_hw(all_Delay_Channels.indexOf(dp))
       gc_port(dp_hw.in,protocol);gc_port(dp_hw.out,protocol)
-      dp_hw.delay := config_register_files(subnet)(dp.config_high,dp.config_low)
+      if(dp.max_delay > 0){
+        dp_hw.delay := config_register_files(subnet)(dp.config_high,dp.config_low)
+      }else{
+        dp_hw.delay := 0.U
+      }
       // Extract MUX
       val mux = all_MUXes.find(m=>m.operand == operand_idx && m.subnet == subnet).get
       val mux_out = muxes_out_interface(all_MUXes.indexOf(mux))
@@ -400,6 +406,19 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
       <Delay_Pipes>{all_Delay_Channels.map(d=>d.config2XML)}</Delay_Pipes>
       <Alues>{all_ALUs.map(a=>a.config2XML)}</Alues>
     </Dedicated_PE>
+  }
+  // Get Port
+  def get_port(io_t:String,name:String) : Vec[ReqAckConf_if] = {
+    io_t match {
+      case "in" => io.input_ports(input_ports.indexOf(name))
+      case "out" => io.output_ports(output_ports.indexOf(name))
+    }
+  }
+  def get_port_protocol(io_t:String,name:String) : String = {
+    io_t match {
+      case "in" => input_ports_protocol(input_ports.indexOf(name))
+      case "out" => output_ports_protocol(output_ports.indexOf(name))
+    }
   }
 }
 

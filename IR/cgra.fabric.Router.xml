@@ -6,7 +6,7 @@
       <Parameters><KeyValue>
           <PKey DSE="false">output_decomposer</PKey><PValue type="scala.collection.immutable.$colon$colon">2 2 1 4</PValue>
         </KeyValue><KeyValue>
-          <PKey DSE="false">num_output</PKey><PValue type="java.lang.Integer">4</PValue>
+          <PKey DSE="false">num_alu_output</PKey><PValue type="java.lang.Integer">4</PValue>
         </KeyValue><KeyValue>
           <PKey DSE="false">config_index_width</PKey><PValue type="java.lang.Integer">4</PValue>
         </KeyValue><KeyValue>

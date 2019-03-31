@@ -36,7 +36,9 @@ routers:
     output_ports: [north,south,east,west,northeast,northwest,southeast,southwest]
     decomposer: 1
     num_configurations: 8
+    protocol: DataValidReady
     inter_subnet_connection: []
+    isDecomposed: true
 
   router_1: &router_1
     <<: *default_router
@@ -132,7 +134,7 @@ routers:
   router_16: &router_16
     <<: *default_router
     config_input_port: northwest
-    config_output_port: south
+    config_output_port: east
 
 #   ____           _ _           _           _   ____  _____
 #  |  _ \  ___  __| (_) ___ __ _| |_ ___  __| | |  _ \| ____|
@@ -153,17 +155,15 @@ dedicated_pes:
     # Decomposability
     decomposer: 1
     # Timing [max_delay is functional when valid is false]
-    has_backpressure: {valid: true,max_delay: 16}
+    protocol: DataValidReady
     # Control
     has_metaReuse: {valid: false,num_reuse: 4}
     # Register File
     has_register_file: true
-    register_file_length:
     # Shared Instruction
     num_configurations: 8
     # Instructions
-    instructions:
-      southeast: [Sub,BOr,BAnd,Add]
+    instructions: [Sub,BOr,BAnd,Add]
 
   dedicated_pe_1: &dedicated_pe_1
     <<: *default_dedicated_pe
@@ -173,10 +173,7 @@ dedicated_pes:
     <<: *default_dedicated_pe
     output_ports: [southeast,southwest]
     config_input_port: northeast
-    instructions: {
-      southeast: [Sub,Div,Mul,BOr,BAnd],
-      southwest: [Div,Add]
-    }
+    instructions: [Add,Sub,Div,Mul,BOr,BAnd]
 
   dedicated_pe_3: &dedicated_pe_3
     <<: *default_dedicated_pe
@@ -192,8 +189,7 @@ dedicated_pes:
     <<: *default_dedicated_pe
     config_input_port: northeast
     has_metaReuse: {valid: true,num_reuse: 4}
-    instructions:
-      southeast: [GT,GE,LT,LE]
+    instructions: [GT,GE,LT,LE]
 
   dedicated_pe_6: &dedicated_pe_6
     <<: *default_dedicated_pe
@@ -201,8 +197,7 @@ dedicated_pes:
   dedicated_pe_7: &dedicated_pe_7
     <<: *default_dedicated_pe
     config_input_port: northeast
-    instructions:
-      southeast: [LShf,Div]
+    instructions: [LShf,Div]
 
 #   ____  _                        _   ____  _____
 #  / ___|| |__   __ _ _ __ ___  __| | |  _ \| ____|
@@ -319,9 +314,9 @@ topology: [
   router_12.east->vec_out_1.v2,
   router_16.east->vec_out_1.v3,
   # Output Vector Port 2 Connection
-  router_13.southeast->vec_out_2.v1,
-  router_14.southeast->vec_out_2.v2,
-  router_15.southeast->vec_out_2.v3,
+  router_13.south->vec_out_2.v1,
+  router_14.south->vec_out_2.v2,
+  router_15.south->vec_out_2.v3,
   #                  ------ Router Connection ------
   # Router 1 Connection
   router_1.east->router_2.west,

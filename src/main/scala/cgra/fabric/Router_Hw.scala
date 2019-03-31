@@ -6,7 +6,8 @@ import chisel3.util._
 import chisel3._
 import cgra.IO.port_generator._
 import cgra.config.encoding.{config_module_id_high, config_module_id_low}
-import cgra.fabric.common.Multiplexer
+import cgra.fabric.common.datapath.Multiplexer
+
 import scala.collection.mutable
 import scala.xml.Elem
 
@@ -15,7 +16,7 @@ class Router_Hw(pp:(String,Any)) extends Module
   with Reconfigurable {
   val p:mutable.Map[String,Any] = pp._2.asInstanceOf[mutable.Map[String,Any]]
   // Knob Parameters
-  val module_name : String = p("module_name").toString
+  val module_name : String = pp._1//p("module_name").toString
   val module_id : Int = p("module_id").asInstanceOf[Int]
   val use_global : Boolean = try{p("use_global").asInstanceOf[Boolean]}
   catch {case _: Throwable => false}
@@ -46,8 +47,8 @@ class Router_Hw(pp:(String,Any)) extends Module
   val num_output : Int = output_ports.length
   val input_ports_subnet : List[String] = (for(subnet<- 0 until decomposer;port<-input_ports) yield port + "_" + subnet).toList
   val output_ports_subnet : List[String] = (for(subnet<- 0 until decomposer;port<-output_ports) yield port + "_" + subnet).toList
-  val input_ports_type : List[String] = input_ports.map(p=>{if(p == config_input_port) protocol + "_Config" else protocol})
-  val output_ports_type : List[String] = output_ports.map(p=>{if(p == config_output_port) protocol + "_Config" else protocol})
+  val input_ports_protocol : List[String] = input_ports.map(p=>{if(p == config_input_port) protocol + "Config" else protocol})
+  val output_ports_protocol : List[String] = output_ports.map(p=>{if(p == config_output_port) protocol + "Config" else protocol})
   val IO_LookUpTable : Array[Array[Boolean]]= Array.ofDim[Boolean](num_output * decomposer,num_input * decomposer)
 
   // ------ Configuration ------
@@ -75,12 +76,12 @@ class Router_Hw(pp:(String,Any)) extends Module
   })
   // Connect Useless Port with DontCare
   for(p_idx <- input_ports.indices;subnet <- 0 until decomposer){
-    val port_type = input_ports_type(p_idx)
+    val port_type = input_ports_protocol(p_idx)
     val port = io.input_ports(p_idx)(subnet)
     gc_port(port,port_type)
   }
   for(p_idx <- output_ports.indices; subnet <- 0 until decomposer){
-    val port_type = output_ports_type(p_idx)
+    val port_type = output_ports_protocol(p_idx)
     val port = io.output_ports(p_idx)(subnet)
     gc_port(port,port_type)
   }
@@ -117,6 +118,7 @@ class Router_Hw(pp:(String,Any)) extends Module
   val out_config_port_idx :List[(String,Int)]= output_ports_subnet.zipWithIndex
     .filter(p=>p._1.startsWith(config_output_port))
   // Extract Config Port based on Index
+
   val input_config_ports = io.input_ports(input_ports.indexOf(config_input_port))
   val output_config_ports = io.output_ports(output_ports.indexOf(config_output_port))
   // Create Config Wire
@@ -266,49 +268,36 @@ class Router_Hw(pp:(String,Any)) extends Module
       <MUXes>{all_MUXes.map(b=>b.config2XML)}</MUXes>
     </Router>
   }
+  // Get Port
+  def get_port(io_t:String,name:String) : Vec[ReqAckConf_if] = {
+  io_t match {
+    case "in" => io.input_ports(input_ports.indexOf(name))
+    case "out" => io.output_ports(output_ports.indexOf(name))
+    }
+  }
+  def get_port_protocol(io_t:String,name:String) : String = {
+    io_t match {
+      case "in" => input_ports_protocol(input_ports.indexOf(name))
+      case "out" => output_ports_protocol(output_ports.indexOf(name))
+    }
+  }
 }
 
 
 import cgra.IR.global_var._
 
 object tester_router extends App{
-  // Knob Parameters
-  /*
-  val module_name : String = p("module_name").toString
-  val module_id : Int = p("module_id").asInstanceOf[Int]
-  val use_global : Boolean = try{p("use_global").asInstanceOf[Boolean]}
-  catch {case _: Throwable => false}
-  val data_word_width : Int = try {if(use_global) system.data_word_width else p("data_word_width").asInstanceOf[Int]}
-  catch{case _:Throwable => 64}
-  val input_ports : List[String] = try{p("input_ports").asInstanceOf[List[String]]}
-  catch{case _:Throwable => List("north","south","east","west","northwest")}
-  val output_ports : List[String] = try{p("output_ports").asInstanceOf[List[String]]}
-  catch{case _:Throwable => List("north","south","east","west","northeast","northwest","southeast","southwest")}
-  val protocol : String = try{p("protocol").toString}
-  catch {case _:Throwable => "Data"}
-  val back_pressure_fifo_depth : Int = try p("back_pressure_fifo_depth").asInstanceOf[Int] catch{case _:Throwable => 1}
-  val isDecomposed : Boolean = try {p("idDecouped").asInstanceOf[Boolean]}catch{case _:Throwable => false}
-  val decomposer : Int = if(isDecomposed){try{p("decomposer").asInstanceOf[Int]}
-  catch{case _:Throwable => 1}}else{1}
-  val isShared : Boolean = try{p("isShared").asInstanceOf[Boolean]}catch{case _:Throwable => false}
-  val shared_slot_size : Int = if(isShared){try{p("shared_slot_size").asInstanceOf[Int]}
-  catch{case _:Throwable => 32}}else{0}
-  val execute_model : String = if(isShared){try{p("execute_model").toString}catch{case _:Throwable=>"update"}}else{""}
-  val inter_subnet_connection : List[String]= try{p("inter_subnet_connection").asInstanceOf[List[String]]}
-  catch{case _:Throwable => Nil}
-  val config_input_port : String = try p("config_input_port").toString catch{case _:Throwable => input_ports.head}
-  val config_output_port : String = try p("config_output_port").toString catch{case _:Throwable => output_ports.head}
-  */
-  system.data_word_width = 64
-  val p : mutable.Map[String,Any] = mutable.Map[String,Any]()
-  p += "module_name" -> "Router_Test"
-  p += "module_id" -> {get_new_id;get_new_id;get_new_id;get_new_id;get_new_id;get_new_id;get_new_id;get_new_id}
-  p += "protocol" -> "Data_Valid_Ready"
-  p += "back_pressure_fifo_depth" -> 2
-  p += "isDecomposed" -> true
-  p += "decomposer" -> 1
-  p += "isShared" -> true
-  p += "shared_slot_size" -> 32
-  //p += "inter_subnet_connection" -> List("south_1 <-> north_0","northwest_0 <-> east _1")
-  chisel3.Driver.execute(args,()=>{new Router_Hw("test",p)})
+// Knob Parameters
+system.data_word_width = 64
+val p : mutable.Map[String,Any] = mutable.Map[String,Any]()
+p += "module_name" -> "Router_Test"
+p += "module_id" -> {get_new_id;get_new_id;get_new_id;get_new_id;get_new_id;get_new_id;get_new_id;get_new_id}
+p += "protocol" -> "Data_Valid_Ready"
+p += "back_pressure_fifo_depth" -> 2
+p += "isDecomposed" -> true
+p += "decomposer" -> 1
+p += "isShared" -> true
+p += "shared_slot_size" -> 32
+//p += "inter_subnet_connection" -> List("south_1 <-> north_0","northwest_0 <-> east _1")
+chisel3.Driver.execute(args,()=>{new Router_Hw("test",p)})
 }
