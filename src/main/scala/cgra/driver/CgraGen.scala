@@ -1,7 +1,8 @@
-import cgra.IR.IRinstantiator._
-import cgra.IR.IRpreprocessor._
-import cgra.IR.IRreader._
-import cgra.IR.IRmerger._
+package cgra.driver
+
+import cgra.IR.IRinstantiator.instantiateCgra
+import cgra.IR.IRmerger.mergeIRwithCgra
+import cgra.IR.IRreader.readIR
 
 import scala.collection.mutable
 

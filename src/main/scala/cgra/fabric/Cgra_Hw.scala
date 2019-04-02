@@ -46,6 +46,11 @@ class Cgra_Hw(name_p:(String,mutable.Map[String,Any])) extends Module
   private val shared_pes = try{cgra("shared_pes").asInstanceOf[mutable.Map[String,Any]]
     .filter(p => {!p._1.startsWith("default")})}catch{case _:Throwable => null}
 
+  // Calculate Number Of Module
+  val num_router = if(routers != null) routers.size else 0
+  val num_pe = if(dedicated_pes != null) dedicated_pes.size else 0
+  val num_trig_pe = if(shared_pes != null) shared_pes.size else 0
+  set_module_id_num(num_router + num_pe + num_trig_pe)
 
   /*
       Hardware Generation

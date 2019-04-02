@@ -57,8 +57,8 @@ object system_util {
       case _:Throwable =>
         temp = 1 + curr_max
         module_id_list += temp
-        _module_id += 1
     }
+    _module_id += 1
     temp
   }
   def set_module_id_num(num:Int):Unit={
