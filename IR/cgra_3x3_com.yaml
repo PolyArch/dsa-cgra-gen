@@ -7,18 +7,15 @@
 #
 
 system:
-  # Type
-  module_type: Cgra_Hw
-  # IO
-  input_ports: [i1,i2]
-  output_ports: [o1,o2]
-  # Data Information
-  data_word_width: 64
-  # Host bus information.
+  data_word_width: 64 # Host bus information.
   host_word_width: 32 # Fixed, for now.
-  # Test memory system.
-  num_test_data_memory_words: 32786
+  num_test_data_memory_words: 32786 # Test memory system.
   test_data_memory_buffer_depth: 4
+
+
+module_type: Cgra_Hw
+input_ports: [i1,i2]
+output_ports: [o1,o2]
 
 #     ____             _
 #    |  _ \ ___  _   _| |_ ___ _ __

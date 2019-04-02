@@ -1,6 +1,6 @@
 package cgra.fabric.Trig_PE_component.tia_parameters
 
-import cgra.config.system.data_word_width
+import cgra.config.system_var.data_word_width
 import cgra.fabric.Trig_PE_component.instruction.mm_instruction_t
 import chisel3._
 

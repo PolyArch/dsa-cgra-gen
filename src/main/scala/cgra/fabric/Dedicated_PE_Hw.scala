@@ -2,10 +2,10 @@ package cgra.fabric
 
 import cgra.IO.{ReqAckConf_if, config_wire}
 import cgra.IO.port_generator.gc_port
-import cgra.IR.global_var.get_new_id
+import cgra.config.system_var
+import cgra.config.system_util._
 import cgra.config.encoding.{config_module_id_high, config_module_id_low}
 import cgra.config.fullinst._
-import cgra.config.{inst_prop, system}
 import chisel3._
 import chisel3.util._
 
@@ -22,7 +22,7 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
   val module_name = name_p._1
   println("Initialize " + module_name)
   private val p = name_p._2.asInstanceOf[mutable.Map[String,Any]]
-  val module_id : Int = p("module_id").asInstanceOf[Int]
+  val module_id : Int = try{p("module_id").asInstanceOf[Int]}catch{case _:Throwable => get_new_id}
   val use_global : Boolean = try{p("use_global").asInstanceOf[Boolean]}
   catch {case _: Throwable => false}
   val input_ports : List[String] = try{p("input_ports").asInstanceOf[List[String]]}
@@ -43,7 +43,7 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
   }else{"Universal"}
   val register_file_size : Int = if(isShared){try{p("register_file_size").asInstanceOf[Int]}
   catch{case _:Throwable => 8}}else{0}
-  val data_word_width : Int = try {if(use_global) system.data_word_width else p("data_word_width").asInstanceOf[Int]}
+  val data_word_width : Int = try {if(use_global) system_var.data_word_width else p("data_word_width").asInstanceOf[Int]}
   catch{case _:Throwable => 64}
   val config_input_port : String = try p("config_input_port").toString catch{case _:Throwable => input_ports.head}
   val config_output_port : String = try p("config_output_port").toString catch{case _:Throwable => output_ports.head}
@@ -431,7 +431,7 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
 }
 
 object tester_pe extends App{
-  system.data_word_width = 64
+  system_var.data_word_width = 64
   val p : mutable.Map[String,Any] = mutable.Map[String,Any]()
   p += "module_name" -> "PE_Test"
   p += "module_id" -> {get_new_id;get_new_id;get_new_id;get_new_id;get_new_id;get_new_id;get_new_id;get_new_id}

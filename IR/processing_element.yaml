@@ -1,0 +1,28 @@
+system:
+  data_word_width: 64
+  num_module: 61
+
+module_type: Dedicated_PE_Hw
+module_id: 25
+use_global: true
+# Config
+config_input_port: northwest
+config_output_port: southeast
+# Input Output Capability
+input_ports: [northwest,northeast,southwest,southeast]
+output_ports: [southeast]
+# Decomposability
+isDecomposed: true
+decomposer: 1
+# Protocol
+protocol: Data
+# Control
+has_metaReuse: {valid: false,num_reuse: 4} #TODO
+# Shared Instruction
+isShared: false
+shared_slot_size: 32
+register_file_size: 8
+# Datapath
+delay_fifo_depth: 0 # Delay Pipe when protocol don't has Ready; Delay FIFO when protocol has Ready
+instructions: [Add,Sub,BOr,BAnd]
+output_select_mode: Universal #[ Individual ]

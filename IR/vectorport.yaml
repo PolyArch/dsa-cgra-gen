@@ -1,0 +1,8 @@
+system:
+  data_word_width: 64
+
+module_type: VectorPort_Hw
+io_type: "in"
+input_ports: [v1,v2,v3]
+output_ports: [v1]
+channel_buffer: 4

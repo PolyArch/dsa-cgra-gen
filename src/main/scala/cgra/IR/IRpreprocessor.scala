@@ -2,17 +2,20 @@ package cgra.IR
 
 import scala.collection.mutable
 import scala.collection.mutable.{ListBuffer, Map}
-import cgra.IR.IRconvertor._
-
+import cgra.config.system_var
+import cgra.config.system_util._
 object IRpreprocessor {
-
   var topology : List[String] = Nil
-
-  def preprocess(cgra:mutable.Map[String,Any]) ={
-    topology = cgra("topology").asInstanceOf[List[String]]
-    cgra("topology") = elaborate_conn
-    delete_useless_port(cgra)
-    cgra
+  def preprocess(ir:mutable.Map[String,Any]) ={
+    if(ir.isDefinedAt("system")){
+      set_system(ir("system"))
+    }
+    if(ir.isDefinedAt("topology")){
+      topology = ir("topology").asInstanceOf[List[String]]
+      ir("topology") = elaborate_conn
+      delete_useless_port(ir)
+    }
+    ir
   }
 
   def delete_useless_port(cgra:mutable.Map[String,Any]):Unit = {

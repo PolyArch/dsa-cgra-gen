@@ -3,13 +3,11 @@ package cgra.IR
 import org.yaml.snakeyaml.Yaml
 import java.io.{File, FileInputStream}
 import java.util
-import scala.collection.mutable._
 import IRconvertor._
-import cgra.config.system.data_word_width
 import cgra.IR.IRpreprocessor._
 
 object IRreader {
-  def readCgra(filename:String) = {
+  def readIR(filename:String) = {
     val input = new FileInputStream(new File(filename))
     val yaml = new Yaml()
     val j_cgra = yaml.load(input).asInstanceOf[util.Map[String,Any]]

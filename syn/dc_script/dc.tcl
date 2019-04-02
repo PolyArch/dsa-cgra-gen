@@ -524,7 +524,7 @@ if { $OPTIMIZATION_FLOW == "hc"} {
 if { $OPTIMIZATION_FLOW == "rtm_exp"} {
   if {[shell_is_in_topographical_mode]} {
   
-      set_host_options -max_cores 8
+      set_host_options -max_cores $max_cores
       # The following command overrides runtime-intensive user settings with settings designed
       # to improve runtime. Since the run time intensive optimizations are turned off it might 
       # impact QoR. You can use this as an exploration flow when run time is a concern.
@@ -685,7 +685,7 @@ write_sdc -nosplit ${RESULTS_DIR}/${DCRM_FINAL_SDC_OUTPUT_FILE}
 #################################################################################
 
 if { $OPTIMIZATION_FLOW  == "rtm_exp"} {
-  set_host_options -max_cores 8
+  set_host_options -max_cores $max_cores
   update_timing
 
   parallel_execute [list \

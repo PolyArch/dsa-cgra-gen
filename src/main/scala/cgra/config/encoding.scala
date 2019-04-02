@@ -1,7 +1,7 @@
 package cgra.config
 
-import cgra.config.system._
-import cgra.IR.global_var.module_id_width
+import cgra.config.system_var._
+import cgra.config.system_util._
 
 object encoding {
   var data_high = data_word_width - 1

@@ -7,11 +7,11 @@ import scala.collection.mutable
 object IRinstantiator {
   def instantiateCgra (outputDir:String,cgra:mutable.Map[String,Any])={
     val args = Array("--target-dir",outputDir)
-    val system = cgra("system").asInstanceOf[mutable.Map[String,Any]]
+    val module_type = cgra("module_type").toString
     chisel3.Driver.execute(args,()=>{
-      val c = Class.forName("cgra.fabric."+system("module_type")toString)
-        .getConstructor(classOf[mutable.Map[String,Any]])
-        .newInstance(cgra).asInstanceOf[RawModule]
+      val c = Class.forName("cgra.fabric."+module_type)
+        .getConstructor(classOf[(String,mutable.Map[String,Any])])
+        .newInstance((module_type,cgra)).asInstanceOf[RawModule]
       c
     }
     )

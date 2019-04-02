@@ -1,9 +1,9 @@
 package cgra.fabric
 
 import cgra.IO.ReqAckConf_if
-import cgra.config.system
+import cgra.config.system_var
+import cgra.config.system_util._
 import chisel3._
-
 import scala.xml.Elem
 import cgra.fabric.Trig_PE_component.common.datapath.{arithmetic_logic_unit, register_file, scratchpad}
 import cgra.fabric.Trig_PE_component.common.interconnect._
@@ -14,7 +14,6 @@ import cgra.fabric.Trig_PE_component.instruction._
 import cgra.fabric.Trig_PE_component.control._
 import cgra.fabric.Trig_PE_component.datapath._
 import cgra.IO.mmio_if
-import cgra.IR.global_var.get_new_id
 import cgra.fabric.Trig_PE_component.tia_parameters.derived_parameters._
 import cgra.fabric.Trig_PE_component.tia_parameters.fixed_parameters._
 import chisel3._
@@ -34,7 +33,7 @@ class Trig_PE_Hw(name_p:(String,Any)) extends Module
   catch{case _:Throwable => List("northeast","southeast","northwest","southwest")}
   private val num_input = input_ports.length
   private val num_output = output_ports.length
-  val data_word_width : Int = system.data_word_width
+  val data_word_width : Int = system_var.data_word_width
   val decomposer : Int = 1 // TODO : Triggered Inst. + Decomposability
   val protocol : String = "DataValidReadyConfig" // TODO : Explore possible other protocol ?
 
@@ -402,10 +401,11 @@ class Trig_PE_Hw(name_p:(String,Any)) extends Module
   }
 }
 
-import cgra.IR.global_var.get_new_id
+import cgra.config.system_var
+import cgra.config.system_util._
 
 object tester_trig_pe extends App{
-  system.data_word_width = 64
+  system_var.data_word_width = 64
   val p : mutable.Map[String,Any] = mutable.Map[String,Any]()
 
   p += "module_type"-> "shared_pe"

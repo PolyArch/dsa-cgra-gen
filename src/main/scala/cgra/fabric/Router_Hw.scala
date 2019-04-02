@@ -1,13 +1,13 @@
 package cgra.fabric
 
 import cgra.IO._
-import cgra.config.system
 import chisel3.util._
+import cgra.config.system_var
+import cgra.config.system_util._
 import chisel3._
 import cgra.IO.port_generator._
 import cgra.config.encoding.{config_module_id_high, config_module_id_low}
 import cgra.fabric.common.datapath.Multiplexer
-
 import scala.collection.mutable
 import scala.xml.Elem
 
@@ -18,10 +18,10 @@ class Router_Hw(pp:(String,Any)) extends Module
   // Knob Parameters
   val module_name : String = pp._1
   println("Initialize " + module_name)
-  val module_id : Int = p("module_id").asInstanceOf[Int]
+  val module_id : Int = try{p("module_id").asInstanceOf[Int]}catch{case _:Throwable => get_new_id}
   val use_global : Boolean = try{p("use_global").asInstanceOf[Boolean]}
   catch {case _: Throwable => false}
-  val data_word_width : Int = try {if(use_global) system.data_word_width else p("data_word_width").asInstanceOf[Int]}
+  val data_word_width : Int = try {if(use_global) system_var.data_word_width else p("data_word_width").asInstanceOf[Int]}
   catch{case _:Throwable => 64}
   val input_ports : List[String] = try{p("input_ports").asInstanceOf[List[String]]}
   catch{case _:Throwable => List("north","south","east","west","northwest")}
@@ -296,14 +296,15 @@ class Router_Hw(pp:(String,Any)) extends Module
 }
 
 
-import cgra.IR.global_var._
+import cgra.config.system_var
+import cgra.config.system_util._
 
 object tester_router extends App{
 // Knob Parameters
-system.data_word_width = 64
+system_var.data_word_width = 64
 val p : mutable.Map[String,Any] = mutable.Map[String,Any]()
 p += "module_name" -> "Router_Test"
-p += "module_id" -> {for(i <- 0 until 60){get_new_id}
+p += "module_id" -> {for(i <- 0 until 60) get_new_id
   get_new_id
 }
 p += "protocol" -> "Data"

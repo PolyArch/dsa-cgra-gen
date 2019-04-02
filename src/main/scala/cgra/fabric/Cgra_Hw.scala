@@ -2,8 +2,8 @@ package cgra.fabric
 
 import cgra.IO.{ReqAckConf_if, mmio_if}
 import cgra.IR.IRpreprocessor._
-import cgra.config.system
-import cgra.config.system.update_system
+import cgra.config.system_var
+import cgra.config.system_util._
 import cgra.fabric.Trig_PE_component.common.mmio.unused_host_interface
 import cgra.fabric.Trig_PE_component.tia_parameters.fixed_parameters.{TIA_MMIO_DATA_WIDTH, TIA_MMIO_INDEX_WIDTH}
 import chisel3._
@@ -11,18 +11,17 @@ import cgra.fabric.common.interconnect.Decomp_Adapter._
 import scala.collection.mutable
 import scala.collection.mutable._
 import scala.xml.Elem
-import cgra.IR.global_var.get_new_id
 
-class Cgra_Hw(cgra:mutable.Map[String,Any]) extends Module
+class Cgra_Hw(name_p:(String,mutable.Map[String,Any])) extends Module
   with Has_IO
   with Reconfigurable {
   // ------ System Parameter ------
-  update_system(cgra("system"))
-  private val input_ports = system.input_ports
-  private val output_ports = system.output_ports
+  val cgra = name_p._2
+  val data_word_width : Int = system_var.data_word_width
+  private val input_ports = cgra("input_ports").asInstanceOf[List[String]]
+  private val output_ports = cgra("output_ports").asInstanceOf[List[String]]
   private val num_input : Int = input_ports.length
   private val num_output : Int = output_ports.length
-  val data_word_width : Int = system.data_word_width
   val decomposer : Int = 1
   val protocol : String = "DataValidReadyConfig"
   private val AllModules : Map[String,Any] = Map[String,Any]()
@@ -39,13 +38,13 @@ class Cgra_Hw(cgra:mutable.Map[String,Any]) extends Module
   // ------ Calculate Configuration ------
   // Eliminate Default and Add Module ID
   private val vector_ports = try{cgra("vector_ports").asInstanceOf[mutable.Map[String,Any]]
-    .filter(p => {add_module_id(p._2);!p._1.startsWith("default")})}catch{case _:Throwable => null}
+    .filter(p => {!p._1.startsWith("default")})}catch{case _:Throwable => null}
   private val routers = try{cgra("routers").asInstanceOf[mutable.Map[String,Any]]
-    .filter(p => {add_module_id(p._2);!p._1.startsWith("default")})}catch{case _:Throwable => null}
+    .filter(p => {!p._1.startsWith("default")})}catch{case _:Throwable => null}
   private val dedicated_pes = try{cgra("dedicated_pes").asInstanceOf[mutable.Map[String,Any]]
-    .filter(p => {add_module_id(p._2);!p._1.startsWith("default")})}catch{case _:Throwable => null}
+    .filter(p => {!p._1.startsWith("default")})}catch{case _:Throwable => null}
   private val shared_pes = try{cgra("shared_pes").asInstanceOf[mutable.Map[String,Any]]
-    .filter(p => {add_module_id(p._2);!p._1.startsWith("default")})}catch{case _:Throwable => null}
+    .filter(p => {!p._1.startsWith("default")})}catch{case _:Throwable => null}
 
 
   /*
@@ -169,10 +168,5 @@ class Cgra_Hw(cgra:mutable.Map[String,Any]) extends Module
       {if(dedicated_pes_hw != null) <Dedicated_PEs>{dedicated_pes_hw.map(r=>r._2.asInstanceOf[Reconfigurable].config2XML)}</Dedicated_PEs>}
       {if(shared_pes_hw != null) <Shared_PEs>{shared_pes_hw.map(r=>r._2.asInstanceOf[Reconfigurable].config2XML)}</Shared_PEs>}
     </CGRA>
-  }
-
-  def add_module_id(pp:Any):Unit={
-    val p = pp.asInstanceOf[mutable.Map[String,Any]]
-    p += "module_id" -> get_new_id
   }
 }

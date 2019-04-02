@@ -1,0 +1,23 @@
+system:
+  data_word_width: 64
+  num_module: 61
+
+module_type: Router_Hw
+module_id: 25
+use_global: true
+# Input / Output
+input_ports: [north,south,east,west,northeast,northwest,southeast,southwest]
+output_ports: [north,south,east,west,northeast,northwest,southeast,southwest]
+config_input_port: north
+config_output_port: south
+# Decomposability
+isDecomposed: true
+decomposer: 8
+# Protocol (Ready = Dynamic, Non-Ready = Static)
+protocol: DataValidReady
+# Shared
+isShared: true
+back_pressure_fifo_depth: 2
+shared_slot_size: 32
+# Interconnection between Subent
+inter_subnet_connection: []

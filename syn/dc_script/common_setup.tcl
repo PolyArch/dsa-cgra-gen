@@ -9,17 +9,33 @@ source -echo -verbose ./dc_script/lib_setup_umc28.tcl
 # Copyright (C) 2007-2017 Synopsys, Inc. All rights reserved.
 ##########################################################################################
 
-set DESIGN_NAME "Dedicated_PE_Hw" ;#  The name of the top-level design
-set DESIGN_FILE_NAME "Dedicated_PE_Hw_Shar_Stat_1"
+##########################################################################################
+# Source File and Frequency Setup
+##########################################################################################
 
-set Period 0.8 ;#ns 1/Period = frequency (GHz)
+#  The name of the top-level design
+set DESIGN_NAME "Dedicated_PE_Hw" ;	
+
+set DESIGN_FILE_NAME "Dedicated_PE_Hw_Shar_Stat_1";
+
+set RTL_SOURCE_DIR "/home/sihao/ss-cgra-gen/verilog-output/verilog-output-backup-20190330/";
+
+#ns 1/Period = frequency (GHz)
+set Period 0.8 ;
+
+##########################################################################################
+# Design Compiler Setup
+##########################################################################################
+
+set max_cores 8;
+
+##########################################################################################
+# Derived Results / Reports Variables
+##########################################################################################
 
 set REPORTS_DIR ./Reports/${DESIGN_NAME}_${DESIGN_FILE_NAME}_${MajorFeature}_${LibraryFeature}_${DesignDirection}_${Process}_${VT}_${modelType}_${cellType}_${voltage}_${temperature}_${Period}ns
 set RESULTS_DIR ./Results/${DESIGN_NAME}_${DESIGN_FILE_NAME}_${MajorFeature}_${LibraryFeature}_${DesignDirection}_${Process}_${VT}_${modelType}_${cellType}_${voltage}_${temperature}_${Period}ns
-
-set RTL_SOURCE_DIR "/home/sihao/ss-cgra-gen/verilog-output/verilog-output-backup-20190330/"
 set RTL_SOURCE_FILES  ${RTL_SOURCE_DIR}${DESIGN_FILE_NAME}.v      ;# Enter the list of source RTL files if reading from RTL
-
 set DESIGN_REF_DATA_PATH          ""  ;#  Absolute path prefix variable for library/design data.
                                        #  Use this variable to prefix the common absolute path  
                                        #  to the common variables defined below.
@@ -40,7 +56,7 @@ set HIERARCHICAL_CELLS             ""
 # For the following variables, use a blank space to separate multiple entries.
 # Example: set TARGET_LIBRARY_FILES "lib1.db lib2.db lib3.db"
 
-set ADDITIONAL_SEARCH_PATH        "/home/sihao/Synopsys/UMC_28nm/ManuallyAddLibrary"  ;#  Additional search path to be added to the default search path
+set ADDITIONAL_SEARCH_PATH        $manully_add_path  ;#  Additional search path to be added to the default search path
 
 set MIN_LIBRARY_FILES             ""  ;#  List of max min library pairs "max1 min1 max2 min2 max3 min3"...
 

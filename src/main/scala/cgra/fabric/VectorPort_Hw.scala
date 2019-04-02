@@ -3,7 +3,8 @@ package cgra.fabric
 import java.lang.Throwable
 
 import cgra.IO.{ReqAckConf_if, ReqAckConf_t}
-import cgra.config.system
+import cgra.config.system_var
+import cgra.config.system_util._
 import chisel3._
 import chisel3.util._
 import cgra.IO.port_generator._
@@ -22,7 +23,7 @@ class VectorPort_Hw(pp:(String,Any)) extends Module
   val output_ports : List[String] = p("output_ports").asInstanceOf[List[String]]
   val channel_buffer : Int = try{p("channel_buffer").asInstanceOf[Int]}catch{case _: Throwable => 2}
   val data_word_width : Int = try{p("data_word_width").asInstanceOf[Int]}
-  catch{case _:Throwable => try{system.data_word_width}catch{case _:Throwable =>64}}
+  catch{case _:Throwable => try{system_var.data_word_width}catch{case _:Throwable =>64}}
   val decomposer : Int = 1 // Not need to build a decomposable VP here
   val protocol : String = try{p("protocol").toString}catch{case _:Throwable => "DataValidReadyConfig"}
 
@@ -186,7 +187,8 @@ class VectorPort_Hw(pp:(String,Any)) extends Module
   }
 }
 
-import cgra.IR.global_var._
+import cgra.config.system_var
+import cgra.config.system_util._
 
 class vp_tester(vp: VectorPort_Hw) extends PeekPokeTester(vp){
   poke(vp.io.in(0).bits,11)
@@ -231,7 +233,7 @@ channel_buffer = 3
 output_ports = List(v1, v2)
 input_ports = List(v1)
    */
-  system.data_word_width = 32
+  system_var.data_word_width = 32
   val p: mutable.Map[String,Any] = mutable.Map[String,Any]()
   p += "input_ports" -> List("v0")
   p += "output_ports" -> List("v0","v1")
@@ -244,7 +246,7 @@ input_ports = List(v1)
 }
 
 object initialize_vp extends App{
-  system.data_word_width = 32
+  system_var.data_word_width = 32
   val p: mutable.Map[String,Any] = mutable.Map[String,Any]()
   p += "input_ports" -> List("v1")
   p += "output_ports" -> List("v1","v2","v3")

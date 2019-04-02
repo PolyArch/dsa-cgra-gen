@@ -29,9 +29,9 @@ class simple_dfg_tester(cgra_Hw: Cgra_Hw) extends PeekPokeTester(cgra_Hw){
 }
 
 object simple_dfg extends App{
-  val cgra_hw = readCgra(args(0))
+  val cgra_hw = readIR(args(0))
   iotesters.Driver.execute(args, () =>
-    new Cgra_Hw(cgra_hw)
+    new Cgra_Hw("simple_cgra",cgra_hw)
   ){
     c => new simple_dfg_tester(c)
   }
