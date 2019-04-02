@@ -1,0 +1,43 @@
+system:
+  data_word_width: 64 # Host bus information.
+  host_word_width: 32 # Fixed, for now.
+  num_test_data_memory_words: 32786 # Test memory system.
+  test_data_memory_buffer_depth: 4
+
+module_type: Trig_PE_Hw
+# I/O
+input_ports: [northwest,northeast,southwest,southeast]
+output_ports: [northwest,northeast,southwest,southeast]
+# Base architecture.
+architecture: integer
+immediate_width: 32
+mm_instruction_width: 128
+instructions: [Sub,Div,Mul,BOr,BAnd]
+num_instructions: 16
+num_predicates: 8
+num_registers: 8
+# Instruction features.
+has_multiplier: true
+has_two_word_product_multiplier: true
+has_scratchpad: false
+num_scratchpad_words: 512
+spm_depth: 8
+# Instruction memory microarchitecture.
+latch_based_instruction_memory: false
+ram_based_immediate_storage: false
+# Channels.
+channel_buffer_depth: 2 # Must be >= 2.
+max_num_input_channels_to_check: 2
+num_tags: 3
+# Pipeline features.
+has_speculative_predicate_unit: true
+has_effective_queue_status: true
+# Debugging and profiling features.
+has_debug_monitor: true
+has_performance_counters: true
+has_software_router: false
+has_switch_router: true
+num_physical_planes: 1
+memory_link_buffer_fifo_depth: 4
+num_data_memory_words: 32786
+num_scratchpad_words_if_enabled: 512
