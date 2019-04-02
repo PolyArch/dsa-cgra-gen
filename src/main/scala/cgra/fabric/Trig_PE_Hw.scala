@@ -414,7 +414,7 @@ object tester_trig_pe extends App{
   p += "architecture"-> "integer"
   p += "immediate_width"-> 32
   p += "mm_instruction_width"-> 128
-  p += "instructions"-> List("Sub","Div","Mul","BOr","BAnd")
+  p += "instructions"-> List("Add","Sub","BNot","BOr","BAnd", "GT","GE","LT","LE","LShf","RShf")
   p += "num_instructions"-> 16
   p += "num_predicates"-> 8
   p += "num_registers"-> 8

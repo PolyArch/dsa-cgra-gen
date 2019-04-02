@@ -8,12 +8,15 @@ object IRpreprocessor {
 
   var topology : List[String] = Nil
 
-  def preprocess(cgra:mutable.Map[String,Any]):Unit={
+  def preprocess(cgra:mutable.Map[String,Any]) ={
+    topology = cgra("topology").asInstanceOf[List[String]]
+    cgra("topology") = elaborate_conn
     delete_useless_port(cgra)
+    cgra
   }
 
   def delete_useless_port(cgra:mutable.Map[String,Any]):Unit = {
-    topology = cgra("topology").asInstanceOf[List[String]]
+
     if(cgra.isDefinedAt("vector_ports")) delete_useless_port(cgra("vector_ports"))
     if(cgra.isDefinedAt("dedicated_pes")) delete_useless_port(cgra("dedicated_pes"))
     if(cgra.isDefinedAt("shared_pes")) delete_useless_port(cgra("shared_pes"))
@@ -45,19 +48,20 @@ object IRpreprocessor {
     temp_c
   }
 
-  def elaborate_conn:Unit={
+  def elaborate_conn ={
     val temp = topology.to[ListBuffer]
     for (i <- topology.indices){
       val curr = topology(i)
-      if(curr.contains("<>")){
-        val a : String = curr.split("<>").head
-        val b : String = curr.split("<>")(1)
+      if(curr.contains("<->")){
+        val a : String = curr.split("<->").head
+        val b : String = curr.split("<->")(1)
         temp -= curr
         temp += a + "->" + b
         temp += b + "->" + a
       }
     }
     topology = temp.toList
+    topology
   }
 
   class port_location {

@@ -20,6 +20,7 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
 
   // Extract Parameter
   val module_name = name_p._1
+  println("Initialize " + module_name)
   private val p = name_p._2.asInstanceOf[mutable.Map[String,Any]]
   val module_id : Int = p("module_id").asInstanceOf[Int]
   val use_global : Boolean = try{p("use_global").asInstanceOf[Boolean]}
@@ -118,9 +119,11 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
     alu.inst = instructions
     alu.alu_word_width = decomped_data_word_width
     alu.protocol = protocol
-    alu.opcode_config_low = pre_high_bit + 1
-    alu.opcode_config_high = alu.opcode_config_low + log2Ceil(instructions.length) - 1
-    pre_high_bit = alu.opcode_config_high
+    if(instructions.length > 1){
+      alu.opcode_config_low = pre_high_bit + 1
+      alu.opcode_config_high = alu.opcode_config_low + log2Ceil(instructions.length) - 1
+      pre_high_bit = alu.opcode_config_high
+    }
     if(output_select_mode=="Individual"){
       val temp : ListBuffer[String] = alu.sink.to[ListBuffer]
       for(output_port <- output_ports)
@@ -230,7 +233,7 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
     }
   }
 
-  // ------- Create Hardware  New Version
+  // ------- Create Hardware
   // Create Register File
   val register_file : Vec[Vec[UInt]] = if(isShared){
     RegInit(VecInit(Seq.fill(decomposer)(VecInit(Seq.fill(register_file_size)(0.U(decomped_data_word_width.W))))))
@@ -243,7 +246,12 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
     val alu = all_ALUs.find(a=>a.subnet == subnet).get
     val alu_hw = all_alu_hw(all_ALUs.indexOf(alu))
     alu_hw.in.foreach(gc_port(_,protocol));gc_port(alu_hw.out,protocol)
-    alu_hw.opcode := config_register_files(subnet)(alu.opcode_config_high,alu.opcode_config_low)
+    if(alu.inst.length > 1){
+      alu_hw.opcode := config_register_files(subnet)(alu.opcode_config_high,alu.opcode_config_low)
+    }else{
+      alu_hw.opcode := 0.U
+    }
+
     val alu_sinks : List[String] = alu.sink
     val alu_output_select_wire = if(alu_sinks.length > 1)
       Wire(UInt(log2Ceil(alu.sink.length).W))else
@@ -427,15 +435,17 @@ object tester_pe extends App{
   val p : mutable.Map[String,Any] = mutable.Map[String,Any]()
   p += "module_name" -> "PE_Test"
   p += "module_id" -> {get_new_id;get_new_id;get_new_id;get_new_id;get_new_id;get_new_id;get_new_id;get_new_id}
-  // p += "output_ports" -> List("south","north","east")
-  // p += "output_select_mode" -> "Individual"
-  p += "protocol" -> "Data_Valid_Ready"
+
+  p += "protocol" -> "DataValidReady"
   p += "delay_fifo_depth" -> 4
-  p += "isDecomposed" -> true
-  p += "decomposer" -> 4
-  p += "isShared" -> false
+  p += "instructions" -> List("Add", "Sub", "BOr", "BAnd")
+
+  p += "isDecomposed" -> false
+  p += "decomposer" -> 1
+
+  p += "isShared" -> true
   p += "shared_slot_size" -> 32
   p += "register_file_size" -> 8
-  p += "instructions" -> List("Add","Sub","BOr","BAnd")
+
   chisel3.Driver.execute(args,()=>{new Dedicated_PE_Hw("test",p)})
 }

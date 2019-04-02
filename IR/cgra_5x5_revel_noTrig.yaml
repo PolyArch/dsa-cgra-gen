@@ -1,0 +1,577 @@
+#                _
+#   ___ _   _ ___| |_ ___ _ __ ___
+#  / __| | | / __| __/ _ \ _ ` _ \
+#  \__ \ |_| \__ \ ||  __/ | | | | |
+#  |___/\__, |___/\__\___|_| |_| |_|
+#       |___/
+#
+
+system:
+  # Type
+  module_type: Cgra_Hw
+  # IO
+  input_ports: [i0,i1,i2,i3,i4,i5,i6,i7,i8,i9,i10]
+  output_ports: [o0,o1,o2,o3,o4,o5,o6,o7,o8]
+  # Data Information
+  data_word_width: 64
+  # Host bus information.
+  host_word_width: 32 # Fixed, for now.
+  # Test memory system.
+  num_test_data_memory_words: 32786
+  test_data_memory_buffer_depth: 4
+
+#     ____             _
+#    |  _ \ ___  _   _| |_ ___ _ __
+#    | |_) / _ \| | | | __/ _ \ __|
+#    |  _ < (_) | |_| | ||  __/ |
+#    |_| \_\___/ \__,_|\__\___|_|
+#
+
+routers:
+  default: &default_router
+    module_type: router
+    # Input / Output
+    input_ports: [north,south,east,west,northeast,northwest,southeast,southwest]
+    output_ports: [north,south,east,west,northeast,northwest,southeast,southwest]
+    config_input_port: northwest
+    config_output_port: southwest
+    # Data Word Width use global or not
+    use_global: true
+    # Decomposability
+    isDecomposed: false
+    decomposer: 1
+    # Protocol (Ready = Dynamic, Non-Ready = Static)
+    protocol: Data
+    # Shared
+    isShared: false
+    back_pressure_fifo_depth: 2
+    shared_slot_size: 32
+    # Interconnection between Subent
+    inter_subnet_connection: []
+
+  router_1: &router_1
+    <<: *default_router
+    config_input_port: north
+    config_output_port: east
+
+  router_2: &router_2
+    <<: *default_router
+    config_input_port: west
+    config_output_port: southwest
+
+
+  router_3: &router_3
+    <<: *default_router
+    config_input_port: north
+    config_output_port: southwest
+
+
+  router_4: &router_4
+    <<: *default_router
+    config_input_port: north
+    config_output_port: southwest
+
+  router_5: &router_5
+    <<: *default_router
+    config_input_port: north
+    config_output_port: southwest
+
+  router_6: &router_6
+    <<: *default_router
+    config_input_port: north
+    config_output_port: southwest
+
+  router_7: &router_7
+    <<: *default_router
+    config_input_port: east
+    config_output_port: southeast
+
+  router_8: &router_8
+    <<: *default_router
+    config_input_port: northwest
+    config_output_port: west
+
+
+  router_9: &router_9
+    <<: *default_router
+
+  router_10: &router_10
+    <<: *default_router
+
+  router_11: &router_11
+    <<: *default_router
+
+  router_12: &router_12
+    <<: *default_router
+
+  router_13: &router_13
+    <<: *default_router
+    config_input_port: east
+    config_output_port: southeast
+
+
+  router_14: &router_14
+    <<: *default_router
+    config_input_port: northwest
+    config_output_port: west
+
+
+  router_15: &router_15
+    <<: *default_router
+
+  router_16: &router_16
+    <<: *default_router
+
+  router_17: &router_1
+    <<: *default_router
+
+  router_18: &router_2
+    <<: *default_router
+
+
+  router_19: &router_3
+    <<: *default_router
+    config_input_port: east
+    config_output_port: southeast
+
+
+  router_20: &router_4
+    <<: *default_router
+    config_input_port: northwest
+    config_output_port: west
+
+  router_21: &router_5
+    <<: *default_router
+
+  router_22: &router_6
+    <<: *default_router
+
+  router_23: &router_7
+    <<: *default_router
+
+  router_24: &router_8
+    <<: *default_router
+
+  router_25: &router_9
+    <<: *default_router
+    config_input_port: east
+    config_output_port: southeast
+
+  router_26: &router_10
+    <<: *default_router
+    config_input_port: northwest
+    config_output_port: west
+
+  router_27: &router_11
+    <<: *default_router
+
+  router_28: &router_12
+    <<: *default_router
+
+  router_29: &router_13
+    <<: *default_router
+
+  router_30: &router_14
+    <<: *default_router
+
+  router_31: &router_15
+    <<: *default_router
+    config_input_port: east
+    config_output_port: north
+
+  router_32: &router_16
+    <<: *default_router
+    config_input_port: northwest
+    config_output_port: south
+
+  router_33: &router_16
+    <<: *default_router
+    config_input_port: northwest
+    config_output_port: south
+
+  router_34: &router_16
+    <<: *default_router
+    config_input_port: northwest
+    config_output_port: south
+
+  router_35: &router_16
+    <<: *default_router
+    config_input_port: northwest
+    config_output_port: south
+
+  router_36: &router_16
+    <<: *default_router
+    config_input_port: northwest
+    config_output_port: south
+#   ____           _ _           _           _   ____  _____
+#  |  _ \  ___  __| (_) ___ __ _| |_ ___  __| | |  _ \| ____|
+#  | | | |/ _ \/ _` | |/ __/ _` | __/ _ \/ _` | | |_) |  _|
+#  | |_| |  __/ (_| | | (_| (_| | ||  __/ (_| | |  __/| |___
+#  |____/ \___|\__,_|_|\___\__,_|\__\___|\__,_| |_|   |_____|
+#
+
+dedicated_pes:
+  default_dedicated_pe: &default_dedicated_pe
+    module_type: dedicated_pe
+    use_global: true
+    # Config
+    config_input_port: northeast
+    config_output_port: southeast
+    # Input Output Capability
+    input_ports: [northwest,northeast,southwest,southeast]
+    output_ports: [southeast]
+    # Decomposability
+    isDecomposed: false
+    decomposer: 1
+    # Protocol
+    protocol: Data
+    # Control
+    has_metaReuse: {valid: false,num_reuse: 4} #TODO
+    # Shared Instruction
+    isShared: false
+    shared_slot_size: 32
+    register_file_size: 8
+    # Datapath
+    delay_fifo_depth: 4 # Delay Pipe when protocol don't has Ready; Delay FIFO when protocol has Ready
+    instructions: [BOr]
+    output_select_mode: Universal #[ Individual ]
+
+  dedicated_pe_1: &dedicated_pe_1
+    <<: *default_dedicated_pe
+
+  dedicated_pe_2: &dedicated_pe_2
+    <<: *default_dedicated_pe
+
+  dedicated_pe_3: &dedicated_pe_3
+    <<: *default_dedicated_pe
+
+  dedicated_pe_4: &dedicated_pe_4
+    <<: *default_dedicated_pe
+
+  dedicated_pe_5: &dedicated_pe_5
+    <<: *default_dedicated_pe
+
+  dedicated_pe_6: &dedicated_pe_6
+    <<: *default_dedicated_pe
+    config_input_port: northwest
+    config_output_port: southeast
+
+  dedicated_pe_7: &dedicated_pe_7
+    <<: *default_dedicated_pe
+
+  dedicated_pe_8: &dedicated_pe_1
+    <<: *default_dedicated_pe
+
+  dedicated_pe_9: &dedicated_pe_2
+    <<: *default_dedicated_pe
+
+  dedicated_pe_10: &dedicated_pe_3
+    <<: *default_dedicated_pe
+
+  dedicated_pe_11: &dedicated_pe_4
+    <<: *default_dedicated_pe
+    config_input_port: northwest
+    config_output_port: southeast
+
+  dedicated_pe_12: &dedicated_pe_5
+    <<: *default_dedicated_pe
+
+  dedicated_pe_13: &dedicated_pe_6
+    <<: *default_dedicated_pe
+
+  dedicated_pe_14: &dedicated_pe_7
+    <<: *default_dedicated_pe
+
+  dedicated_pe_15: &dedicated_pe_5
+    <<: *default_dedicated_pe
+
+  dedicated_pe_16: &dedicated_pe_6
+    <<: *default_dedicated_pe
+    config_input_port: northwest
+    config_output_port: southeast
+
+  dedicated_pe_17: &dedicated_pe_7
+    <<: *default_dedicated_pe
+
+  dedicated_pe_18: &dedicated_pe_1
+    <<: *default_dedicated_pe
+
+  dedicated_pe_19: &dedicated_pe_2
+    <<: *default_dedicated_pe
+
+  dedicated_pe_20: &dedicated_pe_3
+    <<: *default_dedicated_pe
+
+  dedicated_pe_21: &dedicated_pe_4
+    <<: *default_dedicated_pe
+    config_input_port: northwest
+    config_output_port: southeast
+
+  dedicated_pe_22: &dedicated_pe_5
+    <<: *default_dedicated_pe
+
+  dedicated_pe_23: &dedicated_pe_6
+    <<: *default_dedicated_pe
+
+  dedicated_pe_24: &dedicated_pe_6
+    <<: *default_dedicated_pe
+
+  dedicated_pe_25: &dedicated_pe_6
+    <<: *default_dedicated_pe
+
+
+
+#   _____                 _
+#  |_   _|__  _ __   ___ | | ___   __ _ _   _
+#    | |/ _ \| '_ \ / _ \| |/ _ \ / _` | | | |
+#    | | (_) | |_) | (_) | | (_) | (_| | |_| |
+#    |_|\___/| .__/ \___/|_|\___/ \__, |\__, |
+#            |_|                  |___/ |___/
+
+topology: [
+  #                  ------ Vector Port Connection ------
+  # Input -> Vector Port
+  this.i0 -> router_1.north,
+  this.i1 -> router_2.north,
+  this.i2 -> router_3.north,
+  this.i3 -> router_4.north,
+  this.i4 -> router_5.north,
+  this.i5 -> router_7.west,
+  this.i6 -> router_13.west,
+  this.i7 -> router_19.west,
+  this.i8 -> router_25.west,
+  this.i9 -> router_31.west,
+  this.i10 -> router_6.north,
+  # Vector Port -> Output
+  router_12.east -> this.o0,
+  router_18.east -> this.o1,
+  router_24.east -> this.o2,
+  router_30.east -> this.o3,
+  router_32.south -> this.o4,
+  router_33.south -> this.o5,
+  router_34.south -> this.o6,
+  router_35.south -> this.o7,
+  router_36.south -> this.o8,
+  #                  ------ Router Connection ------
+  # Router 1 Connection
+  router_1.east <-> router_2.west,
+  router_1.south<-> router_7.north,
+  # Router 2 Connection
+  router_2.east <-> router_3.west,
+  router_2.south<-> router_8.north,
+  # Router 3 Connection
+  router_3.east <-> router_4.west,
+  router_3.south<-> router_9.north,
+  # Router 4 Connection
+  router_4.east <-> router_5.west,
+  router_4.south<-> router_10.north,
+  # Router 5 Connection
+  router_5.east <-> router_6.west,
+  router_5.south<-> router_11.north,
+  # Router 6 Connection
+  router_6.south<-> router_12.north,
+  # Router 7 Connection
+  router_7.east <-> router_8.west,
+  router_7.south<-> router_13.north,
+  # Router 8 Connection
+  router_8.east <-> router_9.west,
+  router_8.south<-> router_14.north,
+  # Router 9 Connection
+  router_9.east <-> router_10.west,
+  router_9.south<-> router_15.north,
+  # Router 10 Connection
+  router_10.east <-> router_11.west,
+  router_10.south<-> router_16.north,
+  # Router 11 Connection
+  router_11.east <-> router_12.west,
+  router_11.south<-> router_17.north,
+  # Router 12 Connection
+  router_12.south<-> router_18.north,
+  # Router 13 Connection
+  router_13.east <-> router_14.west,
+  router_13.south<-> router_19.north,
+  # Router 14 Connection
+  router_14.east <-> router_15.west,
+  router_14.south<-> router_20.north,
+  # Router 15 Connection
+  router_15.east <-> router_16.west,
+  router_15.south<-> router_21.north,
+  # Router 16 Connection
+  router_16.east <-> router_17.west,
+  router_16.south<-> router_22.north,
+  # Router 17 Connection
+  router_17.east <-> router_18.west,
+  router_17.south<-> router_23.north,
+  # Router 18 Connection
+  router_18.south<-> router_24.north,
+  # Router 19 Connection
+  router_19.east <-> router_20.west,
+  router_19.south<-> router_25.north,
+  # Router 20 Connection
+  router_20.east <-> router_21.west,
+  router_20.south<-> router_26.north,
+  # Router 21 Connection
+  router_21.east <-> router_22.west,
+  router_21.south<-> router_27.north,
+  # Router 22 Connection
+  router_22.east <-> router_23.west,
+  router_22.south<-> router_28.north,
+  # Router 23 Connection
+  router_23.east <-> router_24.west,
+  router_23.south<-> router_29.north,
+  # Router 24 Connection
+  router_24.south<-> router_30.north,
+  # Router 25 Connection
+  router_25.east <-> router_26.west,
+  router_25.south<-> router_31.north,
+  # Router 26 Connection
+  router_26.east <-> router_27.west,
+  router_26.south<-> router_32.north,
+  # Router 27 Connection
+  router_27.east <-> router_28.west,
+  router_27.south<-> router_33.north,
+  # Router 28 Connection
+  router_28.east <-> router_29.west,
+  router_28.south<-> router_34.north,
+  # Router 29 Connection
+  router_29.east <-> router_30.west,
+  router_29.south<-> router_35.north,
+  # Router 30 Connection
+  router_30.south<-> router_36.north,
+  # Router 31 Connection
+  router_31.east <-> router_32.west,
+  # Router 32 Connection
+  router_32.east <-> router_33.west,
+  # Router 33 Connection
+  router_33.east <-> router_34.west,
+  # Router 34 Connection
+  router_34.east <-> router_35.west,
+  # Router 35 Connection
+  router_35.east <-> router_36.west,
+  #                  ------ Processing Elements Connection ------
+  # Processing Element 1
+  router_1.southeast->dedicated_pe_1.northwest,
+  router_2.southwest->dedicated_pe_1.northeast,
+  router_7.northeast->dedicated_pe_1.southwest,
+  router_8.northwest<->dedicated_pe_1.southeast,
+  # Processing Element 2
+  router_2.southeast ->dedicated_pe_2.northwest,
+  router_3.southwest ->dedicated_pe_2.northeast,
+  router_8.northeast ->dedicated_pe_2.southwest,
+  router_9.northwest<->dedicated_pe_2.southeast,
+  # Processing Element 3
+  router_3.southeast ->dedicated_pe_3.northwest,
+  router_4.southwest ->dedicated_pe_3.northeast,
+  router_9.northeast ->dedicated_pe_3.southwest,
+  router_10.northwest<->dedicated_pe_3.southeast,
+  # Processing Element 4
+  router_4.southeast ->dedicated_pe_4.northwest,
+  router_5.southwest ->dedicated_pe_4.northeast,
+  router_10.northeast ->dedicated_pe_4.southwest,
+  router_11.northwest<->dedicated_pe_4.southeast,
+  # Processing Element 5
+  router_5.southeast ->dedicated_pe_5.northwest,
+  router_6.southwest ->dedicated_pe_5.northeast,
+  router_11.northeast ->dedicated_pe_5.southwest,
+  router_12.northwest<->dedicated_pe_5.southeast,
+  # Processing Element 6
+  router_7.southeast->dedicated_pe_6.northwest,
+  router_8.southwest->dedicated_pe_6.northeast,
+  router_13.northeast->dedicated_pe_6.southwest,
+  router_14.northwest<->dedicated_pe_6.southeast,
+  # Processing Element 7
+  router_8.southeast ->dedicated_pe_7.northwest,
+  router_9.southwest ->dedicated_pe_7.northeast,
+  router_14.northeast ->dedicated_pe_7.southwest,
+  router_15.northwest<->dedicated_pe_7.southeast,
+  # Processing Element 8
+  router_9.southeast ->dedicated_pe_8.northwest,
+  router_10.southwest ->dedicated_pe_8.northeast,
+  router_15.northeast ->dedicated_pe_8.southwest,
+  router_16.northwest<->dedicated_pe_8.southeast,
+  # Processing Element 9
+  router_10.southeast ->dedicated_pe_9.northwest,
+  router_11.southwest ->dedicated_pe_9.northeast,
+  router_16.northeast ->dedicated_pe_9.southwest,
+  router_17.northwest<->dedicated_pe_9.southeast,
+  # Processing Element 10
+  router_11.southeast ->dedicated_pe_10.northwest,
+  router_12.southwest ->dedicated_pe_10.northeast,
+  router_17.northeast ->dedicated_pe_10.southwest,
+  router_18.northwest<->dedicated_pe_10.southeast,
+  # Processing Element 11
+  router_13.southeast ->dedicated_pe_11.northwest,
+  router_14.southwest ->dedicated_pe_11.northeast,
+  router_19.northeast ->dedicated_pe_11.southwest,
+  router_20.northwest<->dedicated_pe_11.southeast,
+  # Processing Element 12
+  router_14.southeast ->dedicated_pe_12.northwest,
+  router_15.southwest ->dedicated_pe_12.northeast,
+  router_20.northeast ->dedicated_pe_12.southwest,
+  router_21.northwest<->dedicated_pe_12.southeast,
+  # Processing Element 13
+  router_15.southeast ->dedicated_pe_13.northwest,
+  router_16.southwest ->dedicated_pe_13.northeast,
+  router_21.northeast ->dedicated_pe_13.southwest,
+  router_22.northwest<->dedicated_pe_13.southeast,
+  # Processing Element 14
+  router_16.southeast ->dedicated_pe_14.northwest,
+  router_17.southwest ->dedicated_pe_14.northeast,
+  router_22.northeast ->dedicated_pe_14.southwest,
+  router_23.northwest<->dedicated_pe_14.southeast,
+  # Processing Element 15
+  router_17.southeast ->dedicated_pe_15.northwest,
+  router_18.southwest ->dedicated_pe_15.northeast,
+  router_23.northeast ->dedicated_pe_15.southwest,
+  router_24.northwest<->dedicated_pe_15.southeast,
+  # Processing Element 16
+  router_19.southeast ->dedicated_pe_16.northwest,
+  router_20.southwest ->dedicated_pe_16.northeast,
+  router_25.northeast ->dedicated_pe_16.southwest,
+  router_26.northwest<->dedicated_pe_16.southeast,
+  # Processing Element 17
+  router_20.southeast ->dedicated_pe_17.northwest,
+  router_21.southwest ->dedicated_pe_17.northeast,
+  router_26.northeast ->dedicated_pe_17.southwest,
+  router_27.northwest<->dedicated_pe_17.southeast,
+  # Processing Element 18
+  router_21.southeast ->dedicated_pe_18.northwest,
+  router_22.southwest ->dedicated_pe_18.northeast,
+  router_27.northeast ->dedicated_pe_18.southwest,
+  router_28.northwest<->dedicated_pe_18.southeast,
+  # Processing Element 19
+  router_22.southeast ->dedicated_pe_19.northwest,
+  router_23.southwest ->dedicated_pe_19.northeast,
+  router_28.northeast ->dedicated_pe_19.southwest,
+  router_29.northwest<->dedicated_pe_19.southeast,
+  # Processing Element 20
+  router_23.southeast ->dedicated_pe_20.northwest,
+  router_24.southwest ->dedicated_pe_20.northeast,
+  router_29.northeast ->dedicated_pe_20.southwest,
+  router_30.northwest<->dedicated_pe_20.southeast,
+  # Processing Element 21
+  router_25.southeast ->dedicated_pe_21.northwest,
+  router_26.southwest ->dedicated_pe_21.northeast,
+  router_31.northeast ->dedicated_pe_21.southwest,
+  router_32.northwest<->dedicated_pe_21.southeast,
+  # Processing Element 22
+  router_26.southeast ->dedicated_pe_22.northwest,
+  router_27.southwest ->dedicated_pe_22.northeast,
+  router_32.northeast ->dedicated_pe_22.southwest,
+  router_33.northwest<->dedicated_pe_22.southeast,
+  # Processing Element 23
+  router_27.southeast ->dedicated_pe_23.northwest,
+  router_28.southwest ->dedicated_pe_23.northeast,
+  router_33.northeast ->dedicated_pe_23.southwest,
+  router_34.northwest<->dedicated_pe_23.southeast,
+  # Processing Element 23
+  router_28.southeast ->dedicated_pe_24.northwest,
+  router_29.southwest ->dedicated_pe_24.northeast,
+  router_34.northeast ->dedicated_pe_24.southwest,
+  router_35.northwest<->dedicated_pe_24.southeast,
+  # Processing Element 23
+  router_29.southeast ->dedicated_pe_25.northwest,
+  router_30.southwest ->dedicated_pe_25.northeast,
+  router_35.northeast ->dedicated_pe_25.southwest,
+  router_36.northwest<->dedicated_pe_25.southeast
+]

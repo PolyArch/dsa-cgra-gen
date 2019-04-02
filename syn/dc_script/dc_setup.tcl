@@ -34,7 +34,7 @@ if {$synopsys_program_name == "dc_shell"}  {
   # for multicore usage guidelines.
   # Note: This is a DC Ultra feature and is not supported in DC Expert.
 
-   set_host_options -max_cores 4
+   set_host_options -max_cores 8
 
   # Change alib_library_analysis_path to point to a central cache of analyzed libraries
   # to save runtime and disk space.  The following setting only reflects the

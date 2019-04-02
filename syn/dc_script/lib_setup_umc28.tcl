@@ -10,7 +10,7 @@ set lib_path "/home/sihao/Synopsys/UMC_28nm"
 set MajorFeature "UltraHighDensity"
 # HighDensity , HighSpeed , UltraHighDensity
 
-set LibraryFeature "HPCLibrary"
+set LibraryFeature "LogicLibrary"
 # LogicLibrary HPCLibrary PowerOptimizationKit
 
 set Process "30nm"
@@ -40,7 +40,6 @@ set temperature "40"
 #########################################################################################
 
 set target_db $lib_path/$MajorFeature/LogicLibrary/$Process/$DesignDirection/$VT/$FileType/$modelType/*$cellType*$voltage*$temperature*.db
-
 set hpc_db $lib_path/$MajorFeature/HPCLibrary/$Process/$DesignDirection/$VT/$FileType/$modelType/*$cellType*$voltage*$temperature*.db
 set PowerOpti_db $lib_path/$MajorFeature/PowerOptimizationKit/$Process/$DesignDirection/$VT/$FileType/$modelType/*$cellType*$voltage*$temperature*.db
 
@@ -48,7 +47,7 @@ set PowerOpti_db $lib_path/$MajorFeature/PowerOptimizationKit/$Process/$DesignDi
 
 set target_lib_list [eval [list exec ls ] [glob $target_db $manully_add_path/*.db ]]
 
-set link_lib_list [eval [list exec ls ] [glob $PowerOpti_db $target_db ]]
+set link_lib_list [eval [list exec ls ] [glob $PowerOpti_db $target_db $hpc_db]]
 
 #########################################################################################
 

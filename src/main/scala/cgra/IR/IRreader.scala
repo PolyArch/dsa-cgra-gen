@@ -6,7 +6,7 @@ import java.util
 import scala.collection.mutable._
 import IRconvertor._
 import cgra.config.system.data_word_width
-
+import cgra.IR.IRpreprocessor._
 
 object IRreader {
   def readCgra(filename:String) = {
@@ -16,6 +16,6 @@ object IRreader {
     val s_cgra = JavaMap2ScalaMap(j_cgra)
     s_cgra += "description_filename" -> filename
     s_cgra += "config_filename" -> filename.replace("yaml","xml")
-    s_cgra
+    preprocess(s_cgra)
   }
 }

@@ -9,7 +9,6 @@ object CgraGen extends App{
   val readFile    : String = args(0) // "/home/sihao/ss-cgra-gen/IR/cgra_3x3_new.yaml"
   val output_dir  : String = args(1) // "verilog-output"
   val cgra : mutable.Map[String,Any] = readCgra(readFile)
-  preprocess(cgra)
   instantiateCgra(output_dir,cgra)
   mergeIRwithCgra(readFile,output_dir + "/Cgra_Hw.v")
 }

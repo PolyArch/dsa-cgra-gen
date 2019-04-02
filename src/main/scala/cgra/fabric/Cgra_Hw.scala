@@ -38,38 +38,46 @@ class Cgra_Hw(cgra:mutable.Map[String,Any]) extends Module
   })
   // ------ Calculate Configuration ------
   // Eliminate Default and Add Module ID
-  private val vector_ports = cgra("vector_ports").asInstanceOf[mutable.Map[String,Any]]
-    .filter(p => {add_module_id(p._2);!p._1.startsWith("default")})
-  private val routers = cgra("routers").asInstanceOf[mutable.Map[String,Any]]
-    .filter(p => {add_module_id(p._2);!p._1.startsWith("default")})
-  private val dedicated_pes = cgra("dedicated_pes").asInstanceOf[mutable.Map[String,Any]]
-    .filter(p => {add_module_id(p._2);!p._1.startsWith("default")})
-  private val shared_pes = cgra("shared_pes").asInstanceOf[mutable.Map[String,Any]]
-    .filter(p => {add_module_id(p._2);!p._1.startsWith("default")})
+  private val vector_ports = try{cgra("vector_ports").asInstanceOf[mutable.Map[String,Any]]
+    .filter(p => {add_module_id(p._2);!p._1.startsWith("default")})}catch{case _:Throwable => null}
+  private val routers = try{cgra("routers").asInstanceOf[mutable.Map[String,Any]]
+    .filter(p => {add_module_id(p._2);!p._1.startsWith("default")})}catch{case _:Throwable => null}
+  private val dedicated_pes = try{cgra("dedicated_pes").asInstanceOf[mutable.Map[String,Any]]
+    .filter(p => {add_module_id(p._2);!p._1.startsWith("default")})}catch{case _:Throwable => null}
+  private val shared_pes = try{cgra("shared_pes").asInstanceOf[mutable.Map[String,Any]]
+    .filter(p => {add_module_id(p._2);!p._1.startsWith("default")})}catch{case _:Throwable => null}
 
 
   /*
       Hardware Generation
    */
   // ------ Vector Ports ------
-  val vector_ports_hw : mutable.Map[String,VectorPort_Hw] = vector_ports map (iv=> iv._1 -> Module(new VectorPort_Hw(iv)))
-  AllModules ++= vector_ports_hw
+  var vector_ports_hw : mutable.Map[String,VectorPort_Hw] = mutable.Map[String,VectorPort_Hw]()
+  if(vector_ports != null){
+    vector_ports_hw = vector_ports map (iv=> iv._1 -> Module(new VectorPort_Hw(iv)))
+    AllModules ++= vector_ports_hw
+  }
 
   // ------ Routers ------
-  val routers_hw : mutable.Map[String,Router_Hw] = routers map (r =>r._1 -> Module(new Router_Hw(r)))
-  AllModules ++= routers_hw
+  var routers_hw : mutable.Map[String,Router_Hw] =mutable.Map[String,Router_Hw]()
+  if(routers != null){
+    routers_hw = routers map (r =>r._1 -> Module(new Router_Hw(r)))
+    AllModules ++= routers_hw
+  }
+
+
 
   // ------ Dedicated PE ------
-  val dedicated_pes_hw : mutable.Map[String,Dedicated_PE_Hw] = mutable.Map[String,Dedicated_PE_Hw]()
+  var dedicated_pes_hw : mutable.Map[String,Dedicated_PE_Hw] = mutable.Map[String,Dedicated_PE_Hw]()
   if(dedicated_pes != null){
-    val dedicated_pes_hw : Map[String,Dedicated_PE_Hw] = dedicated_pes map (dp => dp._1 -> Module(new Dedicated_PE_Hw(dp)))
+    dedicated_pes_hw = dedicated_pes map (dp => dp._1 -> Module(new Dedicated_PE_Hw(dp)))
     AllModules ++= dedicated_pes_hw
   }
 
   // ------ Shared PE ------
-  val shared_pes_hw : Map[String,Trig_PE_Hw] = mutable.Map[String,Trig_PE_Hw]()
+  var shared_pes_hw : Map[String,Trig_PE_Hw] = mutable.Map[String,Trig_PE_Hw]()
   if(shared_pes != null){
-    val shared_pes_hw : Map[String,Trig_PE_Hw] = shared_pes map (sp => sp._1 -> Module(new Trig_PE_Hw(sp)))
+    shared_pes_hw = shared_pes map (sp => sp._1 -> Module(new Trig_PE_Hw(sp)))
     shared_pes_hw foreach (s=>{
       val s_pe = s._2
       s_pe.io.hostInterface <> io.hostinterface
@@ -118,7 +126,7 @@ class Cgra_Hw(cgra:mutable.Map[String,Any]) extends Module
       val sink_port_name = c.sink.port
       val sink_mod = get_module(sink_module_name)
       // Print Current Connection
-      println(source_module_name + "-port-" + source_port_name + "--> " + sink_module_name + "-port-" + sink_port_name)
+      println(source_module_name + "-port-" + source_port_name + " --> " + sink_module_name + "-port-" + sink_port_name)
       // Get Source Port Hardware
       val source_port : Vec[ReqAckConf_if] = if (source_mod == this)
         source_mod.get_port("in",source_port_name)

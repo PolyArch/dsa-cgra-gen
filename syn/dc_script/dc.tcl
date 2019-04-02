@@ -524,7 +524,7 @@ if { $OPTIMIZATION_FLOW == "hc"} {
 if { $OPTIMIZATION_FLOW == "rtm_exp"} {
   if {[shell_is_in_topographical_mode]} {
   
-      set_host_options -max_cores 4
+      set_host_options -max_cores 8
       # The following command overrides runtime-intensive user settings with settings designed
       # to improve runtime. Since the run time intensive optimizations are turned off it might 
       # impact QoR. You can use this as an exploration flow when run time is a concern.
@@ -552,10 +552,7 @@ set_dynamic_optimization true
 
 ## Create Constraints 
 create_clock clock -name ideal_clock1 -period $Period
-
-set  compile_ultra_ungroup_dw  true
-set  compile_auto_ungroup_delay_num_cells   100
-compile_ultra -gate_clock -no_autoungroup -timinq_high_effort_script -retime
+compile_ultra -gate_clock -timinq_high_effort_script -area_high_effort_script -retime
 
 if {$OPTIMIZATION_FLOW != "rtm_exp"} {
 
@@ -688,7 +685,7 @@ write_sdc -nosplit ${RESULTS_DIR}/${DCRM_FINAL_SDC_OUTPUT_FILE}
 #################################################################################
 
 if { $OPTIMIZATION_FLOW  == "rtm_exp"} {
-  set_host_options -max_cores 4
+  set_host_options -max_cores 8
   update_timing
 
   parallel_execute [list \

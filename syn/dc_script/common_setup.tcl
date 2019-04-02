@@ -9,15 +9,15 @@ source -echo -verbose ./dc_script/lib_setup_umc28.tcl
 # Copyright (C) 2007-2017 Synopsys, Inc. All rights reserved.
 ##########################################################################################
 
-set DESIGN_NAME "Decomp_Adapter_Hw" ;#  The name of the top-level design
-set DESIGN_FILE_NAME "Decomp_Adapter_Hw"
+set DESIGN_NAME "Dedicated_PE_Hw" ;#  The name of the top-level design
+set DESIGN_FILE_NAME "Dedicated_PE_Hw_Shar_Stat_1"
 
 set Period 0.8 ;#ns 1/Period = frequency (GHz)
 
-set REPORTS_DIR ./Reports/${DESIGN_NAME}_${DESIGN_FILE_NAME}_${MajorFeature}_${DesignDirection}_${Process}_${VT}_${modelType}_${cellType}_${voltage}_${temperature}_${Period}ns
-set RESULTS_DIR ./Results/${DESIGN_NAME}_${DESIGN_FILE_NAME}_${MajorFeature}_${DesignDirection}_${Process}_${VT}_${modelType}_${cellType}_${voltage}_${temperature}_${Period}ns
+set REPORTS_DIR ./Reports/${DESIGN_NAME}_${DESIGN_FILE_NAME}_${MajorFeature}_${LibraryFeature}_${DesignDirection}_${Process}_${VT}_${modelType}_${cellType}_${voltage}_${temperature}_${Period}ns
+set RESULTS_DIR ./Results/${DESIGN_NAME}_${DESIGN_FILE_NAME}_${MajorFeature}_${LibraryFeature}_${DesignDirection}_${Process}_${VT}_${modelType}_${cellType}_${voltage}_${temperature}_${Period}ns
 
-set RTL_SOURCE_DIR "/home/sihao/ss-cgra-gen/verilog-output/"
+set RTL_SOURCE_DIR "/home/sihao/ss-cgra-gen/verilog-output/verilog-output-backup-20190330/"
 set RTL_SOURCE_FILES  ${RTL_SOURCE_DIR}${DESIGN_FILE_NAME}.v      ;# Enter the list of source RTL files if reading from RTL
 
 set DESIGN_REF_DATA_PATH          ""  ;#  Absolute path prefix variable for library/design data.

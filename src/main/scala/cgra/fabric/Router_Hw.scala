@@ -16,7 +16,8 @@ class Router_Hw(pp:(String,Any)) extends Module
   with Reconfigurable {
   val p:mutable.Map[String,Any] = pp._2.asInstanceOf[mutable.Map[String,Any]]
   // Knob Parameters
-  val module_name : String = pp._1//p("module_name").toString
+  val module_name : String = pp._1
+  println("Initialize " + module_name)
   val module_id : Int = p("module_id").asInstanceOf[Int]
   val use_global : Boolean = try{p("use_global").asInstanceOf[Boolean]}
   catch {case _: Throwable => false}
@@ -258,6 +259,17 @@ class Router_Hw(pp:(String,Any)) extends Module
     }
   }
 
+  // Print for Debug
+  if(module_name == "router_1"){
+    for(port <- input_ports;subnet <- 0 until decomposer){
+      printf(p"Input Port : Port = $port, Subnet = $subnet, " +
+        p"Bits = ${io.input_ports(input_ports.indexOf(port))(subnet).bits}, " +
+        p"Valid = ${io.input_ports(input_ports.indexOf(port))(subnet).valid}, " +
+        p"Ready = ${io.input_ports(input_ports.indexOf(port))(subnet).ready}, " +
+        p"Config = ${io.input_ports(input_ports.indexOf(port))(subnet).config}\n")
+    }
+  }
+
   // Configuration Output
   def config2XML : Elem = {
     <Router>
@@ -291,12 +303,14 @@ object tester_router extends App{
 system.data_word_width = 64
 val p : mutable.Map[String,Any] = mutable.Map[String,Any]()
 p += "module_name" -> "Router_Test"
-p += "module_id" -> {get_new_id;get_new_id;get_new_id;get_new_id;get_new_id;get_new_id;get_new_id;get_new_id}
-p += "protocol" -> "Data_Valid_Ready"
+p += "module_id" -> {for(i <- 0 until 60){get_new_id}
+  get_new_id
+}
+p += "protocol" -> "Data"
 p += "back_pressure_fifo_depth" -> 2
-p += "isDecomposed" -> true
+p += "isDecomposed" -> false
 p += "decomposer" -> 1
-p += "isShared" -> true
+p += "isShared" -> false
 p += "shared_slot_size" -> 32
 //p += "inter_subnet_connection" -> List("south_1 <-> north_0","northwest_0 <-> east _1")
 chisel3.Driver.execute(args,()=>{new Router_Hw("test",p)})
