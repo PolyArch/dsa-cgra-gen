@@ -13,11 +13,13 @@ class single_port_ram(data_width:Int,depth:Int) extends Module{
       val write_data = Input(UInt(data_width.W))
     }
   )
-
   val mem = SyncReadMem(depth, UInt(data_width.W))
-
   when(io.write_enable){
     mem.write(io.index,io.write_data)
   }
   io.read_data := mem.read(io.index, io.read_enable)
+}
+
+object initialize_ram extends App {
+  chisel3.Driver.execute(args,()=>{new single_port_ram(64,8192)})
 }

@@ -14,11 +14,11 @@ source -echo -verbose ./dc_script/lib_setup_umc28.tcl
 ##########################################################################################
 
 #  The name of the top-level design
-set DESIGN_NAME "Dedicated_PE_Hw" ;	
+set DESIGN_NAME "single_port_ram" ;	
 
-set DESIGN_FILE_NAME "Dedicated_PE_Hw_Shar_Stat_1";
+set DESIGN_FILE_NAME "single_port_ram";
 
-set RTL_SOURCE_DIR "/home/sihao/ss-cgra-gen/verilog-output/verilog-output-backup-20190330/";
+set RTL_SOURCE_DIR "/home/sihao/ss-cgra-gen/verilog-output/";
 
 #ns 1/Period = frequency (GHz)
 set Period 0.8 ;

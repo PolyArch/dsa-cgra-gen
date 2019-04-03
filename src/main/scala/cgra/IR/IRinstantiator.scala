@@ -9,7 +9,7 @@ object IRinstantiator {
     val args = Array("--target-dir",outputDir)
     val module_type = cgra("module_type").toString
     chisel3.Driver.execute(args,()=>{
-      val c = Class.forName("cgra.fabric."+module_type)
+      val c = Class.forName(module_type)
         .getConstructor(classOf[(String,mutable.Map[String,Any])])
         .newInstance((module_type,cgra)).asInstanceOf[RawModule]
       c

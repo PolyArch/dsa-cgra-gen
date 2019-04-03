@@ -4,7 +4,7 @@ system:
   num_test_data_memory_words: 32786 # Test memory system.
   test_data_memory_buffer_depth: 4
 
-module_type: Trig_PE_Hw
+module_type: cgra.fabric.Trig_PE_Hw
 # I/O
 input_ports: [northwest,northeast,southwest,southeast]
 output_ports: [northwest,northeast,southwest,southeast]

@@ -19,7 +19,7 @@ set Process "30nm"
 set DesignDirection "HPC_plus"
 # HPC_plus , HPC , HLP
 
-set VT "HVT"
+set VT "SVT"
 # HVT , LVT , SVT
 
 set FileType "liberty"

@@ -24,7 +24,7 @@ system:
 
 routers:
   default: &default_router
-    module_type: router
+    module_type: cgra.fabric.router
     input_ports: [north,south,east,west,northwest]
     output_ports: [north,south,east,west,northeast,northwest,southeast,southwest]
     decomposer: 1
@@ -93,7 +93,7 @@ routers:
 
 dedicated_pes:
   default_dedicated_pe: &default_dedicated_pe
-    module_type: dedicated_pe
+    module_type: cgra.fabric.dedicated_pe
     # Input Output Capability
     input_ports: [northwest,northeast,southwest,souteast]
     output_ports: [southeast]
@@ -148,7 +148,7 @@ dedicated_pes:
 
 shared_pes:
   default_shared_pe: &default_shared_pe
-    module_type: shared_pe
+    module_type: cgra.fabric.shared_pe
     # I/O
     input_ports: [northwest,northeast,southwest,souteast]
     output_ports: [northwest,northeast,southwest,souteast]
@@ -192,7 +192,7 @@ shared_pes:
 #     \_/ \___|\___|\__\___/|_|    |_|   \___/|_|   \__|
 vector_ports:
   default_vp: &default_vp
-    module_type: vector_port
+    module_type: cgra.fabric.vector_port
     input_ports: [v1,v2,v3]
     output_ports: [v1,v2,v3]
     channel_buffer: 2

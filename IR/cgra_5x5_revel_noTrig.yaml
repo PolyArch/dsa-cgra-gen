@@ -16,7 +16,7 @@ system:
   test_data_memory_buffer_depth: 4
 
 # Type
-module_type: Cgra_Hw
+module_type: cgra.fabric.Cgra_Hw
 # IO
 input_ports: [i0,i1,i2,i3,i4,i5,i6,i7,i8,i9,i10]
 output_ports: [o0,o1,o2,o3,o4,o5,o6,o7,o8]
@@ -31,7 +31,7 @@ output_ports: [o0,o1,o2,o3,o4,o5,o6,o7,o8]
 
 routers:
   default: &default_router
-    module_type: router
+    module_type: cgra.fabric.router
     # Input / Output
     input_ports: [north,south,east,west,northeast,northwest,southeast,southwest]
     output_ports: [north,south,east,west,northeast,northwest,southeast,southwest]
@@ -214,7 +214,7 @@ routers:
 
 dedicated_pes:
   default_dedicated_pe: &default_dedicated_pe
-    module_type: dedicated_pe
+    module_type: cgra.fabric.dedicated_pe
     use_global: true
     # Config
     config_input_port: northeast

@@ -2,7 +2,7 @@ system:
   data_word_width: 64
   num_module: 61
 
-module_type: Router_Hw
+module_type: cgra.fabric.Router_Hw
 module_id: 25
 use_global: true
 # Input / Output
