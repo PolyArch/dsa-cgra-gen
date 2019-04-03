@@ -24,5 +24,19 @@ inter_subnet_connection: []
 
 DSE:
   decomposer: [1,2,4,8]
+  shared_slot_size: [2,4,8,16]
+  back_pressure_fifo_depth: [0,2,4,8]
   protocol: [Data,DataValidReady]
-  isShared: [true,false]
+  input_ports: [[north,south],
+                [north,south,east],
+                [north,south,east,west],
+                [north,south,east,west,northeast],
+                [north,south,east,west,northeast,northwest],
+                [north,south,east,west,northeast,northwest,southeast]]
+  output_ports: [[north,south],
+                [north,south,east],
+                [north,south,east,west],
+                [north,south,east,west,northeast],
+                [north,south,east,west,northeast,northwest],
+                [north,south,east,west,northeast,northwest,southeast]]
+  

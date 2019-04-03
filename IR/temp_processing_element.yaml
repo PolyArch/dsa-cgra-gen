@@ -1,0 +1,81 @@
+DSE:
+  decomposer:
+  - 1
+  - 2
+  - 4
+  - 8
+  delay_fifo_depth:
+  - 0
+  - 2
+  - 4
+  - 6
+  - 8
+  - 10
+  input_ports:
+  - - northwest
+    - northeast
+  - - northwest
+    - northeast
+    - southwest
+  - - northwest
+    - northeast
+    - southwest
+    - southeast
+  - - northwest
+    - northeast
+    - southwest
+    - southeast
+    - east
+  output_ports:
+  - - southeast
+  - - southwest
+    - southeast
+  - - southeast
+    - southwest
+    - northeast
+  output_select_mode:
+  - Universal
+  - Individual
+  protocol:
+  - Data
+  - DataValidReady
+  register_file_size:
+  - 2
+  - 4
+  - 16
+  - 32
+  shared_slot_size:
+  - 2
+  - 4
+  - 8
+  - 16
+config_input_port: northwest
+config_output_port: southeast
+decomposer: 1
+delay_fifo_depth: 6
+has_metaReuse:
+  num_reuse: 4
+  valid: false
+input_ports:
+- northwest
+- northeast
+instructions:
+- Add
+- Sub
+- BOr
+- BAnd
+isDecomposed: true
+isShared: true
+module_id: 25
+module_type: cgra.fabric.Dedicated_PE_Hw
+output_ports:
+- southwest
+- southeast
+output_select_mode: Universal
+protocol: Data
+register_file_size: 4
+shared_slot_size: 2
+system:
+  data_word_width: 64
+  num_module: 61
+use_global: true

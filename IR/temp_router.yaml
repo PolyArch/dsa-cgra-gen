@@ -1,0 +1,45 @@
+DSE:
+  decomposer:
+  - 1
+  - 2
+  - 4
+  - 8
+  isShared:
+  - true
+  - false
+  protocol:
+  - Data
+  - DataValidReady
+back_pressure_fifo_depth: 2
+config_input_port: north
+config_output_port: south
+decomposer: 8
+input_ports:
+- north
+- south
+- east
+- west
+- northeast
+- northwest
+- southeast
+- southwest
+inter_subnet_connection: []
+isDecomposed: true
+isShared: false
+module_id: 25
+module_type: cgra.fabric.Router_Hw
+output_ports:
+- north
+- south
+- east
+- west
+- northeast
+- northwest
+- southeast
+- southwest
+protocol: DataValidReady
+shared_slot_size: 32
+system:
+  data_word_width: 64
+  num_module: 61
+use_global: true

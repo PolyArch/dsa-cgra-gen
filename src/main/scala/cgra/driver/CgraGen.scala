@@ -11,5 +11,6 @@ object CgraGen extends App{
   val output_dir  : String = args(1) // "verilog-output"
   val cgra : mutable.Map[String,Any] = readIR(readFile)
   instantiateCgra(output_dir,cgra)
-  mergeIRwithCgra(readFile,output_dir + "/" + cgra("module_type") + ".v")
+  val className = cgra("module_type").toString().split("\\.").reverse.head
+  mergeIRwithCgra(readFile,output_dir + "/" + className + ".v")
 }

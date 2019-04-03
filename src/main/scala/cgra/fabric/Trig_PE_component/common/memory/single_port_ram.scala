@@ -21,5 +21,5 @@ class single_port_ram(data_width:Int,depth:Int) extends Module{
 }
 
 object initialize_ram extends App {
-  chisel3.Driver.execute(args,()=>{new single_port_ram(64,8192)})
+  chisel3.Driver.execute(args,()=>{new single_port_ram(512,128)})
 }

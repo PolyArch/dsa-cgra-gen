@@ -14,9 +14,9 @@ source -echo -verbose ./dc_script/lib_setup_umc28.tcl
 ##########################################################################################
 
 #  The name of the top-level design
-set DESIGN_NAME "single_port_ram" ;	
+set DESIGN_NAME "Dedicated_PE_Hw" ;#  The name of the top-level design
 
-set DESIGN_FILE_NAME "single_port_ram";
+set DESIGN_FILE_NAME "Dedicated_PE_Hw_190403_132115.v"
 
 set RTL_SOURCE_DIR "/home/sihao/ss-cgra-gen/verilog-output/";
 
@@ -35,7 +35,7 @@ set max_cores 8;
 
 set REPORTS_DIR ./Reports/${DESIGN_NAME}_${DESIGN_FILE_NAME}_${MajorFeature}_${LibraryFeature}_${DesignDirection}_${Process}_${VT}_${modelType}_${cellType}_${voltage}_${temperature}_${Period}ns
 set RESULTS_DIR ./Results/${DESIGN_NAME}_${DESIGN_FILE_NAME}_${MajorFeature}_${LibraryFeature}_${DesignDirection}_${Process}_${VT}_${modelType}_${cellType}_${voltage}_${temperature}_${Period}ns
-set RTL_SOURCE_FILES  ${RTL_SOURCE_DIR}${DESIGN_FILE_NAME}.v      ;# Enter the list of source RTL files if reading from RTL
+set RTL_SOURCE_FILES  ${RTL_SOURCE_DIR}${DESIGN_FILE_NAME}      ;# Enter the list of source RTL files if reading from RTL
 set DESIGN_REF_DATA_PATH          ""  ;#  Absolute path prefix variable for library/design data.
                                        #  Use this variable to prefix the common absolute path  
                                        #  to the common variables defined below.

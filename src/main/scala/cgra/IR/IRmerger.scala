@@ -17,7 +17,8 @@ object IRmerger {
     val tp : String = DateTimeFormatter.ofPattern("yyMMdd_HHmmss").format(LocalDateTime.now)
 
     // Create Temp File
-    val tempFile = new File(cgraFileName.split("\\.").head + "_" + tp +".v")
+    val tempFileName : String = cgraFileName.split("\\.").head + "_" + tp +".v"
+    val tempFile = new File(tempFileName)
     val pw = new PrintWriter(tempFile)
 
     // ------- Merge Togather
@@ -28,5 +29,6 @@ object IRmerger {
     // print cgra file
     for (line <- hwLines) pw.write(line + "\n")
     pw.close
+    println("Generated Verilog File Path : \n" + tempFile.getAbsolutePath)
   }
 }
