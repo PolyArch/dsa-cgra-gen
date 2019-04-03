@@ -21,3 +21,8 @@ back_pressure_fifo_depth: 2
 shared_slot_size: 32
 # Interconnection between Subent
 inter_subnet_connection: []
+
+DSE:
+  decomposer: [1,2,4,8]
+  protocol: [Data,DataValidReady]
+  isShared: [true,false]
