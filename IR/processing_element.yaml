@@ -26,3 +26,8 @@ register_file_size: 8
 delay_fifo_depth: 0 # Delay Pipe when protocol don't has Ready; Delay FIFO when protocol has Ready
 instructions: [Add,Sub,BOr,BAnd]
 output_select_mode: Universal #[ Individual ]
+
+DSE:
+  decomposer: [1,2,4,8]
+  protocol: [Data,DataValidReady]
+  isShared: [true,false]
