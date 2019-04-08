@@ -2,23 +2,26 @@
 
 import csv
 import yaml
-from src.result_parser.parse_util import find_all_files, fine_all_dirs
-from src.result_parser import syn_result_parser
-from src.result_parser.syn_result_parser import *
+from parse_util import find_all_files, find_all_dirs
+import syn_result_parser
+from syn_result_parser import *
+import datetime
+import time
 
 # Verilog File Directory
 VL_Dir = "/home/sihao/ss-cgra-gen/verilog-output/"
 # Verilog Source Code
 Reports_dir = "/home/sihao/ss-cgra-gen/syn/Reports/"
 # Output Statistic File Name
-Output_FileName = "/home/sihao/ss-cgra-gen/src/analytical_model/resource/Cgra_DesignSpace.csv"
+Output_Dir = "/home/sihao/ss-cgra-gen/src/analytical_model/resource/"
+Output_File = "Cgra_DesignSpace"
 # Statistic Structure File
 statistic_desc = '/home/sihao/ss-cgra-gen/src/analytical_model/src/result_parser/synthesize_statistic.yaml'
 
 
 def get_statistic():
     # Get All Report Directory
-    all_report_dir = [dir for dir in fine_all_dirs(Reports_dir) if ".v" in dir]
+    all_report_dir = [dir for dir in find_all_dirs(Reports_dir) if ".v" in dir]
 
     # Read needed feature describe file
     with open(statistic_desc, 'r') as syn_sta_f:
@@ -55,16 +58,15 @@ def get_statistic():
         one_level_dict.append(temp_oneResult)
 
     # Output as CSV
-    with open(Output_FileName, 'w') as f:  # Just use 'w' mode in 3.x
+    ts = time.time()
+    st = datetime.datetime.fromtimestamp(ts).strftime('_%Y%m%d_%H%M%S')
+    output_filename = Output_Dir + Output_File + st + ".csv"
+    with open(output_filename, 'w') as f:  # Just use 'w' mode in 3.x
         head = one_level_dict[0].keys()
         w = csv.DictWriter(f, head)
         w.writeheader()
         for oneDataPoint in one_level_dict:
             w.writerow(oneDataPoint)
-
+    # Finished
+    print("Statistic Collected!")
     return one_level_dict
-
-
-get_statistic()
-# Finished
-print("Statistic Collected!")

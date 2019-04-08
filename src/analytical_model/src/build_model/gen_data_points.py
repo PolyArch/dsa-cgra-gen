@@ -4,10 +4,12 @@ import subprocess
 import time
 
 # Set Directory
-IR_dir = "/home/sihao/ss-cgra-gen/IR/"
-DC_dir = "/home/sihao/ss-cgra-gen/syn/"
-VL_dir = "/home/sihao/ss-cgra-gen/verilog-output/"
-target_IRs = ["processing_element.yaml", "router.yaml"]
+home_dir = "/home/sihao/ss-cgra-gen/"
+IR_dir = home_dir + "IR/"
+DC_dir = home_dir + "syn/"
+VL_dir = home_dir + "verilog-output/"
+Rep_dir = DC_dir + "Reports/"
+target_IRs = ["processing_element.yaml"]
 
 # Cgra Generator Driver
 cgra_gen = "/home/sihao/ss-cgra-gen/scripts/gen_cgra.sh"
@@ -49,21 +51,23 @@ for target_ir_filename in target_IRs:
     # Update the design point
     for design_point in design_space:
         ir = update_design_point(IR_dir + target_ir_filename, design_dimension, design_point)
-        temp_filename = IR_dir + "temp_" + target_ir_filename
-        with open(temp_filename, "w") as temp_f:
-            yaml.dump(ir, temp_f, default_flow_style=False)
-        result = subprocess.run([cgra_gen, temp_filename, VL_dir], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout_str = str(result.stdout).split("\\n")
-        generated_verilog_fileFullPath = stdout_str[-2].split("/")
-        verilog_file = generated_verilog_fileFullPath[-1]
-        while(len(processes) >= parallel):
-            time.sleep(3)
-            check_finished()
-            print("Has run : " + str(has_run_num) + ", Finished : " + str(finished_num) + ", Processes List Len = " + str(len(processes)))
-        else:
-            change_design(DC_dir + "dc_script/", className)
-            change_design_file(DC_dir + "dc_script/", verilog_file)
-            process = subprocess.Popen([DC_dir + "dc_script/" + "dc_wrapper.sh"], shell=True)
-            has_run_num += 1
-            processes.append(process)
+        all_synthesized_ir = get_all_synthesized_ir(VL_dir, Rep_dir)
+        if not isSynthesized(ir, all_synthesized_ir):
+            temp_filename = IR_dir + "temp_" + target_ir_filename
+            with open(temp_filename, "w") as temp_f:
+                yaml.dump(ir, temp_f, default_flow_style=False)
+            result = subprocess.run([cgra_gen, temp_filename, VL_dir], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout_str = str(result.stdout).split("\\n")
+            generated_verilog_fileFullPath = stdout_str[-2].split("/")
+            verilog_file = generated_verilog_fileFullPath[-1]
+            while(len(processes) >= parallel):
+                time.sleep(3)
+                check_finished()
+                print("Has run : " + str(has_run_num) + ", Finished : " + str(finished_num) + ", Processes List Len = " + str(len(processes)))
+            else:
+                change_design(DC_dir + "dc_script/", className)
+                change_design_file(DC_dir + "dc_script/", verilog_file)
+                process = subprocess.Popen([DC_dir + "dc_script/" + "dc_wrapper.sh"], shell=True)
+                has_run_num += 1
+                processes.append(process)
 

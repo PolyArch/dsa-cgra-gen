@@ -1,11 +1,51 @@
 import itertools
 import yaml
+import sys
+sys.path.insert(0, '/home/sihao/ss-cgra-gen/src/analytical_model/src/result_parser')
+from parse_util import find_all_files, find_all_dirs
 
 def elaborate_dse(dse_option):
     dse_keys = [k for k, v in dse_option.items()]
     dse_options = [v for k, v in dse_option.items()]
     dse_space = itertools.product(*dse_options)
     return dse_keys, dse_space
+
+
+def get_all_synthesized_ir(VL_dir, Rep_dir):
+    all_report_dir = [dir for dir in find_all_dirs(Rep_dir) if ".v" in dir]
+    all_vl_files = find_all_files(VL_dir)
+    all_ir = []
+    finished = 0
+    for each_rep_dir in all_report_dir:
+        filenames_in_this_dir = find_all_files(Rep_dir + each_rep_dir)
+        if len(filenames_in_this_dir) == 10:
+            for each_vl_file in all_vl_files:
+                if each_vl_file in each_rep_dir:
+                    all_ir.append(extract_IR_from_verilog(VL_dir + each_vl_file))
+        finished += 1
+        print("Finished : " + str(finished) + ", Total: " + str(len(all_report_dir)) + "\n")
+    return all_ir
+
+
+def isSynthesized(ir, all_synd_ir):
+    return ir in all_synd_ir
+
+
+def extract_IR_from_verilog(verilog_filename):
+    start = False
+    end = False
+    ir_str = ""
+    with open(verilog_filename,'r') as vl_file:
+        for line in vl_file.readlines():
+            if "/*" in line:
+                start = True
+                continue
+            if "*/" in line:
+                end = True
+            if start and not end:
+                ir_str = ir_str + line
+    ir = yaml.load(ir_str)
+    return ir
 
 
 def update_design_point(ir_f_name, design_demension, design_point):

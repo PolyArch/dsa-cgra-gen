@@ -51,14 +51,17 @@ DSE:
   - 16
 config_input_port: northwest
 config_output_port: southeast
-decomposer: 1
-delay_fifo_depth: 6
+decomposer: 4
+delay_fifo_depth: 2
 has_metaReuse:
   num_reuse: 4
   valid: false
 input_ports:
 - northwest
 - northeast
+- southwest
+- southeast
+- east
 instructions:
 - Add
 - Sub
@@ -69,9 +72,10 @@ isShared: true
 module_id: 25
 module_type: cgra.fabric.Dedicated_PE_Hw
 output_ports:
-- southwest
 - southeast
-output_select_mode: Universal
+- southwest
+- northeast
+output_select_mode: Individual
 protocol: Data
 register_file_size: 4
 shared_slot_size: 2
