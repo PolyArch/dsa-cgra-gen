@@ -16,7 +16,7 @@ source -echo -verbose ./dc_script/lib_setup_umc28.tcl
 #  The name of the top-level design
 set DESIGN_NAME "Dedicated_PE_Hw" ;#  The name of the top-level design
 
-set DESIGN_FILE_NAME "Dedicated_PE_Hw_190407_182515.v"
+set DESIGN_FILE_NAME "Dedicated_PE_Hw_190408_211603.v"
 
 set RTL_SOURCE_DIR "/home/sihao/ss-cgra-gen/verilog-output/";
 

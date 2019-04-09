@@ -1,0 +1,2 @@
+function area = predictArea
+end

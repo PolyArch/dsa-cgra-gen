@@ -25,14 +25,14 @@ register_file_size: 8
 # Datapath
 delay_fifo_depth: 0 # Delay Pipe when protocol don't has Ready; Delay FIFO when protocol has Ready
 instructions: [Add,Sub,BOr,BAnd]
-output_select_mode: Individual #[ Individual ]
+output_select_mode: Universal #[ Individual ]
 
 DSE:
   decomposer: [1,2,4,8]
   protocol: [Data,DataValidReady]
   shared_slot_size: [2,4,8,16]
   register_file_size: [2,4,16,32]
-  output_select_mode: [Universal, Individual]
+#  output_select_mode: [Universal, Individual]
   delay_fifo_depth: [0,2,4,6,8,10]
   input_ports: [[northwest,northeast],
                 [northwest,northeast,southwest],

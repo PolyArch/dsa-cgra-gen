@@ -7,8 +7,11 @@ from parse_util import find_all_files, find_all_dirs
 def elaborate_dse(dse_option):
     dse_keys = [k for k, v in dse_option.items()]
     dse_options = [v for k, v in dse_option.items()]
+    len_dse = 1
+    for single_dse_option in dse_options:
+        len_dse = len_dse * len(single_dse_option)
     dse_space = itertools.product(*dse_options)
-    return dse_keys, dse_space
+    return dse_keys, dse_space, len_dse
 
 
 def get_all_synthesized_ir(VL_dir, Rep_dir):
@@ -23,12 +26,27 @@ def get_all_synthesized_ir(VL_dir, Rep_dir):
                 if each_vl_file in each_rep_dir:
                     all_ir.append(extract_IR_from_verilog(VL_dir + each_vl_file))
         finished += 1
-        print("Finished : " + str(finished) + ", Total: " + str(len(all_report_dir)) + "\n")
+        print("Processing Synthesized Data Point: Finished : " + str(finished) + ", Total: " + str(len(all_report_dir)) + "\n")
     return all_ir
 
 
 def isSynthesized(ir, all_synd_ir):
     return ir in all_synd_ir
+
+
+def extract_sta_from_IR(ir):
+    ir_sta = {}
+    for k, v in ir.items():
+        if k == "input_ports":
+            ir_sta["num_input_ports"] = len(v)
+        elif k == "output_ports":
+            ir_sta["num_output_ports"] = len(v)
+        elif isinstance(v, dict):
+            for kk, vv in v.items():
+                ir_sta[k + "-" + kk] = vv
+        else:
+            ir_sta[k] = v
+    return ir_sta
 
 
 def extract_IR_from_verilog(verilog_filename):
@@ -45,6 +63,7 @@ def extract_IR_from_verilog(verilog_filename):
             if start and not end:
                 ir_str = ir_str + line
     ir = yaml.load(ir_str)
+    ir.pop("DSE", None)
     return ir
 
 
@@ -54,6 +73,7 @@ def update_design_point(ir_f_name, design_demension, design_point):
     ir_f.close()
     for dimension in design_demension:
         ir[dimension] = design_point[design_demension.index(dimension)]
+    ir.pop("DSE", None)
     return ir
 
 

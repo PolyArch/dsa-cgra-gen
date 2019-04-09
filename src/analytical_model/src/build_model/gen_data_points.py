@@ -41,17 +41,18 @@ def check_finished():
 
 
 # Read needed feature describe file
+design_point_finished = 0
+all_synthesized_ir = get_all_synthesized_ir(VL_dir, Rep_dir)
 for target_ir_filename in target_IRs:
     with open(IR_dir + target_ir_filename, 'r') as ir_f:
         ir = yaml.load(ir_f)
     dse = ir["DSE"]
     classFullName = ir['module_type'].split(".")
     className = classFullName[-1]
-    design_dimension, design_space = elaborate_dse(dse)
+    design_dimension, design_space, len_dse = elaborate_dse(dse)
     # Update the design point
     for design_point in design_space:
         ir = update_design_point(IR_dir + target_ir_filename, design_dimension, design_point)
-        all_synthesized_ir = get_all_synthesized_ir(VL_dir, Rep_dir)
         if not isSynthesized(ir, all_synthesized_ir):
             temp_filename = IR_dir + "temp_" + target_ir_filename
             with open(temp_filename, "w") as temp_f:
@@ -63,11 +64,15 @@ for target_ir_filename in target_IRs:
             while(len(processes) >= parallel):
                 time.sleep(3)
                 check_finished()
-                print("Has run : " + str(has_run_num) + ", Finished : " + str(finished_num) + ", Processes List Len = " + str(len(processes)))
+                print("Has run : " + str(has_run_num) + ", Finished : " + str(finished_num) + ", Total : " + str(
+                    len_dse) + ", Processes List Len = " + str(len(processes)))
             else:
                 change_design(DC_dir + "dc_script/", className)
                 change_design_file(DC_dir + "dc_script/", verilog_file)
                 process = subprocess.Popen([DC_dir + "dc_script/" + "dc_wrapper.sh"], shell=True)
                 has_run_num += 1
                 processes.append(process)
-
+        else:
+            finished_num += 1
+            print("Has run : " + str(has_run_num) + ", Finished : " + str(finished_num) + ", Total : " + str(
+                len_dse) + ", Processes List Len = " + str(len(processes)))
