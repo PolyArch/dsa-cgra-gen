@@ -16,6 +16,7 @@ object system_var {
   var host_word_width : Int= -1
   var num_test_data_memory_words : Int= -1
   var test_data_memory_buffer_depth : Int= -1
+
   // Module Num / ID
   var num_module : Int = -1
   var _module_id = 0

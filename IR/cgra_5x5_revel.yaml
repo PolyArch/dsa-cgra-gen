@@ -10,8 +10,8 @@ system:
   # Type
   module_type: cgra.fabric.Cgra_Hw
   # IO
-  input_ports: [i0,i1,i2,i3,i4,i5,i6,i7,i8,i9,i10]
-  output_ports: [o0,o1,o2,o3,o4,o5,o6,o7,o8]
+  input_ports: [i0]
+  output_ports: [o0]
   # Data Information
   data_word_width: 64
   # Host bus information.
@@ -228,12 +228,12 @@ dedicated_pes:
     # Control
     has_metaReuse: {valid: false,num_reuse: 4} #TODO
     # Shared Instruction
-    isShared: true
+    isShared: false
     shared_slot_size: 32
     register_file_size: 8
     # Datapath
     delay_fifo_depth: 4 # Delay Pipe when protocol don't has Ready; Delay FIFO when protocol has Ready
-    instructions: [BOr]
+    instructions: [Add64,Sub,Mul]
     output_select_mode: Universal #[ Individual ]
 
   dedicated_pe_1: &dedicated_pe_1
@@ -330,7 +330,7 @@ shared_pes:
     architecture: integer
     immediate_width: 32
     mm_instruction_width: 128
-    instructions: [BOr]
+    instructions: [Add,Sub,Mul]
     num_instructions: 16
     num_predicates: 8
     num_registers: 8
@@ -366,6 +366,36 @@ shared_pes:
   shared_pe_2: &shared_pe_2
     <<: *default_shared_pe
 
+#  __     __        _               ____            _
+#  \ \   / /__  ___| |_ ___  _ __  |  _ \ ___  _ __| |_
+#   \ \ / / _ \/ __| __/ _ \| '__| | |_) / _ \| '__| __|
+#    \ V /  __/ (__| || (_) | |    |  __/ (_) | |  | |_
+#     \_/ \___|\___|\__\___/|_|    |_|   \___/|_|   \__|
+vector_ports:
+  default_vp: &default_vp
+    io_type: ""
+    module_type: cgra.fabric.vector_port
+    input_ports: [v0,v1,v2,v3,v4,v5,v6,v7]
+    output_ports: [v0,v1,v2,v3,v4,v5,v6,v7]
+    channel_buffer: 3
+
+  vec_in_1: &vec_in_1
+    <<: *default_vp
+    io_type: in
+    input_ports: [v0]
+
+  vec_in_2: &vec_in_2
+    <<: *default_vp
+    io_type: in
+    input_ports: [v0]
+    output_ports: [v0]
+
+  vec_out_1: &vec_out_1
+    <<: *default_vp
+    io_type: out
+    output_ports: [v0]
+
+
 #   _____                 _
 #  |_   _|__  _ __   ___ | | ___   __ _ _   _
 #    | |/ _ \| '_ \ / _ \| |/ _ \ / _` | | | |
@@ -374,29 +404,31 @@ shared_pes:
 #            |_|                  |___/ |___/
 
 topology: [
+  this.i0 -> vec_in_1.v0,
+  vec_out_1.v0 -> this.o0,
   #                  ------ Vector Port Connection ------
   # Input -> Vector Port
-  this.i0 -> router_1.north,
-  this.i1 -> router_2.north,
-  this.i2 -> router_3.north,
-  this.i3 -> router_4.north,
-  this.i4 -> router_5.north,
-  this.i5 -> router_7.west,
-  this.i6 -> router_13.west,
-  this.i7 -> router_19.west,
-  this.i8 -> router_25.west,
-  this.i9 -> router_31.west,
-  this.i10 -> router_6.north,
+  vec_in_1.v0 -> router_1.north,
+  vec_in_1.v1 -> router_2.north,
+  vec_in_1.v2 -> router_3.north,
+  vec_in_1.v3 -> router_4.north,
+  vec_in_1.v4 -> router_5.north,
+  vec_in_1.v5 -> router_6.north,
+  vec_in_1.v6 -> router_7.west,
+  vec_in_1.v7 -> router_12.east,
+  
+  vec_in_2.v0 -> router_19.west,
+  #vec_in_1.v9 -> router_31.west,
+  #vec_in_1.v10 -> router_6.north,
   # Vector Port -> Output
-  router_12.east -> this.o0,
-  router_18.east -> this.o1,
-  router_24.east -> this.o2,
-  router_30.east -> this.o3,
-  router_32.south -> this.o4,
-  router_33.south -> this.o5,
-  router_34.south -> this.o6,
-  router_35.south -> this.o7,
-  router_36.south -> this.o8,
+  router_24.east ->   vec_out_1.v0,
+  router_30.east ->   vec_out_1.v1,
+  router_18.east ->   vec_out_1.v2,
+  router_32.south ->  vec_out_1.v3,
+  router_33.south ->  vec_out_1.v4,
+  router_34.south ->  vec_out_1.v5,
+  router_35.south ->  vec_out_1.v6,
+  router_36.south ->  vec_out_1.v7,
   #                  ------ Router Connection ------
   # Router 1 Connection
   router_1.east <-> router_2.west,

@@ -172,7 +172,7 @@ dedicated_pes:
     register_file_size: 8
     # Datapath
     delay_fifo_depth: 2 # Delay Pipe when protocol don't has Ready; Delay FIFO when protocol has Ready
-    instructions: [Sub,BOr,BAnd,Add]
+    instructions: [Sub,BOr,BAnd,Add,Add64]
     output_select_mode: Universal #[ Individual ]
 
   dedicated_pe_1: &dedicated_pe_1
@@ -270,7 +270,7 @@ vector_ports:
     module_type: cgra.fabric.vector_port
     input_ports: [v1,v2,v3]
     output_ports: [v1,v2,v3]
-    channel_buffer:
+    channel_buffer: 3
 
   vec_in_1: &vec_in_1
     <<: *default_vp

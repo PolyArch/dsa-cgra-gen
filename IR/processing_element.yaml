@@ -32,7 +32,7 @@ DSE:
   protocol: [Data,DataValidReady]
   shared_slot_size: [2,4,8,16]
   register_file_size: [2,4,16,32]
-#  output_select_mode: [Universal, Individual]
+  output_select_mode: [Universal, Individual]
   delay_fifo_depth: [0,2,4,6,8,10]
   input_ports: [[northwest,northeast],
                 [northwest,northeast,southwest],

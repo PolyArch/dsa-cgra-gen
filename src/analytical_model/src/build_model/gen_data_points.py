@@ -9,7 +9,7 @@ IR_dir = home_dir + "IR/"
 DC_dir = home_dir + "syn/"
 VL_dir = home_dir + "verilog-output/"
 Rep_dir = DC_dir + "Reports/"
-target_IRs = ["processing_element.yaml"]
+target_IRs = ["processing_element.yaml","router.yaml"]
 
 # Cgra Generator Driver
 cgra_gen = "/home/sihao/ss-cgra-gen/scripts/gen_cgra.sh"

@@ -16,15 +16,17 @@ from trainModel import trainRegression
 
 # Set Directory
 home_dir = "/home/sihao/ss-cgra-gen/"
+hw_dir = "/home/sihao/ss-cgra-upd/"
 IR_dir = home_dir + "IR/"
-DC_dir = home_dir + "syn/"
-VL_dir = home_dir + "verilog-output/"
+DC_dir = hw_dir + "syn/"
+VL_dir = hw_dir + "verilog-output/"
 Rep_dir = DC_dir + "Reports/"
 Output_Dir = "/home/sihao/ss-cgra-gen/src/analytical_model/resource/"
 
 # Parameter
 output_write_csv = True
-collect_new_data_point = False
+collect_new_data_point = True
+need_trainModel = False
 limit_num = -1
 target_designs = ["Dedicated_PE", "Router"]
 predict_target = ["mapped.area-Total cell area", "mapped.power-Total"]
@@ -101,19 +103,22 @@ if collect_new_data_point:
                     w.writerow(value)
 
 # Build Model
-design_model = {}
-for target_design in target_designs:
-    feature_field = design_feature[target_design]
-    try:
-        design_list_dict
-    except NameError:
-        design_list_dict = None
-    if design_list_dict is None:
-        list_of_files = [f for f in glob.glob(Output_Dir + "*") if
-                         target_design in f]  # * means all if need specific format then *.csv
-        latest_file = max(list_of_files, key=os.path.getctime)
-        dataset = pd.read_csv(latest_file, usecols=list(feature_field.keys()) + predict_target, na_values="N/A")
-    else:
-        dataset = pd.DataFrame(design_list_dict[target_design])
-    design_model[target_design] = trainRegression(target_design, dataset, feature_field, predict_target)
+if need_trainModel:
+    design_model = {}
+    for target_design in target_designs:
+        feature_field = design_feature[target_design]
+        try:
+            design_list_dict
+        except NameError:
+            design_list_dict = None
+        if design_list_dict is None:
+            list_of_files = [f for f in glob.glob(Output_Dir + "*") if
+                             target_design in f]  # * means all if need specific format then *.csv
+            latest_file = max(list_of_files, key=os.path.getctime)
+            dataset = pd.read_csv(latest_file, usecols=list(feature_field.keys()) + predict_target, na_values="N/A")
+        else:
+            dataset = pd.DataFrame(design_list_dict[target_design])
+        design_model[target_design] = trainRegression(target_design, dataset, feature_field, predict_target)
+
+# Finished
 print("Model Built!")

@@ -9,8 +9,6 @@ input_ports:
 - northwest
 - northeast
 - southwest
-- southeast
-- east
 instructions:
 - Add
 - Sub
@@ -23,10 +21,10 @@ module_type: cgra.fabric.Dedicated_PE_Hw
 output_ports:
 - southwest
 - southeast
-output_select_mode: Universal
+output_select_mode: Individual
 protocol: DataValidReady
-register_file_size: 16
-shared_slot_size: 4
+register_file_size: 32
+shared_slot_size: 16
 system:
   data_word_width: 64
   num_module: 61

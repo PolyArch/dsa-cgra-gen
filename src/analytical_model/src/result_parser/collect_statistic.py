@@ -8,10 +8,17 @@ from syn_result_parser import *
 import datetime
 import time
 
+
+# Set Directory
+home_dir = "/home/sihao/ss-cgra-gen/"
+hw_dir = "/home/sihao/ss-cgra-upd/"
+
+IR_dir = home_dir + "IR/"
 # Verilog File Directory
-VL_Dir = "/home/sihao/ss-cgra-gen/verilog-output/"
-# Verilog Source Code
-Reports_dir = "/home/sihao/ss-cgra-gen/syn/Reports/"
+VL_Dir = hw_dir + "verilog-output/"
+# Synthesizing Dir
+DC_dir = hw_dir + "syn/"
+Reports_dir = DC_dir + "Reports/"
 # Output Statistic File Name
 Output_Dir = "/home/sihao/ss-cgra-gen/src/analytical_model/resource/"
 Output_File = "Cgra_DesignSpace"
