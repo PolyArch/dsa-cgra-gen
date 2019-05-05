@@ -25,6 +25,7 @@ class Trig_PE_Hw(name_p:(String,Any)) extends Module
   with Has_IO
   with Reconfigurable {
   private val module_name = name_p._1
+  private val module_id : Int = try{p("module_id").asInstanceOf[Int]}catch{case _:Throwable => get_new_id}
   private val p = name_p._2.asInstanceOf[mutable.Map[String,Any]]
   parameter_update(p)
   val input_ports : List[String] = try{p("input_ports").asInstanceOf[List[String]]}
@@ -396,7 +397,7 @@ class Trig_PE_Hw(name_p:(String,Any)) extends Module
   def config2XML : Elem = {
     <Shared_PE>
       <Module_Name>{module_name}</Module_Name>
-      <Module_ID>{p("module_id")}</Module_ID>
+      <Module_ID>{module_id}</Module_ID>
     </Shared_PE>
   }
 }

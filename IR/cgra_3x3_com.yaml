@@ -172,7 +172,7 @@ dedicated_pes:
     register_file_size: 8
     # Datapath
     delay_fifo_depth: 2 # Delay Pipe when protocol don't has Ready; Delay FIFO when protocol has Ready
-    instructions: [Sub,BOr,BAnd,Add,Add64]
+    instructions: [Sub,BOr,BAnd,Add]
     output_select_mode: Universal #[ Individual ]
 
   dedicated_pe_1: &dedicated_pe_1
