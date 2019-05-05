@@ -114,16 +114,15 @@ class VectorPort_Hw_New (pp:(String,Any)) extends Module
           yield Mux((_head + i.U) < vecSize,io.out(i).ready,true.B)
         val outputValid = valids.reduce(_&&_)
         val outputReady = readys.reduce(_&&_)
-
-          for (i <- 0 until num_vector){
-            when(i.U < vecSize){
-              io.out(i).bits := MainQueue(_head + i.U)
-              io.out(i).config := ConfigQueue(_head + i.U)
-            }.otherwise{
-              io.out(i).bits := 0.U
-              io.out(i).config := false.B
-            }
+        for (i <- 0 until num_vector){
+          when(i.U < vecSize){
+            io.out(i).bits := MainQueue(_head + i.U)
+            io.out(i).config := ConfigQueue(_head + i.U)
+          }.otherwise{
+            io.out(i).bits := 0.U
+            io.out(i).config := false.B
           }
+        }
         when(outputValid && outputReady){
           _head := _head + vecSize
         }
