@@ -59,7 +59,7 @@ class channel_buffer extends Module{
   io.receiver.count := count
 
   // Logic
-  when(reset.asBool()){
+  when(reset.toBool()){
     count := 0.U
     head := 0.U
     tail := 0.U

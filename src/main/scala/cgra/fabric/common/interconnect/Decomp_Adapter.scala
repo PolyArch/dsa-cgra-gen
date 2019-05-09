@@ -146,7 +146,8 @@ class Decomp_Adapter_Hw(p:mutable.Map[String,Any]) extends Module {
     for(toBit <- 0 until toWidth){
       if(fromWidth > toWidth){
         val from_to_ratio = fromWidth / toWidth
-        todata(toBit) := fromdata((toBit + 1) * from_to_ratio - 1,toBit * from_to_ratio).asBools().reduce(_&&_)
+        val seq_bools : Seq[Bool] = fromdata((toBit + 1) * from_to_ratio - 1,toBit * from_to_ratio).toBools
+        todata(toBit) := seq_bools.reduce(_&&_)
       }else{
         val to_from_ratio = toWidth / fromWidth
         todata(toBit) := fromdata(toBit / to_from_ratio)

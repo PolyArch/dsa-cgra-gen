@@ -237,7 +237,7 @@ class Trig_PE_Hw(name_p:(String,Any)) extends Module
   potentially_overridden_datapath_instruction := hazard_free_datapath_instruction
 
   // T|DX1 Pipeline Register
-  when(reset.asBool || predicate_prediction_miss){
+  when(reset.toBool() || predicate_prediction_miss){
     dx1_triggered_datapath_instruction := zero_datapath_instruction
   }.elsewhen(io_enable){
     dx1_triggered_datapath_instruction := potentially_overridden_datapath_instruction
@@ -305,7 +305,7 @@ class Trig_PE_Hw(name_p:(String,Any)) extends Module
   imu_result := 0.U
 
   // DX1|X2 Pipeline Register
-  when (reset.asBool() || predicate_prediction_miss){
+  when (reset.toBool() || predicate_prediction_miss){
     x2_triggered_datapath_instruction := zero_datapath_instruction
     x2_instruction_retiring_stage := 0.U
     x2_functional_unit := ALU.U

@@ -32,7 +32,7 @@ class execution_control_unit extends Module {
   io.internal_enable := (io.enable & io.execute) & halted
 
   // not halted unless by opcode
-  when(reset.asBool()){
+  when(reset.toBool()){
     halted := false.B
   }.elsewhen(io.enable && io.execute){
     when(io.opcode === TIA_OP_HALT.U){
@@ -41,7 +41,7 @@ class execution_control_unit extends Module {
   }
 
   // pass quiescent status to output
-  when(reset.asBool()){
+  when(reset.toBool()){
     io.channels_quiescent := false.B
   }.elsewhen(io.enable){
     io.channels_quiescent := Cat(io.input_channel_quiescent_status,io.output_channel_quiescent_status).andR()
