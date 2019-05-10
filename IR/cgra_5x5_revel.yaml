@@ -6,19 +6,17 @@
 #       |___/
 #
 
-system:
-  # Type
-  module_type: cgra.fabric.Cgra_Hw
-  # IO
-  input_ports: [i0]
-  output_ports: [o0]
-  # Data Information
-  data_word_width: 64
-  # Host bus information.
-  host_word_width: 32 # Fixed, for now.
-  # Test memory system.
-  num_test_data_memory_words: 32786
-  test_data_memory_buffer_depth: 4
+module_type: cgra.fabric.Cgra_Hw
+# IO
+input_ports: [i0]
+output_ports: [o0]
+# Data Information
+data_word_width: 64
+# Host bus information.
+host_word_width: 32 # Fixed, for now.
+# Test memory system.
+num_test_data_memory_words: 32786
+test_data_memory_buffer_depth: 4
 
 #     ____             _
 #    |  _ \ ___  _   _| |_ ___ _ __
