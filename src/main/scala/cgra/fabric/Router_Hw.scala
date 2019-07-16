@@ -191,7 +191,8 @@ class Router_Hw(pp:(String,Any)) extends Module
     }
   }
 
-  // ------ Create Hardware
+  // ------ Create Hardware -------
+  // Building the interface of MUXes (mux_out)
   val muxes_out_interface = Wire(Vec(all_MUXes.length,DecoupledIO(UInt(decomped_data_word_width.W))))
   for (mux_idx <- all_MUXes.indices){
     val mux_out = muxes_out_interface(mux_idx)
@@ -211,7 +212,6 @@ class Router_Hw(pp:(String,Any)) extends Module
     if(protocol.contains("Data")){
       val bits_select = current_input_ports.map(p =>  p._2.U -> p._1.bits)
       mux_out.bits := MuxLookup(select_wire,0.U,bits_select)
-
     }
     // Connect Valid
     if(protocol.contains("Valid")){
@@ -243,9 +243,9 @@ class Router_Hw(pp:(String,Any)) extends Module
     }else{
       mux_out.ready := DontCare
     }
-    // Add Backpressure FIFO
 
     when(!config_enable){
+      // Considering Backpressure FIFO
       if(back_pressure_fifo_depth > 0) {
         val queue_out = Queue(mux_out, back_pressure_fifo_depth)
         if (protocol.contains("Data"))
