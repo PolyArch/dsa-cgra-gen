@@ -179,6 +179,7 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
       out_config_wire.bits((subnet_idx + 1) * decomped_data_word_width - 1,subnet_idx * decomped_data_word_width)
     output_config_ports(output_port_idx)(subnet_idx).config := out_config_wire.config
   }))
+  // Connect Input and Output Wire
   out_config_wire := in_config_wire
 
   // ------- Update Configuration
@@ -268,15 +269,20 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
       // Write to Output Port
       if(alu_sinks.contains("Universal Output")){
         val selected_all_output_port : Bool = alu_output_select_wire === alu_sinks.indexOf("Universal Output").U
-        when(!config_enable){
-          if(protocol.contains("Data"))
-            io.output_ports.foreach(ps=>ps(subnet).bits := Mux(selected_all_output_port,alu_hw.out.bits,0.U))
-          if(protocol.contains("Valid"))
-            io.output_ports.foreach(ps=>ps(subnet).valid := Mux(selected_all_output_port,alu_hw.out.valid,false.B))
-        }otherwise{
-          io.output_ports.foreach(ps=>ps(subnet).valid := DontCare)
+        if(protocol.contains("Data")){
+          when(!config_enable){ // When not been configured, pass the data
+            io.output_ports.foreach(ps=>
+              ps(subnet).bits := Mux(selected_all_output_port,alu_hw.out.bits,0.U)
+            )
+          }.otherwise{ // When configured, don't care those non-config output ports
+            val non_config_output_port : List[String] = output_ports diff config_output_port
+            non_config_output_port.map(ncop=>output_ports.indexOf(ncop)).map(io.output_ports).foreach(ncop=>{
+              ncop.foreach(subnet_port=>subnet_port.bits := DontCare)
+            })
+          }
         }
-
+        if(protocol.contains("Valid"))
+          io.output_ports.foreach(ps=>ps(subnet).valid := Mux(selected_all_output_port,alu_hw.out.valid,false.B))
         if(protocol.contains("Ready")){
           val output_backpressure_signal = (for(output <- output_ports)
             yield io.output_ports(output_ports.indexOf(output))(subnet).ready).reduce(_&&_)
@@ -289,11 +295,9 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
           when(!config_enable) {
             if (protocol.contains("Data"))
               io.output_ports(port_idx)(subnet).bits := Mux(selected_this_output_port, alu_hw.out.bits, 0.U)
-            if (protocol.contains("Valid"))
-              io.output_ports(port_idx)(subnet).valid := Mux(selected_this_output_port, alu_hw.out.valid, false.B)
-          }.otherwise{
-            out_config_wire := in_config_wire
           }
+          if (protocol.contains("Valid"))
+            io.output_ports(port_idx)(subnet).valid := Mux(selected_this_output_port, alu_hw.out.valid, false.B)
           if(protocol.contains("Ready"))
             alu_hw.out.ready := Mux(selected_this_output_port,io.output_ports(port_idx)(subnet).ready,true.B)
         }
@@ -455,6 +459,9 @@ object tester_pe extends App{
   val p : mutable.Map[String,Any] = mutable.Map[String,Any]()
   p += "module_name" -> "PE_Test"
   p += "module_id" -> {get_new_id;get_new_id;get_new_id;get_new_id;get_new_id;get_new_id;get_new_id;get_new_id}
+
+  p += "output_ports" -> List("A","B","C")
+  p += "config_output_port" -> List("A","B")
 
   p += "protocol" -> "DataValidReady"
   p += "delay_fifo_depth" -> 4

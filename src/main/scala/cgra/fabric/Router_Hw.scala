@@ -39,8 +39,11 @@ class Router_Hw(pp:(String,Any)) extends Module
   catch{case _:Throwable => 32}}else{0}
   val inter_subnet_connection : List[String]= try{p("inter_subnet_connection").asInstanceOf[List[String]]}
   catch{case _:Throwable => Nil}
-  val config_input_port : String = try p("config_input_port").toString catch{case _:Throwable => input_ports.head}
-  val config_output_port : String = try p("config_output_port").toString catch{case _:Throwable => output_ports.head}
+  val config_input_port : List[String] = try p("config_input_port").asInstanceOf[List[String]]
+  catch{case _:Throwable => List(input_ports.head)} // To support automatic config path builder
+  // we only allow every node to have single config input port
+  val config_output_port : List[String] = try p("config_output_port").asInstanceOf[List[String]]
+  catch{case _:Throwable => output_ports}
 
   // Derived Variables
   val decomped_data_word_width : Int = data_word_width / decomposer
@@ -113,28 +116,27 @@ class Router_Hw(pp:(String,Any)) extends Module
 
 
   // ------ Config Wire
-  // Extract Config Port Name and Index
-  val in_config_port_idx :List[(String,Int)] = input_ports_subnet.zipWithIndex
-    .filter(p=>p._1.startsWith(config_input_port))
-  val out_config_port_idx :List[(String,Int)]= output_ports_subnet.zipWithIndex
-    .filter(p=>p._1.startsWith(config_output_port))
   // Extract Config Port based on Index
-
-  val input_config_ports = io.input_ports(input_ports.indexOf(config_input_port))
-  val output_config_ports = io.output_ports(output_ports.indexOf(config_output_port))
+  val input_config_ports : List[Vec[ReqAckConf_if]]= config_input_port.map(ip=>input_ports.indexOf(ip)).map(io.input_ports)
+  val output_config_ports : List[Vec[ReqAckConf_if]] = config_output_port.map(op=>output_ports.indexOf(op)).map(io.output_ports)
   // Create Config Wire
   val in_config_wire = Wire(config_wire(data_word_width))
   val out_config_wire = Wire(config_wire(data_word_width))
   // Connect Config Port with Config Wiring
-  in_config_wire.bits := input_config_ports.map(_.bits).reduce(Cat(_,_))
-  in_config_wire.config := input_config_ports.map(_.config).reduce(_&&_)
-  output_config_ports.zipWithIndex.foreach(p=>{
-    val idx = p._2
-    output_config_ports(idx).bits := out_config_wire.bits((idx + 1) * decomped_data_word_width - 1,idx * decomped_data_word_width)
-    output_config_ports(idx).config := out_config_wire.config
-  })
+  in_config_wire.bits := input_config_ports.head.map(_.bits).reduce(Cat(_,_)) // Assume That only have one config input port
+  in_config_wire.config := input_config_ports.head.map(_.config).reduce(_&&_) // Assume That only have one config input port
+  /*
+  output_config_ports.zipWithIndex.foreach(op=>op._1.zipWithIndex.foreach(p=>{
+    val output_port_idx = op._2
+    val subnet_idx = p._2
+    output_config_ports(output_port_idx)(subnet_idx).bits :=
+      out_config_wire.bits((subnet_idx + 1) * decomped_data_word_width - 1,subnet_idx * decomped_data_word_width)
+    output_config_ports(output_port_idx)(subnet_idx).config := out_config_wire.config
+  }))
+  */
   // Connect Input and Output Wire
   out_config_wire := in_config_wire
+
   // ------ Update Configuration
   val module_id_wire : UInt = in_config_wire.bits(config_module_id_high,config_module_id_low)
   val config_enable : Bool = in_config_wire.config && module_id.U === module_id_wire
@@ -194,7 +196,8 @@ class Router_Hw(pp:(String,Any)) extends Module
   for (mux_idx <- all_MUXes.indices){
     val mux_out = muxes_out_interface(mux_idx)
     val mux = all_MUXes(mux_idx)
-    val out_port_name = mux.sink.split("_").head;val out_port_idx:Int=output_ports.indexOf(out_port_name)
+    val out_port_name = mux.sink.split("_").head
+    val out_port_idx:Int=output_ports.indexOf(out_port_name)
     val subnet : Int = mux.sink.split("_")(1).toInt
     // Get source index
     val sources = mux.sources
@@ -208,7 +211,7 @@ class Router_Hw(pp:(String,Any)) extends Module
     if(protocol.contains("Data")){
       val bits_select = current_input_ports.map(p =>  p._2.U -> p._1.bits)
       mux_out.bits := MuxLookup(select_wire,0.U,bits_select)
-      io.output_ports(out_port_idx)(subnet).bits := mux_out.bits
+
     }
     // Connect Valid
     if(protocol.contains("Valid")){
@@ -241,21 +244,36 @@ class Router_Hw(pp:(String,Any)) extends Module
       mux_out.ready := DontCare
     }
     // Add Backpressure FIFO
-    if(back_pressure_fifo_depth > 0){
-      val queue_out = Queue(mux_out,back_pressure_fifo_depth)
-      if(protocol.contains("Data"))
-        io.output_ports(out_port_idx)(subnet).bits := queue_out.bits
-      if(protocol.contains("Valid"))
-        io.output_ports(out_port_idx)(subnet).valid := queue_out.valid
-      if(protocol.contains("Ready"))
-        io.output_ports(out_port_idx)(subnet).ready <> queue_out.ready
-    }else{
-      if(protocol.contains("Data"))
-        io.output_ports(out_port_idx)(subnet).bits := mux_out.bits
-      if(protocol.contains("Valid"))
-        io.output_ports(out_port_idx)(subnet).valid := mux_out.valid
-      if(protocol.contains("Ready"))
-        io.output_ports(out_port_idx)(subnet).ready <> mux_out.ready
+
+    when(!config_enable){
+      if(back_pressure_fifo_depth > 0) {
+        val queue_out = Queue(mux_out, back_pressure_fifo_depth)
+        if (protocol.contains("Data"))
+          io.output_ports(out_port_idx)(subnet).bits := queue_out.bits
+        if (protocol.contains("Valid"))
+          io.output_ports(out_port_idx)(subnet).valid := queue_out.valid
+        if (protocol.contains("Ready"))
+          io.output_ports(out_port_idx)(subnet).ready <> queue_out.ready
+      }
+      else {
+        if(protocol.contains("Data"))
+          io.output_ports(out_port_idx)(subnet).bits := mux_out.bits
+        if(protocol.contains("Valid"))
+          io.output_ports(out_port_idx)(subnet).valid := mux_out.valid
+        if(protocol.contains("Ready"))
+          io.output_ports(out_port_idx)(subnet).ready <> mux_out.ready
+      }
+    }otherwise{
+      io.output_ports(out_port_idx)(subnet).valid := DontCare
+      mux_out.ready := DontCare
+      if(config_output_port.contains(out_port_name)){
+        io.output_ports(out_port_idx)(subnet).bits :=
+          out_config_wire.bits((subnet + 1) * decomped_data_word_width - 1,subnet * decomped_data_word_width)
+        io.output_ports(out_port_idx)(subnet).config := out_config_wire.config
+      }else{
+        io.output_ports(out_port_idx)(subnet).bits := DontCare
+        io.output_ports(out_port_idx)(subnet).config := DontCare
+      }
     }
   }
 
@@ -282,9 +300,9 @@ class Router_Hw(pp:(String,Any)) extends Module
   }
   // Get Port
   def get_port(io_t:String,name:String) : Vec[ReqAckConf_if] = {
-  io_t match {
-    case "in" => io.input_ports(input_ports.indexOf(name))
-    case "out" => io.output_ports(output_ports.indexOf(name))
+    io_t match {
+      case "in" => io.input_ports(input_ports.indexOf(name))
+      case "out" => io.output_ports(output_ports.indexOf(name))
     }
   }
   def get_port_protocol(io_t:String,name:String) : String = {
@@ -300,19 +318,27 @@ import cgra.config.system_var
 import cgra.config.system_util._
 
 object tester_router extends App{
-// Knob Parameters
-system_var.data_word_width = 64
-val p : mutable.Map[String,Any] = mutable.Map[String,Any]()
-p += "module_name" -> "Router_Test"
-p += "module_id" -> {for(i <- 0 until 60) get_new_id
-  get_new_id
-}
-p += "protocol" -> "Data"
-p += "back_pressure_fifo_depth" -> 2
-p += "isDecomposed" -> false
-p += "decomposer" -> 1
-p += "isShared" -> false
-p += "shared_slot_size" -> 32
-//p += "inter_subnet_connection" -> List("south_1 <-> north_0","northwest_0 <-> east _1")
-chisel3.Driver.execute(args,()=>{new Router_Hw("test",p)})
+  // Knob Parameters
+  system_var.data_word_width = 64
+  val p : mutable.Map[String,Any] = mutable.Map[String,Any]()
+  p += "module_name" -> "Router_Test"
+  p += "module_id" -> {
+    for(i <- 0 until 60)
+      get_new_id
+    get_new_id
+  }
+
+
+  p += "output_ports" -> List("A","B","C")
+  p += "config_output_port" -> List("A","B")
+
+  p += "protocol" -> "DataValidReady"
+  p += "back_pressure_fifo_depth" -> 2
+  p += "isDecomposed" -> true
+  p += "decomposer" -> 2
+  p += "isShared" -> false
+  p += "shared_slot_size" -> 32
+  //p += "inter_subnet_connection" -> List("south_1 <-> north_0","northwest_0 <-> east _1")
+  update
+  chisel3.Driver.execute(args,()=>{new Router_Hw("test",p)})
 }
