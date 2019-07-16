@@ -42,11 +42,14 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
     try{p("output_select_mode")toString}catch{case _: Throwable => "Universal"}
   }else{"Universal"}
   val register_file_size : Int = if(isShared){try{p("register_file_size").asInstanceOf[Int]}
-  catch{case _:Throwable => 8}}else{0}
+    catch{case _:Throwable => 8}}else{0}
   val data_word_width : Int = try {if(use_global) system_var.data_word_width else p("data_word_width").asInstanceOf[Int]}
-  catch{case _:Throwable => 64}
-  val config_input_port : String = try p("config_input_port").toString catch{case _:Throwable => input_ports.head}
-  val config_output_port : String = try p("config_output_port").toString catch{case _:Throwable => output_ports.head}
+    catch{case _:Throwable => 64}
+  val config_input_port : List[String] = try p("config_input_port").asInstanceOf[List[String]]
+    catch{case _:Throwable => List(input_ports.head)} // To support automatic config path builder
+  // we only allow every node to have single config input port
+  val config_output_port : List[String] = try p("config_output_port").asInstanceOf[List[String]]
+    catch{case _:Throwable => output_ports}
   private val instructions = p("instructions").asInstanceOf[List[String]]
 
   // Derived Variables
@@ -55,8 +58,8 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
   val num_output : Int = output_ports.length
   val input_ports_subnet : List[String] = (for(subnet<- 0 until decomposer;port<-input_ports) yield port + "_" + subnet).toList
   val output_ports_subnet : List[String] = (for(subnet<- 0 until decomposer;port<-output_ports) yield port + "_" + subnet).toList
-  val input_ports_protocol : List[String] = input_ports.map(p=>{if(p == config_input_port) protocol + "Config" else protocol})
-  val output_ports_protocol : List[String] = output_ports.map(p=>{if(p == config_output_port) protocol + "Config" else protocol})
+  val input_ports_protocol : List[String] = input_ports.map(p=>{if(config_input_port.contains(p)) protocol + "Config" else protocol})
+  val output_ports_protocol : List[String] = output_ports.map(p=>{if(config_output_port.contains(p)) protocol + "Config" else protocol})
 
   // ------ Define Input Output
   val io = IO(new Bundle{
@@ -154,25 +157,28 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
 
   // ------- Config Wire
   // Extract Config Port Name and Index
+  /*
   val in_config_port_idx :List[(String,Int)] = input_ports_subnet.zipWithIndex
     .filter(p=>p._1.startsWith(config_input_port))
   val out_config_port_idx :List[(String,Int)]= output_ports_subnet.zipWithIndex
     .filter(p=>p._1.startsWith(config_output_port))
+  */
   // Extract Config Port based on Index
-  val input_config_ports = io.input_ports(input_ports.indexOf(config_input_port))
-  val output_config_ports = io.output_ports(output_ports.indexOf(config_output_port))
+  val input_config_ports : List[Vec[ReqAckConf_if]]= config_input_port.map(ip=>input_ports.indexOf(ip)).map(io.input_ports)
+  val output_config_ports : List[Vec[ReqAckConf_if]] = config_output_port.map(op=>output_ports.indexOf(op)).map(io.output_ports)
   // Create Config Wire
   val in_config_wire = Wire(config_wire(data_word_width))
   val out_config_wire = Wire(config_wire(data_word_width))
   // Connect Config Port with Config Wiring
-  in_config_wire.bits := input_config_ports.map(_.bits).reduce(Cat(_,_))
-  in_config_wire.config := input_config_ports.map(_.config).reduce(_&&_)
-  output_config_ports.zipWithIndex.foreach(p=>{
-    val idx = p._2
-    output_config_ports(idx).bits := out_config_wire.bits((idx + 1) * decomped_data_word_width - 1,idx * decomped_data_word_width)
-    output_config_ports(idx).config := out_config_wire.config
-  })
-  // Connect Input and Output Wire
+  in_config_wire.bits := input_config_ports.head.map(_.bits).reduce(Cat(_,_)) // Assume That only have one config input port
+  in_config_wire.config := input_config_ports.head.map(_.config).reduce(_&&_) // Assume That only have one config input port
+  output_config_ports.zipWithIndex.foreach(op=>op._1.zipWithIndex.foreach(p=>{
+    val output_port_idx = op._2
+    val subnet_idx = p._2
+    output_config_ports(output_port_idx)(subnet_idx).bits :=
+      out_config_wire.bits((subnet_idx + 1) * decomped_data_word_width - 1,subnet_idx * decomped_data_word_width)
+    output_config_ports(output_port_idx)(subnet_idx).config := out_config_wire.config
+  }))
   out_config_wire := in_config_wire
 
   // ------- Update Configuration
@@ -199,7 +205,7 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
   }else{
     slot_select_wire := 0.U
   }
-  // Specift Config Data Wiring
+  // Specify Config Data Wiring
   var config_data_high : Int = config_slot_low - 1
   var config_data_low : Int = 0
   require(config_data_high + 1 >= config_register_files_width,"Write Config Data / Instruction " +
@@ -262,10 +268,15 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
       // Write to Output Port
       if(alu_sinks.contains("Universal Output")){
         val selected_all_output_port : Bool = alu_output_select_wire === alu_sinks.indexOf("Universal Output").U
-        if(protocol.contains("Data"))
-          io.output_ports.foreach(ps=>ps(subnet).bits := Mux(selected_all_output_port,alu_hw.out.bits,0.U))
-        if(protocol.contains("Valid"))
-          io.output_ports.foreach(ps=>ps(subnet).valid := Mux(selected_all_output_port,alu_hw.out.valid,false.B))
+        when(!config_enable){
+          if(protocol.contains("Data"))
+            io.output_ports.foreach(ps=>ps(subnet).bits := Mux(selected_all_output_port,alu_hw.out.bits,0.U))
+          if(protocol.contains("Valid"))
+            io.output_ports.foreach(ps=>ps(subnet).valid := Mux(selected_all_output_port,alu_hw.out.valid,false.B))
+        }otherwise{
+          io.output_ports.foreach(ps=>ps(subnet).valid := DontCare)
+        }
+
         if(protocol.contains("Ready")){
           val output_backpressure_signal = (for(output <- output_ports)
             yield io.output_ports(output_ports.indexOf(output))(subnet).ready).reduce(_&&_)
@@ -275,10 +286,14 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
         for(output_port <- output_ports){
           val port_idx = output_ports.indexOf(output_port)
           val selected_this_output_port : Bool = alu_output_select_wire === alu_sinks.indexOf(output_port).U
-          if(protocol.contains("Data"))
-            io.output_ports(port_idx)(subnet).bits := Mux(selected_this_output_port,alu_hw.out.bits,0.U)
-          if(protocol.contains("Valid"))
-            io.output_ports(port_idx)(subnet).valid := Mux(selected_this_output_port,alu_hw.out.valid,false.B)
+          when(!config_enable) {
+            if (protocol.contains("Data"))
+              io.output_ports(port_idx)(subnet).bits := Mux(selected_this_output_port, alu_hw.out.bits, 0.U)
+            if (protocol.contains("Valid"))
+              io.output_ports(port_idx)(subnet).valid := Mux(selected_this_output_port, alu_hw.out.valid, false.B)
+          }.otherwise{
+            out_config_wire := in_config_wire
+          }
           if(protocol.contains("Ready"))
             alu_hw.out.ready := Mux(selected_this_output_port,io.output_ports(port_idx)(subnet).ready,true.B)
         }
@@ -302,10 +317,15 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
       // Forward: ALU -> Output
       for (output_port <- output_ports){
         val port_idx = output_ports.indexOf(output_port)
-        if(protocol.contains("Data"))
-          io.output_ports(port_idx)(subnet).bits := alu_hw.out.bits
-        if(protocol.contains("Valid"))
-          io.output_ports(port_idx)(subnet).valid := alu_hw.out.valid
+        when(!config_enable){
+          if(protocol.contains("Data"))
+            io.output_ports(port_idx)(subnet).bits := alu_hw.out.bits
+          if(protocol.contains("Valid"))
+            io.output_ports(port_idx)(subnet).valid := alu_hw.out.valid
+        }otherwise{
+          out_config_wire := in_config_wire
+        }
+
       }
       // Backward: Output -> ALU
       if(protocol.contains("Ready")){
@@ -446,6 +466,8 @@ object tester_pe extends App{
   p += "isShared" -> true
   p += "shared_slot_size" -> 32
   p += "register_file_size" -> 8
+
+  update
 
   chisel3.Driver.execute(args,()=>{new Dedicated_PE_Hw("test",p)})
 }

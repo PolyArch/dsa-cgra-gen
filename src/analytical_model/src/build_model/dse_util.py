@@ -24,7 +24,8 @@ def get_all_synthesized_ir(VL_dir, Rep_dir):
         if len(filenames_in_this_dir) == 10:
             for each_vl_file in all_vl_files:
                 if each_vl_file in each_rep_dir:
-                    all_ir.append(extract_IR_from_verilog(VL_dir + each_vl_file))
+                    ir, num_vl_lines = extract_IR_from_verilog(VL_dir + each_vl_file)
+                    all_ir.append(ir)
         finished += 1
         print("Processing Synthesized Data Point: Finished : " + str(finished) + ", Total: " + str(len(all_report_dir)) + "\n")
     return all_ir
@@ -53,6 +54,7 @@ def extract_IR_from_verilog(verilog_filename):
     start = False
     end = False
     ir_str = ""
+    vl_num_of_line = 0
     with open(verilog_filename,'r') as vl_file:
         for line in vl_file.readlines():
             if "/*" in line:
@@ -62,9 +64,11 @@ def extract_IR_from_verilog(verilog_filename):
                 end = True
             if start and not end:
                 ir_str = ir_str + line
+            else:
+                vl_num_of_line += 1
     ir = yaml.load(ir_str)
     ir.pop("DSE", None)
-    return ir
+    return ir, vl_num_of_line
 
 
 def update_design_point(ir_f_name, design_demension, design_point):

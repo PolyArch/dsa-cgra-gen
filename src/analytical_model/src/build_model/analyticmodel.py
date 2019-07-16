@@ -66,8 +66,9 @@ if collect_new_data_point:
                 break
         print("Read Verilog File - Finished: " + str(len(db_ir)) + ", Total: " + str(len(all_vl_file)) + "\n")
         if vl_filename in db_syn:
-            ir = extract_IR_from_verilog(VL_dir + vl_file)
+            ir, num_vl_lines = extract_IR_from_verilog(VL_dir + vl_file)
             ir_statistic = extract_sta_from_IR(ir)
+            ir_statistic["num_verilog_lines"] = num_vl_lines
             db_ir[vl_filename] = ir_statistic
 
 

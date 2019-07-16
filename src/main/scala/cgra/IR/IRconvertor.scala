@@ -15,6 +15,7 @@ object IRconvertor {
     val scalaMap = mapAsScalaMap(javaMap)
     for(kv <- scalaMap){
       val (key,value) = kv
+      println("key = " + key + ", value = " + value)
       scalaMap(key) = value match {
         case i:Int => i
         case d:Double =>  d

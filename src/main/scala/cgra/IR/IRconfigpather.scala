@@ -29,7 +29,7 @@ object IRconfigpather {
   var max_config_cycle : Double= 0.0
   var vari_config_cycle : Double= 0.0
 
-  def getGraph(ir:mutable.Map[String,Any])= {
+  def getGraph(ir:mutable.Map[String,Any]) = {
     if(ir.isDefinedAt("routers"))
       ssnodeList ++= ssnodeGroup2List(ir("routers"))
     if(ir.isDefinedAt("dedicated_pes"))
