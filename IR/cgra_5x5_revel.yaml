@@ -226,8 +226,8 @@ dedicated_pes:
     # Control
     has_metaReuse: {valid: false,num_reuse: 4} #TODO
     # Shared Instruction
-    isShared: false
-    shared_slot_size: 32
+    isShared: true
+    shared_slot_size: 2
     register_file_size: 8
     # Datapath
     delay_fifo_depth: 4 # Delay Pipe when protocol don't has Ready; Delay FIFO when protocol has Ready
@@ -248,6 +248,7 @@ dedicated_pes:
 
   dedicated_pe_5: &dedicated_pe_5
     <<: *default_dedicated_pe
+    input_ports: [northwest,northeast,southwest,southeast,A]
 
   dedicated_pe_6: &dedicated_pe_6
     <<: *default_dedicated_pe
@@ -256,6 +257,7 @@ dedicated_pes:
 
   dedicated_pe_7: &dedicated_pe_7
     <<: *default_dedicated_pe
+    output_ports: [southeast,B]
 
   dedicated_pe_8: &dedicated_pe_1
     <<: *default_dedicated_pe
@@ -648,5 +650,8 @@ topology: [
   shared_pe_2.northwest<->router_29.southeast,
   shared_pe_2.northeast<->router_30.southwest,
   shared_pe_2.southwest<->router_35.northeast,
-  shared_pe_2.southeast<->router_36.northwest
+  shared_pe_2.southeast<->router_36.northwest,
+
+  # Special Connection
+  dedicated_pe_7.B -> dedicated_pe_5.A
 ]
