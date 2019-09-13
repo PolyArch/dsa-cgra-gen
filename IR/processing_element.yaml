@@ -12,15 +12,15 @@ config_output_port: southeast
 input_ports: [northwest,northeast,southwest,southeast]
 output_ports: [southeast]
 # Decomposability
-isDecomposed: true
+isDecomposed: false
 decomposer: 1
 # Protocol
-protocol: Data
+protocol: DataValidReady
 # Control
 has_metaReuse: {valid: false,num_reuse: 4} #TODO
 # Shared Instruction
 isShared: true
-shared_slot_size: 32
+shared_slot_size: 64
 register_file_size: 8
 # Datapath
 delay_fifo_depth: 0 # Delay Pipe when protocol don't has Ready; Delay FIFO when protocol has Ready

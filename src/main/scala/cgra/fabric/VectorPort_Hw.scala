@@ -40,8 +40,8 @@ class VectorPort_Hw(pp:(String,Any)) extends Module
   io.in.foreach(v=>gc_port(v,protocol))
   io.out.foreach(v=>gc_port(v,protocol))
 
-  val num_vector : Int = num_input max num_output
-  val vector_idx = RegInit(0.U(log2Ceil(num_vector).W))
+  val num_vector : Int = 1 max num_input max num_output
+  val vector_idx = RegInit(0.U(log2Ceil(num_vector max 2).W))
 
   // Calculate Hardware Configuration
   val Delay_FIFOs : Array[Delay_FIFO] = Array.fill(num_vector)(new Delay_FIFO)

@@ -326,10 +326,12 @@ class Dedicated_PE_Hw(name_p:(String,Any)) extends Module with Has_IO
             io.output_ports(port_idx)(subnet).bits := alu_hw.out.bits
           if(protocol.contains("Valid"))
             io.output_ports(port_idx)(subnet).valid := alu_hw.out.valid
-        }otherwise{
-          out_config_wire := in_config_wire
+        }.otherwise{
+          if(protocol.contains("Data"))
+            io.output_ports(port_idx)(subnet).bits := DontCare
+          if(protocol.contains("Valid"))
+            io.output_ports(port_idx)(subnet).valid := DontCare
         }
-
       }
       // Backward: Output -> ALU
       if(protocol.contains("Ready")){
@@ -460,19 +462,21 @@ object tester_pe extends App{
   p += "module_name" -> "PE_Test"
   p += "module_id" -> {get_new_id;get_new_id;get_new_id;get_new_id;get_new_id;get_new_id;get_new_id;get_new_id}
 
-  p += "output_ports" -> List("A","B","C")
-  p += "config_output_port" -> List("A","B")
+  p += "input_ports" -> List("A","B","C","D")
+  p += "output_ports" -> List("A")
+  p += "config_input_port" -> List("A")
+  p += "config_output_port" -> List("A")
 
-  p += "protocol" -> "DataValidReady"
+  p += "protocol" -> "Data"
   p += "delay_fifo_depth" -> 4
-  p += "instructions" -> List("Add", "Sub", "BOr", "BAnd")
+  p += "instructions" -> List("Add","Sub","BOr","BAnd")
 
   p += "isDecomposed" -> false
   p += "decomposer" -> 1
 
   p += "isShared" -> true
-  p += "shared_slot_size" -> 32
-  p += "register_file_size" -> 8
+  p += "shared_slot_size" -> 16
+  p += "register_file_size" -> 2
 
   update
 

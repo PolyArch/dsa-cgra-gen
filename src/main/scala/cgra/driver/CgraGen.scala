@@ -11,7 +11,7 @@ object CgraGen extends App{
   val readFile    : String = args(0) // "/home/sihao/ss-cgra-gen/IR/cgra_5x5_revel.yaml"
   val output_dir  : String = args(1) // "verilog-output"
   val cgra : mutable.Map[String,Any] = readIR(readFile)
-  getGraph(cgra)
+  // getGraph(cgra) //TODO: Update the config path, almost there
   instantiateCgra(output_dir,cgra)
   val className = cgra("module_type").toString().split("\\.").reverse.head
   mergeIRwithCgra(readFile,output_dir + "/" + className + ".v")

@@ -244,3 +244,7 @@ class FPAdd(val n: Int) extends Module {
 
 class FPAdd32 extends FPAdd(32) {}
 class FPAdd64 extends FPAdd(64) {}
+
+object fpAdder_driver extends App{
+    chisel3.Driver.execute(args,()=>{new FPAdd32})
+}

@@ -17,7 +17,8 @@ class Cgra_Hw(name_p:(String,mutable.Map[String,Any])) extends Module
   with Reconfigurable {
   // ------ System Parameter ------
   val cgra = name_p._2
-  val data_word_width : Int = system_var.data_word_width
+  set_system(cgra)
+  val data_word_width : Int = cgra("data_word_width").asInstanceOf[Int]
   private val input_ports = cgra("input_ports").asInstanceOf[List[String]]
   private val output_ports = cgra("output_ports").asInstanceOf[List[String]]
   private val num_input : Int = input_ports.length
