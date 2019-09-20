@@ -68,7 +68,7 @@ trait PrintableNode {
     val yamlReader = new ObjectMapper(new YAMLFactory())
     val obj = yamlReader.readValue(yaml, classOf[Any])
     val jsonWriter:ObjectMapper = new ObjectMapper()
-    jsonWriter.writeValueAsString(obj)
+    jsonWriter.writerWithDefaultPrettyPrinter().writeValueAsString(obj)
   }
 
   def toJSON(tree:Any):Any={
@@ -97,19 +97,21 @@ trait PrintableNode {
     }
   }
   def printfile(filename:String):Unit=
-    printfile(filename,"json")
-  def printfile(filename:String,format:String):Unit={
+    printfile(filename,"json","yaml")
+  def printfile(filename:String,formats:String*):Unit={
     postprocess()
+    // Create File Name
     // Timestamp
     val tp : String = DateTimeFormatter.ofPattern("_yyMMdd_HHmmss").format(LocalDateTime.now)
-    // Create Yaml File
-    // val tempFileName : String = filename + tp +"." + format
-    val tempFileName : String = filename + "." + format
-    val tempFile = new File(tempFileName)
-    val pw = new PrintWriter(tempFile)
-    println(this.toString(format))
-    pw.write(this.toString(format))
-    pw.close()
+    // Print to File
+    for (format <- formats){
+      val tempFileName : String = filename + "." + format
+      val tempFile = new File(tempFileName)
+      val pw = new PrintWriter(tempFile)
+      println(this.toString(format))
+      pw.write(this.toString(format))
+      pw.close()
+    }
   }
 
   def postprocess():Unit

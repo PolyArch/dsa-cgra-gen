@@ -71,5 +71,5 @@ object TestDsl extends App{
   )
 
   // Print
-  cgra.printfile("IR/hello","json")
+  cgra.printfile("IR/hello")
 }
