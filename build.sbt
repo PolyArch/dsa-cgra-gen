@@ -50,6 +50,12 @@ val defaultVersions = Map(
 
 libraryDependencies ++= Seq("chisel3","chisel-iotesters").map{dep: String =>"edu.berkeley.cs" %% dep % sys.props.getOrElse(dep + "Version", defaultVersions(dep))}
 libraryDependencies += "org.yaml" % "snakeyaml" % "1.8"
+libraryDependencies ++= Seq(
+  "com.fasterxml.jackson.core" % "jackson-core" % "2.1.1",
+  "com.fasterxml.jackson.core" % "jackson-annotations" % "2.1.1",
+  "com.fasterxml.jackson.core" % "jackson-databind" % "2.1.1",
+  "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % "2.1.1"
+)
 
 
 scalacOptions ++= scalacOptionsVersion(scalaVersion.value)

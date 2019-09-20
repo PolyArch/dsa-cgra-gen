@@ -5,12 +5,14 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 import org.yaml.snakeyaml.Yaml
-
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
+import scala.util.parsing.json._
 import scala.collection.mutable.Map
 import scala.collection.mutable.Set
 import scala.collection.JavaConverters._
 
-trait YamlPrintable {
+trait PrintableNode {
   private val properties : Map[String,Any] = Map[String,Any]()
   private val yaml = new Yaml()
 
@@ -32,24 +34,54 @@ trait YamlPrintable {
   }
 
   // Set
-  def apply(props:Map[String,Any]):Unit ={
+  def apply(props:Map[String,Any]):PrintableNode={
     for (kv <- props){
       properties(kv._1) = kv._2
     }
+    this
   }
-  def apply(key:String, value:Any): Unit = {
+  def apply(key:String, value:Any):PrintableNode= {
     properties += (key -> value)
+    this
   }
-  def apply(kvpairs:(String, Any)*): Unit ={
+  def apply(kvpairs:(String, Any)*):PrintableNode ={
     for (kv <- kvpairs){
       val key: String = kv._1
       val value: Any = kv._2
       apply(key, value)
     }
+    this
   }
 
-  override def toString = {
-    yaml.dump(toJava(properties))
+  override def toString: String = {
+    toString("json")
+  }
+
+  def toString(format:String):String = {
+    format match {
+      case "json" => convertYamlToJson(yaml.dump(toJava(properties)))
+      case "yaml" => yaml.dump(toJava(properties))
+    }
+  }
+
+  def convertYamlToJson(yaml: String): String = {
+    val yamlReader = new ObjectMapper(new YAMLFactory())
+    val obj = yamlReader.readValue(yaml, classOf[Any])
+    val jsonWriter:ObjectMapper = new ObjectMapper()
+    jsonWriter.writeValueAsString(obj)
+  }
+
+  def toJSON(tree:Any):Any={
+    tree match {
+      case imSet:collection.immutable.Set[_] => toJSON(imSet.toList)
+      case set:Set[_]=> toJSON(set.toList)
+      case map:Map[String, Any] =>
+        for (kv <- map) map(kv._1) = toJSON(kv._2)
+        JSONObject(map.toMap)
+      case seq:Seq[_] => seq.map(toJSON)
+      case yaml:PrintableNode => toJSON(yaml.getProps)
+      case _ => tree
+    }
   }
 
   def toJava(scala:Any):Any={
@@ -58,27 +90,33 @@ trait YamlPrintable {
       case set:Set[_]=> toJava(set.toSeq)
       case map:Map[String, Any] =>
         for (kv <- map) map(kv._1) = toJava(kv._2)
-        map.asJava
+        map.toMap.asJava
       case seq:Seq[_] => seq.map(toJava).asJava
-      case yaml:YamlPrintable => toJava(yaml.getProps)
+      case yaml:PrintableNode => toJava(yaml.getProps)
       case _ => scala
     }
   }
-
-  def printfile(filename:String):Unit={
+  def printfile(filename:String):Unit=
+    printfile(filename,"json")
+  def printfile(filename:String,format:String):Unit={
+    postprocess()
     // Timestamp
     val tp : String = DateTimeFormatter.ofPattern("_yyMMdd_HHmmss").format(LocalDateTime.now)
     // Create Yaml File
-    val tempFileName : String = filename + tp +".yaml"
+    // val tempFileName : String = filename + tp +"." + format
+    val tempFileName : String = filename + "." + format
     val tempFile = new File(tempFileName)
     val pw = new PrintWriter(tempFile)
-    println(this)
-    pw.write(this.toString)
+    println(this.toString(format))
+    pw.write(this.toString(format))
     pw.close()
   }
+
+  def postprocess():Unit
 }
 
-class ssnode(nodeType:String) extends YamlPrintable {
+class ssnode(nodeType:String) extends PrintableNode {
+  def postprocess():Unit={}
   def add_sink(sink:ssnode):Unit={
     val sink_info = Map(
       "nodeType" -> sink.getPropByKey("nodeType"),
@@ -151,12 +189,16 @@ class ssnode(nodeType:String) extends YamlPrintable {
     val blink = this <-- that
     Seq(alink,blink)
   }
-  def == (o:ssnode): Boolean = {
+  def == (that:ssnode): Boolean = {
     val thisid:Int = this.getPropByKey("id").asInstanceOf[Int]
-    val thatid:Int = o.getPropByKey("id").asInstanceOf[Int]
+    val thatid:Int = that.getPropByKey("id").asInstanceOf[Int]
     thisid == thatid
   }
-
+  def has (keys:String*):Boolean = {
+    val prop = getProps
+    val keysExistance = for (key <- keys) yield prop.isDefinedAt(key)
+    keysExistance.forall(x=>x)
+  }
   override def clone(): ssnode = {
     val node = new ssnode(nodeType)
     val prop = Map[String,Any]() ++ this.getProps
@@ -169,7 +211,8 @@ class ssnode(nodeType:String) extends YamlPrintable {
   this(("id", this.hashCode()))
 }
 
-class sslink extends YamlPrintable{
+class sslink extends PrintableNode{
+  def postprocess():Unit={}
   def == (that:sslink): Boolean = {
     val thisSourceInfo = getPropByKey("source").asInstanceOf[Map[String,Any]]
     val thisSinkInfo = getPropByKey("sink").asInstanceOf[Map[String,Any]]
@@ -182,7 +225,10 @@ class sslink extends YamlPrintable{
   }
 }
 
-class ssfabric extends YamlPrintable {
+class ssfabric extends PrintableNode {
+  def reset():Unit={
+    getProps.clear()
+  }
   def apply(link:sslink):ssfabric={
     if(getPropByKey("topology")!= None){
       val currLinks:Set[sslink] = getPropByKey("topology").asInstanceOf[Set[sslink]]
@@ -203,7 +249,7 @@ class ssfabric extends YamlPrintable {
     }
     this
   }
-  def apply(seq:Seq[YamlPrintable]):ssfabric={
+  def apply(seq:Seq[PrintableNode]):ssfabric={
     for (elem <- seq)
       elem match{
         case l:sslink => this(l)
@@ -225,8 +271,24 @@ class ssfabric extends YamlPrintable {
     currNodes.filter(node=>{node.getPropByKeys(keys)== value}).toSeq
   }
 
+  def satisfy(keys: String*)(funcs: (Any=>Boolean)*):Seq[ssnode] = {
+    val currNodes:Set[ssnode] = getPropByKey("nodes").asInstanceOf[Set[ssnode]]
+    currNodes.filter(node=>{
+      val satisfications = for(value_idx <- node.getPropByKeys(keys).zipWithIndex)
+        yield {
+          val value = value_idx._1
+          val idx = value_idx._2
+          val fs = funcs.toList
+          val f = fs(idx)
+          f(value)
+        }
+      satisfications.forall(s=>s)
+    }).toSeq
+  }
+
   // Pre-Defined Topology
   def formMesh(fu:ssnode, switch:ssnode, row:Int, col:Int) : Unit = {
+    reset()
     apply(("numRow", row), ("numCol", col))
     val fuGrid = Array.ofDim[ssnode](row,col)
     val swGrid = Array.ofDim[ssnode](row+1,col+1)
@@ -245,8 +307,10 @@ class ssfabric extends YamlPrintable {
     Input4Output1Mesh(fuGrid, swGrid, row, col)
   }
   def formMeshfromText(fuGrid: Array[Array[ssnode]], switch:ssnode) : Unit = {
+    reset()
     val row = fuGrid.length
     val col = fuGrid.head.length
+    apply(("numRow", row), ("numCol", col))
     val swGrid = Array.ofDim[ssnode](row+1,col+1)
     // Adding Fu Node
     for (row_idx <- 0 until row; col_idx <- 0 until col){
@@ -276,5 +340,17 @@ class ssfabric extends YamlPrintable {
       this(swGrid(row_idx+1)(col_idx) <-> swGrid(row_idx+1)(col_idx+1))
       this(swGrid(row_idx)(col_idx+1) <-> swGrid(row_idx+1)(col_idx+1))
     }
+  }
+
+  // Post-Process
+  def postprocess():Unit={
+    // Gather the ISA and Encode them
+    val start_encoding = 2 //0 is saved for NOP, 1 is saved for copy
+    val allFuNodes = this("nodeType")("function unit")
+    val allInsts = allFuNodes.flatMap(n=>n.getPropByKey("Insts")
+      .asInstanceOf[collection.immutable.Set[String]]).distinct
+    val InstsWithEnc = Map[String, Int]() ++= (for (i <- allInsts.indices)
+      yield allInsts(i) -> (i + start_encoding))
+    apply("Instruction Set", InstsWithEnc)
   }
 }
