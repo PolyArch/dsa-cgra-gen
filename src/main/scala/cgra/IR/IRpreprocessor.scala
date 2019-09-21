@@ -10,9 +10,9 @@ object IRpreprocessor {
     if(ir.isDefinedAt("system")){
       set_system(ir("system"))
     }
-    if(ir.isDefinedAt("topology")){
-      topology = ir("topology").asInstanceOf[List[String]]
-      ir("topology") = elaborate_conn
+    if(ir.isDefinedAt("links")){
+      topology = ir("links").asInstanceOf[List[String]]
+      ir("links") = elaborate_conn
       delete_useless_port(ir)
     }
     ir

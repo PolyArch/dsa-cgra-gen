@@ -26,7 +26,7 @@ class Cgra_Hw(name_p:(String,mutable.Map[String,Any])) extends Module
   val decomposer : Int = 1
   val protocol : String = "DataValidReadyConfig"
   private val AllModules : Map[String,Any] = Map[String,Any]()
-  private val topology:List[String] = cgra("topology").asInstanceOf[List[String]]
+  private val topology:List[String] = cgra("links").asInstanceOf[List[String]]
 
   // ------ Input Output ------
   val io = IO(new Bundle{

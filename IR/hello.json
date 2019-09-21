@@ -1538,7 +1538,7 @@
     } ],
     "TestProp2" : [ "Hello", "World", 123 ]
   } ],
-  "topology" : [ {
+  "links" : [ {
     "source" : {
       "nodeType" : "switch",
       "id" : 1691538257

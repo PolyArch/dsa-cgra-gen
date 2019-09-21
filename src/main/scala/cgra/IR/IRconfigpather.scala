@@ -36,7 +36,7 @@ object IRconfigpather {
       ssnodeList ++= ssnodeGroup2List(ir("dedicated_pes"))
     if(ir.isDefinedAt("shared_pes"))
       ssnodeList ++= ssnodeGroup2List(ir("shared_pes"))
-    ssnodeTopology = ir("topology").asInstanceOf[List[String]]
+    ssnodeTopology = ir("links").asInstanceOf[List[String]]
     buildGraph()
     buildConfigPath()
 

@@ -234,12 +234,12 @@ class ssfabric extends PrintableNode {
     getProps.clear()
   }
   def apply(link:sslink):ssfabric={
-    if(getPropByKey("topology")!= None){
-      val currLinks:Set[sslink] = getPropByKey("topology").asInstanceOf[Set[sslink]]
+    if(getPropByKey("links")!= None){
+      val currLinks:Set[sslink] = getPropByKey("links").asInstanceOf[Set[sslink]]
       if(!currLinks.exists(l=>l == link))
-        this("topology", currLinks += link)
+        this("links", currLinks += link)
     }else{
-      this("topology", Set[sslink]() += link)
+      this("links", Set[sslink]() += link)
     }
     this
   }
