@@ -120,27 +120,21 @@ trait PrintableNode {
 class ssnode(nodeType:String) extends PrintableNode {
   def postprocess():Unit={}
   def add_sink(sink:ssnode):Unit={
-    val sink_info = Map(
-      "nodeType" -> sink.getPropByKey("nodeType"),
-      "id" -> sink.getPropByKey("id")
-    )
+    val sink_info = sink.getPropByKey("id").asInstanceOf[Int]
     if(getPropByKey("output_nodes")!= None){
-      val curr_output_nodes:Set[Map[String, Any]] = getPropByKey("output_nodes").asInstanceOf[Set[Map[String, Any]]]
+      val curr_output_nodes:Set[Int] = getPropByKey("output_nodes").asInstanceOf[Set[Int]]
       this("output_nodes", curr_output_nodes += sink_info)
     }else{
-      this("output_nodes", Set[Map[String, Any]]() += sink_info)
+      this("output_nodes", Set[Int]() += sink_info)
     }
   }
   def add_source(source:ssnode):Unit={
-    val source_info = Map(
-      "nodeType" -> source.getPropByKey("nodeType"),
-      "id" -> source.getPropByKey("id")
-    )
+    val source_info = source.getPropByKey("id").asInstanceOf[Int]
     if(getPropByKey("input_nodes")!= None){
-      val curr_input_nodes:Set[Map[String, Any]] = getPropByKey("input_nodes").asInstanceOf[Set[Map[String, Any]]]
+      val curr_input_nodes:Set[Int] = getPropByKey("input_nodes").asInstanceOf[Set[Int]]
       this("input_nodes", curr_input_nodes += source_info)
     }else{
-      this("input_nodes", Set[Map[String, Any]]() += source_info)
+      this("input_nodes", Set[Int]() += source_info)
     }
   }
 
@@ -205,7 +199,9 @@ class ssnode(nodeType:String) extends PrintableNode {
     val node = new ssnode(nodeType)
     val prop = Map[String,Any]() ++ this.getProps
     node(prop)
-    node(("id", node.hashCode()))
+    node("id", node.hashCode())
+    node("output_nodes", Set[Int]())
+    node("input_nodes", Set[Int]())
     node
   }
 

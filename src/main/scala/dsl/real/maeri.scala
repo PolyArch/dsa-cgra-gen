@@ -15,11 +15,14 @@ object maeri extends App{
     }else{
       parent <=| childs
     }
+
     /*
+    println(" ---- ")
     println("depth = " + depth)
-    println(parent)
-    for(child <- childs)
-      println(child)
+    println("parent " + parent.getPropByKey("id") + "->" + parent.getPropByKey("output_nodes"))
+    for(idx <- childs.indices)
+      println("child "+ childs(idx).getPropByKey("id") + " " + idx +  " ->" + childs(idx).getPropByKey("output_nodes"))
+    println(" ---- ")
     */
     if(depth >1){
       val left_childtree = buildTree(childs(0),depth-1,is_distribute)
@@ -27,6 +30,7 @@ object maeri extends App{
       (left_childtree._1 union right_childtree._1 :+ parent,
         left_childtree._2 union right_childtree._2 union links)
     }else{
+      childs.foreach(c=>c("depth",depth-1))
       (childs :+ parent, links)
     }
   }
