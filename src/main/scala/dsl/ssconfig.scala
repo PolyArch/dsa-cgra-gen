@@ -225,6 +225,12 @@ class sslink extends PrintableNode{
       thisSourceInfo("id") == thatSourceInfo("id") &&
       thisSinkInfo("id") == thatSinkInfo("id")
   }
+  def reverse():Unit={
+    val thisSourceInfo = getPropByKey("source")
+    val thisSinkInfo = getPropByKey("sink")
+    apply("source",thisSinkInfo)
+    apply("sink",thisSourceInfo)
+  }
 }
 
 class ssfabric extends PrintableNode {
@@ -257,6 +263,11 @@ class ssfabric extends PrintableNode {
         case l:sslink => this(l)
         case n:ssnode => this(n)
       }
+    this
+  }
+  def apply(pair:(Seq[PrintableNode],Seq[PrintableNode])):ssfabric={
+    apply(pair._1)
+    apply(pair._2)
     this
   }
   def apply(row_idx:Int)(col_idx:Int)(nodeType:String):ssnode={
@@ -349,7 +360,7 @@ class ssfabric extends PrintableNode {
     // Gather the ISA and Encode them
     val start_encoding = 2 //0 is saved for NOP, 1 is saved for copy
     val allFuNodes = this("nodeType")("function unit")
-    val allInsts = allFuNodes.flatMap(n=>n.getPropByKey("Insts")
+    val allInsts = allFuNodes.flatMap(n=>collection.immutable.Set(n.getPropByKey("Insts"))
       .asInstanceOf[collection.immutable.Set[String]]).distinct
     val InstsWithEnc = Map[String, Int]() ++= (for (i <- allInsts.indices)
       yield allInsts(i) -> (i + start_encoding))
