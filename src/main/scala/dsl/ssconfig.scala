@@ -335,8 +335,10 @@ class ssfabric extends PrintableNode {
     }
     Input4Output1Mesh(fuGrid, swGrid, row, col)
   }
+
   // BuildTree
-  def buildTree(parent:ssnode, depth:Int, is_distribute:Boolean):(Seq[ssnode],Seq[sslink])={
+  def buildTree(parent:ssnode, depth:Int,
+                is_distribute:Boolean):(Seq[ssnode],Seq[sslink])={
     val childs = parent * 2
     parent("depth",depth)
     val links = if(is_distribute){
@@ -354,6 +356,7 @@ class ssfabric extends PrintableNode {
       (childs :+ parent, links)
     }
   }
+
   def Input4Output1Mesh(fuGrid:Array[Array[ssnode]], swGrid:Array[Array[ssnode]], row:Int, col:Int) = {
     // Connect Them Together
     for (row_idx <- 0 until row;col_idx <- 0 until col){
