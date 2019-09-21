@@ -1,0 +1,238 @@
+nodes:
+- output_nodes: [706197430]
+  Insts: Mul
+  id: 1766724936
+  nodeType: function unit
+  depth: 0
+  input_nodes: [1468303011]
+- Insts: Add
+  id: 701141022
+  nodeType: function unit
+  depth: 3
+  input_nodes: [982007015, 1663166483]
+- output_nodes: [1766724936]
+  id: 1468303011
+  nodeType: switch
+  depth: 0
+  input_nodes: [1549409129]
+- output_nodes: [982007015]
+  Insts: Add
+  id: 841283083
+  nodeType: function unit
+  depth: 1
+  input_nodes: [1955915048, 1757143877]
+- output_nodes: [2006034581, 522764626]
+  id: 1465085305
+  nodeType: switch
+  depth: 1
+  input_nodes: [1635756693]
+- output_nodes: [1908143486]
+  id: 846238611
+  nodeType: switch
+  depth: 0
+  input_nodes: [1651855867]
+- output_nodes: [319977154]
+  id: 902919927
+  nodeType: switch
+  depth: 0
+  input_nodes: [1549409129]
+- output_nodes: [982007015]
+  Insts: Add
+  id: 520016214
+  nodeType: function unit
+  depth: 1
+  input_nodes: [1585787493, 1518864111]
+- output_nodes: [846238611, 1354011814]
+  id: 1651855867
+  nodeType: switch
+  depth: 1
+  input_nodes: [1050349584]
+- output_nodes: [1757143877]
+  id: 1354011814
+  nodeType: switch
+  depth: 0
+  input_nodes: [1651855867]
+- output_nodes: [1535634836, 143110009]
+  id: 1519280649
+  nodeType: switch
+  depth: 1
+  input_nodes: [1635756693]
+- nodeType: switch
+  output_nodes: [1635756693, 1050349584]
+  depth: 3
+  id: 1938056729
+- output_nodes: [706197430]
+  Insts: Mul
+  id: 319977154
+  nodeType: function unit
+  depth: 0
+  input_nodes: [902919927]
+- output_nodes: [1585787493]
+  id: 2006034581
+  nodeType: switch
+  depth: 0
+  input_nodes: [1465085305]
+- output_nodes: [510464020]
+  Insts: Mul
+  id: 85777802
+  nodeType: function unit
+  depth: 0
+  input_nodes: [522764626]
+- output_nodes: [841283083]
+  Insts: Mul
+  id: 1757143877
+  nodeType: function unit
+  depth: 0
+  input_nodes: [1354011814]
+- output_nodes: [701141022]
+  Insts: Add
+  id: 982007015
+  nodeType: function unit
+  depth: 2
+  input_nodes: [841283083, 520016214]
+- output_nodes: [1468303011, 902919927]
+  id: 1549409129
+  nodeType: switch
+  depth: 1
+  input_nodes: [1050349584]
+- output_nodes: [701141022]
+  Insts: Add
+  id: 1663166483
+  nodeType: function unit
+  depth: 2
+  input_nodes: [510464020, 706197430]
+- output_nodes: [510464020]
+  Insts: Mul
+  id: 1908143486
+  nodeType: function unit
+  depth: 0
+  input_nodes: [846238611]
+- output_nodes: [1663166483]
+  Insts: Add
+  id: 510464020
+  nodeType: function unit
+  depth: 1
+  input_nodes: [1908143486, 85777802]
+- output_nodes: [520016214]
+  Insts: Mul
+  id: 1518864111
+  nodeType: function unit
+  depth: 0
+  input_nodes: [1535634836]
+- output_nodes: [85777802]
+  id: 522764626
+  nodeType: switch
+  depth: 0
+  input_nodes: [1465085305]
+- output_nodes: [1955915048]
+  id: 143110009
+  nodeType: switch
+  depth: 0
+  input_nodes: [1519280649]
+- output_nodes: [1519280649, 1465085305]
+  id: 1635756693
+  nodeType: switch
+  depth: 2
+  input_nodes: [1938056729]
+- output_nodes: [520016214]
+  Insts: Mul
+  id: 1585787493
+  nodeType: function unit
+  depth: 0
+  input_nodes: [2006034581]
+- output_nodes: [1518864111]
+  id: 1535634836
+  nodeType: switch
+  depth: 0
+  input_nodes: [1519280649]
+- output_nodes: [1549409129, 1651855867]
+  id: 1050349584
+  nodeType: switch
+  depth: 2
+  input_nodes: [1938056729]
+- output_nodes: [841283083]
+  Insts: Mul
+  id: 1955915048
+  nodeType: function unit
+  depth: 0
+  input_nodes: [143110009]
+- output_nodes: [1663166483]
+  Insts: Add
+  id: 706197430
+  nodeType: function unit
+  depth: 1
+  input_nodes: [1766724936, 319977154]
+Instruction Set: {Add: 3, Mul: 2}
+topology:
+- source: {nodeType: function unit, id: 706197430}
+  sink: {nodeType: function unit, id: 319977154}
+- source: {nodeType: switch, id: 1468303011}
+  sink: {nodeType: function unit, id: 1766724936}
+- source: {nodeType: switch, id: 1938056729}
+  sink: {nodeType: switch, id: 1050349584}
+- source: {nodeType: function unit, id: 841283083}
+  sink: {nodeType: function unit, id: 1955915048}
+- source: {nodeType: switch, id: 2006034581}
+  sink: {nodeType: function unit, id: 1585787493}
+- source: {nodeType: function unit, id: 701141022}
+  sink: {nodeType: function unit, id: 982007015}
+- source: {nodeType: function unit, id: 520016214}
+  sink: {nodeType: function unit, id: 1585787493}
+- source: {nodeType: switch, id: 1635756693}
+  sink: {nodeType: switch, id: 1465085305}
+- source: {nodeType: function unit, id: 982007015}
+  sink: {nodeType: function unit, id: 520016214}
+- source: {nodeType: switch, id: 1651855867}
+  sink: {nodeType: switch, id: 846238611}
+- source: {nodeType: switch, id: 1519280649}
+  sink: {nodeType: switch, id: 1535634836}
+- source: {nodeType: function unit, id: 510464020}
+  sink: {nodeType: function unit, id: 85777802}
+- source: {nodeType: function unit, id: 701141022}
+  sink: {nodeType: function unit, id: 1663166483}
+- source: {nodeType: switch, id: 902919927}
+  sink: {nodeType: function unit, id: 319977154}
+- source: {nodeType: switch, id: 1465085305}
+  sink: {nodeType: switch, id: 2006034581}
+- source: {nodeType: switch, id: 846238611}
+  sink: {nodeType: function unit, id: 1908143486}
+- source: {nodeType: switch, id: 1519280649}
+  sink: {nodeType: switch, id: 143110009}
+- source: {nodeType: switch, id: 1635756693}
+  sink: {nodeType: switch, id: 1519280649}
+- source: {nodeType: function unit, id: 841283083}
+  sink: {nodeType: function unit, id: 1757143877}
+- source: {nodeType: function unit, id: 1663166483}
+  sink: {nodeType: function unit, id: 510464020}
+- source: {nodeType: function unit, id: 1663166483}
+  sink: {nodeType: function unit, id: 706197430}
+- source: {nodeType: function unit, id: 706197430}
+  sink: {nodeType: function unit, id: 1766724936}
+- source: {nodeType: switch, id: 1651855867}
+  sink: {nodeType: switch, id: 1354011814}
+- source: {nodeType: function unit, id: 510464020}
+  sink: {nodeType: function unit, id: 1908143486}
+- source: {nodeType: function unit, id: 982007015}
+  sink: {nodeType: function unit, id: 841283083}
+- source: {nodeType: switch, id: 1549409129}
+  sink: {nodeType: switch, id: 902919927}
+- source: {nodeType: switch, id: 1050349584}
+  sink: {nodeType: switch, id: 1651855867}
+- source: {nodeType: switch, id: 1938056729}
+  sink: {nodeType: switch, id: 1635756693}
+- source: {nodeType: switch, id: 1465085305}
+  sink: {nodeType: switch, id: 522764626}
+- source: {nodeType: switch, id: 522764626}
+  sink: {nodeType: function unit, id: 85777802}
+- source: {nodeType: switch, id: 1549409129}
+  sink: {nodeType: switch, id: 1468303011}
+- source: {nodeType: switch, id: 1535634836}
+  sink: {nodeType: function unit, id: 1518864111}
+- source: {nodeType: function unit, id: 520016214}
+  sink: {nodeType: function unit, id: 1518864111}
+- source: {nodeType: switch, id: 143110009}
+  sink: {nodeType: function unit, id: 1955915048}
+- source: {nodeType: switch, id: 1050349584}
+  sink: {nodeType: switch, id: 1549409129}
+- source: {nodeType: switch, id: 1354011814}
+  sink: {nodeType: function unit, id: 1757143877}
