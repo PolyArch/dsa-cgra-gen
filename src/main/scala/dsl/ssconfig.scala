@@ -12,7 +12,21 @@ import scala.collection.mutable.Map
 import scala.collection.mutable.Set
 import scala.collection.JavaConverters._
 
+object identifier {
+  val key = List("id", "nodeType")
+}
+
+class identifier(original_value:Any){
+  var id : Any = original_value
+}
+
 trait PrintableNode {
+  implicit def value2string(value:Any):String = {
+    value match {
+      case id:identifier => id.id.toString
+      case _ => value.toString
+    }
+  }
   private val properties : Map[String,Any] = Map[String,Any]()
   private val yaml = new Yaml()
 
@@ -27,10 +41,7 @@ trait PrintableNode {
   }
   def  getPropByKeys(keys:Seq[String]):Seq[Any]={
     for (key <- keys) yield
-      if(properties.isDefinedAt(key))
-        properties(key)
-      else
-        None
+        getPropByKey(key)
   }
 
   // Set
@@ -40,9 +51,23 @@ trait PrintableNode {
     }
     this
   }
-  def apply(key:String, value:Any):PrintableNode= {
-    properties += (key -> value)
-    this
+  def apply(key:String, value:Any):PrintableNode={
+    if(identifier.key.contains(key)){
+      if (!properties.isDefinedAt(key)) {
+        // Initial
+        val init_id = new identifier(value)
+        properties += key -> init_id
+        this
+      } else {
+        // Update old data
+        val old_id = properties(key).asInstanceOf[identifier]
+        old_id.id = value
+        this
+      }
+    }else{
+      properties(key) = value
+      this
+    }
   }
   def apply(kvpairs:(String, Any)*):PrintableNode ={
     for (kv <- kvpairs){
@@ -88,11 +113,15 @@ trait PrintableNode {
     scala match {
       case imSet:collection.immutable.Set[_] => toJava(imSet.toSeq)
       case set:Set[_]=> toJava(set.toSeq)
+      case imMap:collection.immutable.Map[_,_] =>
+        toJava(Map(imMap.toSeq: _*) )
       case map:Map[String, Any] =>
         for (kv <- map) map(kv._1) = toJava(kv._2)
         map.toMap.asJava
       case seq:Seq[_] => seq.map(toJava).asJava
       case yaml:PrintableNode => toJava(yaml.getProps)
+      case id:identifier =>
+        toJava(id.id)
       case _ => scala
     }
   }
@@ -108,7 +137,8 @@ trait PrintableNode {
       val tempFileName : String = filename + "." + format
       val tempFile = new File(tempFileName)
       val pw = new PrintWriter(tempFile)
-      println(this.toString(format))
+      if(format == "yaml")
+        println(this.toString(format))
       pw.write(this.toString(format))
       pw.close()
     }
@@ -120,21 +150,21 @@ trait PrintableNode {
 class ssnode(nodeType:String) extends PrintableNode {
   def postprocess():Unit={}
   def add_sink(sink:ssnode):Unit={
-    val sink_info = sink.getPropByKey("id").asInstanceOf[Int]
+    var sink_info = sink.getPropByKeys(identifier.key)
     if(getPropByKey("output_nodes")!= None){
-      val curr_output_nodes:Set[Int] = getPropByKey("output_nodes").asInstanceOf[Set[Int]]
-      this("output_nodes", curr_output_nodes += sink_info)
+      val curr_output_nodes:Set[Any] = getPropByKey("output_nodes").asInstanceOf[Set[Any]]
+      apply("output_nodes", curr_output_nodes += sink_info)
     }else{
-      this("output_nodes", Set[Int]() += sink_info)
+      apply("output_nodes", Set[Any]() += sink_info)
     }
   }
   def add_source(source:ssnode):Unit={
-    val source_info = source.getPropByKey("id").asInstanceOf[Int]
+    val source_info : Any = source.getPropByKeys(identifier.key)
     if(getPropByKey("input_nodes")!= None){
-      val curr_input_nodes:Set[Int] = getPropByKey("input_nodes").asInstanceOf[Set[Int]]
+      val curr_input_nodes:Set[Any] = getPropByKey("input_nodes").asInstanceOf[Set[Any]]
       this("input_nodes", curr_input_nodes += source_info)
     }else{
-      this("input_nodes", Set[Int]() += source_info)
+      this("input_nodes", Set[Any]() += source_info)
     }
   }
 
@@ -143,27 +173,16 @@ class ssnode(nodeType:String) extends PrintableNode {
   def |=> (nodes : Seq[ssnode]) : Seq[sslink] = {
     for (node <- nodes) yield this --> node
   }
-  def |=> (nodes : Set[ssnode]) : Seq[sslink] = {
-    this |=> nodes.toSeq
-  }
   def <=| (nodes : Seq[ssnode]) : Seq[sslink] = {
     for (node <- nodes) yield this <-- node
   }
-  def <=| (nodes : Set[ssnode]) : Seq[sslink] = {
-    this <=| nodes.toSeq
-  }
+
   def --> (that:ssnode): sslink ={
     val link = new sslink
     this.add_sink(that)
     that.add_source(this)
-    val source_info = Map(
-      "nodeType" -> this.getPropByKey("nodeType"),
-      "id" -> this.getPropByKey("id")
-    )
-    val sink_info = Map(
-      "nodeType" -> that.getPropByKey("nodeType"),
-      "id" -> that.getPropByKey("id")
-    )
+    val source_info = this.getPropByKeys(identifier.key)
+    val sink_info = that.getPropByKeys(identifier.key)
     link(("source",source_info),("sink",sink_info))
     link
   }
@@ -172,6 +191,7 @@ class ssnode(nodeType:String) extends PrintableNode {
     kvpairs.foreach(link.apply(_))
     link
   }
+
   def <-- (that:ssnode) : sslink = {
     that --> this
   }
@@ -180,14 +200,15 @@ class ssnode(nodeType:String) extends PrintableNode {
     kvpairs.foreach(link.apply(_))
     link
   }
+
   def <-> (that:ssnode):Seq[sslink]={
     val alink = this --> that
     val blink = this <-- that
     Seq(alink,blink)
   }
   def == (that:ssnode): Boolean = {
-    val thisid:Int = this.getPropByKey("id").asInstanceOf[Int]
-    val thatid:Int = that.getPropByKey("id").asInstanceOf[Int]
+    val thisid = this.getPropByKey("id")
+    val thatid = that.getPropByKey("id")
     thisid == thatid
   }
   def has (keys:String*):Boolean = {
@@ -196,32 +217,30 @@ class ssnode(nodeType:String) extends PrintableNode {
     keysExistance.forall(x=>x)
   }
   override def clone(): ssnode = {
-    val node = new ssnode(nodeType)
-    val prop = Map[String,Any]() ++ this.getProps
-    node(prop)
-    node("id", node.hashCode())
-    node("output_nodes", Set[Int]())
-    node("input_nodes", Set[Int]())
+    val currNodeType:String = this.getPropByKey("nodeType")
+    val node = new ssnode(currNodeType)
+    val temp_cloned_prop = this.getProps
+    var cloned_prop = temp_cloned_prop
+    for (id <- identifier.key)
+      cloned_prop = cloned_prop - id
+    node(cloned_prop - "output_nodes" - "input_nodes")
     node
   }
 
-  this(("nodeType", nodeType))
-  this(("id", this.hashCode()))
+  apply("nodeType", nodeType)
+  apply("id", this.hashCode())
 }
 
 class sslink extends PrintableNode{
   def postprocess():Unit={}
   def == (that:sslink): Boolean = {
-    val thisSourceInfo = getPropByKey("source").asInstanceOf[Map[String,Any]]
-    val thisSinkInfo = getPropByKey("sink").asInstanceOf[Map[String,Any]]
-    val thatSourceInfo = that.getPropByKey("source").asInstanceOf[Map[String,Any]]
-    val thatSinkInfo = that.getPropByKey("sink").asInstanceOf[Map[String,Any]]
-    thisSourceInfo("nodeType") == thatSourceInfo("nodeType") &&
-      thisSinkInfo("nodeType") == thatSinkInfo("nodeType") &&
-      thisSourceInfo("id") == thatSourceInfo("id") &&
-      thisSinkInfo("id") == thatSinkInfo("id")
+    val thisSourceInfo = getPropByKey("source")
+    val thisSinkInfo = getPropByKey("sink")
+    val thatSourceInfo = that.getPropByKey("source")
+    val thatSinkInfo = that.getPropByKey("sink")
+    thisSourceInfo == thatSourceInfo && thisSinkInfo == thatSinkInfo
   }
-  def reverse():Unit={
+  def reverse():Unit={ //TODO: reverse the input_nodes and output_nodes in ssnode
     val thisSourceInfo = getPropByKey("source")
     val thisSinkInfo = getPropByKey("sink")
     apply("source",thisSinkInfo)
@@ -245,11 +264,14 @@ class ssfabric extends PrintableNode {
   }
   def apply(node:ssnode) :ssfabric= {
     if(getPropByKey("nodes")!= None){
-      val currNodes:Set[ssnode] = getPropByKey("nodes").asInstanceOf[Set[ssnode]]
-      if(!currNodes.exists(n=>n == node))
-        this("nodes", currNodes += node)
+      val currNodes = getPropByKey("nodes").asInstanceOf[List[ssnode]]
+      if(!currNodes.exists(n=>n == node)){
+        node("id",currNodes.size)
+        apply("nodes", currNodes :+ node)
+      }
     }else{
-      this("nodes", Set[ssnode]() += node)
+      node("id",0)
+      apply("nodes", Nil :+ node)
     }
     this
   }
@@ -267,25 +289,43 @@ class ssfabric extends PrintableNode {
     this
   }
   def apply(row_idx:Int)(col_idx:Int)(nodeType:String):ssnode={
-    val currNodes:Set[ssnode] = getPropByKey("nodes").asInstanceOf[Set[ssnode]]
+    val currNodes:List[ssnode] = getPropByKey("nodes").asInstanceOf[List[ssnode]]
     val target_node = currNodes.filter(node=>{
+      val target_values = Seq(row_idx,col_idx, nodeType)
       val node_info = node.getPropByKeys(Seq("row_idx","col_idx", "nodeType"))
-      node_info == Seq(row_idx, col_idx, nodeType)
+      node_info.zipWithIndex.forall(value_idx => {
+        val value = value_idx._1 match {
+          case id:identifier => id.id
+          case x => x
+        }
+        val idx = value_idx._2
+        value == target_values(idx)
+      })
     })
     require(target_node.size == 1)
     target_node.head
   }
-  def apply(keys: String*)(value: Any*):Seq[ssnode] = {
-    val currNodes:Set[ssnode] = getPropByKey("nodes").asInstanceOf[Set[ssnode]]
-    currNodes.filter(node=>{node.getPropByKeys(keys)== value}).toSeq
+  def apply(keys: String*)(values: Any*):Seq[ssnode] = {
+    val currNodes:List[ssnode] = getPropByKey("nodes").asInstanceOf[List[ssnode]]
+    currNodes.filter(node=>{node.getPropByKeys(keys).zipWithIndex.forall(value_idx =>{
+      val value = value_idx._1 match {
+        case id:identifier => id.id
+        case x => x
+      }
+      val idx = value_idx._2
+      value == values(idx)
+    })})
   }
 
   def satisfy(keys: String*)(funcs: (Any=>Boolean)*):Seq[ssnode] = {
-    val currNodes:Set[ssnode] = getPropByKey("nodes").asInstanceOf[Set[ssnode]]
+    val currNodes:List[ssnode] = getPropByKey("nodes").asInstanceOf[List[ssnode]]
     currNodes.filter(node=>{
       val satisfications = for(value_idx <- node.getPropByKeys(keys).zipWithIndex)
         yield {
-          val value = value_idx._1
+          val value = value_idx._1 match {
+            case id: identifier => id.id
+            case _ =>
+          }
           val idx = value_idx._2
           val fs = funcs.toList
           val f = fs(idx)
@@ -373,16 +413,23 @@ class ssfabric extends PrintableNode {
     }
   }
 
-
   // Post-Process
   def postprocess():Unit={
     // Gather the ISA and Encode them
     val start_encoding = 2 //0 is saved for NOP, 1 is saved for copy
     val allFuNodes = this("nodeType")("function unit")
-    val allInsts = allFuNodes.flatMap(n=>collection.immutable.Set(n.getPropByKey("Insts"))
-      .asInstanceOf[collection.immutable.Set[String]]).distinct
-    val InstsWithEnc = Map[String, Int]() ++= (for (i <- allInsts.indices)
-      yield allInsts(i) -> (i + start_encoding))
-    apply("Instruction Set", InstsWithEnc)
+    if (!allFuNodes.isEmpty){
+      val temp_allInsts = allFuNodes.map(n=>n.getPropByKey("Insts")).distinct
+      var allInsts : List[String] = Nil
+      for (insts <- temp_allInsts){
+        insts match {
+          case i:String => allInsts = allInsts :+ i
+          case is:collection.immutable.Set[String] => allInsts = allInsts ::: is.toList
+        }
+      }
+      val InstsWithEnc = Map[String, Int]() ++= (for (i <- allInsts.indices)
+        yield allInsts(i) -> (i + start_encoding))
+      apply("Instruction Set", InstsWithEnc)
+    }
   }
 }

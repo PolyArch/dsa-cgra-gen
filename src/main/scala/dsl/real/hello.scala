@@ -2,7 +2,7 @@ package dsl.real
 
 import dsl._
 
-object TestDsl extends App{
+object hello extends App{
   // Define Default Switch
   val sw_default = new ssnode("switch")
   sw_default( ("share_slot_size", 2),
@@ -12,7 +12,7 @@ object TestDsl extends App{
 
   // Define a Adding Function Unit
   val fu_add = new ssnode("function unit")
-  fu_add("Insts",Set("Add64","Sub","Mul16x4"))
+  fu_add("Insts","Add64")
 
   val fu_spc = new ssnode("function unit")
   fu_spc("Insts",Set("Div16", "RShf4_16x4", "Abs16x4"))
