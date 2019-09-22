@@ -1,18 +1,20 @@
 links:
-- source: [0, fu]
-  sink: [1, sw]
+- source: [1, fu]
+  sink: [0, sw]
+- source: [1, fu]
+  sink: [0, sw]
 nodes:
 - god: [cold, 1]
   map: {134: 435.245, a: 123}
-  output_nodes:
-  - [1, sw]
   id: 0
-  nodeType: fu
-  hello: 456
+  mesh: 456
+  nodeType: sw
+  input_nodes:
+  - [1, fu]
 - god: [cold, 1]
   map: {134: 435.245, a: 123}
+  output_nodes:
+  - [0, sw]
   id: 1
-  nodeType: sw
-  hello: 456
-  input_nodes:
-  - [0, fu]
+  mesh: 456
+  nodeType: fu

@@ -2,7 +2,7 @@ package dsl.real
 
 import dsl._
 
-object hello extends App{
+object mesh extends App{
   // Define Default Switch
   val sw_default = new ssnode("switch")
   sw_default( ("share_slot_size", 2),
@@ -24,10 +24,10 @@ object hello extends App{
   val cgra = new ssfabric
 
   // Build Mesh Topology
-  cgra.formMesh(fu_add, sw_default, 4,4)
+  cgra.buildMesh(fu_add, sw_default, 4,4)
 
   // Build Grid from Text
-  cgra.formMeshfromText(
+  cgra.buildMeshfromText(
     Array(
       Array(fu_add,fu_add,fu_spc,fu_add),
       Array(fu_spc,fu_add,fu_add,fu_add),
@@ -71,5 +71,5 @@ object hello extends App{
   )
 
   // Print
-  cgra.printfile("IR/hello")
+  cgra.printfile("IR/mesh")
 }

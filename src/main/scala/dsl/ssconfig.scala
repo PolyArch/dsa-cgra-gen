@@ -148,7 +148,12 @@ trait PrintableNode {
 }
 
 class ssnode(nodeType:String) extends PrintableNode {
+
+  private val output_links : Set[sslink] = Set[sslink]()
+  private val input_links : Set[sslink] = Set[sslink]()
+
   def postprocess():Unit={}
+  // Add/Delete Sink Node
   def add_sink(sink:ssnode):Unit={
     var sink_info = sink.getPropByKeys(identifier.key)
     if(getPropByKey("output_nodes")!= None){
@@ -158,6 +163,33 @@ class ssnode(nodeType:String) extends PrintableNode {
       apply("output_nodes", Set[Any]() += sink_info)
     }
   }
+  def add_sink(link:sslink):Unit={
+    output_links += link
+  }
+  def delete_sink(sink:ssnode):Unit={
+    var sink_info = sink.getPropByKeys(identifier.key)
+    if(getPropByKey("output_nodes")!= None){
+      val curr_output_nodes:Set[Any] = getPropByKey("output_nodes").asInstanceOf[Set[Any]]
+      apply("output_nodes", curr_output_nodes -= sink_info)
+    }
+  }
+  def delete_sink(link:sslink):Unit={
+    output_links -= link
+  }
+  def delete = {
+    // delete source links (automatically delete nodes)
+    for (source_link <- input_links){
+      source_link.delete
+      delete_source(source_link)
+    }
+    // delete sink links (automatically delete nodes)
+    for (sink_link <- output_links){
+      sink_link.delete
+      delete_sink(sink_link)
+    }
+  }
+
+  // Add/Delete Source Node
   def add_source(source:ssnode):Unit={
     val source_info : Any = source.getPropByKeys(identifier.key)
     if(getPropByKey("input_nodes")!= None){
@@ -167,7 +199,22 @@ class ssnode(nodeType:String) extends PrintableNode {
       this("input_nodes", Set[Any]() += source_info)
     }
   }
-
+  def add_source(link:sslink):Unit={
+    input_links += link
+  }
+  def delete_source(source:ssnode):Unit={
+    val source_info : Any = source.getPropByKeys(identifier.key)
+    if(getPropByKey("input_nodes")!= None){
+      val curr_input_nodes:Set[Any] = getPropByKey("input_nodes").asInstanceOf[Set[Any]]
+      this("input_nodes", curr_input_nodes -= source_info)
+    }
+  }
+  def delete_source(link:sslink):Unit={
+    input_links -= link
+  }
+  def ? (that:ssnode):Set[sslink]={
+    this.output_links intersect that.input_links
+  }
   def * (duplicate_time:Int) : Seq[ssnode] =
     for (idx <- 0 until duplicate_time) yield this.clone()
   def |=> (nodes : Seq[ssnode]) : Seq[sslink] = {
@@ -183,6 +230,9 @@ class ssnode(nodeType:String) extends PrintableNode {
     that.add_source(this)
     val source_info = this.getPropByKeys(identifier.key)
     val sink_info = that.getPropByKeys(identifier.key)
+    link(this,that)
+    this.add_sink(link)
+    that.add_source(link)
     link(("source",source_info),("sink",sink_info))
     link
   }
@@ -206,11 +256,13 @@ class ssnode(nodeType:String) extends PrintableNode {
     val blink = this <-- that
     Seq(alink,blink)
   }
+  /*
   def == (that:ssnode): Boolean = {
     val thisid = this.getPropByKey("id")
     val thatid = that.getPropByKey("id")
     thisid == thatid
   }
+  */
   def has (keys:String*):Boolean = {
     val prop = getProps
     val keysExistance = for (key <- keys) yield prop.isDefinedAt(key)
@@ -232,7 +284,12 @@ class ssnode(nodeType:String) extends PrintableNode {
 }
 
 class sslink extends PrintableNode{
+  private var sink_node:ssnode = _
+  private var source_node:ssnode = _
+  def get_source = source_node
+  def get_sink = sink_node
   def postprocess():Unit={}
+  /*
   def == (that:sslink): Boolean = {
     val thisSourceInfo = getPropByKey("source")
     val thisSinkInfo = getPropByKey("sink")
@@ -240,56 +297,119 @@ class sslink extends PrintableNode{
     val thatSinkInfo = that.getPropByKey("sink")
     thisSourceInfo == thatSourceInfo && thisSinkInfo == thatSinkInfo
   }
-  def reverse():Unit={ //TODO: reverse the input_nodes and output_nodes in ssnode
+  */
+  def reverse():Unit={
     val thisSourceInfo = getPropByKey("source")
     val thisSinkInfo = getPropByKey("sink")
+    // Delete Original
+    sink_node.delete_source(source_node)
+    source_node.delete_sink(sink_node)
+    // Add Reverse
+    sink_node.add_sink(source_node)
+    source_node.add_source(sink_node)
     apply("source",thisSinkInfo)
     apply("sink",thisSourceInfo)
+  }
+  def apply(source:ssnode, sink:ssnode)={
+      source_node = source
+      sink_node = sink
+  }
+  def delete:Unit={
+    source_node.delete_sink(sink_node)
+    sink_node.delete_source(source_node)
   }
 }
 
 class ssfabric extends PrintableNode {
+
+  private val nodes : Set[ssnode] = Set[ssnode]()
+  private val links : Set[sslink] = Set[sslink]()
+
+  // Clear all properties
   def reset():Unit={
     getProps.clear()
+    nodes.clear()
+    links.clear()
   }
+  // Add link
   def apply(link:sslink):ssfabric={
+    apply(link.get_sink);apply(link.get_source)
     if(getPropByKey("links")!= None){
-      val currLinks:Set[sslink] = getPropByKey("links").asInstanceOf[Set[sslink]]
-      if(!currLinks.exists(l=>l == link))
+      val currLinks = getPropByKey("links").asInstanceOf[Set[sslink]]
+      if(!currLinks.contains(link)){
         this("links", currLinks += link)
+      }
     }else{
       this("links", Set[sslink]() += link)
     }
+    links += link
     this
   }
+  // Delete link
+  def delete(link:sslink):ssfabric={
+    if(getPropByKey("links")!= None){
+      val currLinks = getPropByKey("links").asInstanceOf[Set[sslink]]
+      if(currLinks.contains(link)){
+        this("links", currLinks -= link)
+        link.delete
+      }
+    }
+    links -= link
+    this
+  }
+  // Add node
   def apply(node:ssnode) :ssfabric= {
     if(getPropByKey("nodes")!= None){
-      val currNodes = getPropByKey("nodes").asInstanceOf[List[ssnode]]
-      if(!currNodes.exists(n=>n == node)){
+      val currNodes = getPropByKey("nodes").asInstanceOf[Set[ssnode]]
+      if(!currNodes.contains(node)){
         node("id",currNodes.size)
-        apply("nodes", currNodes :+ node)
+        apply("nodes", currNodes += node)
       }
     }else{
       node("id",0)
-      apply("nodes", Nil :+ node)
+      apply("nodes", Set[ssnode]() += node)
     }
+    nodes += node
     this
   }
+  // Delete node
+  def delete(node:ssnode):ssfabric={
+    if(getPropByKey("nodes")!= None){
+      val currNodes = getPropByKey("nodes").asInstanceOf[Set[ssnode]]
+      if(currNodes.contains(node)){
+        apply("nodes", currNodes -= node)
+        node.delete
+      }
+    }
+    nodes -= node
+    this
+  }
+  // Add nodes and links in batch mode
   def apply(seq:Seq[PrintableNode]):ssfabric={
     for (elem <- seq)
       elem match{
-        case l:sslink => this(l)
-        case n:ssnode => this(n)
+        case l:sslink =>
+          apply(l)
+          links += l
+        case n:ssnode =>
+          apply(n)
+          nodes += n
       }
     this
   }
-  def apply(pair:(Seq[PrintableNode],Seq[PrintableNode])):ssfabric={
-    apply(pair._1)
-    apply(pair._2)
+  // Add Graph
+  def apply(graph:(Seq[PrintableNode],Seq[PrintableNode])):ssfabric={
+    apply(graph._1)
+    apply(graph._2)
     this
   }
+  // Pick link by nodes
+  def apply(source_node:ssnode, sink_node:ssnode):Set[sslink]={
+    source_node ? sink_node
+  }
+  // Pick node in mesh
   def apply(row_idx:Int)(col_idx:Int)(nodeType:String):ssnode={
-    val currNodes:List[ssnode] = getPropByKey("nodes").asInstanceOf[List[ssnode]]
+    val currNodes = getPropByKey("nodes").asInstanceOf[Set[ssnode]]
     val target_node = currNodes.filter(node=>{
       val target_values = Seq(row_idx,col_idx, nodeType)
       val node_info = node.getPropByKeys(Seq("row_idx","col_idx", "nodeType"))
@@ -305,20 +425,25 @@ class ssfabric extends PrintableNode {
     require(target_node.size == 1)
     target_node.head
   }
+  // Pick node with key value pair
   def apply(keys: String*)(values: Any*):Seq[ssnode] = {
-    val currNodes:List[ssnode] = getPropByKey("nodes").asInstanceOf[List[ssnode]]
-    currNodes.filter(node=>{node.getPropByKeys(keys).zipWithIndex.forall(value_idx =>{
-      val value = value_idx._1 match {
-        case id:identifier => id.id
-        case x => x
-      }
-      val idx = value_idx._2
-      value == values(idx)
-    })})
+    if(getPropByKey("nodes")!=None){
+      val currNodes = getPropByKey("nodes").asInstanceOf[Set[ssnode]]
+      currNodes.filter(node=>{node.getPropByKeys(keys).zipWithIndex.forall(value_idx =>{
+        val value = value_idx._1 match {
+          case id:identifier => id.id
+          case x => x
+        }
+        val idx = value_idx._2
+        value == values(idx)
+      })}).toSeq
+    }else{
+      Seq[ssnode]()
+    }
   }
-
+  // Pick node that satisfies condition
   def satisfy(keys: String*)(funcs: (Any=>Boolean)*):Seq[ssnode] = {
-    val currNodes:List[ssnode] = getPropByKey("nodes").asInstanceOf[List[ssnode]]
+    val currNodes = getPropByKey("nodes").asInstanceOf[Set[ssnode]]
     currNodes.filter(node=>{
       val satisfications = for(value_idx <- node.getPropByKeys(keys).zipWithIndex)
         yield {
@@ -335,8 +460,10 @@ class ssfabric extends PrintableNode {
     }).toSeq
   }
 
-  // Pre-Defined Topology
-  def formMesh(fu:ssnode, switch:ssnode, row:Int, col:Int) : Unit = {
+  // --- Pre-Defined Topology ---
+
+  // build mesh
+  def buildMesh(fu:ssnode, switch:ssnode, row:Int, col:Int) = {
     reset()
     apply(("numRow", row), ("numCol", col))
     val fuGrid = Array.ofDim[ssnode](row,col)
@@ -355,7 +482,7 @@ class ssfabric extends PrintableNode {
     // Connect Them Together
     Input4Output1Mesh(fuGrid, swGrid, row, col)
   }
-  def formMeshfromText(fuGrid: Array[Array[ssnode]], switch:ssnode) : Unit = {
+  def buildMeshfromText(fuGrid: Array[Array[ssnode]], switch:ssnode) = {
     reset()
     val row = fuGrid.length
     val col = fuGrid.head.length
@@ -411,6 +538,7 @@ class ssfabric extends PrintableNode {
       this(swGrid(row_idx+1)(col_idx) <-> swGrid(row_idx+1)(col_idx+1))
       this(swGrid(row_idx)(col_idx+1) <-> swGrid(row_idx+1)(col_idx+1))
     }
+    (nodes.toSeq, links.toSeq)
   }
 
   // Post-Process

@@ -6,7 +6,7 @@ object test extends App {
 
   val node1 = new ssnode("sw")
 
-  node1("hello",456)("god",List("cold",1))(
+  node1("mesh",456)("god",List("cold",1))(
     "map",Map("a" -> 123, 134 -> 435.245)
   )
 
@@ -16,7 +16,9 @@ object test extends App {
 
   test(node1 --> node2)
 
-  test(node1)(node2)
+  test(node1 --> node2)
+
+  //test(node1,node2).foreach(l=>l.reverse())
 
   node1("nodeType","fu")
 
