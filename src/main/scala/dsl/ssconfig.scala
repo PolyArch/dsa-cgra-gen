@@ -13,7 +13,7 @@ import scala.collection.mutable.Set
 import scala.collection.JavaConverters._
 
 object identifier {
-  val key = List("id", "nodeType")
+  var key = List("id", "nodeType")
 }
 
 class identifier(original_value:Any){
@@ -223,7 +223,9 @@ class ssnode(nodeType:String) extends PrintableNode {
   def <=| (nodes : Seq[ssnode]) : Seq[sslink] = {
     for (node <- nodes) yield this <-- node
   }
-
+  def apply(key:String)={
+    this.getPropByKey(key)
+  }
   def --> (that:ssnode): sslink ={
     val link = new sslink
     this.add_sink(that)
@@ -288,6 +290,9 @@ class sslink extends PrintableNode{
   private var source_node:ssnode = _
   def get_source = source_node
   def get_sink = sink_node
+  def * (duplicate_time:Int) = {
+    for (i <- 0 until duplicate_time) yield source_node --> sink_node
+  }
   def postprocess():Unit={}
   /*
   def == (that:sslink): Boolean = {
@@ -439,6 +444,27 @@ class ssfabric extends PrintableNode {
       })}).toSeq
     }else{
       Seq[ssnode]()
+    }
+  }
+  // Get node or else
+  def getOrElse(keys: String*)(values: Any*)(elseNode:ssnode) = {
+    if(getPropByKey("nodes")!=None){
+      val currNodes = getPropByKey("nodes").asInstanceOf[Set[ssnode]]
+      val cands = currNodes.filter(node=>{node.getPropByKeys(keys).zipWithIndex.forall(value_idx =>{
+        val value = value_idx._1 match {
+          case id:identifier => id.id
+          case x => x
+        }
+        val idx = value_idx._2
+        value == values(idx)
+      })})
+      if(cands.nonEmpty){
+        cands.head
+      }else{
+        elseNode
+      }
+    }else{
+      elseNode
     }
   }
   // Pick node that satisfies condition

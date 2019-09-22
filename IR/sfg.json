@@ -1,0 +1,89 @@
+{
+  "links" : [ {
+    "source" : [ 2, 1 ],
+    "sink" : [ 1, 1 ]
+  }, {
+    "source" : [ 2, 1 ],
+    "sink" : [ 1, 1 ]
+  }, {
+    "source" : [ 2, 1 ],
+    "sink" : [ 2, 2 ]
+  }, {
+    "source" : [ 1, 1 ],
+    "sink" : [ 0, 0 ]
+  }, {
+    "source" : [ 2, 1 ],
+    "sink" : [ 1, 0 ]
+  }, {
+    "source" : [ 1, 0 ],
+    "sink" : [ 0, 0 ]
+  }, {
+    "source" : [ 2, 0 ],
+    "sink" : [ 1, 0 ]
+  }, {
+    "source" : [ 2, 2 ],
+    "sink" : [ 1, 1 ]
+  }, {
+    "source" : [ 2, 0 ],
+    "sink" : [ 2, 1 ]
+  }, {
+    "source" : [ 2, 1 ],
+    "sink" : [ 1, 1 ]
+  }, {
+    "source" : [ 2, 0 ],
+    "sink" : [ 1, 0 ]
+  }, {
+    "source" : [ 1, 0 ],
+    "sink" : [ 0, 0 ]
+  }, {
+    "source" : [ 1, 0 ],
+    "sink" : [ 1, 1 ]
+  }, {
+    "source" : [ 1, 0 ],
+    "sink" : [ 0, 0 ]
+  }, {
+    "source" : [ 2, 0 ],
+    "sink" : [ 1, 0 ]
+  } ],
+  "nodes" : [ {
+    "row" : 0,
+    "id" : 0,
+    "col" : 0,
+    "nodeType" : "fu",
+    "input_nodes" : [ [ 1, 1 ], [ 1, 0 ] ]
+  }, {
+    "output_nodes" : [ [ 0, 0 ] ],
+    "row" : 1,
+    "id" : 2,
+    "col" : 1,
+    "nodeType" : "fu",
+    "input_nodes" : [ [ 2, 1 ], [ 2, 2 ], [ 1, 0 ] ]
+  }, {
+    "output_nodes" : [ [ 2, 1 ], [ 1, 0 ] ],
+    "row" : 2,
+    "id" : 5,
+    "col" : 0,
+    "nodeType" : "fu"
+  }, {
+    "output_nodes" : [ [ 1, 1 ], [ 0, 0 ] ],
+    "row" : 1,
+    "id" : 1,
+    "col" : 0,
+    "nodeType" : "fu",
+    "input_nodes" : [ [ 2, 0 ], [ 2, 1 ] ]
+  }, {
+    "output_nodes" : [ [ 1, 1 ] ],
+    "row" : 2,
+    "id" : 4,
+    "col" : 2,
+    "nodeType" : "fu",
+    "input_nodes" : [ [ 2, 1 ] ]
+  }, {
+    "output_nodes" : [ [ 1, 1 ], [ 2, 2 ], [ 1, 0 ] ],
+    "row" : 2,
+    "id" : 3,
+    "col" : 1,
+    "nodeType" : "fu",
+    "input_nodes" : [ [ 2, 0 ] ]
+  } ]
+}
