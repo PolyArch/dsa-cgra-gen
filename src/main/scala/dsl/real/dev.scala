@@ -2,7 +2,7 @@ package dsl.real
 
 import dsl._
 
-object mesh extends App{
+object dev extends App{
   // Define Default Switch
   val sw_default = new ssnode("switch")
   sw_default( ("share_slot_size", 2),
@@ -21,13 +21,13 @@ object mesh extends App{
   another_fu("Insts",Set("Acc16", "Or16"))
 
   // Create a ssfabric
-  val cgra = new ssfabric
+  val dev = new ssfabric
 
   // Build Mesh Topology
-  cgra.buildMesh(fu_add, sw_default, 4,4)
+  dev.buildMesh(fu_add, sw_default, 4,4)
 
   // Build Grid from Text
-  cgra.buildMeshfromText(
+  dev.buildMeshfromText(
     Array(
       Array(fu_add,fu_add,fu_spc,fu_add),
       Array(fu_spc,fu_add,fu_add,fu_add),
@@ -37,23 +37,23 @@ object mesh extends App{
   )
 
   // Specify the Input Node and Output Node (in Grid)
-  val first_row_switch = cgra("row_idx","nodeType")(0,"switch")
-  val last_row_switch = cgra("row_idx","nodeType")(3,"switch")
-  val left_column_switch = cgra("col_idx","nodeType")(0,"switch")
-  val right_column_switch = cgra("col_idx","nodeType")(3,"switch")
+  val first_row_switch = dev("row_idx","nodeType")(0,"switch")
+  val last_row_switch = dev("row_idx","nodeType")(3,"switch")
+  val left_column_switch = dev("col_idx","nodeType")(0,"switch")
+  val right_column_switch = dev("col_idx","nodeType")(3,"switch")
 
   // Connect the Vector Port
   val in_vport = new ssnode("vector port")
   val second_in_vport = new ssnode ("vector port")
   val out_vport = new ssnode("vector port")
 
-  cgra(
+  dev(
     in_vport)(in_vport |=> (first_row_switch union left_column_switch))(
     out_vport)(out_vport <=| (last_row_switch union right_column_switch))(
     second_in_vport)(second_in_vport |=> left_column_switch)
 
   // Change Properties of One Switch
-  cgra(1)(1)("switch")(
+  dev(1)(1)("switch")(
     "inter_subnet_connection",
       Array(
         Array(true, true, false, false),
@@ -62,14 +62,14 @@ object mesh extends App{
     )
 
   // Add a extra link
-  cgra(
-    cgra(2)(3)("function unit") <->
-      cgra(1)(0)("switch")
+  dev(
+    dev(2)(3)("function unit") <->
+      dev(1)(0)("switch")
   )(
-    cgra(2)(3)("function unit") <->
-      cgra(1)(0)("switch")
+    dev(2)(3)("function unit") <->
+      dev(1)(0)("switch")
   )
 
   // Print
-  cgra.printfile("IR/mesh")
+  dev.printfile("IR/dev")
 }

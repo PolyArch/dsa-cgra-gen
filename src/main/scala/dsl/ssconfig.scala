@@ -5,30 +5,33 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 import org.yaml.snakeyaml.Yaml
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
-import scala.util.parsing.json._
 import scala.collection.mutable.Map
 import scala.collection.mutable.Set
-import scala.collection.JavaConverters._
+import cgra.IR.IRconvertor._
 
+// Singleton identifier
 object identifier {
   var key = List("id", "nodeType")
 }
 
+// Identifier Class
 class identifier(original_value:Any){
   var id : Any = original_value
 }
 
 trait PrintableNode {
+  // Variable
+  private val properties : Map[String,Any] = Map[String,Any]()
+  private val yaml = new Yaml()
+
+  // Member
+  def postprocess():Unit
   implicit def value2string(value:Any):String = {
     value match {
       case id:identifier => id.id.toString
       case _ => value.toString
     }
   }
-  private val properties : Map[String,Any] = Map[String,Any]()
-  private val yaml = new Yaml()
 
   // Get
   def getProps = properties
@@ -78,57 +81,26 @@ trait PrintableNode {
     this
   }
 
+  // Delete
+  def deletePropByKey(key:String*):Unit={
+    properties -= key
+  }
+
+  // Print
+  // toString
   override def toString: String = {
     toString("json")
   }
-
   def toString(format:String):String = {
+    val yamlString = yaml.dump(toJava(properties))
     format match {
-      case "json" => convertYamlToJson(yaml.dump(toJava(properties)))
-      case "yaml" => yaml.dump(toJava(properties))
+      case "json" => convertYamlToJson(yamlString)
+      case "yaml" => yamlString
     }
   }
-
-  def convertYamlToJson(yaml: String): String = {
-    val yamlReader = new ObjectMapper(new YAMLFactory())
-    val obj = yamlReader.readValue(yaml, classOf[Any])
-    val jsonWriter:ObjectMapper = new ObjectMapper()
-    jsonWriter.writerWithDefaultPrettyPrinter().writeValueAsString(obj)
-  }
-
-  def toJSON(tree:Any):Any={
-    tree match {
-      case imSet:collection.immutable.Set[_] => toJSON(imSet.toList)
-      case set:Set[_]=> toJSON(set.toList)
-      case map:Map[String, Any] =>
-        for (kv <- map) map(kv._1) = toJSON(kv._2)
-        JSONObject(map.toMap)
-      case seq:Seq[_] => seq.map(toJSON)
-      case yaml:PrintableNode => toJSON(yaml.getProps)
-      case _ => tree
-    }
-  }
-
-  def toJava(scala:Any):Any={
-    scala match {
-      case imSet:collection.immutable.Set[_] => toJava(imSet.toSeq)
-      case set:Set[_]=> toJava(set.toSeq)
-      case imMap:collection.immutable.Map[_,_] =>
-        toJava(Map(imMap.toSeq: _*) )
-      case map:Map[String, Any] =>
-        for (kv <- map) map(kv._1) = toJava(kv._2)
-        map.toMap.asJava
-      case seq:Seq[_] => seq.map(toJava).asJava
-      case yaml:PrintableNode => toJava(yaml.getProps)
-      case id:identifier =>
-        toJava(id.id)
-      case _ => scala
-    }
-  }
-
+  // to File
   def printfile(filename:String):Unit=
     printfile(filename,"json","yaml")
-
   def printfile(filename:String,formats:String*):Unit={
     postprocess()
     // Create File Name
@@ -145,8 +117,6 @@ trait PrintableNode {
       pw.close()
     }
   }
-
-  def postprocess():Unit
 }
 
 class ssnode(nodeType:String) extends PrintableNode {
@@ -214,19 +184,21 @@ class ssnode(nodeType:String) extends PrintableNode {
   def delete_source(link:sslink):Unit={
     input_links -= link
   }
+
+  // ------ Basic Utility ------
+  // Find possible links
   def ? (that:ssnode):Set[sslink]={
     this.output_links intersect that.input_links
   }
+  // Duplicate ssnode
   def * (duplicate_time:Int) : Seq[ssnode] =
     for (idx <- 0 until duplicate_time) yield this.clone()
+  // Connection
   def |=> (nodes : Seq[ssnode]) : Seq[sslink] = {
     for (node <- nodes) yield this --> node
   }
   def <=| (nodes : Seq[ssnode]) : Seq[sslink] = {
     for (node <- nodes) yield this <-- node
-  }
-  def apply(key:String)={
-    this.getPropByKey(key)
   }
   def --> (that:ssnode): sslink ={
     val link = new sslink
@@ -245,7 +217,6 @@ class ssnode(nodeType:String) extends PrintableNode {
     kvpairs.foreach(link.apply(_))
     link
   }
-
   def <-- (that:ssnode) : sslink = {
     that --> this
   }
@@ -254,24 +225,23 @@ class ssnode(nodeType:String) extends PrintableNode {
     kvpairs.foreach(link.apply(_))
     link
   }
-
   def <-> (that:ssnode):Seq[sslink]={
     val alink = this --> that
     val blink = this <-- that
     Seq(alink,blink)
   }
-  /*
-  def == (that:ssnode): Boolean = {
-    val thisid = this.getPropByKey("id")
-    val thatid = that.getPropByKey("id")
-    thisid == thatid
-  }
-  */
+  // Properties manipulation
+  def apply(key:String)={
+    this.getPropByKey(key)
+  }// Get property
+  def delete(keys:String*):Unit={
+    keys.foreach(deletePropByKey(_))
+  }// Delete property
   def has (keys:String*):Boolean = {
     val prop = getProps
     val keysExistance = for (key <- keys) yield prop.isDefinedAt(key)
     keysExistance.forall(x=>x)
-  }
+  }// Test whether has this property
   override def clone(): ssnode = {
     val currNodeType:String = this.getPropByKey("nodeType")
     val node = new ssnode(currNodeType)
