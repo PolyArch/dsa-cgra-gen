@@ -125,8 +125,10 @@ trait PrintableNode {
       case _ => scala
     }
   }
+
   def printfile(filename:String):Unit=
     printfile(filename,"json","yaml")
+
   def printfile(filename:String,formats:String*):Unit={
     postprocess()
     // Create File Name
@@ -326,9 +328,14 @@ class sslink extends PrintableNode{
 }
 
 class ssfabric extends PrintableNode {
-
+  // nodes and links
   private val nodes : Set[ssnode] = Set[ssnode]()
   private val links : Set[sslink] = Set[sslink]()
+
+  // predefined properties
+  apply("datawidth", 64) // datawidth
+
+
 
   // Clear all properties
   def reset():Unit={
