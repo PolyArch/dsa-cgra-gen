@@ -28,15 +28,26 @@ object dev extends App{
   // Build Mesh Topology
   val switchMesh = dev.buildMesh(sw_default, 5,5)
 
-  // Build Grid from Text
-  val fuMesh = dev.connectMesh(
-    Array(
-      Array(fu_add,fu_add,fu_spc,fu_add),
-      Array(fu_spc,fu_add,fu_add,fu_add),
-      Array(fu_add,fu_add,fu_add,another_fu),
-      Array(fu_add,fu_add,another_fu,fu_add)
-    )
+  // Adding function units
+  val fuArray = Array(
+    Array(fu_add,fu_add,fu_spc,fu_add),
+    Array(fu_spc,fu_add,fu_add,fu_add),
+    Array(fu_add,fu_add,fu_add,another_fu),
+    Array(fu_add,fu_add,another_fu,fu_add)
   )
+  for(row_idx <- 0 until 4;col_idx <- 0 until 4){
+    val temp_node = fuArray(row_idx)(col_idx).clone
+    temp_node("row_idx",row_idx)("col_idx",col_idx)
+    dev(
+      dev(row_idx)(col_idx)("switch") --> temp_node
+    )(
+      dev(row_idx+1)(col_idx)("switch") --> temp_node
+    )(
+      dev(row_idx)(col_idx+1)("switch") --> temp_node
+    )(
+      dev(row_idx+1)(col_idx+1)("switch") <-> temp_node
+    )
+  }
 
   // Specify the Input Node and Output Node (in Grid)
   val first_row_switch = dev("row_idx","nodeType")(0,"switch")
