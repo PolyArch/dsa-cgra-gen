@@ -51,9 +51,9 @@ object dev extends App{
 
   // Specify the Input Node and Output Node (in Grid)
   val first_row_switch = dev("row_idx","nodeType")(0,"switch")
-  val last_row_switch = dev("row_idx","nodeType")(3,"switch")
+  val last_row_switch = dev("row_idx","nodeType")(4,"switch")
   val left_column_switch = dev("col_idx","nodeType")(0,"switch")
-  val right_column_switch = dev("col_idx","nodeType")(3,"switch")
+  val right_column_switch = dev("col_idx","nodeType")(4,"switch")
 
   // Connect the Vector Port
   val in_vport = new ssnode("vector port")
@@ -61,8 +61,8 @@ object dev extends App{
   val out_vport = new ssnode("vector port")
 
   dev(
-    in_vport)(in_vport |=> (first_row_switch union left_column_switch))(
-    out_vport)(out_vport <=| (last_row_switch union right_column_switch))(
+    in_vport)(in_vport |=> (first_row_switch union left_column_switch).distinct)(
+    out_vport)(out_vport <=| (last_row_switch union right_column_switch).distinct)(
     second_in_vport)(second_in_vport |=> left_column_switch)
 
   // Change Properties of One Switch

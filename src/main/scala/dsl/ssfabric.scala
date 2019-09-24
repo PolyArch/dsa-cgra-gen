@@ -1,6 +1,6 @@
 package dsl
 
-import scala.collection.mutable.{Map, Set}
+import scala.collection.mutable.{ListBuffer, Map, Set}
 
 
 class ssfabric extends IRPrintable {
@@ -8,8 +8,8 @@ class ssfabric extends IRPrintable {
   apply("identifier", identifier.key)
 
   // nodes and links
-  private val nodes : Set[ssnode] = Set[ssnode]()
-  private val links : Set[sslink] = Set[sslink]()
+  private val nodes : ListBuffer[ssnode] = ListBuffer[ssnode]()
+  private val links : ListBuffer[sslink] = ListBuffer[sslink]()
 
   // predefined properties
   apply("datawidth", 64) // datawidth
@@ -26,12 +26,12 @@ class ssfabric extends IRPrintable {
     apply(link.get_sink);apply(link.get_source)
     // Add link
     if(getPropByKey("links")!= None){
-      val currLinks = getPropByKey("links").asInstanceOf[Set[sslink]]
+      val currLinks = getPropByKey("links").asInstanceOf[ListBuffer[sslink]]
       if(!currLinks.contains(link)){
         this("links", currLinks += link)
       }
     }else{
-      this("links", Set[sslink]() += link)
+      this("links", ListBuffer[sslink]() += link)
     }
     links += link
     this
@@ -39,7 +39,7 @@ class ssfabric extends IRPrintable {
   // Delete link
   def delete(link:sslink):ssfabric={
     if(getPropByKey("links")!= None){
-      val currLinks = getPropByKey("links").asInstanceOf[Set[sslink]]
+      val currLinks = getPropByKey("links").asInstanceOf[ListBuffer[sslink]]
       if(currLinks.contains(link)){
         this("links", currLinks -= link)
         link.delete
@@ -51,14 +51,14 @@ class ssfabric extends IRPrintable {
   // Add node
   def apply(node:ssnode) :ssfabric= {
     if(getPropByKey("nodes")!= None){
-      val currNodes = getPropByKey("nodes").asInstanceOf[Set[ssnode]]
+      val currNodes = getPropByKey("nodes").asInstanceOf[ListBuffer[ssnode]]
       if(!currNodes.contains(node)){
         node("id",currNodes.size)
         apply("nodes", currNodes += node)
       }
     }else{
       node("id",0)
-      apply("nodes", Set[ssnode]() += node)
+      apply("nodes", ListBuffer[ssnode]() += node)
     }
     nodes += node
     this
@@ -66,7 +66,7 @@ class ssfabric extends IRPrintable {
   // Delete node
   def delete(node:ssnode):ssfabric={
     if(getPropByKey("nodes")!= None){
-      val currNodes = getPropByKey("nodes").asInstanceOf[Set[ssnode]]
+      val currNodes = getPropByKey("nodes").asInstanceOf[ListBuffer[ssnode]]
       if(currNodes.contains(node)){
         apply("nodes", currNodes -= node)
         node.delete
@@ -85,10 +85,8 @@ class ssfabric extends IRPrintable {
       elem match{
         case l:sslink =>
           apply(l)
-          links += l
         case n:ssnode =>
           apply(n)
-          nodes += n
       }
     this
   }
@@ -99,12 +97,12 @@ class ssfabric extends IRPrintable {
     this
   }
   // Pick link by nodes
-  def apply(source_node:ssnode, sink_node:ssnode):Set[sslink]={
+  def apply(source_node:ssnode, sink_node:ssnode):ListBuffer[sslink]={
     source_node ? sink_node
   }
   // Pick node in mesh
   def apply(row_idx:Int)(col_idx:Int)(nodeType:String):ssnode={
-    val currNodes = getPropByKey("nodes").asInstanceOf[Set[ssnode]]
+    val currNodes = getPropByKey("nodes").asInstanceOf[ListBuffer[ssnode]]
     val target_node = currNodes.filter(node=>{
       val target_values = Seq(row_idx,col_idx, nodeType)
       val node_info = node.getPropByKeys(Seq("row_idx","col_idx", "nodeType"))
@@ -122,7 +120,7 @@ class ssfabric extends IRPrintable {
     target_node.head
   }
   // Pick out the nodes that have right kv pair
-  private def findNodeByKey(currNodes:Set[ssnode],
+  private def findNodeByKey(currNodes:ListBuffer[ssnode],
                             keys:Seq[String],values:Seq[Any]) = {
     currNodes.filter(node=>{node.getPropByKeys(keys).zipWithIndex.forall(value_idx =>{
       val value = getValue(value_idx._1)
@@ -133,7 +131,7 @@ class ssfabric extends IRPrintable {
   // Pick node with key value pair
   def apply(keys: String*)(values: Any*):Seq[ssnode] = {
     if(getPropByKey("nodes")!=None){
-      val currNodes = getPropByKey("nodes").asInstanceOf[Set[ssnode]]
+      val currNodes = getPropByKey("nodes").asInstanceOf[ListBuffer[ssnode]]
       findNodeByKey(currNodes, keys,values).toSeq
     }else{
       Seq[ssnode]()
@@ -142,7 +140,7 @@ class ssfabric extends IRPrintable {
   // Get node or else
   def getOrElse(keys: String*)(values: Any*)(elseNode:ssnode) = {
     if(getPropByKey("nodes")!=None){
-      val currNodes = getPropByKey("nodes").asInstanceOf[Set[ssnode]]
+      val currNodes = getPropByKey("nodes").asInstanceOf[ListBuffer[ssnode]]
       val cands = findNodeByKey(currNodes, keys,values)
       if(cands.nonEmpty){
         cands.head
@@ -155,7 +153,7 @@ class ssfabric extends IRPrintable {
   }
   // Pick node that satisfies condition
   def satisfy(keys: String*)(funcs: (Any=>Boolean)*):Seq[ssnode] = {
-    val currNodes = getPropByKey("nodes").asInstanceOf[Set[ssnode]]
+    val currNodes = getPropByKey("nodes").asInstanceOf[ListBuffer[ssnode]]
     currNodes.filter(node=>{
       val satisfications = for(value_idx <- node.getPropByKeys(keys).zipWithIndex)
         yield {

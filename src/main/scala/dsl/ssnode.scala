@@ -1,6 +1,6 @@
 package dsl
 
-import scala.collection.mutable.Set
+import scala.collection.mutable.{ListBuffer, Set}
 
 class ssnode(nodeType:String) extends IRPrintable {
 
@@ -9,15 +9,24 @@ class ssnode(nodeType:String) extends IRPrintable {
   apply("subnet_offset", List(0))
 
   // Private Variables
-  private val output_links : Set[sslink] = Set[sslink]()
-  private val input_links : Set[sslink] = Set[sslink]()
+  private val output_links : ListBuffer[sslink] = ListBuffer[sslink]()
+  private val input_links : ListBuffer[sslink] = ListBuffer[sslink]()
 
   // Postprocess before output
   def postprocess():Unit={
-    // Subnet Table Postprocess
+    // I/O Port Properties
     val decomposer = getPropByKey("decomposer").asInstanceOf[Int]
     val num_input = input_links.size;apply("num_input", num_input)
     val num_output = output_links.size;apply("num_output", num_output)
+    if(num_input > 0){
+      val input_nodes = apply("input_nodes").asInstanceOf[ListBuffer[ssnode]]
+      require(num_input == input_nodes.length)
+    }
+    if(num_output > 0){
+      val output_nodes = apply("output_nodes").asInstanceOf[ListBuffer[ssnode]]
+      require(num_output == output_nodes.length)
+    }
+    // Subnet Table Postprocess
     if(num_input > 0 && num_output > 0){
       val subnet_offset = getPropByKey("subnet_offset")
         .asInstanceOf[List[Int]]
@@ -44,11 +53,11 @@ class ssnode(nodeType:String) extends IRPrintable {
   def add_sink(sink:ssnode):Unit={
     var sink_info = sink.getPropByKeys(identifier.key)
     if(getPropByKey("output_nodes")!= None){
-      val curr_output_nodes:Set[Any] = getPropByKey("output_nodes")
-        .asInstanceOf[Set[Any]]
+      val curr_output_nodes:ListBuffer[Any] = getPropByKey("output_nodes")
+        .asInstanceOf[ListBuffer[Any]]
       apply("output_nodes", curr_output_nodes += sink_info)
     }else{
-      apply("output_nodes", Set[Any]() += sink_info)
+      apply("output_nodes", ListBuffer[Any]() += sink_info)
     }
   }
   def add_sink(link:sslink):Unit={
@@ -57,8 +66,8 @@ class ssnode(nodeType:String) extends IRPrintable {
   def delete_sink(sink:ssnode):Unit={
     var sink_info = sink.getPropByKeys(identifier.key)
     if(getPropByKey("output_nodes")!= None){
-      val curr_output_nodes:Set[Any] = getPropByKey("output_nodes")
-        .asInstanceOf[Set[Any]]
+      val curr_output_nodes:ListBuffer[Any] = getPropByKey("output_nodes")
+        .asInstanceOf[ListBuffer[Any]]
       apply("output_nodes", curr_output_nodes -= sink_info)
     }
   }
@@ -82,11 +91,11 @@ class ssnode(nodeType:String) extends IRPrintable {
   def add_source(source:ssnode):Unit={
     val source_info : Any = source.getPropByKeys(identifier.key)
     if(getPropByKey("input_nodes")!= None){
-      val curr_input_nodes:Set[Any] = getPropByKey("input_nodes")
-        .asInstanceOf[Set[Any]]
+      val curr_input_nodes:ListBuffer[Any] = getPropByKey("input_nodes")
+        .asInstanceOf[ListBuffer[Any]]
       this("input_nodes", curr_input_nodes += source_info)
     }else{
-      this("input_nodes", Set[Any]() += source_info)
+      this("input_nodes", ListBuffer[Any]() += source_info)
     }
   }
   def add_source(link:sslink):Unit={
@@ -95,8 +104,8 @@ class ssnode(nodeType:String) extends IRPrintable {
   def delete_source(source:ssnode):Unit={
     val source_info : Any = source.getPropByKeys(identifier.key)
     if(getPropByKey("input_nodes")!= None){
-      val curr_input_nodes:Set[Any] = getPropByKey("input_nodes")
-        .asInstanceOf[Set[Any]]
+      val curr_input_nodes:ListBuffer[Any] = getPropByKey("input_nodes")
+        .asInstanceOf[ListBuffer[Any]]
       this("input_nodes", curr_input_nodes -= source_info)
     }
   }
@@ -106,7 +115,7 @@ class ssnode(nodeType:String) extends IRPrintable {
 
   // ------ Basic Utility ------
   // Find possible links
-  def ? (that:ssnode):Set[sslink]={
+  def ? (that:ssnode):ListBuffer[sslink]={
     this.output_links intersect that.input_links
   }
   // Duplicate ssnode

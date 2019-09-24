@@ -3,7 +3,6 @@ package cgra.IR
 import IRconvertor._
 import cgra.IR.IRpreprocessor._
 import dsl.{IRPrintable, identifier}
-
 import java.io.{File, FileInputStream}
 import java.util
 
@@ -12,7 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 
 import scala.collection.JavaConverters._
-import scala.collection.mutable.{Map, Set}
+import scala.collection.mutable.{ListBuffer, Map, Set}
 import scala.util.parsing.json.JSONObject
 import scala.collection.JavaConversions._
 import scala.collection.JavaConverters.{asScalaBuffer, mapAsScalaMap}
@@ -71,6 +70,7 @@ object IRconvertor {
     val yamlWriter = new ObjectMapper(new YAMLFactory())
     yamlWriter.writerWithDefaultPrettyPrinter().writeValueAsString(obj)
   }
+  /*
   def toJSON(tree:Any):Any={
     tree match {
       case imSet:collection.immutable.Set[_] => toJSON(imSet.toList)
@@ -83,6 +83,7 @@ object IRconvertor {
       case _ => tree
     }
   }
+   */
   def toJava(scala:Any):Any={
     scala match {
       case imSet:collection.immutable.Set[_] => toJava(imSet.toSeq)
@@ -97,6 +98,7 @@ object IRconvertor {
       case id:identifier =>
         toJava(id.id)
       case None => "N/A"
+      case listbuffer:ListBuffer[_] => toJava(listbuffer.toList)
       case _ => scala
     }
   }
