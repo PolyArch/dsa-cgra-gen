@@ -4,6 +4,9 @@ import scala.collection.mutable.{Map, Set}
 
 
 class ssfabric extends IRPrintable {
+  //pre-processs
+  apply("identifier", identifier.key)
+
   // nodes and links
   private val nodes : Set[ssnode] = Set[ssnode]()
   private val links : Set[sslink] = Set[sslink]()
@@ -207,18 +210,20 @@ class ssfabric extends IRPrintable {
                 is_distribute:Boolean):(Seq[ssnode],Seq[sslink])={
     val childs = parent * 2
     parent("depth",depth)
+    childs.foreach(c=>c("depth",depth-1))
+    // Determine the direction of tree
     val links = if(is_distribute){
       parent |=> childs
     }else{
       parent <=| childs
     }
+    // Connect
     if(depth >1){
       val left_childtree = buildTree(childs(0),depth-1,is_distribute)
       val right_childtree = buildTree(childs(1),depth-1,is_distribute)
       (left_childtree._1 union right_childtree._1 :+ parent,
         left_childtree._2 union right_childtree._2 union links)
     }else{
-      childs.foreach(c=>c("depth",depth-1))
       (childs :+ parent, links)
     }
   }
@@ -245,5 +250,6 @@ class ssfabric extends IRPrintable {
         yield allInsts(i) -> (i + start_encoding))
       apply("Instruction Set", InstsWithEnc)
     }
+    // TODO: Make sure all nodes have different identifier
   }
 }

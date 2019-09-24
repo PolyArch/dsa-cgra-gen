@@ -3,6 +3,8 @@ package real
 import dsl._
 
 object maeri extends App{
+  identifier("depth")
+
   val start_sw = new ssnode("switch")
   val end_add = new ssnode("function unit")
   end_add("Insts","Add")

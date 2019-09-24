@@ -14,21 +14,25 @@ class ssnode(nodeType:String) extends IRPrintable {
 
   // Postprocess before output
   def postprocess():Unit={
-    // Subnet Table
+    // Subnet Table Postprocess
     val decomposer = getPropByKey("decomposer").asInstanceOf[Int]
     val num_input = input_links.size;apply("num_input", num_input)
     val num_output = output_links.size;apply("num_output", num_output)
     if(num_input > 0 && num_output > 0){
       val subnet_offset = getPropByKey("subnet_offset")
         .asInstanceOf[List[Int]]
+      require(subnet_offset.forall(offset=>{
+        Math.abs(offset) <  decomposer
+      }),"offset if larger than max slot size")
       val subnet_table = Array.ofDim[Boolean](
         num_output*decomposer,num_input*decomposer)
       for(op_idx <- 0 until num_output;os_idx <- 0 until decomposer;
           ip_idx <- 0 until num_input; is_idx <- 0 until decomposer){
         subnet_table( op_idx * decomposer + os_idx)(
           ip_idx * decomposer + is_idx)  =
-          if(subnet_offset.contains((is_idx - os_idx) % decomposer) ||
-            subnet_offset.contains((is_idx - os_idx - decomposer) % decomposer))
+          if(subnet_offset.contains((is_idx - os_idx) % decomposer)||
+            subnet_offset.contains((is_idx - os_idx - decomposer) % decomposer)||
+            subnet_offset.contains((is_idx - os_idx + decomposer) % decomposer))
             true
           else
             false

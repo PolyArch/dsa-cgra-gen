@@ -10,7 +10,13 @@ import cgra.IR.IRconvertor._
 
 // Singleton identifier
 object identifier {
-  var key : List[String] = List("nodeType")
+  var key : List[String] = List("nodeType","id")
+  def apply(keys:String*) = {
+    for(k <- keys){
+      key = key :+ k
+    }
+    this
+  }
 }
 
 // Identifier Class

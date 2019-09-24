@@ -5,7 +5,7 @@ import dsl._
 object dev extends App{
 
   // Keys that differ nodes
-  identifier.key = List("nodeType", "row_idx", "col_idx")
+  identifier("row_idx","col_idx")
 
   // Define Default Switch
   val sw_default = new ssnode("switch")
