@@ -1,5 +1,6 @@
 ### IR
 IR/*.xml
+IR/old
 
 ### Analytical Model
 src/analytical_model/resource/*

@@ -1,9 +1,0 @@
-system:
-  data_word_width: 64
-
-module_type: cgra.fabric.VectorPort_Hw_New
-io_type: "in"
-input_ports: [v1]
-output_ports: [v1,v2,v3,v4]
-channel_buffer: 4
-vectorMode: Map
