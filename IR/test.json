@@ -1,10 +1,11 @@
 {
+  "datawidth" : 64,
   "links" : [ {
-    "source" : [ 1, "fu" ],
-    "sink" : [ 0, "sw" ]
+    "source" : [ "fu" ],
+    "sink" : [ "sw" ]
   }, {
-    "source" : [ 1, "fu" ],
-    "sink" : [ 0, "sw" ]
+    "source" : [ "fu" ],
+    "sink" : [ "sw" ]
   } ],
   "nodes" : [ {
     "god" : [ "cold", 1 ],
@@ -12,19 +13,23 @@
       "134" : 435.245,
       "a" : 123
     },
-    "output_nodes" : [ [ 0, "sw" ] ],
+    "subnet_offset" : [ 0 ],
+    "output_nodes" : [ [ "sw" ] ],
     "id" : 1,
     "mesh" : 456,
-    "nodeType" : "fu"
+    "nodeType" : "fu",
+    "decomposer" : 8
   }, {
     "god" : [ "cold", 1 ],
     "map" : {
       "134" : 435.245,
       "a" : 123
     },
+    "subnet_offset" : [ 0 ],
     "id" : 0,
     "mesh" : 456,
     "nodeType" : "sw",
-    "input_nodes" : [ [ 1, "fu" ] ]
+    "decomposer" : 8,
+    "input_nodes" : [ [ "fu" ] ]
   } ]
 }

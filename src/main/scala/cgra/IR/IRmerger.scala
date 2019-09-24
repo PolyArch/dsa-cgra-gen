@@ -5,6 +5,7 @@ import java.io._
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+// IR merger is used to merge the IR with the Yaml Configuration
 object IRmerger {
   def mergeIRwithCgra(irFileName:String,cgraFileName:String)={
     // Read Original Files

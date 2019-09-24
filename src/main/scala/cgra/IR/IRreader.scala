@@ -1,16 +1,19 @@
 package cgra.IR
 
-import java.io.{File, FileInputStream}
 import IRconvertor._
 import cgra.IR.IRpreprocessor._
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
-import dsl.{PrintableNode, identifier}
+import dsl.{IRPrintable, identifier}
+
+import java.io.{File, FileInputStream}
+import java.util
+
 import org.yaml.snakeyaml.Yaml
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
+
 import scala.collection.JavaConverters._
 import scala.collection.mutable.{Map, Set}
 import scala.util.parsing.json.JSONObject
-import java.util
 import scala.collection.JavaConversions._
 import scala.collection.JavaConverters.{asScalaBuffer, mapAsScalaMap}
 import scala.collection.mutable
@@ -76,7 +79,7 @@ object IRconvertor {
         for (kv <- map) map(kv._1) = toJSON(kv._2)
         JSONObject(map.toMap)
       case seq:Seq[_] => seq.map(toJSON)
-      case yaml:PrintableNode => toJSON(yaml.getProps)
+      case yaml:IRPrintable => toJSON(yaml.getProps)
       case _ => tree
     }
   }
@@ -90,9 +93,10 @@ object IRconvertor {
         for (kv <- map) map(kv._1) = toJava(kv._2)
         map.toMap.asJava
       case seq:Seq[_] => seq.map(toJava).asJava
-      case yaml:PrintableNode => toJava(yaml.getProps)
+      case yaml:IRPrintable => toJava(yaml.getProps)
       case id:identifier =>
         toJava(id.id)
+      case None => "N/A"
       case _ => scala
     }
   }

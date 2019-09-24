@@ -1,4 +1,4 @@
-package dsl.real
+package real
 
 import dsl._
 

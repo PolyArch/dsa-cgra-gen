@@ -5,13 +5,16 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 import org.yaml.snakeyaml.Yaml
+
 import scala.collection.mutable.Map
 import scala.collection.mutable.Set
 import cgra.IR.IRconvertor._
 
+import scala.collection.mutable
+
 // Singleton identifier
 object identifier {
-  var key = List("id", "nodeType")
+  var key : List[String] = List("nodeType")
 }
 
 // Identifier Class
@@ -19,7 +22,7 @@ class identifier(original_value:Any){
   var id : Any = original_value
 }
 
-trait PrintableNode {
+trait IRPrintable {
   // Variable
   private val properties : Map[String,Any] = Map[String,Any]()
   private val yaml = new Yaml()
@@ -42,19 +45,19 @@ trait PrintableNode {
       None
     }
   }
-  def  getPropByKeys(keys:Seq[String]):Seq[Any]={
+  def getPropByKeys(keys:Seq[String]):Seq[Any]={
     for (key <- keys) yield
         getPropByKey(key)
   }
 
   // Set
-  def apply(props:Map[String,Any]):PrintableNode={
+  def apply(props:Map[String,Any]):IRPrintable={
     for (kv <- props){
-      properties(kv._1) = kv._2
+      apply(kv._1,kv._2)
     }
     this
   }
-  def apply(key:String, value:Any):PrintableNode={
+  def apply(key:String, value:Any):IRPrintable={
     if(identifier.key.contains(key)){
       if (!properties.isDefinedAt(key)) {
         // Initial
@@ -71,14 +74,6 @@ trait PrintableNode {
       properties(key) = value
       this
     }
-  }
-  def apply(kvpairs:(String, Any)*):PrintableNode ={
-    for (kv <- kvpairs){
-      val key: String = kv._1
-      val value: Any = kv._2
-      apply(key, value)
-    }
-    this
   }
 
   // Delete
@@ -119,12 +114,38 @@ trait PrintableNode {
   }
 }
 
-class ssnode(nodeType:String) extends PrintableNode {
+class ssnode(nodeType:String) extends IRPrintable {
 
+  // pre-defined properties
+  apply("decomposer", 8)
+  apply("subnet_offset", List(0))
+
+  // Private Variables
   private val output_links : Set[sslink] = Set[sslink]()
   private val input_links : Set[sslink] = Set[sslink]()
 
-  def postprocess():Unit={}
+  // Postprocess before output
+  def postprocess():Unit={
+    val decomposer = getPropByKey("decomposer").asInstanceOf[Int]
+    val num_input = input_links.size;apply("num_input", num_input)
+    val num_output = output_links.size;apply("num_output", num_output)
+    if(num_input > 0 && num_output > 0){
+      val subnet_offset = getPropByKey("subnet_offset").asInstanceOf[List[Int]]
+      val subnet_table = Array.ofDim[Boolean](
+        num_output*decomposer,num_input*decomposer)
+      for(op_idx <- 0 until num_output;os_idx <- 0 until decomposer;
+          ip_idx <- 0 until num_input; is_idx <- 0 until decomposer){
+        subnet_table( op_idx * decomposer + os_idx)(
+          ip_idx * decomposer + is_idx)  =
+          if(subnet_offset.contains(is_idx - os_idx) ||
+             subnet_offset.contains(os_idx - decomposer + is_idx))
+            true
+          else
+            false
+      }
+      apply("subnet_table", subnet_table)
+    }
+  }
   // Add/Delete Sink Node
   def add_sink(sink:ssnode):Unit={
     var sink_info = sink.getPropByKeys(identifier.key)
@@ -209,12 +230,12 @@ class ssnode(nodeType:String) extends PrintableNode {
     link(this,that)
     this.add_sink(link)
     that.add_source(link)
-    link(("source",source_info),("sink",sink_info))
+    link("source",source_info)("sink",sink_info)
     link
   }
   def --> (that:ssnode, kvpairs:(String,Any)*):sslink = {
     val link = this --> that
-    kvpairs.foreach(link.apply(_))
+    kvpairs.foreach(kv=>link.apply(kv._1,kv._2))
     link
   }
   def <-- (that:ssnode) : sslink = {
@@ -222,7 +243,7 @@ class ssnode(nodeType:String) extends PrintableNode {
   }
   def <-- (that:ssnode,kvpairs:(String,Any)*):sslink = {
     val link = that --> this
-    kvpairs.foreach(link.apply(_))
+    kvpairs.foreach(kv=>link.apply(kv._1,kv._2))
     link
   }
   def <-> (that:ssnode):Seq[sslink]={
@@ -247,8 +268,10 @@ class ssnode(nodeType:String) extends PrintableNode {
     val node = new ssnode(currNodeType)
     val temp_cloned_prop = this.getProps
     var cloned_prop = temp_cloned_prop
-    for (id <- identifier.key)
+    for (id <- identifier.key) {
       cloned_prop = cloned_prop - id
+    }
+    node("nodeType", currNodeType)
     node(cloned_prop - "output_nodes" - "input_nodes")
     node
   }
@@ -257,7 +280,7 @@ class ssnode(nodeType:String) extends PrintableNode {
   apply("id", this.hashCode())
 }
 
-class sslink extends PrintableNode{
+class sslink extends IRPrintable{
   private var sink_node:ssnode = _
   private var source_node:ssnode = _
   def get_source = source_node
@@ -297,15 +320,13 @@ class sslink extends PrintableNode{
   }
 }
 
-class ssfabric extends PrintableNode {
+class ssfabric extends IRPrintable {
   // nodes and links
   private val nodes : Set[ssnode] = Set[ssnode]()
   private val links : Set[sslink] = Set[sslink]()
 
   // predefined properties
   apply("datawidth", 64) // datawidth
-
-
 
   // Clear all properties
   def reset():Unit={
@@ -315,7 +336,9 @@ class ssfabric extends PrintableNode {
   }
   // Add link
   def apply(link:sslink):ssfabric={
+    // Add linked nodes
     apply(link.get_sink);apply(link.get_source)
+    // Add link
     if(getPropByKey("links")!= None){
       val currLinks = getPropByKey("links").asInstanceOf[Set[sslink]]
       if(!currLinks.contains(link)){
@@ -367,7 +390,7 @@ class ssfabric extends PrintableNode {
     this
   }
   // Add nodes and links in batch mode
-  def apply(seq:Seq[PrintableNode]):ssfabric={
+  def apply(seq:Seq[IRPrintable]):ssfabric={
     for (elem <- seq)
       elem match{
         case l:sslink =>
@@ -380,7 +403,7 @@ class ssfabric extends PrintableNode {
     this
   }
   // Add Graph
-  def apply(graph:(Seq[PrintableNode],Seq[PrintableNode])):ssfabric={
+  def apply(graph:(Seq[IRPrintable],Seq[IRPrintable])):ssfabric={
     apply(graph._1)
     apply(graph._2)
     this
@@ -466,44 +489,34 @@ class ssfabric extends PrintableNode {
   // --- Pre-Defined Topology ---
 
   // build mesh
-  def buildMesh(fu:ssnode, switch:ssnode, row:Int, col:Int) = {
-    reset()
-    apply(("numRow", row), ("numCol", col))
-    val fuGrid = Array.ofDim[ssnode](row,col)
-    val swGrid = Array.ofDim[ssnode](row+1,col+1)
-    // Fill with initial FU and Switch
+  def buildMesh(node:ssnode, row:Int, col:Int) = {
+    val mesh = Array.ofDim[ssnode](row,col)
+    // Fill with initial node
     for (row_idx <- 0 until row;col_idx <- 0 until col){
-      val temp_fu = fu.clone
-      apply(temp_fu); temp_fu(("row_idx", row_idx),("col_idx", col_idx))
-      fuGrid(row_idx)(col_idx) = temp_fu
+      val temp_node = node.clone
+      mesh(row_idx)(col_idx) = temp_node
     }
-    for (row_idx <- 0 until row + 1;col_idx <- 0 until col + 1){
-      val temp_switch = switch.clone
-      apply(temp_switch); temp_switch(("row_idx", row_idx),("col_idx", col_idx))
-      swGrid(row_idx)(col_idx) = temp_switch
-    }
-    // Connect Them Together
-    Input4Output1Mesh(fuGrid, swGrid, row, col)
+    connectMesh(mesh)
   }
-  def buildMeshfromText(fuGrid: Array[Array[ssnode]], switch:ssnode) = {
-    reset()
-    val row = fuGrid.length
-    val col = fuGrid.head.length
-    apply(("numRow", row), ("numCol", col))
-    val swGrid = Array.ofDim[ssnode](row+1,col+1)
-    // Adding Fu Node
+  def connectMesh(mesh: Array[Array[ssnode]]) = {
+    val row = mesh.length
+    val col = mesh.head.length
+    apply("numRow", row)("numCol", col)
+    // Duplicate array nodes and assigne idx properties
     for (row_idx <- 0 until row; col_idx <- 0 until col){
-      val temp_fu = fuGrid(row_idx)(col_idx).clone()
-      fuGrid(row_idx)(col_idx) = temp_fu
-      apply(temp_fu); temp_fu(("row_idx", row_idx), ("col_idx", col_idx))
+      mesh(row_idx)(col_idx) = mesh(row_idx)(col_idx).clone()
+      val temp_node = mesh(row_idx)(col_idx)
+      apply(temp_node); temp_node("row_idx", row_idx)("col_idx", col_idx)
     }
-    // Adding Switch Node
-    for (row_idx <- 0 until row + 1;col_idx <- 0 until col + 1){
-      val temp_switch = switch.clone
-      apply(temp_switch); temp_switch(("row_idx", row_idx),("col_idx", col_idx))
-      swGrid(row_idx)(col_idx) = temp_switch
+    // Traverse
+    for (row_idx <- 0 until row; col_idx <- 0 until col){
+      // Connect
+      if(row_idx + 1 < row)
+        apply(mesh(row_idx)(col_idx) <-> mesh(row_idx + 1)(col_idx))
+      if(col_idx + 1 < col)
+        apply(mesh(row_idx)(col_idx) <-> mesh(row_idx)(col_idx + 1))
     }
-    Input4Output1Mesh(fuGrid, swGrid, row, col)
+    mesh
   }
 
   // BuildTree
@@ -527,25 +540,10 @@ class ssfabric extends PrintableNode {
     }
   }
 
-  def Input4Output1Mesh(fuGrid:Array[Array[ssnode]], swGrid:Array[Array[ssnode]], row:Int, col:Int) = {
-    // Connect Them Together
-    for (row_idx <- 0 until row;col_idx <- 0 until col){
-      // 4 Input 1 Output Fu connections
-      this(fuGrid(row_idx)(col_idx) <-> swGrid(row_idx+1)(col_idx+1))
-      this(fuGrid(row_idx)(col_idx) <-- swGrid(row_idx)(col_idx+1))
-      this(fuGrid(row_idx)(col_idx) <-- swGrid(row_idx+1)(col_idx))
-      this(fuGrid(row_idx)(col_idx) <-- swGrid(row_idx)(col_idx))
-      // Square Switches connections
-      this(swGrid(row_idx)(col_idx) <-> swGrid(row_idx)(col_idx+1))
-      this(swGrid(row_idx)(col_idx) <-> swGrid(row_idx+1)(col_idx))
-      this(swGrid(row_idx+1)(col_idx) <-> swGrid(row_idx+1)(col_idx+1))
-      this(swGrid(row_idx)(col_idx+1) <-> swGrid(row_idx+1)(col_idx+1))
-    }
-    (nodes.toSeq, links.toSeq)
-  }
-
   // Post-Process
   def postprocess():Unit={
+    nodes.foreach(_.postprocess())
+    links.foreach(_.postprocess())
     // Gather the ISA and Encode them
     val start_encoding = 2 //0 is saved for NOP, 1 is saved for copy
     val allFuNodes = this("nodeType")("function unit")

@@ -1,8 +1,10 @@
-package dsl.real
+package real
 
 import dsl._
 
 object test extends App {
+
+  identifier.key = List("nodeType")
 
   val node1 = new ssnode("sw")
 
