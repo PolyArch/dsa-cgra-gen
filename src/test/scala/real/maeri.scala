@@ -36,5 +36,5 @@ object maeri extends App{
 
 
   // Print MAERI
-  MAERI.printfile("IR/MAERI")
+  MAERI.printfile("IR/maeri")
 }

@@ -1,0 +1,2071 @@
+datawidth: 64
+links:
+- source: [switch]
+  sink: [switch]
+- source: [switch]
+  sink: [function unit]
+- source: [function unit]
+  sink: [function unit]
+- source: [function unit]
+  sink: [function unit]
+- source: [switch]
+  sink: [switch]
+- source: [switch]
+  sink: [function unit]
+- source: [function unit]
+  sink: [function unit]
+- source: [function unit]
+  sink: [function unit]
+- source: [function unit]
+  sink: [function unit]
+- source: [function unit]
+  sink: [function unit]
+- source: [function unit]
+  sink: [function unit]
+- source: [function unit]
+  sink: [function unit]
+- source: [switch]
+  sink: [switch]
+- source: [switch]
+  sink: [switch]
+- source: [switch]
+  sink: [function unit]
+- source: [switch]
+  sink: [switch]
+- source: [function unit]
+  sink: [function unit]
+- source: [function unit]
+  sink: [function unit]
+- source: [switch]
+  sink: [switch]
+- source: [switch]
+  sink: [switch]
+- source: [function unit]
+  sink: [function unit]
+- source: [function unit]
+  sink: [function unit]
+- source: [function unit]
+  sink: [function unit]
+- source: [switch]
+  sink: [function unit]
+- source: [switch]
+  sink: [switch]
+- source: [function unit]
+  sink: [function unit]
+- source: [switch]
+  sink: [switch]
+- source: [switch]
+  sink: [switch]
+- source: [function unit]
+  sink: [function unit]
+- source: [switch]
+  sink: [function unit]
+- source: [switch]
+  sink: [switch]
+- source: [switch]
+  sink: [function unit]
+- source: [function unit]
+  sink: [function unit]
+- source: [switch]
+  sink: [function unit]
+- source: [function unit]
+  sink: [function unit]
+- source: [switch]
+  sink: [function unit]
+- source: [switch]
+  sink: [function unit]
+- source: [function unit]
+  sink: [function unit]
+- source: [function unit]
+  sink: [function unit]
+- source: [switch]
+  sink: [function unit]
+- source: [switch]
+  sink: [switch]
+- source: [function unit]
+  sink: [function unit]
+- source: [switch]
+  sink: [switch]
+- source: [function unit]
+  sink: [function unit]
+- source: [function unit]
+  sink: [function unit]
+- source: [switch]
+  sink: [switch]
+- source: [switch]
+  sink: [switch]
+- source: [switch]
+  sink: [function unit]
+- source: [switch]
+  sink: [switch]
+- source: [switch]
+  sink: [switch]
+- source: [function unit]
+  sink: [function unit]
+- source: [function unit]
+  sink: [function unit]
+- source: [switch]
+  sink: [function unit]
+- source: [switch]
+  sink: [function unit]
+- source: [function unit]
+  sink: [function unit]
+- source: [function unit]
+  sink: [function unit]
+- source: [function unit]
+  sink: [function unit]
+- source: [function unit]
+  sink: [function unit]
+- source: [switch]
+  sink: [function unit]
+- source: [switch]
+  sink: [switch]
+- source: [function unit]
+  sink: [function unit]
+- source: [function unit]
+  sink: [function unit]
+- source: [switch]
+  sink: [switch]
+- source: [switch]
+  sink: [switch]
+- source: [function unit]
+  sink: [function unit]
+- source: [function unit]
+  sink: [function unit]
+- source: [function unit]
+  sink: [function unit]
+- source: [switch]
+  sink: [function unit]
+- source: [function unit]
+  sink: [function unit]
+- source: [switch]
+  sink: [switch]
+- source: [function unit]
+  sink: [function unit]
+- source: [function unit]
+  sink: [function unit]
+- source: [switch]
+  sink: [switch]
+- source: [function unit]
+  sink: [function unit]
+- source: [function unit]
+  sink: [function unit]
+- source: [switch]
+  sink: [switch]
+- source: [function unit]
+  sink: [function unit]
+- source: [function unit]
+  sink: [function unit]
+- source: [function unit]
+  sink: [function unit]
+- source: [switch]
+  sink: [switch]
+- source: [switch]
+  sink: [switch]
+- source: [function unit]
+  sink: [function unit]
+- source: [switch]
+  sink: [switch]
+- source: [function unit]
+  sink: [function unit]
+- source: [switch]
+  sink: [function unit]
+- source: [switch]
+  sink: [switch]
+- source: [switch]
+  sink: [switch]
+- source: [switch]
+  sink: [switch]
+- source: [function unit]
+  sink: [function unit]
+- source: [function unit]
+  sink: [function unit]
+- source: [switch]
+  sink: [switch]
+nodes:
+- num_output: 1
+  subnet_offset: [0, -1]
+  num_input: 1
+  output_nodes:
+  - [function unit]
+  id: 1
+  nodeType: switch
+  decomposer: 8
+  depth: 0
+  subnet_table:
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  input_nodes:
+  - [switch]
+- num_output: 2
+  subnet_offset: [0, -1]
+  num_input: 1
+  output_nodes:
+  - [function unit]
+  - [function unit]
+  Insts: Mul
+  id: 38
+  nodeType: function unit
+  decomposer: 8
+  depth: 0
+  subnet_table:
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  input_nodes:
+  - [switch]
+- num_output: 1
+  subnet_offset: [0, -1]
+  num_input: 1
+  output_nodes:
+  - [function unit]
+  id: 0
+  nodeType: switch
+  decomposer: 8
+  depth: 0
+  subnet_table:
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  input_nodes:
+  - [switch]
+- num_output: 1
+  subnet_offset: [0, -1]
+  num_input: 2
+  output_nodes:
+  - [function unit]
+  Insts: Add
+  id: 51
+  nodeType: function unit
+  decomposer: 8
+  depth: 1
+  subnet_table:
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  input_nodes:
+  - [function unit]
+  - [function unit]
+- num_output: 2
+  subnet_offset: [0, -1]
+  num_input: 1
+  output_nodes:
+  - [switch]
+  - [switch]
+  id: 6
+  nodeType: switch
+  decomposer: 8
+  depth: 2
+  subnet_table:
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  input_nodes:
+  - [switch]
+- num_output: 1
+  subnet_offset: [0, -1]
+  num_input: 2
+  output_nodes:
+  - [function unit]
+  Insts: Add
+  id: 43
+  nodeType: function unit
+  decomposer: 8
+  depth: 1
+  subnet_table:
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  input_nodes:
+  - [function unit]
+  - [function unit]
+- num_output: 2
+  subnet_offset: [0, -1]
+  num_input: 2
+  output_nodes:
+  - [function unit]
+  - [function unit]
+  Insts: Mul
+  id: 57
+  nodeType: function unit
+  decomposer: 8
+  depth: 0
+  subnet_table:
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  input_nodes:
+  - [switch]
+  - [function unit]
+- num_output: 2
+  subnet_offset: [0, -1]
+  num_input: 1
+  output_nodes:
+  - [switch]
+  - [switch]
+  id: 24
+  nodeType: switch
+  decomposer: 8
+  depth: 1
+  subnet_table:
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  input_nodes:
+  - [switch]
+- num_output: 2
+  subnet_offset: [0, -1]
+  num_input: 1
+  output_nodes:
+  - [switch]
+  - [switch]
+  id: 29
+  nodeType: switch
+  decomposer: 8
+  depth: 3
+  subnet_table:
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  input_nodes:
+  - [switch]
+- num_output: 2
+  subnet_offset: [0, -1]
+  num_input: 1
+  output_nodes:
+  - [switch]
+  - [switch]
+  id: 2
+  nodeType: switch
+  decomposer: 8
+  depth: 1
+  subnet_table:
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  input_nodes:
+  - [switch]
+- num_output: 2
+  subnet_offset: [0, -1]
+  num_input: 2
+  output_nodes:
+  - [function unit]
+  - [function unit]
+  Insts: Mul
+  id: 35
+  nodeType: function unit
+  decomposer: 8
+  depth: 0
+  subnet_table:
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  input_nodes:
+  - [switch]
+  - [function unit]
+- num_output: 2
+  subnet_offset: [0, -1]
+  num_input: 2
+  output_nodes:
+  - [function unit]
+  - [function unit]
+  Insts: Mul
+  id: 46
+  nodeType: function unit
+  decomposer: 8
+  depth: 0
+  subnet_table:
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  input_nodes:
+  - [function unit]
+  - [switch]
+- num_output: 2
+  subnet_offset: [0, -1]
+  num_input: 1
+  output_nodes:
+  - [switch]
+  - [switch]
+  id: 14
+  nodeType: switch
+  decomposer: 8
+  depth: 3
+  subnet_table:
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  input_nodes:
+  - [switch]
+- num_output: 1
+  subnet_offset: [0, -1]
+  num_input: 2
+  output_nodes:
+  - [function unit]
+  Insts: Add
+  id: 48
+  nodeType: function unit
+  decomposer: 8
+  depth: 1
+  subnet_table:
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  input_nodes:
+  - [function unit]
+  - [function unit]
+- num_output: 2
+  subnet_offset: [0, -1]
+  num_input: 2
+  output_nodes:
+  - [function unit]
+  - [function unit]
+  Insts: Mul
+  id: 54
+  nodeType: function unit
+  decomposer: 8
+  depth: 0
+  subnet_table:
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  input_nodes:
+  - [switch]
+  - [function unit]
+- num_output: 1
+  subnet_offset: [0, -1]
+  num_input: 2
+  output_nodes:
+  - [function unit]
+  Insts: Add
+  id: 60
+  nodeType: function unit
+  decomposer: 8
+  depth: 3
+  subnet_table:
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  input_nodes:
+  - [function unit]
+  - [function unit]
+- num_output: 1
+  subnet_offset: [0, -1]
+  num_input: 2
+  output_nodes:
+  - [function unit]
+  Insts: Add
+  id: 55
+  nodeType: function unit
+  decomposer: 8
+  depth: 1
+  subnet_table:
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  input_nodes:
+  - [function unit]
+  - [function unit]
+- num_output: 1
+  subnet_offset: [0, -1]
+  num_input: 2
+  output_nodes:
+  - [function unit]
+  Insts: Add
+  id: 52
+  nodeType: function unit
+  decomposer: 8
+  depth: 2
+  subnet_table:
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  input_nodes:
+  - [function unit]
+  - [function unit]
+- num_output: 1
+  subnet_offset: [0, -1]
+  num_input: 1
+  output_nodes:
+  - [function unit]
+  id: 3
+  nodeType: switch
+  decomposer: 8
+  depth: 0
+  subnet_table:
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  input_nodes:
+  - [switch]
+- num_output: 1
+  subnet_offset: [0, -1]
+  num_input: 1
+  output_nodes:
+  - [function unit]
+  id: 16
+  nodeType: switch
+  decomposer: 8
+  depth: 0
+  subnet_table:
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  input_nodes:
+  - [switch]
+- num_output: 1
+  subnet_offset: [0, -1]
+  num_input: 1
+  output_nodes:
+  - [function unit]
+  id: 23
+  nodeType: switch
+  decomposer: 8
+  depth: 0
+  subnet_table:
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  input_nodes:
+  - [switch]
+- num_output: 2
+  subnet_offset: [0, -1]
+  num_input: 2
+  output_nodes:
+  - [function unit]
+  - [function unit]
+  Insts: Mul
+  id: 53
+  nodeType: function unit
+  decomposer: 8
+  depth: 0
+  subnet_table:
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  input_nodes:
+  - [switch]
+  - [function unit]
+- num_output: 1
+  subnet_offset: [0, -1]
+  num_input: 1
+  output_nodes:
+  - [function unit]
+  id: 8
+  nodeType: switch
+  decomposer: 8
+  depth: 0
+  subnet_table:
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  input_nodes:
+  - [switch]
+- num_output: 2
+  subnet_offset: [0, -1]
+  num_input: 1
+  output_nodes:
+  - [switch]
+  - [switch]
+  id: 21
+  nodeType: switch
+  decomposer: 8
+  depth: 2
+  subnet_table:
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  input_nodes:
+  - [switch]
+- num_output: 1
+  subnet_offset: [0, -1]
+  num_input: 1
+  output_nodes:
+  - [function unit]
+  id: 15
+  nodeType: switch
+  decomposer: 8
+  depth: 0
+  subnet_table:
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  input_nodes:
+  - [switch]
+- num_output: 1
+  subnet_offset: [0, -1]
+  num_input: 2
+  output_nodes:
+  - [function unit]
+  Insts: Add
+  id: 45
+  nodeType: function unit
+  decomposer: 8
+  depth: 3
+  subnet_table:
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  input_nodes:
+  - [function unit]
+  - [function unit]
+- num_output: 1
+  subnet_offset: [0, -1]
+  num_input: 2
+  output_nodes:
+  - [function unit]
+  Insts: Add
+  id: 40
+  nodeType: function unit
+  decomposer: 8
+  depth: 1
+  subnet_table:
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  input_nodes:
+  - [function unit]
+  - [function unit]
+- num_output: 2
+  subnet_offset: [0, -1]
+  num_input: 2
+  output_nodes:
+  - [function unit]
+  - [function unit]
+  Insts: Mul
+  id: 31
+  nodeType: function unit
+  decomposer: 8
+  depth: 0
+  subnet_table:
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  input_nodes:
+  - [switch]
+  - [function unit]
+- num_output: 1
+  subnet_offset: [0, -1]
+  num_input: 2
+  output_nodes:
+  - [function unit]
+  Insts: Add
+  id: 58
+  nodeType: function unit
+  decomposer: 8
+  depth: 1
+  subnet_table:
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  input_nodes:
+  - [function unit]
+  - [function unit]
+- num_output: 1
+  subnet_offset: [0, -1]
+  num_input: 2
+  output_nodes:
+  - [function unit]
+  Insts: Add
+  id: 37
+  nodeType: function unit
+  decomposer: 8
+  depth: 2
+  subnet_table:
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  input_nodes:
+  - [function unit]
+  - [function unit]
+- num_output: 2
+  subnet_offset: [0, -1]
+  num_input: 2
+  output_nodes:
+  - [function unit]
+  - [function unit]
+  Insts: Mul
+  id: 47
+  nodeType: function unit
+  decomposer: 8
+  depth: 0
+  subnet_table:
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  input_nodes:
+  - [switch]
+  - [function unit]
+- num_output: 1
+  subnet_offset: [0, -1]
+  num_input: 1
+  output_nodes:
+  - [function unit]
+  id: 18
+  nodeType: switch
+  decomposer: 8
+  depth: 0
+  subnet_table:
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  input_nodes:
+  - [switch]
+- num_output: 2
+  subnet_offset: [0, -1]
+  num_input: 1
+  output_nodes:
+  - [switch]
+  - [switch]
+  id: 5
+  nodeType: switch
+  decomposer: 8
+  depth: 1
+  subnet_table:
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  input_nodes:
+  - [switch]
+- num_output: 2
+  subnet_offset: [0, -1]
+  num_input: 2
+  output_nodes:
+  - [function unit]
+  - [function unit]
+  Insts: Mul
+  id: 50
+  nodeType: function unit
+  decomposer: 8
+  depth: 0
+  subnet_table:
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  input_nodes:
+  - [switch]
+  - [function unit]
+- num_output: 1
+  subnet_offset: [0, -1]
+  num_input: 1
+  output_nodes:
+  - [function unit]
+  id: 25
+  nodeType: switch
+  decomposer: 8
+  depth: 0
+  subnet_table:
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  input_nodes:
+  - [switch]
+- num_output: 1
+  subnet_offset: [0, -1]
+  num_input: 1
+  output_nodes:
+  - [function unit]
+  id: 4
+  nodeType: switch
+  decomposer: 8
+  depth: 0
+  subnet_table:
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  input_nodes:
+  - [switch]
+- num_output: 2
+  subnet_offset: [0, -1]
+  num_input: 1
+  output_nodes:
+  - [switch]
+  - [switch]
+  id: 9
+  nodeType: switch
+  decomposer: 8
+  depth: 1
+  subnet_table:
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  input_nodes:
+  - [switch]
+- num_output: 1
+  subnet_offset: [0, -1]
+  num_input: 2
+  output_nodes:
+  - [function unit]
+  Insts: Mul
+  id: 39
+  nodeType: function unit
+  decomposer: 8
+  depth: 0
+  subnet_table:
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  input_nodes:
+  - [switch]
+  - [function unit]
+- num_output: 1
+  subnet_offset: [0, -1]
+  num_input: 2
+  output_nodes:
+  - [function unit]
+  Insts: Add
+  id: 59
+  nodeType: function unit
+  decomposer: 8
+  depth: 2
+  subnet_table:
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  input_nodes:
+  - [function unit]
+  - [function unit]
+- num_output: 1
+  subnet_offset: [0, -1]
+  num_input: 1
+  output_nodes:
+  - [function unit]
+  id: 7
+  nodeType: switch
+  decomposer: 8
+  depth: 0
+  subnet_table:
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  input_nodes:
+  - [switch]
+- num_output: 2
+  subnet_offset: [0, -1]
+  num_input: 1
+  output_nodes:
+  - [switch]
+  - [switch]
+  id: 17
+  nodeType: switch
+  decomposer: 8
+  depth: 1
+  subnet_table:
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  input_nodes:
+  - [switch]
+- num_output: 1
+  subnet_offset: [0, -1]
+  num_input: 2
+  output_nodes:
+  - [function unit]
+  Insts: Add
+  id: 44
+  nodeType: function unit
+  decomposer: 8
+  depth: 2
+  subnet_table:
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  input_nodes:
+  - [function unit]
+  - [function unit]
+- num_output: 2
+  subnet_offset: [0, -1]
+  num_input: 1
+  output_nodes:
+  - [switch]
+  - [switch]
+  id: 20
+  nodeType: switch
+  decomposer: 8
+  depth: 1
+  subnet_table:
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  input_nodes:
+  - [switch]
+- num_output: 1
+  subnet_offset: [0, -1]
+  num_input: 2
+  output_nodes:
+  - [function unit]
+  Insts: Add
+  id: 33
+  nodeType: function unit
+  decomposer: 8
+  depth: 1
+  subnet_table:
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  input_nodes:
+  - [function unit]
+  - [function unit]
+- num_output: 1
+  subnet_offset: [0, -1]
+  num_input: 2
+  output_nodes:
+  - [function unit]
+  Insts: Add
+  id: 36
+  nodeType: function unit
+  decomposer: 8
+  depth: 1
+  subnet_table:
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  input_nodes:
+  - [function unit]
+  - [function unit]
+- num_output: 2
+  subnet_offset: [0, -1]
+  num_input: 1
+  output_nodes:
+  - [switch]
+  - [switch]
+  id: 27
+  nodeType: switch
+  decomposer: 8
+  depth: 1
+  subnet_table:
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  input_nodes:
+  - [switch]
+- num_output: 2
+  subnet_offset: [0, -1]
+  num_input: 2
+  output_nodes:
+  - [function unit]
+  - [function unit]
+  Insts: Mul
+  id: 41
+  nodeType: function unit
+  decomposer: 8
+  depth: 0
+  subnet_table:
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  input_nodes:
+  - [function unit]
+  - [switch]
+- num_output: 1
+  subnet_offset: [0, -1]
+  num_input: 1
+  output_nodes:
+  - [function unit]
+  id: 10
+  nodeType: switch
+  decomposer: 8
+  depth: 0
+  subnet_table:
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  input_nodes:
+  - [switch]
+- num_output: 2
+  subnet_offset: [0, -1]
+  num_input: 1
+  output_nodes:
+  - [switch]
+  - [switch]
+  id: 13
+  nodeType: switch
+  decomposer: 8
+  depth: 2
+  subnet_table:
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  input_nodes:
+  - [switch]
+- num_output: 1
+  subnet_offset: [0, -1]
+  num_input: 1
+  output_nodes:
+  - [function unit]
+  id: 22
+  nodeType: switch
+  decomposer: 8
+  depth: 0
+  subnet_table:
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  input_nodes:
+  - [switch]
+- num_output: 2
+  subnet_offset: [0, -1]
+  num_input: 2
+  output_nodes:
+  - [function unit]
+  - [function unit]
+  Insts: Mul
+  id: 49
+  nodeType: function unit
+  decomposer: 8
+  depth: 0
+  subnet_table:
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  input_nodes:
+  - [function unit]
+  - [switch]
+- num_output: 0
+  subnet_offset: [0, -1]
+  num_input: 2
+  Insts: Add
+  id: 61
+  nodeType: function unit
+  decomposer: 8
+  depth: 4
+  input_nodes:
+  - [function unit]
+  - [function unit]
+- num_output: 2
+  subnet_offset: [0, -1]
+  num_input: 1
+  output_nodes:
+  - [switch]
+  - [switch]
+  id: 12
+  nodeType: switch
+  decomposer: 8
+  depth: 1
+  subnet_table:
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  input_nodes:
+  - [switch]
+- num_output: 2
+  subnet_offset: [0, -1]
+  num_input: 0
+  output_nodes:
+  - [switch]
+  - [switch]
+  id: 30
+  nodeType: switch
+  decomposer: 8
+  depth: 4
+- num_output: 2
+  subnet_offset: [0, -1]
+  num_input: 2
+  output_nodes:
+  - [function unit]
+  - [function unit]
+  Insts: Mul
+  id: 34
+  nodeType: function unit
+  decomposer: 8
+  depth: 0
+  subnet_table:
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  input_nodes:
+  - [switch]
+  - [function unit]
+- num_output: 1
+  subnet_offset: [0, -1]
+  num_input: 1
+  output_nodes:
+  - [function unit]
+  id: 11
+  nodeType: switch
+  decomposer: 8
+  depth: 0
+  subnet_table:
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  input_nodes:
+  - [switch]
+- num_output: 2
+  subnet_offset: [0, -1]
+  num_input: 2
+  output_nodes:
+  - [function unit]
+  - [function unit]
+  Insts: Mul
+  id: 42
+  nodeType: function unit
+  decomposer: 8
+  depth: 0
+  subnet_table:
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  input_nodes:
+  - [function unit]
+  - [switch]
+- num_output: 2
+  subnet_offset: [0, -1]
+  num_input: 1
+  output_nodes:
+  - [switch]
+  - [switch]
+  id: 28
+  nodeType: switch
+  decomposer: 8
+  depth: 2
+  subnet_table:
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  input_nodes:
+  - [switch]
+- num_output: 2
+  subnet_offset: [0, -1]
+  num_input: 2
+  output_nodes:
+  - [function unit]
+  - [function unit]
+  Insts: Mul
+  id: 32
+  nodeType: function unit
+  decomposer: 8
+  depth: 0
+  subnet_table:
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  input_nodes:
+  - [switch]
+  - [function unit]
+- num_output: 2
+  subnet_offset: [0, -1]
+  num_input: 2
+  output_nodes:
+  - [function unit]
+  - [function unit]
+  Insts: Mul
+  id: 56
+  nodeType: function unit
+  decomposer: 8
+  depth: 0
+  subnet_table:
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  - [true, false, false, false, false, false, false, true, true, false, false, false,
+    false, false, false, true]
+  - [true, true, false, false, false, false, false, false, true, true, false, false,
+    false, false, false, false]
+  - [false, true, true, false, false, false, false, false, false, true, true, false,
+    false, false, false, false]
+  - [false, false, true, true, false, false, false, false, false, false, true, true,
+    false, false, false, false]
+  - [false, false, false, true, true, false, false, false, false, false, false, true,
+    true, false, false, false]
+  - [false, false, false, false, true, true, false, false, false, false, false, false,
+    true, true, false, false]
+  - [false, false, false, false, false, true, true, false, false, false, false, false,
+    false, true, true, false]
+  - [false, false, false, false, false, false, true, true, false, false, false, false,
+    false, false, true, true]
+  input_nodes:
+  - [switch]
+  - [function unit]
+- num_output: 1
+  subnet_offset: [0, -1]
+  num_input: 1
+  output_nodes:
+  - [function unit]
+  id: 19
+  nodeType: switch
+  decomposer: 8
+  depth: 0
+  subnet_table:
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  input_nodes:
+  - [switch]
+- num_output: 1
+  subnet_offset: [0, -1]
+  num_input: 1
+  output_nodes:
+  - [function unit]
+  id: 26
+  nodeType: switch
+  decomposer: 8
+  depth: 0
+  subnet_table:
+  - [true, false, false, false, false, false, false, true]
+  - [true, true, false, false, false, false, false, false]
+  - [false, true, true, false, false, false, false, false]
+  - [false, false, true, true, false, false, false, false]
+  - [false, false, false, true, true, false, false, false]
+  - [false, false, false, false, true, true, false, false]
+  - [false, false, false, false, false, true, true, false]
+  - [false, false, false, false, false, false, true, true]
+  input_nodes:
+  - [switch]
+Instruction Set: {Add: 3, Mul: 2}
