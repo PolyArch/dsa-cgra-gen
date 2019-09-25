@@ -11,9 +11,6 @@ class ssfabric extends IRPrintable {
   private val nodes : ListBuffer[ssnode] = ListBuffer[ssnode]()
   private val links : ListBuffer[sslink] = ListBuffer[sslink]()
 
-  // predefined properties
-  apply("datawidth", 64) // datawidth
-
   // Clear all properties
   def reset():Unit={
     getProps.clear()
@@ -226,14 +223,48 @@ class ssfabric extends IRPrintable {
     }
   }
 
+  // Pre-process
+  // predefined properties
+  // datawidth
+  private val datawidth = 64; apply("datawidth", datawidth)
+  // granularity
+  private val granularity = 8; apply("granularity", granularity)
+  // decomposer
+  private val decomposer = datawidth / granularity
+  // subnet offset
+  private val subnet_offset = List(0);apply("subnet_offset", subnet_offset)
+
   // Post-Process
   def postprocess():Unit={
+    // Nodes post process - assign default
+    for(node <- nodes){
+      // Add default datawidth
+      val datawidth = getPropByKey("datawidth").asInstanceOf[Int]
+      if(!node.has("datawidth")){
+        node.apply("datawidth", datawidth)
+      }
+      // Add default granularity
+      val granularity = getPropByKey("granularity").asInstanceOf[Int]
+      if(!node.has("granularity")){
+        node.apply("granularity", granularity)
+      }
+      // Add default subnet offset
+      val subnet_offset = getPropByKey("subnet_offset")
+        .asInstanceOf[List[Int]]
+      if(!node.has("subnet_offset")){
+        node.apply("subnet_offset", subnet_offset)
+      }
+    }
+    // final post process
     nodes.foreach(_.postprocess())
-    links.foreach(_.postprocess())
+
+    // Links post process
+    links.foreach(_.postprocess()) // final post process
+
     // Gather the ISA and Encode them
     val start_encoding = 2 //0 is saved for NOP, 1 is saved for copy
     val allFuNodes = this("nodeType")("function unit")
-    if (!allFuNodes.isEmpty){
+    if (allFuNodes.nonEmpty){
       val temp_allInsts = allFuNodes.map(n=>n.getPropByKey("Insts"))
         .distinct
       var allInsts : List[String] = Nil

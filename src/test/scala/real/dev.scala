@@ -9,12 +9,11 @@ object dev extends App{
 
   // Define Default Switch
   val sw_default = new ssnode("switch")
-  sw_default("share_slot_size",2)(
-              "decompoer",2)
+  sw_default("share_slot_size",2)("granularity",32)
 
   // Define a Adding Function Unit
   val fu_add = new ssnode("function unit")
-  fu_add("Insts","Add64")("decompoer", 2)
+  fu_add("Insts","Add64")("granularity", 32)
 
   val fu_spc = new ssnode("function unit")
   fu_spc("Insts",Set("Div16", "RShf4_16x4", "Abs16x4"))
@@ -68,7 +67,7 @@ object dev extends App{
   // Change Properties of One Switch
   dev(1)(1)("switch")(
     "subnet_offset",List(0, -1, 2)
-    )("decomposer",4)
+    )("granularity",16)
 
   // Add a extra link
   dev(

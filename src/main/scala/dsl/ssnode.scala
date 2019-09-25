@@ -4,51 +4,10 @@ import scala.collection.mutable.{ListBuffer, Set}
 
 class ssnode(nodeType:String) extends IRPrintable {
 
-  // pre-defined properties
-  apply("decomposer", 8)
-  apply("subnet_offset", List(0))
-
   // Private Variables
   private val output_links : ListBuffer[sslink] = ListBuffer[sslink]()
   private val input_links : ListBuffer[sslink] = ListBuffer[sslink]()
 
-  // Postprocess before output
-  def postprocess():Unit={
-    // I/O Port Properties
-    val decomposer = getPropByKey("decomposer").asInstanceOf[Int]
-    val num_input = input_links.size;apply("num_input", num_input)
-    val num_output = output_links.size;apply("num_output", num_output)
-    if(num_input > 0){
-      val input_nodes = apply("input_nodes").asInstanceOf[ListBuffer[ssnode]]
-      require(num_input == input_nodes.length)
-    }
-    if(num_output > 0){
-      val output_nodes = apply("output_nodes").asInstanceOf[ListBuffer[ssnode]]
-      require(num_output == output_nodes.length)
-    }
-    // Subnet Table Postprocess
-    if(num_input > 0 && num_output > 0){
-      val subnet_offset = getPropByKey("subnet_offset")
-        .asInstanceOf[List[Int]]
-      require(subnet_offset.forall(offset=>{
-        Math.abs(offset) <  decomposer
-      }),"offset if larger than max slot size")
-      val subnet_table = Array.ofDim[Boolean](
-        num_output*decomposer,num_input*decomposer)
-      for(op_idx <- 0 until num_output;os_idx <- 0 until decomposer;
-          ip_idx <- 0 until num_input; is_idx <- 0 until decomposer){
-        subnet_table( op_idx * decomposer + os_idx)(
-          ip_idx * decomposer + is_idx)  =
-          if(subnet_offset.contains((is_idx - os_idx) % decomposer)||
-            subnet_offset.contains((is_idx - os_idx - decomposer) % decomposer)||
-            subnet_offset.contains((is_idx - os_idx + decomposer) % decomposer))
-            true
-          else
-            false
-      }
-      apply("subnet_table", subnet_table)
-    }
-  }
   // Add/Delete Sink Node
   def add_sink(sink:ssnode):Unit={
     var sink_info = sink.getPropByKeys(identifier.key)
@@ -183,6 +142,60 @@ class ssnode(nodeType:String) extends IRPrintable {
     node
   }
 
+  // Pre-process
+  // pre-defined properties
   apply("nodeType", nodeType)
   apply("id", this.hashCode())
+
+
+  // Postprocess
+  def postprocess():Unit={
+    // datapath properties
+    val datawidth = getPropByKey("datawidth").asInstanceOf[Int]
+    val granularity = getPropByKey("granularity").asInstanceOf[Int]
+    val decomposer = datawidth / granularity;
+    require(datawidth == decomposer * granularity,"datawidth = " + datawidth +
+      ", granularity = " + granularity + ", decomposer = " + decomposer)
+    // I/O Port Properties
+    val num_input = input_links.size; apply("num_input", num_input)
+    val num_output = output_links.size; apply("num_output", num_output)
+    if(num_input > 0){
+      val input_nodes = apply("input_nodes").asInstanceOf[ListBuffer[ssnode]]
+      require(num_input == input_nodes.length)
+    }
+    if(num_output > 0){
+      val output_nodes = apply("output_nodes").asInstanceOf[ListBuffer[ssnode]]
+      require(num_output == output_nodes.length)
+    }
+    // Function Unit specific process
+    if(getValue(getPropByKey("nodeType"))=="function unit"){
+      val insts = getPropByKey("Insts")
+      insts match {
+        case single:String => apply("Insts", collection.immutable.Set(single))
+        case _ =>
+      }
+    }
+    // Subnet Table Postprocess
+    if(num_input > 0 && num_output > 0){
+      val subnet_offset = getPropByKey("subnet_offset")
+        .asInstanceOf[List[Int]]
+      require(subnet_offset.forall(offset=>{
+        Math.abs(offset) <  decomposer
+      }),"offset if larger than max slot size")
+      val subnet_table = Array.ofDim[Boolean](
+        num_output*decomposer,num_input*decomposer)
+      for(op_idx <- 0 until num_output;os_idx <- 0 until decomposer;
+          ip_idx <- 0 until num_input; is_idx <- 0 until decomposer){
+        subnet_table( op_idx * decomposer + os_idx)(
+          ip_idx * decomposer + is_idx)  =
+          if(subnet_offset.contains((is_idx - os_idx) % decomposer)||
+            subnet_offset.contains((is_idx - os_idx - decomposer) % decomposer)||
+            subnet_offset.contains((is_idx - os_idx + decomposer) % decomposer))
+            true
+          else
+            false
+      }
+      apply("subnet_table", subnet_table)
+    }
+  }
 }

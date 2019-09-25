@@ -7,7 +7,7 @@ import dsl._
 // SFG has a specific tri-array topology
 object sfg extends App{
 
-  identifier.key = List("row", "col")
+  identifier("row", "col")
 
   // Initialize the top node
   val top = new ssnode("fu")
