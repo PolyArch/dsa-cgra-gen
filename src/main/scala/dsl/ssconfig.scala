@@ -17,6 +17,14 @@ object identifier {
     }
     this
   }
+  def delete(keys:String*) = {
+    for(k <- keys){
+      if(k != "id" && k!="nodeType"){
+        key = key.filter(_ != k)
+      }
+    }
+    this
+  }
 }
 
 // Identifier Class
@@ -60,7 +68,7 @@ trait IRPrintable {
   }
 
   // Set
-  def apply(props:Map[String,Any]):IRPrintable={
+  def apply(props:collection.mutable.Map[String,Any]):IRPrintable={
     for (kv <- props){
       apply(kv._1,kv._2)
     }

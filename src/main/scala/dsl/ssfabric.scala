@@ -226,13 +226,20 @@ class ssfabric extends IRPrintable {
   // Pre-process
   // predefined properties
   // datawidth
-  private val datawidth = 64; apply("datawidth", datawidth)
+  private val default_datawidth = 64
+  apply("datawidth", default_datawidth)
   // granularity
-  private val granularity = 8; apply("granularity", granularity)
-  // decomposer
-  private val decomposer = datawidth / granularity
+  private val default_granularity = 8
+  apply("granularity", default_granularity)
   // subnet offset
-  private val subnet_offset = List(0);apply("subnet_offset", subnet_offset)
+  private val default_subnet_offset = List(0)
+  apply("subnet_offset", default_subnet_offset)
+  // max utility
+  private val default_max_util = 8
+  apply("max_util", default_max_util)
+  // flow_control
+  private val default_flow_control = true
+  apply("flow_control", default_flow_control)
 
   // Post-Process
   def postprocess():Unit={
@@ -253,6 +260,10 @@ class ssfabric extends IRPrintable {
         .asInstanceOf[List[Int]]
       if(!node.has("subnet_offset")){
         node.apply("subnet_offset", subnet_offset)
+      }
+      // Add total number of nodes
+      if(!node.has("max_id")){
+        node.apply("max_id", nodes.length - 1)
       }
     }
     // final post process

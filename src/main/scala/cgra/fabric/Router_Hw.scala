@@ -193,7 +193,8 @@ class Router_Hw(pp:(String,Any)) extends Module
 
   // ------ Create Hardware -------
   // Building the interface of MUXes (mux_out)
-  val muxes_out_interface = Wire(Vec(all_MUXes.length,DecoupledIO(UInt(decomped_data_word_width.W))))
+  val muxes_out_interface = Wire(Vec(all_MUXes.length,
+    DecoupledIO(UInt(decomped_data_word_width.W))))
   for (mux_idx <- all_MUXes.indices){
     val mux_out = muxes_out_interface(mux_idx)
     val mux = all_MUXes(mux_idx)
@@ -207,7 +208,8 @@ class Router_Hw(pp:(String,Any)) extends Module
       val subnet = ps.split("_")(1).toInt
       io.input_ports(port_idx)(subnet)
     }).zipWithIndex
-    val select_wire : UInt = config_register_files(subnet)(mux.config_high,mux.config_low)
+    val select_wire : UInt = config_register_files(subnet)(
+      mux.config_high,mux.config_low)
     // Connect Data
     if(protocol.contains("Data")){
       val bits_select = current_input_ports.map(p =>  p._2.U -> p._1.bits)

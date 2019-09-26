@@ -2,7 +2,7 @@ package cgra.IR
 
 import IRconvertor._
 import cgra.IR.IRpreprocessor._
-import dsl.{IRPrintable, identifier}
+import dsl.{IRPrintable, identifier, ssnode}
 import java.io.{File, FileInputStream}
 import java.util
 
@@ -25,6 +25,16 @@ object IRreader {
     val s_cgra = JavaMap2ScalaMap(j_cgra)
     s_cgra += "description_filename" -> filename
     s_cgra += "config_filename" -> filename.replace("yaml","xml")
+
+    // Test for ssnode
+    val switch_prop = s_cgra("nodes")
+      .asInstanceOf[List[Any]].head
+      .asInstanceOf[mutable.Map[String,Any]]
+    val switch = new cgra.fabric.switch(switch_prop)
+
+    val subnet_table = switch.getPropByKey("subnet_table")
+        .asInstanceOf[List[List[Boolean]]]
+
     preprocess(s_cgra)
   }
 }
