@@ -1,6 +1,9 @@
 ### IR
 IR/*.xml
+IR/*.yaml
+IR
 IR/old
+IR/*.json
 
 ### Analytical Model
 src/analytical_model/resource/*
