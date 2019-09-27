@@ -8,6 +8,9 @@ src/analytical_model/resource/*
 ### For Hardware Synthesizing and backup
 verilog-output/*
 *.tar.gz
+*.anno.json
+*.fir
+*.v
 
 ### Python Cache
 *.pyc

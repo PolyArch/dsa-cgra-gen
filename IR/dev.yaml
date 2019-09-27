@@ -1,5 +1,7 @@
 identifier: [id, nodeType, row_idx, col_idx]
 subnet_offset: [0]
+flow_control: true
+max_util: 8
 datawidth: 64
 numCol: 5
 Instruction Set: {RShf4_16x4: 4, Add64: 2, Acc16: 6, Div16: 3, Abs16x4: 5, Or16: 7}
@@ -382,6 +384,7 @@ numRow: 5
 nodes:
 - num_output: 3
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 4
   col_idx: 0
@@ -394,6 +397,7 @@ nodes:
   id: 0
   nodeType: switch
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -408,6 +412,7 @@ nodes:
   - [43, vector port, N/A, N/A]
 - num_output: 5
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 4
   col_idx: 1
@@ -422,6 +427,7 @@ nodes:
   id: 1
   nodeType: switch
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -440,6 +446,7 @@ nodes:
   - [41, vector port, N/A, N/A]
 - num_output: 5
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 4
   col_idx: 2
@@ -454,6 +461,7 @@ nodes:
   id: 2
   nodeType: switch
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -472,6 +480,7 @@ nodes:
   - [41, vector port, N/A, N/A]
 - num_output: 5
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 4
   col_idx: 3
@@ -486,6 +495,7 @@ nodes:
   id: 3
   nodeType: switch
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -504,6 +514,7 @@ nodes:
   - [41, vector port, N/A, N/A]
 - num_output: 4
   subnet_offset: [0]
+  flow_control: false
   datawidth: 64
   num_input: 3
   col_idx: 4
@@ -517,6 +528,7 @@ nodes:
   id: 4
   nodeType: switch
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false]
   - [false, true, false, true, false, true]
@@ -532,6 +544,7 @@ nodes:
   - [41, vector port, N/A, N/A]
 - num_output: 7
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 7
   col_idx: 0
@@ -548,6 +561,7 @@ nodes:
   id: 5
   nodeType: switch
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false, true, false, true, false,
     true, false]
@@ -587,6 +601,7 @@ nodes:
   - [36, function unit, 2, 3]
 - num_output: 8
   subnet_offset: [0, -1, 2]
+  flow_control: true
   datawidth: 64
   num_input: 5
   col_idx: 1
@@ -604,6 +619,7 @@ nodes:
   id: 6
   nodeType: switch
   granularity: 16
+  max_id: 43
   subnet_table:
   - [true, false, true, true, true, false, true, true, true, false, true, true, true,
     false, true, true, true, false, true, true]
@@ -677,6 +693,7 @@ nodes:
   - [25, function unit, 0, 0]
 - num_output: 8
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 5
   col_idx: 2
@@ -694,6 +711,7 @@ nodes:
   id: 7
   nodeType: switch
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true, false, true]
@@ -719,6 +737,7 @@ nodes:
   - [26, function unit, 0, 1]
 - num_output: 8
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 5
   col_idx: 3
@@ -736,6 +755,7 @@ nodes:
   id: 8
   nodeType: switch
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true, false, true]
@@ -761,6 +781,7 @@ nodes:
   - [27, function unit, 0, 2]
 - num_output: 6
   subnet_offset: [0]
+  flow_control: false
   datawidth: 64
   num_input: 4
   col_idx: 4
@@ -776,6 +797,7 @@ nodes:
   id: 9
   nodeType: switch
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -796,6 +818,7 @@ nodes:
   - [28, function unit, 0, 3]
 - num_output: 5
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 5
   col_idx: 0
@@ -810,6 +833,7 @@ nodes:
   id: 10
   nodeType: switch
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true, false, true]
@@ -829,6 +853,7 @@ nodes:
   - [43, vector port, N/A, N/A]
 - num_output: 8
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 5
   col_idx: 1
@@ -846,6 +871,7 @@ nodes:
   id: 11
   nodeType: switch
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true, false, true]
@@ -871,6 +897,7 @@ nodes:
   - [29, function unit, 1, 0]
 - num_output: 8
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 5
   col_idx: 2
@@ -888,6 +915,7 @@ nodes:
   id: 12
   nodeType: switch
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true, false, true]
@@ -913,6 +941,7 @@ nodes:
   - [30, function unit, 1, 1]
 - num_output: 8
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 5
   col_idx: 3
@@ -930,6 +959,7 @@ nodes:
   id: 13
   nodeType: switch
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true, false, true]
@@ -955,6 +985,7 @@ nodes:
   - [31, function unit, 1, 2]
 - num_output: 6
   subnet_offset: [0]
+  flow_control: false
   datawidth: 64
   num_input: 4
   col_idx: 4
@@ -970,6 +1001,7 @@ nodes:
   id: 14
   nodeType: switch
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -990,6 +1022,7 @@ nodes:
   - [32, function unit, 1, 3]
 - num_output: 5
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 5
   col_idx: 0
@@ -1004,6 +1037,7 @@ nodes:
   id: 15
   nodeType: switch
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true, false, true]
@@ -1023,6 +1057,7 @@ nodes:
   - [43, vector port, N/A, N/A]
 - num_output: 8
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 5
   col_idx: 1
@@ -1040,6 +1075,7 @@ nodes:
   id: 16
   nodeType: switch
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true, false, true]
@@ -1065,6 +1101,7 @@ nodes:
   - [33, function unit, 2, 0]
 - num_output: 8
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 5
   col_idx: 2
@@ -1082,6 +1119,7 @@ nodes:
   id: 17
   nodeType: switch
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true, false, true]
@@ -1107,6 +1145,7 @@ nodes:
   - [34, function unit, 2, 1]
 - num_output: 8
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 5
   col_idx: 3
@@ -1124,6 +1163,7 @@ nodes:
   id: 18
   nodeType: switch
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true, false, true]
@@ -1149,6 +1189,7 @@ nodes:
   - [35, function unit, 2, 2]
 - num_output: 6
   subnet_offset: [0]
+  flow_control: false
   datawidth: 64
   num_input: 4
   col_idx: 4
@@ -1164,6 +1205,7 @@ nodes:
   id: 19
   nodeType: switch
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -1184,6 +1226,7 @@ nodes:
   - [36, function unit, 2, 3]
 - num_output: 4
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 4
   col_idx: 0
@@ -1197,6 +1240,7 @@ nodes:
   id: 20
   nodeType: switch
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -1213,6 +1257,7 @@ nodes:
   - [43, vector port, N/A, N/A]
 - num_output: 6
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 4
   col_idx: 1
@@ -1228,6 +1273,7 @@ nodes:
   id: 21
   nodeType: switch
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -1248,6 +1294,7 @@ nodes:
   - [37, function unit, 3, 0]
 - num_output: 6
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 4
   col_idx: 2
@@ -1263,6 +1310,7 @@ nodes:
   id: 22
   nodeType: switch
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -1283,6 +1331,7 @@ nodes:
   - [38, function unit, 3, 1]
 - num_output: 6
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 4
   col_idx: 3
@@ -1298,6 +1347,7 @@ nodes:
   id: 23
   nodeType: switch
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -1318,6 +1368,7 @@ nodes:
   - [39, function unit, 3, 2]
 - num_output: 4
   subnet_offset: [0]
+  flow_control: false
   datawidth: 64
   num_input: 3
   col_idx: 4
@@ -1331,6 +1382,7 @@ nodes:
   id: 24
   nodeType: switch
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false]
   - [false, true, false, true, false, true]
@@ -1346,6 +1398,7 @@ nodes:
   - [40, function unit, 3, 3]
 - num_output: 1
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 4
   col_idx: 0
@@ -1356,6 +1409,7 @@ nodes:
   id: 25
   nodeType: function unit
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -1366,6 +1420,7 @@ nodes:
   - [6, switch, 1, 1]
 - num_output: 1
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 4
   col_idx: 1
@@ -1376,6 +1431,7 @@ nodes:
   id: 26
   nodeType: function unit
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -1386,6 +1442,7 @@ nodes:
   - [7, switch, 1, 2]
 - num_output: 1
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 4
   col_idx: 2
@@ -1396,6 +1453,7 @@ nodes:
   id: 27
   nodeType: function unit
   granularity: 8
+  max_id: 43
   subnet_table:
   - [true, false, false, false, false, false, false, false, true, false, false, false,
     false, false, false, false, true, false, false, false, false, false, false, false,
@@ -1428,6 +1486,7 @@ nodes:
   - [8, switch, 1, 3]
 - num_output: 1
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 4
   col_idx: 3
@@ -1438,6 +1497,7 @@ nodes:
   id: 28
   nodeType: function unit
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -1448,6 +1508,7 @@ nodes:
   - [9, switch, 1, 4]
 - num_output: 1
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 4
   col_idx: 0
@@ -1458,6 +1519,7 @@ nodes:
   id: 29
   nodeType: function unit
   granularity: 8
+  max_id: 43
   subnet_table:
   - [true, false, false, false, false, false, false, false, true, false, false, false,
     false, false, false, false, true, false, false, false, false, false, false, false,
@@ -1490,6 +1552,7 @@ nodes:
   - [11, switch, 2, 1]
 - num_output: 1
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 4
   col_idx: 1
@@ -1500,6 +1563,7 @@ nodes:
   id: 30
   nodeType: function unit
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -1510,6 +1574,7 @@ nodes:
   - [12, switch, 2, 2]
 - num_output: 1
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 4
   col_idx: 2
@@ -1520,6 +1585,7 @@ nodes:
   id: 31
   nodeType: function unit
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -1530,6 +1596,7 @@ nodes:
   - [13, switch, 2, 3]
 - num_output: 1
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 4
   col_idx: 3
@@ -1540,6 +1607,7 @@ nodes:
   id: 32
   nodeType: function unit
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -1550,6 +1618,7 @@ nodes:
   - [14, switch, 2, 4]
 - num_output: 1
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 4
   col_idx: 0
@@ -1560,6 +1629,7 @@ nodes:
   id: 33
   nodeType: function unit
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -1570,6 +1640,7 @@ nodes:
   - [16, switch, 3, 1]
 - num_output: 1
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 4
   col_idx: 1
@@ -1580,6 +1651,7 @@ nodes:
   id: 34
   nodeType: function unit
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -1590,6 +1662,7 @@ nodes:
   - [17, switch, 3, 2]
 - num_output: 1
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 4
   col_idx: 2
@@ -1600,6 +1673,7 @@ nodes:
   id: 35
   nodeType: function unit
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -1610,6 +1684,7 @@ nodes:
   - [18, switch, 3, 3]
 - num_output: 3
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 6
   col_idx: 3
@@ -1622,6 +1697,7 @@ nodes:
   id: 36
   nodeType: function unit
   granularity: 8
+  max_id: 43
   subnet_table:
   - [true, false, false, false, false, false, false, false, true, false, false, false,
     false, false, false, false, true, false, false, false, false, false, false, false,
@@ -1728,6 +1804,7 @@ nodes:
   - [5, switch, 1, 0]
 - num_output: 1
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 4
   col_idx: 0
@@ -1738,6 +1815,7 @@ nodes:
   id: 37
   nodeType: function unit
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -1748,6 +1826,7 @@ nodes:
   - [21, switch, 4, 1]
 - num_output: 1
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 4
   col_idx: 1
@@ -1758,6 +1837,7 @@ nodes:
   id: 38
   nodeType: function unit
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -1768,6 +1848,7 @@ nodes:
   - [22, switch, 4, 2]
 - num_output: 1
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 4
   col_idx: 2
@@ -1778,6 +1859,7 @@ nodes:
   id: 39
   nodeType: function unit
   granularity: 8
+  max_id: 43
   subnet_table:
   - [true, false, false, false, false, false, false, false, true, false, false, false,
     false, false, false, false, true, false, false, false, false, false, false, false,
@@ -1810,6 +1892,7 @@ nodes:
   - [23, switch, 4, 3]
 - num_output: 1
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 4
   col_idx: 3
@@ -1820,6 +1903,7 @@ nodes:
   id: 40
   nodeType: function unit
   granularity: 32
+  max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -1830,6 +1914,7 @@ nodes:
   - [24, switch, 4, 4]
 - num_output: 9
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 0
   output_nodes:
@@ -1845,13 +1930,16 @@ nodes:
   id: 41
   nodeType: vector port
   granularity: 8
+  max_id: 43
 - num_output: 0
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 9
   id: 42
   nodeType: vector port
   granularity: 8
+  max_id: 43
   input_nodes:
   - [20, switch, 4, 0]
   - [21, switch, 4, 1]
@@ -1864,6 +1952,7 @@ nodes:
   - [19, switch, 3, 4]
 - num_output: 5
   subnet_offset: [0]
+  flow_control: true
   datawidth: 64
   num_input: 0
   output_nodes:
@@ -1875,4 +1964,5 @@ nodes:
   id: 43
   nodeType: vector port
   granularity: 8
+  max_id: 43
 granularity: 8

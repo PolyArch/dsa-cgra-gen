@@ -54,6 +54,8 @@ object dev extends App{
   val left_column_switch = dev("col_idx","nodeType")(0,"switch")
   val right_column_switch = dev("col_idx","nodeType")(4,"switch")
 
+  right_column_switch.foreach(s=>s("flow_control", false))
+
   // Connect the Vector Port
   val in_vport = new ssnode("vector port")
   val second_in_vport = new ssnode ("vector port")

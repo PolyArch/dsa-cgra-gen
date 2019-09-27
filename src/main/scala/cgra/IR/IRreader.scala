@@ -26,16 +26,8 @@ object IRreader {
     s_cgra += "description_filename" -> filename
     s_cgra += "config_filename" -> filename.replace("yaml","xml")
 
-    // Test for ssnode
-    val switch_prop = s_cgra("nodes")
-      .asInstanceOf[List[Any]].head
-      .asInstanceOf[mutable.Map[String,Any]]
-    val switch = new cgra.fabric.switch(switch_prop)
-
-    val subnet_table = switch.getPropByKey("subnet_table")
-        .asInstanceOf[List[List[Boolean]]]
-
-    preprocess(s_cgra)
+    //preprocess(s_cgra)
+    s_cgra
   }
 }
 
@@ -46,20 +38,7 @@ object IRconvertor {
     for(kv <- scalaMap){
       val (key,value) = kv
       println("key = " + key + ", value = " + value)
-      scalaMap(key) = value match {
-        case i:Int => i
-        case d:Double =>  d
-        case b:Boolean => b
-        case s:String => s
-        case ll:List[_] => ll
-        case l:util.ArrayList[_] => {
-          asScalaBuffer(l.map(p => p match {
-            case p:util.Map[String,Any] => JavaMap2ScalaMap(p)
-            case _ => p
-          })).toList
-        }
-        case jMap:util.Map[String,Any] => JavaMap2ScalaMap(jMap)
-      }
+      scalaMap(key) = toScala(value)
     }
     scalaMap
   }
@@ -110,6 +89,20 @@ object IRconvertor {
       case None => "N/A"
       case listbuffer:ListBuffer[_] => toJava(listbuffer.toList)
       case _ => scala
+    }
+  }
+
+  def toScala(java:Any):Any={
+    java match{
+      case i:Int => i
+      case d:Double =>  d
+      case b:Boolean => b
+      case s:String => s
+      case ll:List[_] => ll
+      case l:util.ArrayList[_] => {
+        asScalaBuffer(l.map(p => toScala(p))).toList
+      }
+      case jMap:util.Map[String,Any] => JavaMap2ScalaMap(jMap)
     }
   }
 }

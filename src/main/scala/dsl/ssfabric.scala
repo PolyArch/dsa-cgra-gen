@@ -244,7 +244,7 @@ class ssfabric extends IRPrintable {
   // Post-Process
   def postprocess():Unit={
     // Nodes post process - assign default
-    for(node <- nodes){
+    for(node <- nodes.distinct){
       // Add default datawidth
       val datawidth = getPropByKey("datawidth").asInstanceOf[Int]
       if(!node.has("datawidth")){
@@ -263,14 +263,19 @@ class ssfabric extends IRPrintable {
       }
       // Add total number of nodes
       if(!node.has("max_id")){
-        node.apply("max_id", nodes.length - 1)
+        node.apply("max_id", nodes.distinct.size - 1)
+      }
+      // Add default flow control
+      val flow_control = getPropByKey("flow_control").asInstanceOf[Boolean]
+      if(!node.has("flow_control")){
+        node.apply("flow_control", flow_control)
       }
     }
     // final post process
-    nodes.foreach(_.postprocess())
+    nodes.distinct.foreach(_.postprocess())
 
     // Links post process
-    links.foreach(_.postprocess()) // final post process
+    links.distinct.foreach(_.postprocess()) // final post process
 
     // Gather the ISA and Encode them
     val start_encoding = 2 //0 is saved for NOP, 1 is saved for copy
