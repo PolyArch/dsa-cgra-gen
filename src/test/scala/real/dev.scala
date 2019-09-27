@@ -9,7 +9,7 @@ object dev extends App{
 
   // Define Default Switch
   val sw_default = new ssnode("switch")
-  sw_default("share_slot_size",2)("granularity",32)
+  sw_default("max_util",2)("granularity",32)
 
   // Define a Adding Function Unit
   val fu_add = new ssnode("function unit")
@@ -54,7 +54,11 @@ object dev extends App{
   val left_column_switch = dev("col_idx","nodeType")(0,"switch")
   val right_column_switch = dev("col_idx","nodeType")(4,"switch")
 
+  // Make switches have different flow control
   right_column_switch.foreach(s=>s("flow_control", false))
+
+  val third_row_switch = dev("row","nodeType")(2,"switch")
+  third_row_switch.foreach(s=>s("max_util", 1))
 
   // Connect the Vector Port
   val in_vport = new ssnode("vector port")

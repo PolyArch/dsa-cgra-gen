@@ -270,6 +270,11 @@ class ssfabric extends IRPrintable {
       if(!node.has("flow_control")){
         node.apply("flow_control", flow_control)
       }
+      // Add default max_util
+      val max_util = getPropByKey("max_util").asInstanceOf[Int]
+      if(!node.has("max_util")){
+        node.apply("max_util", max_util)
+      }
     }
     // final post process
     nodes.distinct.foreach(_.postprocess())

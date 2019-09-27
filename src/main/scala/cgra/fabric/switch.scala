@@ -140,7 +140,7 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
         io.output_ports(output_port_idx)(output_slot_idx).valid := DontCare
       }
 
-      // configuration
+      // don't care configuration when stream mode
       io.output_ports(output_port_idx)(output_slot_idx).config := DontCare
     }
 
@@ -231,21 +231,29 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
         // determine the useful config bit range
         useful_config_info_high = shared_slot_ptr_field_low - 1
         val useful_config_width = useful_config_info_high - useful_config_info_low + 1
+
+        // Print Warning if available configuration bit is smaller than needed
         if(useful_config_width < conf_bit_width){
           println("WARNING: this configuration require " + conf_bit_width +
-          " bit register, but only " + useful_config_width + " bits are" +
+            " bit register, but only " + useful_config_width + " bits are" +
             "available")
         }
 
-        // write it into the config slot
         config_slot_files(toUpdated_config_ptr) := config_port_bits
       }else{
         // The needed config bit range need to be smaller than useful config
         val useful_config_width = useful_config_info_high - useful_config_info_low + 1
         require(useful_config_width >= conf_bit_width)
 
+        // Print Warning if available configuration bit is smaller than needed
+        if(useful_config_width < conf_bit_width){
+          println("WARNING: this configuration require " + conf_bit_width +
+            " bit register, but only " + useful_config_width + " bits are" +
+            "available")
+        }
+
         // write it into the config register
-        config_slot_files.head := config_port_bits(conf_bit_width - 1,0)
+        config_slot_files.head := config_port_bits
       }
     }.otherwise{// configuration for other nodes, pass it to them
       // forward connection
@@ -273,7 +281,6 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
     }
   }
 
-
   // Post process
   def postprocess(): Unit = {
 
@@ -287,7 +294,7 @@ object gen_switch extends App{
   val cgra = readIR(args(0))
 
   val nodes = cgra("nodes")
-      .asInstanceOf[List[mutable.Map[String,Any]]]
+    .asInstanceOf[List[mutable.Map[String,Any]]]
 
   for (node <- nodes){
     if(node("nodeType") == "switch"){
@@ -303,7 +310,6 @@ object gen_switch extends App{
       }else{
         node += "config_out_port_idx" -> List(0, num_output - 1)
       }
-
       chisel3.Driver.execute(args,()=>{new switch(node)})
     }
   }
