@@ -2,18 +2,10 @@ package cgra.fabric
 
 import cgra.IO._
 import chisel3.util._
-import cgra.config.system_var
-import cgra.config.system_util._
 import chisel3._
-import cgra.IO.port_generator._
-import cgra.config.encoding.{config_module_id_high, config_module_id_low}
-import cgra.fabric.common.datapath.Multiplexer
-import dsl.{IRPrintable, ssnode}
-
+import dsl.IRPrintable
 import scala.collection.mutable
-import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
-import scala.xml.Elem
 
 class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
   // Assign initial properties
@@ -29,7 +21,7 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
   private val num_input:Int = getPropByKey("num_input").asInstanceOf[Int]
   private val num_output:Int = getPropByKey("num_output").asInstanceOf[Int]
   private val flow_control:Boolean = getPropByKey("flow_control").asInstanceOf[Boolean]
-  private val max_util:Int = getPropByKey("share_slot_size").asInstanceOf[Int]
+  private val max_util:Int = getPropByKey("max_util").asInstanceOf[Int]
   private val decomposer:Int = datawidth / granularity
   private val config_in_port_idx:Int = getPropByKey("config_in_port_idx")
     .asInstanceOf[Int]
@@ -37,33 +29,65 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
     .asInstanceOf[List[Int]]
   private val subnet_table:List[List[Boolean]] =
     getPropByKey("subnet_table").asInstanceOf[List[List[Boolean]]]
+  private val switch_mode:String = getPropByKey("switch_mode").toString
 
   // Calculate the number of configuration
-  private val num_conf_output_slot : IndexedSeq[Int] = for (
+  private val output_slot2num_conf : Map[(Int,Int),Int] = {for (
     port_idx <- 0 until num_output;
     slot_idx <- 0 until decomposer)yield{
     val output_slot_idx = port_idx * decomposer + slot_idx
-    subnet_table(output_slot_idx).count(c=>c)
-  }
+    switch_mode match {
+      case "full-control" =>
+        (port_idx, slot_idx) -> subnet_table(output_slot_idx).count(c=>c)
+      case "group-by-port" =>
+        (port_idx, slot_idx) -> subnet_table(output_slot_idx).count(c=>c)
+    }
+  }}.toMap
 
   // Calculate the ID field in incoming config bits
   private val id_field_high = datawidth - 1
   apply("id_field_high", id_field_high)
-  private val id_field_low = id_field_high - log2Ceil(max_id) + 1
+  private val id_field_low = id_field_high - log2Ceil(max_id + 1) + 1
   apply("id_field_low", id_field_low)
 
   // Calculate the bit range of configuration
+  // conf_bit_range :
+  // (output_port_idx, output_slot_idx) -> (config_high, config_low)
   private var curr_bit = 0
-  private val conf_bit_range : IndexedSeq[(Int,Int)]=
-    (for (num_conf <- num_conf_output_slot) yield{
-      val num_bits = log2Ceil(num_conf + 1)
-      require(num_bits >= 1, "No input for port")
-      val bit_range = (curr_bit + num_bits - 1, curr_bit)
-      curr_bit += num_bits
-      bit_range
-    }).reverse
+  private val conf_bit_range : Map[(Int,Int),(Int,Int)]={
+    switch_mode match {
+      case "full-control" => {
+        for(output_port_idx <- 0 until num_output;
+            output_slot_idx <- 0 until decomposer)yield{
+          val num_conf = output_slot2num_conf((output_port_idx, output_slot_idx))
+          val num_bits = log2Ceil(num_conf + 1) // 0 leave for default
+          val bit_range = (curr_bit + num_bits - 1, curr_bit)
+          curr_bit += num_bits
+          (output_port_idx, output_slot_idx) -> bit_range
+        }
+      }.toMap
+      case "group-by-port" => {
+        for(output_port_idx <- 0 until num_output;
+            output_slot_idx <- 0 until decomposer)yield{
+          val num_conf = output_slot2num_conf((output_port_idx,0))
+          val num_bits = log2Ceil(num_conf + 1)
+          val bit_range = (curr_bit + num_bits - 1, curr_bit)
+          if(output_slot_idx == decomposer - 1){
+            curr_bit += num_bits
+          }
+          (output_port_idx, output_slot_idx) -> bit_range
+        }
+      }.toMap
+    }
+  }
 
-  private val conf_bit_width = conf_bit_range.head._1 + 1
+  // Add conf_bit_range to properties
+  val prop_conf_bit_range :Map[String,(Int,Int)] = conf_bit_range.toSeq.map(kv=>{
+    (kv._1._1 + "_" + kv._1._2) -> kv._2
+  }).toMap
+  apply("port_slot_config_bit_range", prop_conf_bit_range)
+
+  private val conf_bit_width : Int = conf_bit_range.map(_._2._1).max + 1
   apply("config_bit_width", conf_bit_width)
 
   // ------ Create Hardware ------
@@ -107,26 +131,34 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
     }
 
     // Mux (forward)
+    val port_slot_sel2_port_slot = mutable.Map[(Int,Int),
+      mutable.Map[Int,(Int,Int)]]()
     for(output_port_idx <- 0 until num_output;
         output_slot_idx <- 0 until decomposer){
       val slot_idx = output_port_idx * decomposer + output_slot_idx
-      val slot_config_bit_range = conf_bit_range(slot_idx)
+      val slot_config_bit_range = conf_bit_range(output_port_idx,output_slot_idx)
       val config_high_bit = slot_config_bit_range._1
       val config_low_bit = slot_config_bit_range._2
       require(config_high_bit >= config_low_bit)
       val config_reg_value = config_wire(config_high_bit, config_low_bit)
 
-      // Mux port mapping
-      val connected_input = subnet_table(slot_idx).zipWithIndex.filter(
-        conn_idx => conn_idx._1
+      // Mux port mapping: This slot connected (input_port, input_slot)
+      val connected_input : List[(Int, Int)] = subnet_table(slot_idx)
+        .zipWithIndex.filter(conn_idx => conn_idx._1
       ).map(conn_idx => (conn_idx._2 / decomposer, conn_idx._2 % decomposer))
 
       // Mux selection
+      val sel2port_slot = mutable.Map[Int,(Int,Int)]()
       val portMuxLookup = for (sel <- connected_input.indices) yield {
         val input_port_slot = connected_input(sel)
+        sel2port_slot += (sel + 1) -> (input_port_slot._1,input_port_slot._2)
         (sel + 1).U -> // selection value = 0 is left for default
           io.input_ports(input_port_slot._1)(input_port_slot._2)
       }
+
+      // Add Mux selection to properties
+      port_slot_sel2_port_slot += (output_port_idx, output_slot_idx) ->
+        sel2port_slot
 
       // bit connection
       io.output_ports(output_port_idx)(output_slot_idx).bits := MuxLookup(
@@ -144,6 +176,13 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
       io.output_ports(output_port_idx)(output_slot_idx).config := DontCare
     }
 
+    // Add this into properties
+    val prop_port_slot_sel2_port_slot = port_slot_sel2_port_slot.toSeq
+        .map(kv => {
+          (kv._1._1 + "_" + kv._1._2) -> kv._2
+        }).toMap
+    apply("MUX_table",prop_port_slot_sel2_port_slot)
+
     // Mux (backward)
     for(input_port_idx <- 0 until num_input;
         input_slot_idx <- 0 until decomposer){
@@ -152,18 +191,20 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
         val slot_idx = input_port_idx * decomposer + input_slot_idx
         // Which output slots it connected to
         val connected_output_slot_idx = subnet_table.map(o=>o(slot_idx))
-          .zipWithIndex.filter(x=>x._1).map(x=>x._2)
+          .zipWithIndex.filter(x=>x._1).map(x=>(x._2 / decomposer, x._2 % decomposer))
         // Find what is the select value for each output port to select this input
         val sel_input_value_foreach_output = connected_output_slot_idx
           .map(x=>{
-            var start_sel_value = 1 // 0 is left for nothing
-            for (i <- 0 until slot_idx){
-              if(subnet_table(x)(i)){
-                start_sel_value += 1
-              }
+            val sel2this_slot =
+              port_slot_sel2_port_slot(x._1,x._2)
+                .filter(sel2slot =>
+                  sel2slot._2 == (input_port_idx, input_slot_idx))
+            if(sel2this_slot.size != 1){
+              require(sel2this_slot.size == 1, "only one value can select to this slot")
             }
-            start_sel_value
-          })
+            sel2this_slot.head._1
+          }
+        )
         // get select register (wire) for each output slot
         val sel_reg_foreach_output = connected_output_slot_idx
           .map(x=>conf_bit_range(x)).map(hl=>config_wire(hl._1,hl._2))
@@ -174,8 +215,8 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
         val downstream_readys = for (idx <- connected_output_slot_idx.indices)
           yield{
             val o_slot_idx = connected_output_slot_idx(idx)
-            val output_port_idx = o_slot_idx / decomposer
-            val output_slot_idx = o_slot_idx % decomposer
+            val output_port_idx = o_slot_idx._1
+            val output_slot_idx = o_slot_idx._2
             val is_select = sel_input_value_foreach_output(idx).U ===
               sel_reg_foreach_output(idx)
             Mux(is_select,io.output_ports(output_port_idx)(output_slot_idx).ready,
@@ -240,6 +281,12 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
         }
 
         config_slot_files(toUpdated_config_ptr) := config_port_bits
+
+        // Add into IR
+        apply("useful_config_info_high", useful_config_info_high)
+        apply("useful_config_info_low", useful_config_info_low)
+        apply("conf_bit_high", conf_bit_width - 1)
+        apply("conf_bit_low", useful_config_info_low)
       }else{
         // The needed config bit range need to be smaller than useful config
         val useful_config_width = useful_config_info_high - useful_config_info_low + 1
@@ -254,6 +301,12 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
 
         // write it into the config register
         config_slot_files.head := config_port_bits
+
+        // Add into IR
+        apply("useful_config_info_high", useful_config_info_high)
+        apply("useful_config_info_low", useful_config_info_low)
+        apply("conf_bit_high", conf_bit_width - 1)
+        apply("conf_bit_low", useful_config_info_low)
       }
     }.otherwise{// configuration for other nodes, pass it to them
       // forward connection
@@ -283,7 +336,7 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
 
   // Post process
   def postprocess(): Unit = {
-
+    print(this)
   }
 }
 
@@ -310,7 +363,11 @@ object gen_switch extends App{
       }else{
         node += "config_out_port_idx" -> List(0, num_output - 1)
       }
-      chisel3.Driver.execute(args,()=>{new switch(node)})
+      chisel3.Driver.execute(args,()=>{
+        val module = new switch(node)
+        println(module)
+        module
+      })
     }
   }
 

@@ -48,6 +48,9 @@ trait IRPrintable {
 
   // Get
   def getProps = properties
+  def getAllKeys = {
+    properties.keys
+  }
   def getPropByKey(key:String):Any = {
     if(properties.isDefinedAt(key)){
       properties(key)

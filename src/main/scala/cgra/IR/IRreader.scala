@@ -79,15 +79,18 @@ object IRconvertor {
       case set:Set[_]=> toJava(set.toSeq)
       case imMap:collection.immutable.Map[_,_] =>
         toJava(Map(imMap.toSeq: _*) )
-      case map:Map[String, Any] =>
-        for (kv <- map) map(kv._1) = toJava(kv._2)
+      case map:Map[_, Any] =>
+        for (kv <- map) {
+          map(kv._1) = toJava(kv._2)
+        }
         map.toMap.asJava
       case seq:Seq[_] => seq.map(toJava).asJava
       case yaml:IRPrintable => toJava(yaml.getProps)
       case id:identifier =>
         toJava(id.id)
       case None => "N/A"
-      case listbuffer:ListBuffer[_] => toJava(listbuffer.toList)
+      case tuple:(_, _) => toJava(List(tuple._1, tuple._2))
+      case listBuffer:ListBuffer[_] => toJava(listBuffer.toList)
       case _ => scala
     }
   }

@@ -23,6 +23,14 @@ object dev extends App{
 
   // Create a ssfabric
   val dev = new ssfabric
+  dev(
+    "default_datawidth", 64)(
+    "default_granularity", 32)(
+    "defaultsubnet_offset", List(0))(
+    "Default_max_util", 2)(
+    "Defaultflow_control", true)(
+    "default_switch_mode", "full-control"
+  )
 
   // Build Mesh Topology
   val switchMesh = dev.buildMesh(sw_default, 5,5)
@@ -55,10 +63,12 @@ object dev extends App{
   val right_column_switch = dev("col_idx","nodeType")(4,"switch")
 
   // Make switches have different flow control
-  right_column_switch.foreach(s=>s("flow_control", false))
+  right_column_switch.foreach(s=>s("flow_control", false)("switch_mode","group-by-port"))
 
-  val third_row_switch = dev("row","nodeType")(2,"switch")
-  third_row_switch.foreach(s=>s("max_util", 1))
+  val third_row_switch = dev("row_idx","nodeType")(2,"switch")
+  third_row_switch.foreach(s=>s("max_util", 1)("switch_mode","group-by-port"))
+
+
 
   // Connect the Vector Port
   val in_vport = new ssnode("vector port")

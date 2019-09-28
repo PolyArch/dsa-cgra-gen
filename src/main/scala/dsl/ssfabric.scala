@@ -8,8 +8,8 @@ class ssfabric extends IRPrintable {
   apply("identifier", identifier.key)
 
   // nodes and links
-  private val nodes : ListBuffer[ssnode] = ListBuffer[ssnode]()
-  private val links : ListBuffer[sslink] = ListBuffer[sslink]()
+  private var nodes : ListBuffer[ssnode] = ListBuffer[ssnode]()
+  private var links : ListBuffer[sslink] = ListBuffer[sslink]()
 
   // Clear all properties
   def reset():Unit={
@@ -223,64 +223,28 @@ class ssfabric extends IRPrintable {
     }
   }
 
-  // Pre-process
-  // predefined properties
-  // datawidth
-  private val default_datawidth = 64
-  apply("datawidth", default_datawidth)
-  // granularity
-  private val default_granularity = 8
-  apply("granularity", default_granularity)
-  // subnet offset
-  private val default_subnet_offset = List(0)
-  apply("subnet_offset", default_subnet_offset)
-  // max utility
-  private val default_max_util = 8
-  apply("max_util", default_max_util)
-  // flow_control
-  private val default_flow_control = true
-  apply("flow_control", default_flow_control)
-
   // Post-Process
   def postprocess():Unit={
+    nodes = nodes.distinct
+    links = links.distinct
     // Nodes post process - assign default
-    for(node <- nodes.distinct){
-      // Add default datawidth
-      val datawidth = getPropByKey("datawidth").asInstanceOf[Int]
-      if(!node.has("datawidth")){
-        node.apply("datawidth", datawidth)
+    val default_keys = this.getAllKeys.filter(key=>{
+      key.startsWith("Default") || key.startsWith("default")})
+    for(node <- nodes){
+      for (key <- default_keys){
+          val start_sub = {if(key(7)=='_'){8}else{7}}
+          val true_key = key.substring(start_sub)
+          if(!node.has(true_key)){
+            node(true_key,getPropByKey(key))
+          }
       }
-      // Add default granularity
-      val granularity = getPropByKey("granularity").asInstanceOf[Int]
-      if(!node.has("granularity")){
-        node.apply("granularity", granularity)
-      }
-      // Add default subnet offset
-      val subnet_offset = getPropByKey("subnet_offset")
-        .asInstanceOf[List[Int]]
-      if(!node.has("subnet_offset")){
-        node.apply("subnet_offset", subnet_offset)
-      }
-      // Add total number of nodes
-      if(!node.has("max_id")){
-        node.apply("max_id", nodes.distinct.size - 1)
-      }
-      // Add default flow control
-      val flow_control = getPropByKey("flow_control").asInstanceOf[Boolean]
-      if(!node.has("flow_control")){
-        node.apply("flow_control", flow_control)
-      }
-      // Add default max_util
-      val max_util = getPropByKey("max_util").asInstanceOf[Int]
-      if(!node.has("max_util")){
-        node.apply("max_util", max_util)
-      }
+      node("max_id", nodes.length - 1)
     }
     // final post process
-    nodes.distinct.foreach(_.postprocess())
+    nodes.foreach(_.postprocess())
 
     // Links post process
-    links.distinct.foreach(_.postprocess()) // final post process
+    links.foreach(_.postprocess()) // final post process
 
     // Gather the ISA and Encode them
     val start_encoding = 2 //0 is saved for NOP, 1 is saved for copy

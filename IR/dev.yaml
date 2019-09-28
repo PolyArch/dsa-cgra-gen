@@ -1,10 +1,8 @@
 identifier: [id, nodeType, row_idx, col_idx]
-subnet_offset: [0]
-flow_control: true
-max_util: 8
-datawidth: 64
+Default_max_util: 2
 numCol: 5
 Instruction Set: {RShf4_16x4: 4, Add64: 2, Acc16: 6, Div16: 3, Abs16x4: 5, Or16: 7}
+default_switch_mode: full-control
 links:
 - source: [0, switch, 0, 0]
   sink: [5, switch, 1, 0]
@@ -385,10 +383,10 @@ nodes:
 - num_output: 3
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 4
   col_idx: 0
-  share_slot_size: 2
   output_nodes:
   - [5, switch, 1, 0]
   - [1, switch, 0, 1]
@@ -397,6 +395,7 @@ nodes:
   id: 0
   nodeType: switch
   granularity: 32
+  switch_mode: full-control
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
@@ -413,10 +412,10 @@ nodes:
 - num_output: 5
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 4
   col_idx: 1
-  share_slot_size: 2
   output_nodes:
   - [0, switch, 0, 0]
   - [6, switch, 1, 1]
@@ -427,6 +426,7 @@ nodes:
   id: 1
   nodeType: switch
   granularity: 32
+  switch_mode: full-control
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
@@ -447,10 +447,10 @@ nodes:
 - num_output: 5
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 4
   col_idx: 2
-  share_slot_size: 2
   output_nodes:
   - [1, switch, 0, 1]
   - [7, switch, 1, 2]
@@ -461,6 +461,7 @@ nodes:
   id: 2
   nodeType: switch
   granularity: 32
+  switch_mode: full-control
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
@@ -481,10 +482,10 @@ nodes:
 - num_output: 5
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 4
   col_idx: 3
-  share_slot_size: 2
   output_nodes:
   - [2, switch, 0, 2]
   - [8, switch, 1, 3]
@@ -495,6 +496,7 @@ nodes:
   id: 3
   nodeType: switch
   granularity: 32
+  switch_mode: full-control
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
@@ -515,10 +517,10 @@ nodes:
 - num_output: 4
   subnet_offset: [0]
   flow_control: false
+  max_util: 2
   datawidth: 64
   num_input: 3
   col_idx: 4
-  share_slot_size: 2
   output_nodes:
   - [3, switch, 0, 3]
   - [9, switch, 1, 4]
@@ -528,6 +530,7 @@ nodes:
   id: 4
   nodeType: switch
   granularity: 32
+  switch_mode: group-by-port
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false]
@@ -545,10 +548,10 @@ nodes:
 - num_output: 7
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 7
   col_idx: 0
-  share_slot_size: 2
   output_nodes:
   - [0, switch, 0, 0]
   - [10, switch, 2, 0]
@@ -561,6 +564,7 @@ nodes:
   id: 5
   nodeType: switch
   granularity: 32
+  switch_mode: full-control
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false, true, false, true, false,
@@ -602,10 +606,10 @@ nodes:
 - num_output: 8
   subnet_offset: [0, -1, 2]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 5
   col_idx: 1
-  share_slot_size: 2
   output_nodes:
   - [1, switch, 0, 1]
   - [5, switch, 1, 0]
@@ -619,6 +623,7 @@ nodes:
   id: 6
   nodeType: switch
   granularity: 16
+  switch_mode: full-control
   max_id: 43
   subnet_table:
   - [true, false, true, true, true, false, true, true, true, false, true, true, true,
@@ -694,10 +699,10 @@ nodes:
 - num_output: 8
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 5
   col_idx: 2
-  share_slot_size: 2
   output_nodes:
   - [2, switch, 0, 2]
   - [6, switch, 1, 1]
@@ -711,6 +716,7 @@ nodes:
   id: 7
   nodeType: switch
   granularity: 32
+  switch_mode: full-control
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false, true, false]
@@ -738,10 +744,10 @@ nodes:
 - num_output: 8
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 5
   col_idx: 3
-  share_slot_size: 2
   output_nodes:
   - [3, switch, 0, 3]
   - [7, switch, 1, 2]
@@ -755,6 +761,7 @@ nodes:
   id: 8
   nodeType: switch
   granularity: 32
+  switch_mode: full-control
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false, true, false]
@@ -782,10 +789,10 @@ nodes:
 - num_output: 6
   subnet_offset: [0]
   flow_control: false
+  max_util: 2
   datawidth: 64
   num_input: 4
   col_idx: 4
-  share_slot_size: 2
   output_nodes:
   - [4, switch, 0, 4]
   - [8, switch, 1, 3]
@@ -797,6 +804,7 @@ nodes:
   id: 9
   nodeType: switch
   granularity: 32
+  switch_mode: group-by-port
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
@@ -819,10 +827,10 @@ nodes:
 - num_output: 5
   subnet_offset: [0]
   flow_control: true
+  max_util: 1
   datawidth: 64
   num_input: 5
   col_idx: 0
-  share_slot_size: 2
   output_nodes:
   - [5, switch, 1, 0]
   - [15, switch, 3, 0]
@@ -833,6 +841,7 @@ nodes:
   id: 10
   nodeType: switch
   granularity: 32
+  switch_mode: group-by-port
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false, true, false]
@@ -854,10 +863,10 @@ nodes:
 - num_output: 8
   subnet_offset: [0]
   flow_control: true
+  max_util: 1
   datawidth: 64
   num_input: 5
   col_idx: 1
-  share_slot_size: 2
   output_nodes:
   - [6, switch, 1, 1]
   - [10, switch, 2, 0]
@@ -871,6 +880,7 @@ nodes:
   id: 11
   nodeType: switch
   granularity: 32
+  switch_mode: group-by-port
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false, true, false]
@@ -898,10 +908,10 @@ nodes:
 - num_output: 8
   subnet_offset: [0]
   flow_control: true
+  max_util: 1
   datawidth: 64
   num_input: 5
   col_idx: 2
-  share_slot_size: 2
   output_nodes:
   - [7, switch, 1, 2]
   - [11, switch, 2, 1]
@@ -915,6 +925,7 @@ nodes:
   id: 12
   nodeType: switch
   granularity: 32
+  switch_mode: group-by-port
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false, true, false]
@@ -942,10 +953,10 @@ nodes:
 - num_output: 8
   subnet_offset: [0]
   flow_control: true
+  max_util: 1
   datawidth: 64
   num_input: 5
   col_idx: 3
-  share_slot_size: 2
   output_nodes:
   - [8, switch, 1, 3]
   - [12, switch, 2, 2]
@@ -959,6 +970,7 @@ nodes:
   id: 13
   nodeType: switch
   granularity: 32
+  switch_mode: group-by-port
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false, true, false]
@@ -986,10 +998,10 @@ nodes:
 - num_output: 6
   subnet_offset: [0]
   flow_control: false
+  max_util: 1
   datawidth: 64
   num_input: 4
   col_idx: 4
-  share_slot_size: 2
   output_nodes:
   - [9, switch, 1, 4]
   - [13, switch, 2, 3]
@@ -1001,6 +1013,7 @@ nodes:
   id: 14
   nodeType: switch
   granularity: 32
+  switch_mode: group-by-port
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
@@ -1023,10 +1036,10 @@ nodes:
 - num_output: 5
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 5
   col_idx: 0
-  share_slot_size: 2
   output_nodes:
   - [10, switch, 2, 0]
   - [20, switch, 4, 0]
@@ -1037,6 +1050,7 @@ nodes:
   id: 15
   nodeType: switch
   granularity: 32
+  switch_mode: full-control
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false, true, false]
@@ -1058,10 +1072,10 @@ nodes:
 - num_output: 8
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 5
   col_idx: 1
-  share_slot_size: 2
   output_nodes:
   - [11, switch, 2, 1]
   - [15, switch, 3, 0]
@@ -1075,6 +1089,7 @@ nodes:
   id: 16
   nodeType: switch
   granularity: 32
+  switch_mode: full-control
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false, true, false]
@@ -1102,10 +1117,10 @@ nodes:
 - num_output: 8
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 5
   col_idx: 2
-  share_slot_size: 2
   output_nodes:
   - [12, switch, 2, 2]
   - [16, switch, 3, 1]
@@ -1119,6 +1134,7 @@ nodes:
   id: 17
   nodeType: switch
   granularity: 32
+  switch_mode: full-control
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false, true, false]
@@ -1146,10 +1162,10 @@ nodes:
 - num_output: 8
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 5
   col_idx: 3
-  share_slot_size: 2
   output_nodes:
   - [13, switch, 2, 3]
   - [17, switch, 3, 2]
@@ -1163,6 +1179,7 @@ nodes:
   id: 18
   nodeType: switch
   granularity: 32
+  switch_mode: full-control
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false, true, false]
@@ -1190,10 +1207,10 @@ nodes:
 - num_output: 6
   subnet_offset: [0]
   flow_control: false
+  max_util: 2
   datawidth: 64
   num_input: 4
   col_idx: 4
-  share_slot_size: 2
   output_nodes:
   - [14, switch, 2, 4]
   - [18, switch, 3, 3]
@@ -1205,6 +1222,7 @@ nodes:
   id: 19
   nodeType: switch
   granularity: 32
+  switch_mode: group-by-port
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
@@ -1227,10 +1245,10 @@ nodes:
 - num_output: 4
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 4
   col_idx: 0
-  share_slot_size: 2
   output_nodes:
   - [15, switch, 3, 0]
   - [21, switch, 4, 1]
@@ -1240,6 +1258,7 @@ nodes:
   id: 20
   nodeType: switch
   granularity: 32
+  switch_mode: full-control
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
@@ -1258,10 +1277,10 @@ nodes:
 - num_output: 6
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 4
   col_idx: 1
-  share_slot_size: 2
   output_nodes:
   - [16, switch, 3, 1]
   - [20, switch, 4, 0]
@@ -1273,6 +1292,7 @@ nodes:
   id: 21
   nodeType: switch
   granularity: 32
+  switch_mode: full-control
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
@@ -1295,10 +1315,10 @@ nodes:
 - num_output: 6
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 4
   col_idx: 2
-  share_slot_size: 2
   output_nodes:
   - [17, switch, 3, 2]
   - [21, switch, 4, 1]
@@ -1310,6 +1330,7 @@ nodes:
   id: 22
   nodeType: switch
   granularity: 32
+  switch_mode: full-control
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
@@ -1332,10 +1353,10 @@ nodes:
 - num_output: 6
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 4
   col_idx: 3
-  share_slot_size: 2
   output_nodes:
   - [18, switch, 3, 3]
   - [22, switch, 4, 2]
@@ -1347,6 +1368,7 @@ nodes:
   id: 23
   nodeType: switch
   granularity: 32
+  switch_mode: full-control
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
@@ -1369,10 +1391,10 @@ nodes:
 - num_output: 4
   subnet_offset: [0]
   flow_control: false
+  max_util: 2
   datawidth: 64
   num_input: 3
   col_idx: 4
-  share_slot_size: 2
   output_nodes:
   - [19, switch, 3, 4]
   - [23, switch, 4, 3]
@@ -1382,6 +1404,7 @@ nodes:
   id: 24
   nodeType: switch
   granularity: 32
+  switch_mode: group-by-port
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false]
@@ -1399,6 +1422,7 @@ nodes:
 - num_output: 1
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 4
   col_idx: 0
@@ -1409,6 +1433,7 @@ nodes:
   id: 25
   nodeType: function unit
   granularity: 32
+  switch_mode: full-control
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
@@ -1421,6 +1446,7 @@ nodes:
 - num_output: 1
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 4
   col_idx: 1
@@ -1431,6 +1457,7 @@ nodes:
   id: 26
   nodeType: function unit
   granularity: 32
+  switch_mode: full-control
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
@@ -1443,6 +1470,7 @@ nodes:
 - num_output: 1
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 4
   col_idx: 2
@@ -1452,33 +1480,12 @@ nodes:
   row_idx: 0
   id: 27
   nodeType: function unit
-  granularity: 8
+  granularity: 32
+  switch_mode: full-control
   max_id: 43
   subnet_table:
-  - [true, false, false, false, false, false, false, false, true, false, false, false,
-    false, false, false, false, true, false, false, false, false, false, false, false,
-    true, false, false, false, false, false, false, false]
-  - [false, true, false, false, false, false, false, false, false, true, false, false,
-    false, false, false, false, false, true, false, false, false, false, false, false,
-    false, true, false, false, false, false, false, false]
-  - [false, false, true, false, false, false, false, false, false, false, true, false,
-    false, false, false, false, false, false, true, false, false, false, false, false,
-    false, false, true, false, false, false, false, false]
-  - [false, false, false, true, false, false, false, false, false, false, false, true,
-    false, false, false, false, false, false, false, true, false, false, false, false,
-    false, false, false, true, false, false, false, false]
-  - [false, false, false, false, true, false, false, false, false, false, false, false,
-    true, false, false, false, false, false, false, false, true, false, false, false,
-    false, false, false, false, true, false, false, false]
-  - [false, false, false, false, false, true, false, false, false, false, false, false,
-    false, true, false, false, false, false, false, false, false, true, false, false,
-    false, false, false, false, false, true, false, false]
-  - [false, false, false, false, false, false, true, false, false, false, false, false,
-    false, false, true, false, false, false, false, false, false, false, true, false,
-    false, false, false, false, false, false, true, false]
-  - [false, false, false, false, false, false, false, true, false, false, false, false,
-    false, false, false, true, false, false, false, false, false, false, false, true,
-    false, false, false, false, false, false, false, true]
+  - [true, false, true, false, true, false, true, false]
+  - [false, true, false, true, false, true, false, true]
   input_nodes:
   - [2, switch, 0, 2]
   - [7, switch, 1, 2]
@@ -1487,6 +1494,7 @@ nodes:
 - num_output: 1
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 4
   col_idx: 3
@@ -1497,6 +1505,7 @@ nodes:
   id: 28
   nodeType: function unit
   granularity: 32
+  switch_mode: full-control
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
@@ -1509,6 +1518,7 @@ nodes:
 - num_output: 1
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 4
   col_idx: 0
@@ -1518,33 +1528,12 @@ nodes:
   row_idx: 1
   id: 29
   nodeType: function unit
-  granularity: 8
+  granularity: 32
+  switch_mode: full-control
   max_id: 43
   subnet_table:
-  - [true, false, false, false, false, false, false, false, true, false, false, false,
-    false, false, false, false, true, false, false, false, false, false, false, false,
-    true, false, false, false, false, false, false, false]
-  - [false, true, false, false, false, false, false, false, false, true, false, false,
-    false, false, false, false, false, true, false, false, false, false, false, false,
-    false, true, false, false, false, false, false, false]
-  - [false, false, true, false, false, false, false, false, false, false, true, false,
-    false, false, false, false, false, false, true, false, false, false, false, false,
-    false, false, true, false, false, false, false, false]
-  - [false, false, false, true, false, false, false, false, false, false, false, true,
-    false, false, false, false, false, false, false, true, false, false, false, false,
-    false, false, false, true, false, false, false, false]
-  - [false, false, false, false, true, false, false, false, false, false, false, false,
-    true, false, false, false, false, false, false, false, true, false, false, false,
-    false, false, false, false, true, false, false, false]
-  - [false, false, false, false, false, true, false, false, false, false, false, false,
-    false, true, false, false, false, false, false, false, false, true, false, false,
-    false, false, false, false, false, true, false, false]
-  - [false, false, false, false, false, false, true, false, false, false, false, false,
-    false, false, true, false, false, false, false, false, false, false, true, false,
-    false, false, false, false, false, false, true, false]
-  - [false, false, false, false, false, false, false, true, false, false, false, false,
-    false, false, false, true, false, false, false, false, false, false, false, true,
-    false, false, false, false, false, false, false, true]
+  - [true, false, true, false, true, false, true, false]
+  - [false, true, false, true, false, true, false, true]
   input_nodes:
   - [5, switch, 1, 0]
   - [10, switch, 2, 0]
@@ -1553,6 +1542,7 @@ nodes:
 - num_output: 1
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 4
   col_idx: 1
@@ -1563,6 +1553,7 @@ nodes:
   id: 30
   nodeType: function unit
   granularity: 32
+  switch_mode: full-control
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
@@ -1575,6 +1566,7 @@ nodes:
 - num_output: 1
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 4
   col_idx: 2
@@ -1585,6 +1577,7 @@ nodes:
   id: 31
   nodeType: function unit
   granularity: 32
+  switch_mode: full-control
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
@@ -1597,6 +1590,7 @@ nodes:
 - num_output: 1
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 4
   col_idx: 3
@@ -1607,6 +1601,7 @@ nodes:
   id: 32
   nodeType: function unit
   granularity: 32
+  switch_mode: full-control
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
@@ -1619,6 +1614,7 @@ nodes:
 - num_output: 1
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 4
   col_idx: 0
@@ -1629,6 +1625,7 @@ nodes:
   id: 33
   nodeType: function unit
   granularity: 32
+  switch_mode: full-control
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
@@ -1641,6 +1638,7 @@ nodes:
 - num_output: 1
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 4
   col_idx: 1
@@ -1651,6 +1649,7 @@ nodes:
   id: 34
   nodeType: function unit
   granularity: 32
+  switch_mode: full-control
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
@@ -1663,6 +1662,7 @@ nodes:
 - num_output: 1
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 4
   col_idx: 2
@@ -1673,6 +1673,7 @@ nodes:
   id: 35
   nodeType: function unit
   granularity: 32
+  switch_mode: full-control
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
@@ -1685,6 +1686,7 @@ nodes:
 - num_output: 3
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 6
   col_idx: 3
@@ -1696,105 +1698,16 @@ nodes:
   row_idx: 2
   id: 36
   nodeType: function unit
-  granularity: 8
+  granularity: 32
+  switch_mode: full-control
   max_id: 43
   subnet_table:
-  - [true, false, false, false, false, false, false, false, true, false, false, false,
-    false, false, false, false, true, false, false, false, false, false, false, false,
-    true, false, false, false, false, false, false, false, true, false, false, false,
-    false, false, false, false, true, false, false, false, false, false, false, false]
-  - [false, true, false, false, false, false, false, false, false, true, false, false,
-    false, false, false, false, false, true, false, false, false, false, false, false,
-    false, true, false, false, false, false, false, false, false, true, false, false,
-    false, false, false, false, false, true, false, false, false, false, false, false]
-  - [false, false, true, false, false, false, false, false, false, false, true, false,
-    false, false, false, false, false, false, true, false, false, false, false, false,
-    false, false, true, false, false, false, false, false, false, false, true, false,
-    false, false, false, false, false, false, true, false, false, false, false, false]
-  - [false, false, false, true, false, false, false, false, false, false, false, true,
-    false, false, false, false, false, false, false, true, false, false, false, false,
-    false, false, false, true, false, false, false, false, false, false, false, true,
-    false, false, false, false, false, false, false, true, false, false, false, false]
-  - [false, false, false, false, true, false, false, false, false, false, false, false,
-    true, false, false, false, false, false, false, false, true, false, false, false,
-    false, false, false, false, true, false, false, false, false, false, false, false,
-    true, false, false, false, false, false, false, false, true, false, false, false]
-  - [false, false, false, false, false, true, false, false, false, false, false, false,
-    false, true, false, false, false, false, false, false, false, true, false, false,
-    false, false, false, false, false, true, false, false, false, false, false, false,
-    false, true, false, false, false, false, false, false, false, true, false, false]
-  - [false, false, false, false, false, false, true, false, false, false, false, false,
-    false, false, true, false, false, false, false, false, false, false, true, false,
-    false, false, false, false, false, false, true, false, false, false, false, false,
-    false, false, true, false, false, false, false, false, false, false, true, false]
-  - [false, false, false, false, false, false, false, true, false, false, false, false,
-    false, false, false, true, false, false, false, false, false, false, false, true,
-    false, false, false, false, false, false, false, true, false, false, false, false,
-    false, false, false, true, false, false, false, false, false, false, false, true]
-  - [true, false, false, false, false, false, false, false, true, false, false, false,
-    false, false, false, false, true, false, false, false, false, false, false, false,
-    true, false, false, false, false, false, false, false, true, false, false, false,
-    false, false, false, false, true, false, false, false, false, false, false, false]
-  - [false, true, false, false, false, false, false, false, false, true, false, false,
-    false, false, false, false, false, true, false, false, false, false, false, false,
-    false, true, false, false, false, false, false, false, false, true, false, false,
-    false, false, false, false, false, true, false, false, false, false, false, false]
-  - [false, false, true, false, false, false, false, false, false, false, true, false,
-    false, false, false, false, false, false, true, false, false, false, false, false,
-    false, false, true, false, false, false, false, false, false, false, true, false,
-    false, false, false, false, false, false, true, false, false, false, false, false]
-  - [false, false, false, true, false, false, false, false, false, false, false, true,
-    false, false, false, false, false, false, false, true, false, false, false, false,
-    false, false, false, true, false, false, false, false, false, false, false, true,
-    false, false, false, false, false, false, false, true, false, false, false, false]
-  - [false, false, false, false, true, false, false, false, false, false, false, false,
-    true, false, false, false, false, false, false, false, true, false, false, false,
-    false, false, false, false, true, false, false, false, false, false, false, false,
-    true, false, false, false, false, false, false, false, true, false, false, false]
-  - [false, false, false, false, false, true, false, false, false, false, false, false,
-    false, true, false, false, false, false, false, false, false, true, false, false,
-    false, false, false, false, false, true, false, false, false, false, false, false,
-    false, true, false, false, false, false, false, false, false, true, false, false]
-  - [false, false, false, false, false, false, true, false, false, false, false, false,
-    false, false, true, false, false, false, false, false, false, false, true, false,
-    false, false, false, false, false, false, true, false, false, false, false, false,
-    false, false, true, false, false, false, false, false, false, false, true, false]
-  - [false, false, false, false, false, false, false, true, false, false, false, false,
-    false, false, false, true, false, false, false, false, false, false, false, true,
-    false, false, false, false, false, false, false, true, false, false, false, false,
-    false, false, false, true, false, false, false, false, false, false, false, true]
-  - [true, false, false, false, false, false, false, false, true, false, false, false,
-    false, false, false, false, true, false, false, false, false, false, false, false,
-    true, false, false, false, false, false, false, false, true, false, false, false,
-    false, false, false, false, true, false, false, false, false, false, false, false]
-  - [false, true, false, false, false, false, false, false, false, true, false, false,
-    false, false, false, false, false, true, false, false, false, false, false, false,
-    false, true, false, false, false, false, false, false, false, true, false, false,
-    false, false, false, false, false, true, false, false, false, false, false, false]
-  - [false, false, true, false, false, false, false, false, false, false, true, false,
-    false, false, false, false, false, false, true, false, false, false, false, false,
-    false, false, true, false, false, false, false, false, false, false, true, false,
-    false, false, false, false, false, false, true, false, false, false, false, false]
-  - [false, false, false, true, false, false, false, false, false, false, false, true,
-    false, false, false, false, false, false, false, true, false, false, false, false,
-    false, false, false, true, false, false, false, false, false, false, false, true,
-    false, false, false, false, false, false, false, true, false, false, false, false]
-  - [false, false, false, false, true, false, false, false, false, false, false, false,
-    true, false, false, false, false, false, false, false, true, false, false, false,
-    false, false, false, false, true, false, false, false, false, false, false, false,
-    true, false, false, false, false, false, false, false, true, false, false, false]
-  - [false, false, false, false, false, true, false, false, false, false, false, false,
-    false, true, false, false, false, false, false, false, false, true, false, false,
-    false, false, false, false, false, true, false, false, false, false, false, false,
-    false, true, false, false, false, false, false, false, false, true, false, false]
-  - [false, false, false, false, false, false, true, false, false, false, false, false,
-    false, false, true, false, false, false, false, false, false, false, true, false,
-    false, false, false, false, false, false, true, false, false, false, false, false,
-    false, false, true, false, false, false, false, false, false, false, true, false]
-  - [false, false, false, false, false, false, false, true, false, false, false, false,
-    false, false, false, true, false, false, false, false, false, false, false, true,
-    false, false, false, false, false, false, false, true, false, false, false, false,
-    false, false, false, true, false, false, false, false, false, false, false, true]
+  - [true, false, true, false, true, false, true, false, true, false, true, false]
+  - [false, true, false, true, false, true, false, true, false, true, false, true]
+  - [true, false, true, false, true, false, true, false, true, false, true, false]
+  - [false, true, false, true, false, true, false, true, false, true, false, true]
+  - [true, false, true, false, true, false, true, false, true, false, true, false]
+  - [false, true, false, true, false, true, false, true, false, true, false, true]
   input_nodes:
   - [13, switch, 2, 3]
   - [18, switch, 3, 3]
@@ -1805,6 +1718,7 @@ nodes:
 - num_output: 1
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 4
   col_idx: 0
@@ -1815,6 +1729,7 @@ nodes:
   id: 37
   nodeType: function unit
   granularity: 32
+  switch_mode: full-control
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
@@ -1827,6 +1742,7 @@ nodes:
 - num_output: 1
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 4
   col_idx: 1
@@ -1837,6 +1753,7 @@ nodes:
   id: 38
   nodeType: function unit
   granularity: 32
+  switch_mode: full-control
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
@@ -1849,6 +1766,7 @@ nodes:
 - num_output: 1
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 4
   col_idx: 2
@@ -1858,33 +1776,12 @@ nodes:
   row_idx: 3
   id: 39
   nodeType: function unit
-  granularity: 8
+  granularity: 32
+  switch_mode: full-control
   max_id: 43
   subnet_table:
-  - [true, false, false, false, false, false, false, false, true, false, false, false,
-    false, false, false, false, true, false, false, false, false, false, false, false,
-    true, false, false, false, false, false, false, false]
-  - [false, true, false, false, false, false, false, false, false, true, false, false,
-    false, false, false, false, false, true, false, false, false, false, false, false,
-    false, true, false, false, false, false, false, false]
-  - [false, false, true, false, false, false, false, false, false, false, true, false,
-    false, false, false, false, false, false, true, false, false, false, false, false,
-    false, false, true, false, false, false, false, false]
-  - [false, false, false, true, false, false, false, false, false, false, false, true,
-    false, false, false, false, false, false, false, true, false, false, false, false,
-    false, false, false, true, false, false, false, false]
-  - [false, false, false, false, true, false, false, false, false, false, false, false,
-    true, false, false, false, false, false, false, false, true, false, false, false,
-    false, false, false, false, true, false, false, false]
-  - [false, false, false, false, false, true, false, false, false, false, false, false,
-    false, true, false, false, false, false, false, false, false, true, false, false,
-    false, false, false, false, false, true, false, false]
-  - [false, false, false, false, false, false, true, false, false, false, false, false,
-    false, false, true, false, false, false, false, false, false, false, true, false,
-    false, false, false, false, false, false, true, false]
-  - [false, false, false, false, false, false, false, true, false, false, false, false,
-    false, false, false, true, false, false, false, false, false, false, false, true,
-    false, false, false, false, false, false, false, true]
+  - [true, false, true, false, true, false, true, false]
+  - [false, true, false, true, false, true, false, true]
   input_nodes:
   - [17, switch, 3, 2]
   - [22, switch, 4, 2]
@@ -1893,6 +1790,7 @@ nodes:
 - num_output: 1
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 4
   col_idx: 3
@@ -1903,6 +1801,7 @@ nodes:
   id: 40
   nodeType: function unit
   granularity: 32
+  switch_mode: full-control
   max_id: 43
   subnet_table:
   - [true, false, true, false, true, false, true, false]
@@ -1915,6 +1814,7 @@ nodes:
 - num_output: 9
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 0
   output_nodes:
@@ -1929,16 +1829,19 @@ nodes:
   - [20, switch, 4, 0]
   id: 41
   nodeType: vector port
-  granularity: 8
+  granularity: 32
+  switch_mode: full-control
   max_id: 43
 - num_output: 0
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 9
   id: 42
   nodeType: vector port
-  granularity: 8
+  granularity: 32
+  switch_mode: full-control
   max_id: 43
   input_nodes:
   - [20, switch, 4, 0]
@@ -1953,6 +1856,7 @@ nodes:
 - num_output: 5
   subnet_offset: [0]
   flow_control: true
+  max_util: 2
   datawidth: 64
   num_input: 0
   output_nodes:
@@ -1963,6 +1867,10 @@ nodes:
   - [20, switch, 4, 0]
   id: 43
   nodeType: vector port
-  granularity: 8
+  granularity: 32
+  switch_mode: full-control
   max_id: 43
-granularity: 8
+default_datawidth: 64
+default_granularity: 32
+defaultsubnet_offset: [0]
+Defaultflow_control: true
