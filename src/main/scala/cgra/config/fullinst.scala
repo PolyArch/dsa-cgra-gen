@@ -36,7 +36,7 @@ object fullinst {
     "XorR"     -> inst_prop(1,1,1)
   )
 
-  val inst_operation : Map[String,(UInt*) => UInt]= Map(
+  val inst_operation : Map[String,Seq[UInt] => UInt]= Map(
     // 8-Bit Instructions
     "Add8"      -> ((ops:Seq[UInt]) => {
       val op0 = ops.head.apply(7,0)
@@ -210,7 +210,13 @@ object fullinst {
     "Extract16"    -> ((ops:Seq[UInt]) => {
       val op0 = ops.head
       val op1 = ops(1).apply(1,0)
-
+      val muxLookup : Seq[(UInt,UInt)]=
+        for(i <- 0 until 4)yield{
+        val high = (i + 1) * 16 -1
+        val low = i * 16
+        (i.U, op0(high,low))
+      }
+      MuxLookup(op1,0.U,muxLookup)
     }),
     "Add16x4"    -> ((ops:Seq[UInt]) => {
       Cat(
@@ -246,7 +252,5 @@ object fullinst {
     "AndR"     -> ((ops:Seq[UInt]) => ops.head.andR()),
     "OrR"      -> ((ops:Seq[UInt]) => ops.head.orR()),
     "XorR"     -> ((ops:Seq[UInt]) => ops.head.xorR())
-
-
   )
 }
