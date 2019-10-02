@@ -82,7 +82,7 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
   }
 
   // Add conf_bit_range to properties
-  val prop_conf_bit_range :Map[String,(Int,Int)] = conf_bit_range.toSeq.map(kv=>{
+  private val prop_conf_bit_range :Map[String,(Int,Int)] = conf_bit_range.toSeq.map(kv=>{
     (kv._1._1 + "_" + kv._1._2) -> kv._2
   }).toMap
   apply("port_slot_config_bit_range", prop_conf_bit_range)
@@ -100,7 +100,7 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
 
 
   // Generate the configuration register
-  val config_slot_files = RegInit(VecInit(Seq.fill(max_util)(0.U(conf_bit_width.W))))
+  val config_slot_file = RegInit(VecInit(Seq.fill(max_util)(0.U(conf_bit_width.W))))
 
   val config_enable : Bool = io.input_ports(config_in_port_idx).map(_.config)
     .reduce(_ && _)
@@ -118,7 +118,7 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
 
     // Multiple configurations
     if(max_util == 1){
-      config_wire := config_slot_files(0)
+      config_wire := config_slot_file(0)
     }else{
       // configuration counter
       val config_pointer = RegInit(0.U(log2Ceil(max_util).W))
@@ -127,7 +127,7 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
       config_pointer := config_pointer + 1.U
 
       // select it to wire
-      config_wire := config_slot_files(config_pointer)
+      config_wire := config_slot_file(config_pointer)
     }
 
     // Mux (forward)
@@ -280,7 +280,7 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
             "available")
         }
 
-        config_slot_files(toUpdated_config_ptr) := config_port_bits
+        config_slot_file(toUpdated_config_ptr) := config_port_bits
 
         // Add into IR
         apply("useful_config_info_high", useful_config_info_high)
@@ -300,7 +300,7 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
         }
 
         // write it into the config register
-        config_slot_files.head := config_port_bits
+        config_slot_file.head := config_port_bits
 
         // Add into IR
         apply("useful_config_info_high", useful_config_info_high)

@@ -39,12 +39,12 @@ class arithmetic_logic_unit extends Module
   io.result := result_buffer(io.opcode)
 
   // Util
-  def alu_result (inst_prop:inst_prop, func:(UInt*) => Seq[UInt]) : UInt ={
+  def alu_result (inst_prop:inst_prop, func:(UInt*) => UInt) : UInt ={
     val num_op = inst_prop.numOperands
     val result:UInt = num_op match {
-      case 1 => func(io.operands(0)).head
-      case 2 => func(io.operands(0),io.operands(1)).head
-      case 3 => func(io.operands(0),io.operands(1),io.operands(2)).head
+      case 1 => func(io.operands(0))
+      case 2 => func(io.operands(0),io.operands(1))
+      case 3 => func(io.operands(0),io.operands(1),io.operands(2))
     }
     result
   }
