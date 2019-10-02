@@ -169,9 +169,9 @@ class ssnode(nodeType:String) extends IRPrintable {
     }
     // Function Unit specific process
     if(getValue(getPropByKey("nodeType"))=="function unit"){
-      val insts = getPropByKey("Insts")
+      val insts = getPropByKey("instructions")
       insts match {
-        case single:String => apply("Insts", collection.immutable.Set(single))
+        case single:String => apply("instructions", collection.immutable.Set(single))
         case _ =>
       }
     }

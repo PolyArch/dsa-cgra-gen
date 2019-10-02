@@ -827,7 +827,7 @@ nodes:
 - num_output: 5
   subnet_offset: [0]
   flow_control: true
-  max_util: 1
+  max_util: 5
   datawidth: 64
   num_input: 5
   col_idx: 0
@@ -863,7 +863,7 @@ nodes:
 - num_output: 8
   subnet_offset: [0]
   flow_control: true
-  max_util: 1
+  max_util: 5
   datawidth: 64
   num_input: 5
   col_idx: 1
@@ -908,7 +908,7 @@ nodes:
 - num_output: 8
   subnet_offset: [0]
   flow_control: true
-  max_util: 1
+  max_util: 5
   datawidth: 64
   num_input: 5
   col_idx: 2
@@ -953,7 +953,7 @@ nodes:
 - num_output: 8
   subnet_offset: [0]
   flow_control: true
-  max_util: 1
+  max_util: 5
   datawidth: 64
   num_input: 5
   col_idx: 3
@@ -998,7 +998,7 @@ nodes:
 - num_output: 6
   subnet_offset: [0]
   flow_control: false
-  max_util: 1
+  max_util: 5
   datawidth: 64
   num_input: 4
   col_idx: 4
@@ -1428,13 +1428,13 @@ nodes:
   col_idx: 0
   output_nodes:
   - [6, switch, 1, 1]
-  Insts: [Add64]
   row_idx: 0
   id: 25
   nodeType: function unit
   granularity: 32
   switch_mode: full-control
   max_id: 43
+  instructions: [Add64]
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -1452,13 +1452,13 @@ nodes:
   col_idx: 1
   output_nodes:
   - [7, switch, 1, 2]
-  Insts: [Add64]
   row_idx: 0
   id: 26
   nodeType: function unit
   granularity: 32
   switch_mode: full-control
   max_id: 43
+  instructions: [Add64]
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -1476,13 +1476,13 @@ nodes:
   col_idx: 2
   output_nodes:
   - [8, switch, 1, 3]
-  Insts: [Div16, RShf4_16x4, Abs16x4]
   row_idx: 0
   id: 27
   nodeType: function unit
   granularity: 32
   switch_mode: full-control
   max_id: 43
+  instructions: [Div16, RShf4_16x4, Abs16x4]
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -1500,13 +1500,13 @@ nodes:
   col_idx: 3
   output_nodes:
   - [9, switch, 1, 4]
-  Insts: [Add64]
   row_idx: 0
   id: 28
   nodeType: function unit
   granularity: 32
   switch_mode: full-control
   max_id: 43
+  instructions: [Add64]
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -1524,13 +1524,13 @@ nodes:
   col_idx: 0
   output_nodes:
   - [11, switch, 2, 1]
-  Insts: [Div16, RShf4_16x4, Abs16x4]
   row_idx: 1
   id: 29
   nodeType: function unit
   granularity: 32
   switch_mode: full-control
   max_id: 43
+  instructions: [Div16, RShf4_16x4, Abs16x4]
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -1548,13 +1548,13 @@ nodes:
   col_idx: 1
   output_nodes:
   - [12, switch, 2, 2]
-  Insts: [Add64]
   row_idx: 1
   id: 30
   nodeType: function unit
   granularity: 32
   switch_mode: full-control
   max_id: 43
+  instructions: [Add64]
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -1572,13 +1572,13 @@ nodes:
   col_idx: 2
   output_nodes:
   - [13, switch, 2, 3]
-  Insts: [Add64]
   row_idx: 1
   id: 31
   nodeType: function unit
   granularity: 32
   switch_mode: full-control
   max_id: 43
+  instructions: [Add64]
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -1596,13 +1596,13 @@ nodes:
   col_idx: 3
   output_nodes:
   - [14, switch, 2, 4]
-  Insts: [Add64]
   row_idx: 1
   id: 32
   nodeType: function unit
   granularity: 32
   switch_mode: full-control
   max_id: 43
+  instructions: [Add64]
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -1620,13 +1620,13 @@ nodes:
   col_idx: 0
   output_nodes:
   - [16, switch, 3, 1]
-  Insts: [Add64]
   row_idx: 2
   id: 33
   nodeType: function unit
   granularity: 32
   switch_mode: full-control
   max_id: 43
+  instructions: [Add64]
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -1644,13 +1644,13 @@ nodes:
   col_idx: 1
   output_nodes:
   - [17, switch, 3, 2]
-  Insts: [Add64]
   row_idx: 2
   id: 34
   nodeType: function unit
   granularity: 32
   switch_mode: full-control
   max_id: 43
+  instructions: [Add64]
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -1668,13 +1668,13 @@ nodes:
   col_idx: 2
   output_nodes:
   - [18, switch, 3, 3]
-  Insts: [Add64]
   row_idx: 2
   id: 35
   nodeType: function unit
   granularity: 32
   switch_mode: full-control
   max_id: 43
+  instructions: [Add64]
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -1694,13 +1694,13 @@ nodes:
   - [19, switch, 3, 4]
   - [5, switch, 1, 0]
   - [5, switch, 1, 0]
-  Insts: [Acc16, Or16]
   row_idx: 2
   id: 36
   nodeType: function unit
   granularity: 32
   switch_mode: full-control
   max_id: 43
+  instructions: [Acc16, Or16]
   subnet_table:
   - [true, false, true, false, true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true, false, true, false, true]
@@ -1724,13 +1724,13 @@ nodes:
   col_idx: 0
   output_nodes:
   - [21, switch, 4, 1]
-  Insts: [Add64]
   row_idx: 3
   id: 37
   nodeType: function unit
   granularity: 32
   switch_mode: full-control
   max_id: 43
+  instructions: [Add64]
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -1748,13 +1748,13 @@ nodes:
   col_idx: 1
   output_nodes:
   - [22, switch, 4, 2]
-  Insts: [Add64]
   row_idx: 3
   id: 38
   nodeType: function unit
   granularity: 32
   switch_mode: full-control
   max_id: 43
+  instructions: [Add64]
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -1772,13 +1772,13 @@ nodes:
   col_idx: 2
   output_nodes:
   - [23, switch, 4, 3]
-  Insts: [Acc16, Or16]
   row_idx: 3
   id: 39
   nodeType: function unit
   granularity: 32
   switch_mode: full-control
   max_id: 43
+  instructions: [Acc16, Or16]
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]
@@ -1796,13 +1796,13 @@ nodes:
   col_idx: 3
   output_nodes:
   - [24, switch, 4, 4]
-  Insts: [Add64]
   row_idx: 3
   id: 40
   nodeType: function unit
   granularity: 32
   switch_mode: full-control
   max_id: 43
+  instructions: [Add64]
   subnet_table:
   - [true, false, true, false, true, false, true, false]
   - [false, true, false, true, false, true, false, true]

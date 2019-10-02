@@ -7,7 +7,7 @@ object maeri extends App{
 
   val start_sw = new ssnode("switch")
   val end_add = new ssnode("function unit")
-  end_add("Insts","Add")
+  end_add("instructions","Add")
 
   // Create MAERI
   val MAERI = new ssfabric()
@@ -22,7 +22,7 @@ object maeri extends App{
   // Change the last row function of reduce graph to Multiplication
   val last_row_fu = MAERI("nodeType","depth")("function unit",0)
   val last_row_switch = MAERI("nodeType","depth")("switch",0)
-  last_row_fu.foreach(fu=>fu("Insts","Mul"))
+  last_row_fu.foreach(fu=>fu("instructions","Mul"))
 
   // Connect the distribute and reduce Network
   for (i <- last_row_fu.indices){

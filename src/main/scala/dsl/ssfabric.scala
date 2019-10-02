@@ -250,7 +250,7 @@ class ssfabric extends IRPrintable {
     val start_encoding = 2 //0 is saved for NOP, 1 is saved for copy
     val allFuNodes = this("nodeType")("function unit")
     if (allFuNodes.nonEmpty){
-      val temp_allInsts = allFuNodes.map(n=>n.getPropByKey("Insts"))
+      val temp_allInsts = allFuNodes.map(n=>n.getPropByKey("instructions"))
         .distinct
       var allInsts : List[String] = Nil
       for (insts <- temp_allInsts){

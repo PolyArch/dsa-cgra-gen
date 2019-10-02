@@ -7,8 +7,6 @@ import dsl.IRPrintable
 import scala.collection.mutable
 import scala.util.Random
 
-
-
 class function_unit(prop:mutable.Map[String,Any])
   extends Module
   with IRPrintable{
@@ -31,6 +29,12 @@ class function_unit(prop:mutable.Map[String,Any])
     .asInstanceOf[Int]
   private val config_out_port_idx:List[Int] = getPropByKey("config_out_port_idx")
     .asInstanceOf[List[Int]]
+  private val instructions : List[String] = getPropByKey("instructions")
+    .asInstanceOf[List[String]]
+
+  // ------ Intermediate Variable ------
+  private val max_num_operand =
+
 
   // ------ Create Hardware ------
 
@@ -39,6 +43,8 @@ class function_unit(prop:mutable.Map[String,Any])
     val input_ports = Flipped(Vec(num_input,Vec(decomposer,ReqAckConf_if(granularity))))
     val output_ports = Vec(num_output,Vec(decomposer,ReqAckConf_if(granularity)))
   })
+
+
 
   // ------ Post process ------
   override def postprocess(): Unit = ???

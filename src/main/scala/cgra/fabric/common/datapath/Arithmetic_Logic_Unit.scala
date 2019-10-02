@@ -89,12 +89,12 @@ class Arithmetic_Logic_Unit_Hw(p:Arithmetic_Logic_Unit) extends Module{
   }
 
   // Util
-  def alu_result (inst_prop:inst_prop, func:(UInt*) => UInt) : UInt ={
+  def alu_result (inst_prop:inst_prop, func:(UInt*) => Seq[UInt]) : UInt ={
     val num_op = inst_prop.numOperands
     val result:UInt = num_op match {
-      case 1 => func(io.in(0).bits)
-      case 2 => func(io.in(0).bits,io.in(1).bits)
-      case 3 => func(io.in(0).bits,io.in(1).bits,io.in(2).bits)
+      case 1 => func(io.in(0).bits).head
+      case 2 => func(io.in(0).bits,io.in(1).bits).head
+      case 3 => func(io.in(0).bits,io.in(1).bits,io.in(2).bits).head
     }
     result
   }
