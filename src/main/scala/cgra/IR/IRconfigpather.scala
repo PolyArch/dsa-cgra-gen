@@ -31,7 +31,7 @@ object IRconfigpather {
 
   def getGraph(ir:mutable.Map[String,Any]) = {
     ssnodeList ++= ssnodeGroup2List(ir("nodes"))
-    ssnodeTopology = ir("links").asInstanceOf[List[String]]
+    sslinks2connection(ir("links"))
     buildGraph()
     buildConfigPath()
 
@@ -41,11 +41,42 @@ object IRconfigpather {
     ssnodeGraph
   }
 
+  def sslinks2connection(ls:Any): Unit={
+    val links = ls.asInstanceOf[List[mutable.Map[String,Any]]]
+    val temp_connection : ListBuffer[connection] =new ListBuffer[connection]()
+
+    ssnodeMap = ssnodeList.toMap
+
+    for(link <- links){
+      val source : List[Any] = link("source").asInstanceOf[List[Any]]
+      val sink : List[Any] = link("sink").asInstanceOf[List[Any]]
+
+      if(!(source(1).toString.contains("vector port") ||
+        sink(1).toString.contains("vector port"))){
+        val source_id = source.head.toString
+        val sink_id = sink.head.toString
+        val source_node = ssnodeMap(source_id)
+        val sink_node = ssnodeMap(sink_id)
+        val source_port = source_node("output_nodes")
+          .asInstanceOf[List[List[Any]]].indexWhere(ids=>ids.head.toString == sink_id)
+        val sink_port = sink_node("input_nodes")
+          .asInstanceOf[List[List[Any]]].indexWhere(ids=>ids.head.toString == sink_id)
+
+        val conn = new connection
+        conn.source.module = source_id;conn.source.port = source_port.toString
+        conn.sink.module = sink_id;conn.sink.port = sink_port.toString
+
+        temp_connection += conn
+      }
+    }
+
+    ssnodeConnection = temp_connection.toList
+  }
+
   def buildGraph() :Unit = {
     ssnodeMap = ssnodeList.toMap
     num_ssnode = ssnodeList.length
     ssnodeGraphMatrix = Array.ofDim[Boolean](num_ssnode,num_ssnode)
-    ssnodeConnection = ssnodeTopology map parse_conn
     for (source_ssnode <- ssnodeList){
       // Connection List
       val sink_nodes : List[ssnode_t] =
@@ -59,9 +90,6 @@ object IRconfigpather {
         ssnodeGraphMatrix(row_idx)(col_idx) = true
       }
     }
-    input_ssnodes_list =
-      ssnodeConnection.filter(_.source.module contains("vec_in"))
-      .map(_.sink.module).map(n=>(n,ssnodeMap(n)))
   }
 
   def buildConfigPath() = {
@@ -90,6 +118,7 @@ object IRconfigpather {
     // Assign Random Input Config Port
     for (col_idx <- 0 until num_ssnode){
       val curr_node_name = ssnodeList(col_idx)._1
+      println("randomize on " + curr_node_name)
       val conn_idxs : Array[Int] = ssnodeGraphMatrix.map(_(col_idx)).zipWithIndex.filter(_._1).map(_._2)
       val rand_conn_idx : Int = conn_idxs(rand.nextInt(conn_idxs.length))
       ssnodeConfigPathMatrix(rand_conn_idx)(col_idx) = true
@@ -200,20 +229,40 @@ object IRconfigpather {
   }
 
   def ssnodeGroup2List(g:Any) ={
+
+    // Add a name to each node
     val group = g.asInstanceOf[List[mutable.Map[String, Any]]].map(node => {
-      (node("nodeType").toString + node("id").asInstanceOf[Int]) -> node
+      node("id").toString -> node
     }).toMap
 
     val ssnodeList : ListBuffer[ssnode_t] = new ListBuffer[ssnode_t]()
 
     for (node <- group){
-      if (!node._1.contains("vector port")){
-        val node_name = node._1
-        val node_value = node._2.asInstanceOf[mutable.Map[String, Any]]
-        val ssnode = (node_name, node_value)
+      val node_name = node._1
+      val node_value = node._2.asInstanceOf[mutable.Map[String, Any]]
+      val ssnode = (node_name, node_value)
+
+      if(node_value("nodeType") != "vector port"){
         ssnodeList += ssnode
       }
     }
+
+    ssnodeMap  = ssnodeList.toMap
+
+    for (node <- group){
+      val node_value = node._2.asInstanceOf[mutable.Map[String, Any]]
+      if(node_value("nodeType") == "vector port" && node_value("num_input") == 0){
+
+        for (node <- node_value("output_nodes").asInstanceOf[List[List[Any]]]){
+          val innode_id = node.head.toString
+          val innode = ssnodeMap(innode_id)
+          input_ssnodes_list = input_ssnodes_list :+ (innode_id, innode)
+        }
+      }
+    }
+
+    input_ssnodes_list = input_ssnodes_list.distinct
+
     ssnodeList
   }
 
