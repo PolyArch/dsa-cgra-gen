@@ -5,7 +5,7 @@ import scala.collection.mutable.ListBuffer
 import IRpreprocessor._
 
 object IRconfigpather {
-  type ssnode_t = mutable.Map[String, Any]
+  type ssnode_t = (String, mutable.Map[String, Any])
 
   var num_ssnode : Int = 0
   val rand = scala.util.Random
@@ -200,11 +200,18 @@ object IRconfigpather {
   }
 
   def ssnodeGroup2List(g:Any) ={
-    val group = g.asInstanceOf[List[ssnode_t]]
+    val group = g.asInstanceOf[List[mutable.Map[String, Any]]].map(node => {
+      (node("nodeType").toString + node("id").asInstanceOf[Int]) -> node
+    }).toMap
+
     val ssnodeList : ListBuffer[ssnode_t] = new ListBuffer[ssnode_t]()
+
     for (node <- group){
-      if (node("nodeType") != "vector port"){
-        ssnodeList += node
+      if (!node._1.contains("vector port")){
+        val node_name = node._1
+        val node_value = node._2.asInstanceOf[mutable.Map[String, Any]]
+        val ssnode = (node_name, node_value)
+        ssnodeList += ssnode
       }
     }
     ssnodeList
