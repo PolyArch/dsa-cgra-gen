@@ -3,38 +3,25 @@ package cgra.config
 import chisel3.{UInt, _}
 import chisel3.util._
 
+import scala.io.Source
+
 case class inst_prop(numOperands:Int, latency:Int, Throughput:Int)
 
 object fullinst {
 
-  val insts_prop = Map(
-    "Add"      -> inst_prop(2,1,1),
-    "Sub"      -> inst_prop(2,1,1),
-    "Mul"      -> inst_prop(2,1,1),
-    "Div"      -> inst_prop(2,1,1),
-    "BOr"      -> inst_prop(2,1,1),
-    "BAnd"     -> inst_prop(2,1,1),
-    "BXor"     -> inst_prop(2,1,1),
-    "BNot"     -> inst_prop(1,1,1),
-    "LNot"     -> inst_prop(1,1,1),
-    "LAnd"     -> inst_prop(2,1,1),
-    "LOr"      -> inst_prop(2,1,1),
-    "ExtractB" -> inst_prop(2,1,1),
-    "LShf"     -> inst_prop(2,1,1),
-    "RShf"     -> inst_prop(2,1,1),
-    "Cat"      -> inst_prop(2,1,1),
-    "Mux"      -> inst_prop(3,1,1),
-    "EQ"       -> inst_prop(2,1,1),
-    "NQ"       -> inst_prop(2,1,1),
-    "Mod"      -> inst_prop(2,1,1),
-    "GT"       -> inst_prop(2,1,1),
-    "GE"       -> inst_prop(2,1,1),
-    "LT"       -> inst_prop(2,1,1),
-    "LE"       -> inst_prop(2,1,1),
-    "AndR"     -> inst_prop(1,1,1),
-    "OrR"      -> inst_prop(1,1,1),
-    "XorR"     -> inst_prop(1,1,1)
-  )
+  val full_inst_file = "full.ssinst"
+
+  val ssinst_conf : List[Array[String]] =
+    Source.fromResource(full_inst_file).getLines
+      .toList.map(_.split(" +")).filter(_.length == 6)
+
+  def insts_prop(inst:String) : inst_prop ={
+    val target_line = ssinst_conf.filter(l=>l.head == inst)
+    val num_oper = target_line.head.apply(2).toInt
+    val latency = target_line.head.apply(4).toInt
+    val throughput = target_line.head.apply(5).toInt
+    inst_prop(num_oper, latency, throughput)
+  }
 
   val inst_operation : Map[String,Seq[UInt] => UInt]= Map(
     // 8-Bit Instructions
@@ -224,6 +211,36 @@ object fullinst {
         ops.head.apply(47,32)  + ops(1).apply(47,32),
         ops.head.apply(31,16)  + ops(1).apply(31,16),
         ops.head.apply(15,0)  + ops(1).apply(15,0)
+      )
+    }),
+    "Add64"    -> ((ops:Seq[UInt]) => {
+      val op0 = ops.head.apply(63,0)
+      val op1 = ops(1).apply(63,0)
+      op0 + op1
+    }),
+    "Abs16x4"    -> ((ops:Seq[UInt]) => {
+      val op0 = ops.head.apply(63,0)
+      val s3 = op0(63,48).asSInt()
+      val s2 = op0(47,32).asSInt()
+      val s1 = op0(31,16).asSInt()
+      val s0 = op0(15,0).asSInt()
+      Cat(
+        Mux(s3 > 0.S, s3.asUInt(), (0.S-s3).asUInt()),
+        Mux(s2 > 0.S, s2.asUInt(), (0.S-s2).asUInt()),
+        Mux(s1 > 0.S, s1.asUInt(), (0.S-s1).asUInt()),
+        Mux(s0 > 0.S, s0.asUInt(), (0.S-s0).asUInt())
+      )
+    }),
+    "RShf4_16x4"    -> ((ops:Seq[UInt]) => {
+      val s3 = ops.head.apply(63,48)
+      val s2 = ops.head.apply(47,32)
+      val s1 = ops.head.apply(31,16)
+      val s0 = ops.head.apply(15,0)
+      Cat(
+        s3 >> 4.U,
+        s2 >> 4.U,
+        s1 >> 4.U,
+        s0 >> 4.U
       )
     }),
     "Add"      -> ((ops:Seq[UInt]) => ops.head  + ops(1)),

@@ -13,13 +13,21 @@ object dev extends App{
 
   // Define a Adding Function Unit
   val fu_add = new ssnode("function unit")
-  fu_add("instructions","Add64")("granularity", 32)
+  fu_add(
+    "instructions","Add64")(
+    "granularity", 32)(
+    "num_register", 1)(
+    "max_delay_fifo_depth", 4)
 
   val fu_spc = new ssnode("function unit")
-  fu_spc("instructions",Set("Div16", "RShf4_16x4", "Abs16x4"))
+  fu_spc("instructions",Set("Div16", "RShf4_16x4", "Abs16x4"))(
+    "num_register", 16)(
+    "max_delay_fifo_depth", 2)
 
   val another_fu = fu_spc.clone()
-  another_fu("instructions",Set("Acc16", "Or16"))
+  another_fu("instructions",Set("Acc16", "Or16"))(
+    "num_register", 4)(
+    "max_delay_fifo_depth", 4)
 
   // Create a ssfabric
   val dev = new ssfabric
@@ -67,8 +75,6 @@ object dev extends App{
 
   val third_row_switch = dev("row_idx","nodeType")(2,"switch")
   third_row_switch.foreach(s=>s("max_util", 5)("switch_mode","group-by-port"))
-
-
 
   // Connect the Vector Port
   val in_vport = new ssnode("vector port")

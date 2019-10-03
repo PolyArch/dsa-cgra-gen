@@ -241,7 +241,6 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
     // config this module
     val config_this = config_enable && id_bits === id.U
 
-
     var useful_config_info_high = id_field_low - 1
     val useful_config_info_low = 0
     when(config_this){

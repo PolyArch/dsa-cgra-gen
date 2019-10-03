@@ -1,20 +1,18 @@
 package cgra.fabric
 
 import cgra.IO.ReqAckConf_if
-import cgra.IO.port_generator.gc_port
-import cgra.fabric.Reconfigurable
 import chisel3._
 import chisel3.util._
 
 class delay(datawidth:Int,
-            delay:Int,
+            max_delay:Int,
             flow_control:Boolean) extends Module{
   // ------ Create Hardware ------
   // create IO
   val io = IO(new Bundle{
     val in = Flipped(ReqAckConf_if(datawidth))
     val out = ReqAckConf_if(datawidth)
-    val delay = Input(UInt(log2Ceil(1 + delay).W))
+    val delay = Input(UInt(log2Ceil(1 + max_delay).W))
   })
   // Dont Care the config bit
   io.in.config := DontCare;io.out.config := DontCare
@@ -27,7 +25,7 @@ class delay(datawidth:Int,
     queue_in.valid := io.in.valid
     queue_in.ready <> io.in.ready
     // connect output
-    val queue_out = Queue(queue_in,delay)
+    val queue_out = Queue(queue_in,max_delay)
     io.out.bits := queue_out.bits
     io.out.valid := queue_out.valid
     io.out.ready <> queue_out.ready
@@ -36,10 +34,10 @@ class delay(datawidth:Int,
     io.in.valid := DontCare; io.out.valid := DontCare
     io.in.ready := DontCare; io.out.ready := DontCare
     // Create flip-flop array to store data
-    val pipe = RegInit(VecInit(Seq.fill(delay)(0.U(datawidth.W))))
+    val pipe = RegInit(VecInit(Seq.fill(max_delay)(0.U(datawidth.W))))
     // Create head and tail pointer
-    val head_ptr = RegInit(0.U(log2Ceil(delay).W))
-    val tail_ptr = RegInit(0.U(log2Ceil(delay).W))
+    val head_ptr = RegInit(0.U(log2Ceil(max_delay).W))
+    val tail_ptr = RegInit(0.U(log2Ceil(max_delay).W))
     // ------ Logic connections ------
     // read and write
     io.out.bits := pipe(head_ptr)
