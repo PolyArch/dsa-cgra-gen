@@ -5,7 +5,7 @@ import scala.collection.mutable.ListBuffer
 import IRpreprocessor._
 
 object IRconfigpather {
-  type ssnode_t = (String, mutable.Map[String, Any])
+  type ssnode_t = mutable.Map[String, Any]
 
   var num_ssnode : Int = 0
   val rand = scala.util.Random
@@ -30,12 +30,7 @@ object IRconfigpather {
   var vari_config_cycle : Double= 0.0
 
   def getGraph(ir:mutable.Map[String,Any]) = {
-    if(ir.isDefinedAt("routers"))
-      ssnodeList ++= ssnodeGroup2List(ir("routers"))
-    if(ir.isDefinedAt("dedicated_pes"))
-      ssnodeList ++= ssnodeGroup2List(ir("dedicated_pes"))
-    if(ir.isDefinedAt("shared_pes"))
-      ssnodeList ++= ssnodeGroup2List(ir("shared_pes"))
+    ssnodeList ++= ssnodeGroup2List(ir("nodes"))
     ssnodeTopology = ir("links").asInstanceOf[List[String]]
     buildGraph()
     buildConfigPath()
@@ -205,14 +200,11 @@ object IRconfigpather {
   }
 
   def ssnodeGroup2List(g:Any) ={
-    val group = g.asInstanceOf[mutable.Map[String, Any]]
+    val group = g.asInstanceOf[List[ssnode_t]]
     val ssnodeList : ListBuffer[ssnode_t] = new ListBuffer[ssnode_t]()
     for (node <- group){
-      if (!node._1.contains("default")){
-        val node_name = node._1
-        val node_value = node._2.asInstanceOf[mutable.Map[String, Any]]
-        val ssnode = (node_name, node_value)
-        ssnodeList += ssnode
+      if (node("nodeType") != "vector port"){
+        ssnodeList += node
       }
     }
     ssnodeList

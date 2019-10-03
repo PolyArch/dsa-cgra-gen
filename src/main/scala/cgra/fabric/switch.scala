@@ -369,5 +369,4 @@ object gen_switch extends App{
       })
     }
   }
-
 }

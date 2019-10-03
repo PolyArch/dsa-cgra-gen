@@ -9,7 +9,7 @@ object dev extends App{
 
   // Define Default Switch
   val sw_default = new ssnode("switch")
-  sw_default("max_util",2)("granularity",32)
+  sw_default("max_util",2)("granularity",32)("subnet_offset", List(0))
 
   // Define a Adding Function Unit
   val fu_add = new ssnode("function unit")
@@ -22,7 +22,8 @@ object dev extends App{
   val fu_spc = new ssnode("function unit")
   fu_spc("instructions",Set("Div16", "RShf4_16x4", "Abs16x4"))(
     "num_register", 16)(
-    "max_delay_fifo_depth", 2)
+    "max_delay_fifo_depth", 2)(
+    "flow_control", false)
 
   val another_fu = fu_spc.clone()
   another_fu("instructions",Set("Acc16", "Or16"))(
@@ -34,7 +35,6 @@ object dev extends App{
   dev(
     "default_datawidth", 64)(
     "default_granularity", 32)(
-    "defaultsubnet_offset", List(0))(
     "Default_max_util", 2)(
     "Defaultflow_control", true)(
     "default_switch_mode", "full-control"

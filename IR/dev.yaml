@@ -1475,7 +1475,7 @@ nodes:
   num_register: 16
   num_output: 1
   subnet_offset: [0]
-  flow_control: true
+  flow_control: false
   max_util: 2
   datawidth: 64
   num_input: 4
@@ -1527,7 +1527,7 @@ nodes:
   num_register: 16
   num_output: 1
   subnet_offset: [0]
-  flow_control: true
+  flow_control: false
   max_util: 2
   datawidth: 64
   num_input: 4
@@ -1709,7 +1709,7 @@ nodes:
   num_register: 4
   num_output: 3
   subnet_offset: [0]
-  flow_control: true
+  flow_control: false
   max_util: 2
   datawidth: 64
   num_input: 6
@@ -1795,7 +1795,7 @@ nodes:
   num_register: 4
   num_output: 1
   subnet_offset: [0]
-  flow_control: true
+  flow_control: false
   max_util: 2
   datawidth: 64
   num_input: 4

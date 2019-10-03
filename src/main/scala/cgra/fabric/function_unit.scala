@@ -54,7 +54,7 @@ class function_unit(prop:mutable.Map[String,Any])
 
   // the total config bit width
   private val conf_bit_width : Int = log2Ceil(num_inst) + max_num_operand *
-      (log2Ceil(max_delay_fifo_depth) + log2Ceil(num_register + num_input))
+      (log2Ceil(max_delay_fifo_depth + 1) + log2Ceil(num_register + num_input))
   // config width for opcode, (delay fifo + source select) for each operand
   apply("conf_bit_width", conf_bit_width)
 
@@ -71,7 +71,7 @@ class function_unit(prop:mutable.Map[String,Any])
   // for each operand
   for (op_idx <- 0 until max_num_operand){
     // delay fifo
-    val delay_fifo_width = log2Ceil(max_delay_fifo_depth)
+    val delay_fifo_width = log2Ceil(max_delay_fifo_depth + 1)
     curr_high_bit = curr_low_bit + delay_fifo_width - 1
     apply("delay_" + op_idx, (curr_high_bit, curr_low_bit))
     curr_low_bit = curr_high_bit + 1
@@ -208,6 +208,9 @@ class function_unit(prop:mutable.Map[String,Any])
     if(flow_control){
       delays_module(op_idx).in.valid := operands_valid(op_idx)
       operands_ready(op_idx) := delays_module(op_idx).in.ready
+    }else{
+      delays_module(op_idx).in.valid := DontCare
+      delays_module(op_idx).out.ready := DontCare
     }
     // Dont Care config bit
     delays_module(op_idx).in.config := DontCare
