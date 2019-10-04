@@ -25,8 +25,8 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
   private val decomposer:Int = datawidth / granularity
   private val config_in_port_idx:Int = getPropByKey("config_in_port_idx")
     .asInstanceOf[Int]
-  private val config_out_port_idx:List[Int] = getPropByKey("config_out_port_idx")
-    .asInstanceOf[List[Int]]
+  private val config_out_port_idx:List[Int] = try{getPropByKey("config_out_port_idx")
+    .asInstanceOf[List[Int]]}catch{case _:Throwable => Nil}
   private val subnet_table:List[List[Boolean]] =
     getPropByKey("subnet_table").asInstanceOf[List[List[Boolean]]]
   private val switch_mode:String = getPropByKey("switch_mode").toString
@@ -356,12 +356,14 @@ object gen_switch extends App{
 
       node += "config_in_port_idx" -> (num_input - 1)
 
+      /*
       val rand = new Random()
       if(rand.nextBoolean() && num_output == 1){
         node += "config_out_port_idx" -> List(0)
       }else{
         node += "config_out_port_idx" -> List(0, num_output - 1)
       }
+      */
       chisel3.Driver.execute(args,()=>{
         val module = new switch(node)
         println(module)

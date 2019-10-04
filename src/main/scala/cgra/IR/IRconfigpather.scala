@@ -36,9 +36,56 @@ object IRconfigpather {
     buildConfigPath()
 
     val startNode = ssnodeList(rand.nextInt(ssnodeList.length))
+
+    /*
     val testBFS = ssnodeGraph.BFS(startNode)
     val testDFS = ssnodeGraph.DFS(startNode)
-    ssnodeGraph
+    */
+
+    add_config_port_idx(ir("nodes"))
+  }
+
+  def add_config_port_idx(g:Any):Unit={
+    // Add a name to each node
+    val nodes = g.asInstanceOf[List[mutable.Map[String, Any]]].map(node => {
+      node("id").toString -> node
+    }).toMap
+
+    for(node <- nodes){
+      if(ssnodeList.contains(node)){
+        ssnodeMap = ssnodeList.toMap
+        val node_idx = ssnodeList.indexOf(node)
+        val node_id = node._1
+        val node_prop = node._2
+
+        val config_output_node_idx = ssnodeConfigPathMatrix(node_idx).zipWithIndex
+          .filter(_._1).map(_._2)
+        val output_nodes_id = config_output_node_idx.map(i=>ssnodeList(i)._1)
+
+        val temp_conf_out : ListBuffer[Int] = new ListBuffer[Int]()
+        for(output_id <- output_nodes_id){
+          // Add output conf id -> port idx to temp buffer
+          val output_conf_port_idx = node_prop("output_nodes")
+            .asInstanceOf[List[List[Any]]]
+            .indexWhere(ids=>ids.head.toString == output_id)
+          temp_conf_out += output_conf_port_idx
+          // Add input conf id -> port idx
+          val input_conf_port_idx = ssnodeMap(output_id)("input_nodes")
+            .asInstanceOf[List[List[Any]]].indexWhere(ids=>ids.head.toString == node_id)
+          ssnodeMap(output_id) += "config_in_port_idx" -> input_conf_port_idx
+        }
+        node_prop += "config_out_port_idx" -> temp_conf_out.toList
+      }
+    }
+
+    for(node <- nodes){
+      val node_prop = node._2
+      if(ssnodeList.contains(node) && !node_prop.isDefinedAt("config_in_port_idx")){
+        val vecport_idx : Int = node_prop("input_nodes").asInstanceOf[List[List[Any]]]
+          .indexWhere(ids=>ids(1).toString.contains("vector port"))
+        node_prop += "config_in_port_idx" -> vecport_idx
+      }
+    }
   }
 
   def sslinks2connection(ls:Any): Unit={
@@ -231,13 +278,13 @@ object IRconfigpather {
   def ssnodeGroup2List(g:Any) ={
 
     // Add a name to each node
-    val group = g.asInstanceOf[List[mutable.Map[String, Any]]].map(node => {
+    val nodes = g.asInstanceOf[List[mutable.Map[String, Any]]].map(node => {
       node("id").toString -> node
     }).toMap
 
     val ssnodeList : ListBuffer[ssnode_t] = new ListBuffer[ssnode_t]()
 
-    for (node <- group){
+    for (node <- nodes){
       val node_name = node._1
       val node_value = node._2.asInstanceOf[mutable.Map[String, Any]]
       val ssnode = (node_name, node_value)
@@ -249,7 +296,7 @@ object IRconfigpather {
 
     ssnodeMap  = ssnodeList.toMap
 
-    for (node <- group){
+    for (node <- nodes){
       val node_value = node._2.asInstanceOf[mutable.Map[String, Any]]
       if(node_value("nodeType") == "vector port" && node_value("num_input") == 0){
 

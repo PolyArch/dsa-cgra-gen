@@ -28,8 +28,8 @@ class function_unit(prop:mutable.Map[String,Any])
   private val decomposer:Int = datawidth / granularity
   private val config_in_port_idx:Int = getPropByKey("config_in_port_idx")
     .asInstanceOf[Int]
-  private val config_out_port_idx:List[Int] = getPropByKey("config_out_port_idx")
-    .asInstanceOf[List[Int]]
+  private val config_out_port_idx:List[Int] = try{getPropByKey("config_out_port_idx")
+    .asInstanceOf[List[Int]]}catch{case _:Throwable => Nil}
   private val instructions : List[String] = getPropByKey("instructions")
     .asInstanceOf[List[String]]
   private val num_inst : Int = instructions.length
@@ -486,15 +486,18 @@ object gen_fu extends App{
     if(node("nodeType") == "function unit"){
 
       // Add config input / output port for test
+
       val num_input = node("num_input").asInstanceOf[Int]
       val num_output = node("num_output").asInstanceOf[Int]
       node += "config_in_port_idx" -> (num_input - 1)
+      /*
       val rand = new Random()
       if(rand.nextBoolean() && num_output == 1){
         node += "config_out_port_idx" -> List(0)
       }else{
         node += "config_out_port_idx" -> List(0, num_output - 1)
       }
+      */
 
       chisel3.Driver.execute(args,()=>{
         val module = new function_unit(node)
