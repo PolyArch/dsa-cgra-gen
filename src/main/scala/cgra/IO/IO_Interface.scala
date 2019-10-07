@@ -25,6 +25,8 @@ case class ReqAckConf_if(ww:Int) extends Bundle {
   override def cloneType: ReqAckConf_if.this.type = ReqAckConf_if(ww).asInstanceOf[this.type]
 }
 
+
+
 case class ReqAckConf_t(ww:Int) extends Bundle{
   val valid : Bool = Bool()
   val bits : UInt = UInt(ww.W)
