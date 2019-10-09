@@ -94,23 +94,47 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
 
   // Initialize the I/O port
   val io = IO(new Bundle{
-    val input_ports = Flipped(Vec(num_input,Vec(decomposer,ReqAckConf_if(granularity))))
-    val output_ports = Vec(num_output,Vec(decomposer,ReqAckConf_if(granularity)))
+    val input_ports =
+      Flipped(Vec(num_input, DecoupledIO(UInt((data_width+1).W))))
+    val output_ports =
+      Vec(num_output, DecoupledIO(UInt((data_width+1).W)))
   })
 
+  // De-compose I/O ports
+  // In
+  val decomposed_in_ports = Wire(Vec(num_input, Vec(decomposer, ReqAckConf_t(granularity))))
+  for (port_idx <- 0 until num_input; slot_idx <- 0 until decomposer){
+    decomposed_in_ports(port_idx)(slot_idx).bits :=
+      io.input_ports(port_idx).bits((slot_idx+1)*granularity -1 ,slot_idx * granularity)
+    decomposed_in_ports(port_idx)(slot_idx).valid := io.input_ports(port_idx).valid
+    io.input_ports(port_idx).ready := decomposed_in_ports(port_idx)(slot_idx).ready
+    decomposed_in_ports(port_idx)(slot_idx).config := io.input_ports(port_idx).bits(data_width)
+  }
+
+  // Out
+  val decomposed_out_ports = Wire(Vec(num_output, Vec(decomposer, ReqAckConf_t(granularity))))
+  for (port_idx <- 0 until num_output){
+    val config_bit_out = VecInit(decomposed_out_ports(port_idx).map(_.config))
+        .asUInt().andR()
+    io.output_ports(port_idx).bits := Cat(config_bit_out,decomposed_out_ports(port_idx)
+      .map(_.bits).reverse.reduce(Cat(_,_)))
+    io.output_ports(port_idx).valid :=
+      VecInit(decomposed_out_ports(port_idx).map(_.valid)).asUInt().andR()
+    decomposed_out_ports(port_idx).foreach(p=>p.ready := io.output_ports(port_idx).ready)
+  }
 
   // Generate the configuration register
   val config_slot_file = RegInit(VecInit(Seq.fill(max_util)(0.U(conf_bit_width.W))))
 
-  val config_enable : Bool = io.input_ports(config_in_port_idx).map(_.config)
-    .reduce(_ && _)
+  // Config Enable
+  val config_enable : Bool = io.input_ports(config_in_port_idx).bits(data_width)
 
   // config wire
-  val config_wire :UInt = Wire(UInt(conf_bit_width.W))
+  val config_wire :UInt = WireInit(0.U(conf_bit_width.W))
 
   // extract the incoming config information from config in port
-  val config_port_bits : UInt = io.input_ports(config_in_port_idx).map(_.bits)
-    .reverse.reduce(Cat(_,_))
+  val config_port_bits : UInt = io.input_ports(config_in_port_idx)
+    .bits(data_width-1,0)
 
   // ------ Hardware Logic ------
 
@@ -153,7 +177,7 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
         val input_port_slot = connected_input(sel)
         sel2port_slot += (sel + 1) -> (input_port_slot._1,input_port_slot._2)
         (sel + 1).U -> // selection value = 0 is left for default
-          io.input_ports(input_port_slot._1)(input_port_slot._2)
+          decomposed_in_ports(input_port_slot._1)(input_port_slot._2)
       }
 
       // Add Mux selection to properties
@@ -161,19 +185,19 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
         sel2port_slot
 
       // bit connection
-      io.output_ports(output_port_idx)(output_slot_idx).bits := MuxLookup(
+      decomposed_out_ports(output_port_idx)(output_slot_idx).bits := MuxLookup(
         config_reg_value, 0.U, portMuxLookup.map(x=>(x._1,x._2.bits)))
 
       // control flow connection
       if(flow_control){
-        io.output_ports(output_port_idx)(output_slot_idx).valid := MuxLookup(
+        decomposed_out_ports(output_port_idx)(output_slot_idx).valid := MuxLookup(
           config_reg_value, 0.U, portMuxLookup.map(x=>(x._1,x._2.valid)))
       }else{
-        io.output_ports(output_port_idx)(output_slot_idx).valid := DontCare
+        decomposed_out_ports(output_port_idx)(output_slot_idx).valid := DontCare
       }
 
       // don't care configuration when stream mode
-      io.output_ports(output_port_idx)(output_slot_idx).config := DontCare
+      decomposed_out_ports(output_port_idx)(output_slot_idx).config := DontCare
     }
 
     // Add this into properties
@@ -219,15 +243,15 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
             val output_slot_idx = o_slot_idx._2
             val is_select = sel_input_value_foreach_output(idx).U ===
               sel_reg_foreach_output(idx)
-            Mux(is_select,io.output_ports(output_port_idx)(output_slot_idx).ready,
+            Mux(is_select,decomposed_out_ports(output_port_idx)(output_slot_idx).ready,
               true.B)
           }
         // AND all downstream ready, then pass to upstream
         val overall_downstream_ready = downstream_readys.reduce(_ && _)
-        io.input_ports(input_port_idx)(input_slot_idx).ready :=
+        decomposed_in_ports(input_port_idx)(input_slot_idx).ready :=
           overall_downstream_ready
       }else{
-        io.input_ports(input_port_idx)(input_slot_idx).ready := DontCare
+        decomposed_in_ports(input_port_idx)(input_slot_idx).ready := DontCare
       }
     }// End of backward ready connection
   }.otherwise{// When it is during configuration time
@@ -248,13 +272,13 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
       // disable bits and valid
       for(output_port_idx <- 0 until num_output;
           output_slot_idx <- 0 until decomposer){
-        io.output_ports(output_port_idx)(output_slot_idx).bits := DontCare
-        io.output_ports(output_port_idx)(output_slot_idx).valid := DontCare
-        io.output_ports(output_port_idx)(output_slot_idx).config := DontCare
+        decomposed_out_ports(output_port_idx)(output_slot_idx).bits := DontCare
+        decomposed_out_ports(output_port_idx)(output_slot_idx).valid := DontCare
+        decomposed_out_ports(output_port_idx)(output_slot_idx).config := DontCare
       }
       for(input_port_idx <- 0 until num_input;
           input_slot_idx <- 0 until decomposer){
-        io.input_ports(input_port_idx)(input_slot_idx).ready := DontCare
+        decomposed_in_ports(input_port_idx)(input_slot_idx).ready := DontCare
       }
 
       // config register file
@@ -313,22 +337,22 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
           output_slot_idx <- 0 until decomposer){
         if(config_out_port_idx.contains(output_port_idx)){
           // match slot connection
-          io.output_ports(output_port_idx)(output_slot_idx).bits :=
-            io.input_ports(config_in_port_idx)(output_slot_idx).bits
-          io.output_ports(output_port_idx)(output_slot_idx).valid :=
-            io.input_ports(config_in_port_idx)(output_slot_idx).valid
-          io.output_ports(output_port_idx)(output_slot_idx).config :=
-            io.input_ports(config_in_port_idx)(output_slot_idx).config
+          decomposed_out_ports(output_port_idx)(output_slot_idx).bits :=
+            decomposed_in_ports(config_in_port_idx)(output_slot_idx).bits
+          decomposed_out_ports(output_port_idx)(output_slot_idx).valid :=
+            decomposed_in_ports(config_in_port_idx)(output_slot_idx).valid
+          decomposed_out_ports(output_port_idx)(output_slot_idx).config :=
+            decomposed_in_ports(config_in_port_idx)(output_slot_idx).config
         }else{
-          io.output_ports(output_port_idx)(output_slot_idx).bits := DontCare
-          io.output_ports(output_port_idx)(output_slot_idx).valid := DontCare
-          io.output_ports(output_port_idx)(output_slot_idx).config := DontCare
+          decomposed_out_ports(output_port_idx)(output_slot_idx).bits := DontCare
+          decomposed_out_ports(output_port_idx)(output_slot_idx).valid := DontCare
+          decomposed_out_ports(output_port_idx)(output_slot_idx).config := DontCare
         }
       }
       // backward connection
       for(input_port_idx <- 0 until num_input;
           input_slot_idx <- 0 until decomposer){
-        io.input_ports(input_port_idx)(input_slot_idx).ready := DontCare
+        decomposed_in_ports(input_port_idx)(input_slot_idx).ready := DontCare
       }
     }
   }

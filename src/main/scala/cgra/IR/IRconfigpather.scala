@@ -29,19 +29,11 @@ object IRconfigpather {
   var max_config_cycle : Double= 0.0
   var vari_config_cycle : Double= 0.0
 
-  def getGraph(ir:mutable.Map[String,Any]) = {
+  def tranverse_config_path(ir:mutable.Map[String,Any]) = {
     ssnodeList ++= ssnodeGroup2List(ir("nodes"))
     sslinks2connection(ir("links"))
     buildGraph()
     buildConfigPath()
-
-    val startNode = ssnodeList(rand.nextInt(ssnodeList.length))
-
-    /*
-    val testBFS = ssnodeGraph.BFS(startNode)
-    val testDFS = ssnodeGraph.DFS(startNode)
-    */
-
     add_config_port_idx(ir("nodes"))
   }
 

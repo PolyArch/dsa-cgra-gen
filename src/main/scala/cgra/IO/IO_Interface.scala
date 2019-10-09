@@ -26,13 +26,22 @@ case class ReqAckConf_if(ww:Int) extends Bundle {
 }
 
 
-
 case class ReqAckConf_t(ww:Int) extends Bundle{
   val valid : Bool = Bool()
   val bits : UInt = UInt(ww.W)
   val ready : Bool = Bool()
   val config : Bool = Bool()
+  override def cloneType: ReqAckConf_t.this.type = ReqAckConf_t(ww).asInstanceOf[this.type]
 }
+
+case class ReqAckConf_wire(ww:Int) extends Bundle{
+  val valid : Bool = WireInit(false.B)
+  val bits : UInt = WireInit(0.U(ww.W))
+  val ready : Bool = WireInit(false.B)
+  val config : Bool = WireInit(false.B)
+  override def cloneType: ReqAckConf_wire.this.type = ReqAckConf_wire(ww).asInstanceOf[this.type]
+}
+
 object port_generator {
   def gc_port (p:ReqAckConf_if, t:String):Unit={
     if(!t.contains("Data"))

@@ -1,7 +1,11 @@
 {
+  "num_output" : 9,
   "default_data_width" : 64,
   "identifier" : [ "id", "nodeType", "row_idx", "col_idx" ],
+  "flow_control" : true,
+  "max_util" : 2,
   "Default_max_util" : 2,
+  "num_input" : 14,
   "numCol" : 5,
   "Instruction Set" : {
     "RShf4_16x4" : 4,
@@ -1325,6 +1329,10 @@
     "switch_mode" : "full-control",
     "max_id" : 43
   } ],
+  "data_width" : 64,
+  "granularity" : 32,
   "default_granularity" : 32,
+  "switch_mode" : "full-control",
+  "module_type" : "cgra.fabric.cgra_fabric",
   "Defaultflow_control" : true
 }

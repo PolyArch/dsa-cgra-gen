@@ -3,10 +3,14 @@ package dsl
 import java.io.{File, PrintWriter}
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+
+import cgra.IO.ReqAckConf_if
 import org.yaml.snakeyaml.Yaml
+
 import scala.collection.mutable.Map
 import scala.collection.mutable.Set
 import cgra.IR.IRconvertor._
+import chisel3.{Bundle, Vec}
 
 // Singleton identifier
 object identifier {
@@ -95,6 +99,9 @@ trait IRPrintable {
       this
     }
   }
+  def addProp(key:String, value:Any):IRPrintable={
+    apply(key,value)
+  }
 
   // Delete
   def deletePropByKey(key:String*):Unit={
@@ -134,3 +141,15 @@ trait IRPrintable {
     }
   }
 }
+
+abstract class GeneralNodePorts extends Bundle{
+  val input_ports : Vec[ReqAckConf_if]
+  val output_ports : Vec[ReqAckConf_if]
+}
+
+/*
+class GeneralPort extends GeneralNodePorts{
+  override val input_ports: Vec[ReqAckConf_if] =
+}
+
+ */

@@ -6,6 +6,7 @@ import scala.collection.mutable.{ListBuffer, Map, Set}
 class ssfabric extends IRPrintable {
   //pre-processs
   apply("identifier", identifier.key)
+  addProp("module_type", "cgra.fabric.cgra_fabric")
 
   // nodes and links
   private var nodes : ListBuffer[ssnode] = ListBuffer[ssnode]()
@@ -232,11 +233,13 @@ class ssfabric extends IRPrintable {
       key.startsWith("Default") || key.startsWith("default")})
     for(node <- nodes){
       for (key <- default_keys){
-          val start_sub = {if(key(7)=='_'){8}else{7}}
-          val true_key = key.substring(start_sub)
-          if(!node.has(true_key)){
-            node(true_key,getPropByKey(key))
-          }
+        val start_sub = {if(key(7)=='_'){8}else{7}}
+        val true_key = key.substring(start_sub)
+        val default_value = getPropByKey(key)
+        if(!node.has(true_key)){
+          node(true_key,default_value)
+        }
+        apply(true_key, default_value)
       }
       node("max_id", nodes.length - 1)
     }
@@ -264,6 +267,27 @@ class ssfabric extends IRPrintable {
         yield allInsts(i) -> (i + start_encoding))
       apply("Instruction Set", InstsWithEnc)
     }
-    // TODO: Make sure all nodes have different identifier
+
+    // Calculate the Input number and Output Node Number
+    val allVpNodes = this("nodeType")("vector port")
+    // Output vector port only has input_nodes
+    val num_output : Int = {for(vp <- allVpNodes)yield{
+      if(vp has "input_nodes"){
+        vp.getPropByKey("input_nodes")
+          .asInstanceOf[Seq[ssnode]].length
+      }else{
+        0
+      }
+    }}.sum
+    // Input vector port only has output_nodes
+    val num_input : Int = {for(vp <- allVpNodes)yield{
+      if(vp has "output_nodes"){
+        vp.getPropByKey("output_nodes")
+          .asInstanceOf[Seq[ssnode]].length
+      }else{
+        0
+      }
+    }}.sum
+    apply("num_input", num_input)("num_output",num_output)
   }
 }

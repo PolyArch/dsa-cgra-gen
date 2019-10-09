@@ -167,7 +167,7 @@ class ssnode(nodeType:String) extends IRPrintable {
       val output_nodes = apply("output_nodes").asInstanceOf[ListBuffer[ssnode]]
       require(num_output == output_nodes.length)
     }
-    // Function Unit specific process
+    // Function-Unit specific process
     if(getValue(getPropByKey("nodeType"))=="function unit"){
       val insts = getPropByKey("instructions")
       insts match {
@@ -175,7 +175,7 @@ class ssnode(nodeType:String) extends IRPrintable {
         case _ =>
       }
     }
-    // Subnet Table Postprocess
+    // Switch-specific subnet table process
     if(has("subnet_offset")){
       if(num_input > 0 && num_output > 0){
         val subnet_offset = getPropByKey("subnet_offset")
