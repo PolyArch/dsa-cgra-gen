@@ -14,15 +14,15 @@ class vector_port(prop:mutable.Map[String,Any])
   // ------ Reconfigurable Variable------
 
   // Initialize the properties of switch (hardware)
-  private val datawidth:Int = getPropByKey("datawidth").asInstanceOf[Int]
+  private val data_width:Int = getPropByKey("data_width").asInstanceOf[Int]
   private val num_input:Int = getPropByKey("num_input").asInstanceOf[Int]
   private val num_output:Int = getPropByKey("num_output").asInstanceOf[Int]
   private val num_port = num_input max num_output
 
   // Create the I/O port
   val io = IO(new Bundle{
-    val input_ports = Flipped(Vec(num_port,ReqAckConf_if(datawidth)))
-    val output_ports = Vec(num_port,ReqAckConf_if(datawidth))
+    val input_ports = Flipped(Vec(num_port,ReqAckConf_if(data_width)))
+    val output_ports = Vec(num_port,ReqAckConf_if(data_width))
   })
 
   // ------ Logic Connections

@@ -1,5 +1,6 @@
 package cgra.config
 
+import cgra.fabric.Trig_PE_component.datapath.floatpoint.{FPAdd32, FPAdd64, FPMult32, FPMult64}
 import chisel3.{UInt, _}
 import chisel3.util._
 
@@ -20,56 +21,34 @@ object fullinst {
     val num_oper = target_line.head.apply(2).toInt
     val latency = target_line.head.apply(4).toInt
     val throughput = target_line.head.apply(5).toInt
+    println(inst + " : " + "num_operand = " + num_oper + ", latency = " +
+      latency + ", throughput = " + throughput)
     inst_prop(num_oper, latency, throughput)
   }
 
   val inst_operation : Map[String,Seq[UInt] => UInt]= Map(
     // 8-Bit Instructions
     "Add8"      -> ((ops:Seq[UInt]) => {
-      val op0 = ops.head.apply(7,0)
-      val op1 = ops(1).apply(7,0)
-      op0  + op1
+      ops.head.apply(7,0)  + ops(1).apply(7,0)
     }),
     // ------ 16-Bit Instructions ------
-    // TODO: `Control`, `IndexMatch`, `Select` to be implemented
     "Add16"     -> ((ops:Seq[UInt]) => {
-      val op0 = ops.head.apply(15,0)
-      val op1 = ops(1).apply(15,0)
-      op0 + op1
+      ops.head.apply(15,0) + ops(1).apply(15,0)
     }),
     "Sub16"     -> ((ops:Seq[UInt]) => {
-      val op0 = ops.head.apply(15,0)
-      val op1 = ops(1).apply(15,0)
-      op0 - op1
+      ops.head.apply(15,0) - ops(1).apply(15,0)
     }),
     "Concat16"  -> ((ops:Seq[UInt]) => {
-      val op0 = ops.head.apply(15,0)
-      val op1 = ops(1).apply(15,0)
-      Cat(op0, op1)
-    }),
-    "Acc16"     ->  ((ops:Seq[UInt]) => {
-      val op0 = ops.head.apply(15,0)
-      val op1 = ops(1).apply(15,0)
-      op0 + op1
+      Cat(ops.head.apply(15,0), ops(1).apply(15,0))
     }),
     "Mul16"     -> ((ops : Seq[UInt]) => {
-      val op0 = ops.head.apply(15,0)
-      val op1 = ops(1).apply(15,0)
-      op0 * op1
+      ops.head.apply(15,0) * ops(1).apply(15,0)
     }),
     "Div16"     -> ((ops : Seq[UInt]) => {
-      val op0 = ops.head.apply(15,0)
-      val op1 = ops(1).apply(15,0)
-      op0 / op1
+      ops.head.apply(15,0) / ops(1).apply(15,0)
     }),
     "Mod16"     -> ((ops : Seq[UInt]) => {
-      val op0 = ops.head.apply(15,0)
-      val op1 = ops(1).apply(15,0)
-      op0 % op1
-    }),
-    "Keep16"     -> ((ops : Seq[UInt]) => {
-      val op0 = ops.head.apply(15,0)
-      op0
+      ops.head.apply(15,0) % ops(1).apply(15,0)
     }),
     "Min16"     -> ((ops : Seq[UInt]) => {
       val op0 = ops.head.apply(15,0)
@@ -95,7 +74,7 @@ object fullinst {
       val op1 = ops(1).apply(15,0)
       (op0 >> op1).asUInt()
     }),
-    "ICmpEq"    -> ((ops : Seq[UInt]) => {
+    "ICmpEQ"    -> ((ops : Seq[UInt]) => {
       val op0 = ops.head.apply(15,0)
       val op1 = ops(1).apply(15,0)
       op0 === op1
@@ -105,28 +84,36 @@ object fullinst {
       val op1 = ops(1).apply(15,0)
       op0 =/= op1
     }),
-    "ReLU"    -> ((ops : Seq[UInt]) => {
+    "ReLU16"    -> ((ops : Seq[UInt]) => {
       val op0 = ops.head.apply(15,0)
       Mux(op0 >= 0.U, op0, 0.U)
     }),
 
     // ------ 32-Bit Instructions ------
-    "FMul32"    -> ((ops : Seq[UInt]) => { // TODO: Implement floating point
+    "FMul32"    -> ((ops : Seq[UInt]) => {
       val op0 = ops.head.apply(31,0)
       val op1 = ops(1).apply(31,0)
-      op0 * op1
+      val fMul32_io = Module(new FPMult32).io
+      fMul32_io.a := op0
+      fMul32_io.b := op1
+      fMul32_io.res
     }),
-    "FDiv32"    -> ((ops : Seq[UInt]) => { // TODO: Implement floating point
+    /*
+    "FDiv32"    -> ((ops : Seq[UInt]) => { // TODO: Need Implementation
       val op0 = ops.head.apply(31,0)
       val op1 = ops(1).apply(31,0)
       op0 / op1
     }),
-    "FAdd32"    -> ((ops : Seq[UInt]) => { // TODO: Implement floating point
+     */
+    "FAdd32"    -> ((ops : Seq[UInt]) => {
       val op0 = ops.head.apply(31,0)
       val op1 = ops(1).apply(31,0)
-      op0 + op1
+      val fAdd32_io = Module(new FPAdd32).io
+      fAdd32_io.a := op0
+      fAdd32_io.b := op1
+      fAdd32_io.res
     }),
-    "FSub32"    -> ((ops : Seq[UInt]) => { // TODO: Implement floating point
+    "FSub32"    -> ((ops : Seq[UInt]) => { // TODO: Need Implementation
       val op0 = ops.head.apply(31,0)
       val op1 = ops(1).apply(31,0)
       op0 - op1
@@ -135,11 +122,6 @@ object fullinst {
       val op0 = ops.head.apply(31,0)
       val op1 = ops(1).apply(31,0)
       op0 + op1
-    }),
-    "Sub32"    -> ((ops : Seq[UInt]) => {
-      val op0 = ops.head.apply(31,0)
-      val op1 = ops(1).apply(31,0)
-      op0 - op1
     }),
     "Mul32"    -> ((ops : Seq[UInt]) => {
       val op0 = ops.head.apply(31,0)
@@ -218,6 +200,11 @@ object fullinst {
       val op1 = ops(1).apply(63,0)
       op0 + op1
     }),
+    "Div64"    -> ((ops:Seq[UInt]) => {
+      val op0 = ops.head.apply(63,0)
+      val op1 = ops(1).apply(63,0)
+      op0 / op1
+    }),
     "Abs16x4"    -> ((ops:Seq[UInt]) => {
       val op0 = ops.head.apply(63,0)
       val s3 = op0(63,48).asSInt()
@@ -243,6 +230,34 @@ object fullinst {
         s0 >> 4.U
       )
     }),
+    "FMul64"    -> ((ops : Seq[UInt]) => {
+      val op0 = ops.head.apply(63,0)
+      val op1 = ops(1).apply(63,0)
+      val fMul64_io = Module(new FPMult64).io
+      fMul64_io.a := op0
+      fMul64_io.b := op1
+      fMul64_io.res
+    }),
+    "FDiv64"    -> ((ops : Seq[UInt]) => { // TODO: Need Implementation
+      val op0 = ops.head.apply(63,0)
+      val op1 = ops(1).apply(63,0)
+      op0 / op1
+    }),
+    "FAdd64"    -> ((ops : Seq[UInt]) => {
+      val op0 = ops.head.apply(63,0)
+      val op1 = ops(1).apply(63,0)
+      val fAdd64_io = Module(new FPAdd64).io
+      fAdd64_io.a := op0
+      fAdd64_io.b := op1
+      fAdd64_io.res
+    }),
+    "FSub64"    -> ((ops : Seq[UInt]) => { // TODO: Need Implementation
+      val op0 = ops.head.apply(63,0)
+      val op1 = ops(1).apply(63,0)
+      op0 - op1
+    })
+    /*
+    // ------ Data Width Insensitive Instructions ------
     "Add"      -> ((ops:Seq[UInt]) => ops.head  + ops(1)),
     "Sub"      -> ((ops:Seq[UInt]) => ops.head  - ops(1)),
     "Mul"      -> ((ops:Seq[UInt]) => ops.head  * ops(1)),
@@ -269,5 +284,6 @@ object fullinst {
     "AndR"     -> ((ops:Seq[UInt]) => ops.head.andR()),
     "OrR"      -> ((ops:Seq[UInt]) => ops.head.orR()),
     "XorR"     -> ((ops:Seq[UInt]) => ops.head.xorR())
+     */
   )
 }

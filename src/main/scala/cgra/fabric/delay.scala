@@ -4,14 +4,14 @@ import cgra.IO.ReqAckConf_if
 import chisel3._
 import chisel3.util._
 
-class delay(datawidth:Int,
+class delay(data_width:Int,
             max_delay:Int,
             flow_control:Boolean) extends Module{
   // ------ Create Hardware ------
   // create IO
   val io = IO(new Bundle{
-    val in = Flipped(ReqAckConf_if(datawidth))
-    val out = ReqAckConf_if(datawidth)
+    val in = Flipped(ReqAckConf_if(data_width))
+    val out = ReqAckConf_if(data_width)
     val delay = Input(UInt(log2Ceil(1 + max_delay).W))
   })
   // Dont Care the config bit
@@ -19,7 +19,7 @@ class delay(datawidth:Int,
 
   if(flow_control){// Delay FIFO
     // create fifo use internal lib
-    val queue_in : DecoupledIO[UInt] = Wire(DecoupledIO(UInt(datawidth.W)))
+    val queue_in : DecoupledIO[UInt] = Wire(DecoupledIO(UInt(data_width.W)))
     // connect input
     queue_in.bits := io.in.bits
     queue_in.valid := io.in.valid
@@ -34,7 +34,7 @@ class delay(datawidth:Int,
     io.in.valid := DontCare; io.out.valid := DontCare
     io.in.ready := DontCare; io.out.ready := DontCare
     // Create flip-flop array to store data
-    val pipe = RegInit(VecInit(Seq.fill(max_delay)(0.U(datawidth.W))))
+    val pipe = RegInit(VecInit(Seq.fill(max_delay)(0.U(data_width.W))))
     // Create head and tail pointer
     val head_ptr = RegInit(0.U(log2Ceil(max_delay).W))
     val tail_ptr = RegInit(0.U(log2Ceil(max_delay).W))

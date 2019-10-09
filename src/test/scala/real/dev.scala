@@ -33,7 +33,7 @@ object dev extends App{
   // Create a ssfabric
   val dev = new ssfabric
   dev(
-    "default_datawidth", 64)(
+    "default_data_width", 64)(
     "default_granularity", 32)(
     "Default_max_util", 2)(
     "Defaultflow_control", true)(

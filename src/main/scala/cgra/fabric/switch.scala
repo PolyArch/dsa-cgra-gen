@@ -16,13 +16,13 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
   // Initialize the properties of switch (hardware)
   private val id = getValue(getPropByKey("id")).asInstanceOf[Int]
   private val max_id = getPropByKey("max_id").asInstanceOf[Int]
-  private val datawidth:Int = getPropByKey("datawidth").asInstanceOf[Int]
+  private val data_width:Int = getPropByKey("data_width").asInstanceOf[Int]
   private val granularity = getPropByKey("granularity").asInstanceOf[Int]
   private val num_input:Int = getPropByKey("num_input").asInstanceOf[Int]
   private val num_output:Int = getPropByKey("num_output").asInstanceOf[Int]
   private val flow_control:Boolean = getPropByKey("flow_control").asInstanceOf[Boolean]
   private val max_util:Int = getPropByKey("max_util").asInstanceOf[Int]
-  private val decomposer:Int = datawidth / granularity
+  private val decomposer:Int = data_width / granularity
   private val config_in_port_idx:Int = getPropByKey("config_in_port_idx")
     .asInstanceOf[Int]
   private val config_out_port_idx:List[Int] = try{getPropByKey("config_out_port_idx")
@@ -45,7 +45,7 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
   }}.toMap
 
   // Calculate the ID field in incoming config bits
-  private val id_field_high = datawidth - 1
+  private val id_field_high = data_width - 1
   apply("id_field_high", id_field_high)
   private val id_field_low = id_field_high - log2Ceil(max_id + 1) + 1
   apply("id_field_low", id_field_low)

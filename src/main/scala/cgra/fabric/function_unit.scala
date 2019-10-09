@@ -4,9 +4,11 @@ import cgra.IO._
 import chisel3.util._
 import chisel3._
 import dsl.IRPrintable
+
 import scala.collection.mutable
 import scala.util.Random
 import cgra.config.fullinst._
+import cgra.fabric.common.datapath.general_alu
 
 class function_unit(prop:mutable.Map[String,Any])
   extends Module
@@ -19,13 +21,13 @@ class function_unit(prop:mutable.Map[String,Any])
   // Initialize the properties of switch (hardware)
   private val id = getValue(getPropByKey("id")).asInstanceOf[Int]
   private val max_id = getPropByKey("max_id").asInstanceOf[Int]
-  private val datawidth:Int = getPropByKey("datawidth").asInstanceOf[Int]
+  private val data_width:Int = getPropByKey("data_width").asInstanceOf[Int]
   private val granularity = getPropByKey("granularity").asInstanceOf[Int]
   private val num_input:Int = getPropByKey("num_input").asInstanceOf[Int]
   private val num_output:Int = getPropByKey("num_output").asInstanceOf[Int]
   private val flow_control:Boolean = getPropByKey("flow_control").asInstanceOf[Boolean]
   private val max_util:Int = getPropByKey("max_util").asInstanceOf[Int]
-  private val decomposer:Int = datawidth / granularity
+  private val decomposer:Int = data_width / granularity
   private val config_in_port_idx:Int = getPropByKey("config_in_port_idx")
     .asInstanceOf[Int]
   private val config_out_port_idx:List[Int] = try{getPropByKey("config_out_port_idx")
@@ -40,7 +42,7 @@ class function_unit(prop:mutable.Map[String,Any])
 
   // ------ Intermediate Variable ------
   // Calculate the ID field in incoming config bits
-  private val id_field_high = datawidth - 1
+  private val id_field_high = data_width - 1
   apply("id_field_high", id_field_high)
   private val id_field_low = id_field_high - log2Ceil(max_id + 1) + 1
   apply("id_field_low", id_field_low)
@@ -112,7 +114,7 @@ class function_unit(prop:mutable.Map[String,Any])
 
   // Create register file, each fu will have at least one register (acc)
   val register_file : Vec[UInt] =
-    RegInit(VecInit(Seq.fill(num_register)(0.U(datawidth.W))))
+    RegInit(VecInit(Seq.fill(num_register)(0.U(data_width.W))))
 
   // Create shared configuration slot
   val config_slot_file : Vec[UInt] =
@@ -134,42 +136,37 @@ class function_unit(prop:mutable.Map[String,Any])
     .reverse.reduce(Cat(_,_))
 
   // Create opcode select wire
-  val opcode_select : UInt = if(num_inst > 1){
-    WireInit(0.U(log2Ceil(num_inst).W))
-  }else{
-    0.U
-  }
+  val opcode_select : UInt = Wire(UInt(log2Ceil(max_num_operand).W))
+  opcode_select := 0.U
 
   // Create operands wire, and its control protocol
   val operands : Vec[UInt] =
-    WireInit(VecInit(Seq.fill(max_num_operand)(0.U(datawidth.W))))
+    WireInit(VecInit(Seq.fill(max_num_operand)(0.U(data_width.W))))
   val operands_valid : Vec[Bool] =
     WireInit(VecInit(Seq.fill(max_num_operand)(true.B)))
   val operands_ready : Vec[Bool] =
     WireInit(VecInit(Seq.fill(max_num_operand)(true.B)))
 
-  // Create Alu result buffer
-  val alu_results : Vec[UInt] =
-    WireInit(VecInit(Seq.fill(num_inst)(0.U(datawidth.W))))
-
   // Create output result
-  val output_result : UInt = WireInit(0.U(datawidth.W))
+  val output_result : UInt = WireInit(0.U(data_width.W))
   val output_valid : Bool = WireInit(false.B)
   val output_ready : Bool = WireInit(true.B)
 
-  // Create latency countdown
-  val latency_countdown : UInt =
-    RegInit(0.U(log2Ceil(max_inst_latency + 1).W))
-
-
   // Create config enable
-  val config_enable : Bool = io.input_ports(config_in_port_idx)
-    .map(_.config).reduce(_ && _)
+  val config_enable : Bool = VecInit(io.input_ports(config_in_port_idx)
+    .map(_.config)).asUInt().andR()
 
   // Create delay pipe/fifo
   val delays_module = Array.fill(max_num_operand)(
-    Module(new delay(datawidth, max_delay_fifo_depth, flow_control)).io
+    Module(new delay(data_width, max_delay_fifo_depth, flow_control)).io
   )
+
+  // Create ALU module
+  val alu_module = Module(new general_alu(prop)).io
+  // extract all needed bits, valid, ready
+  val alu_operands : Seq[UInt] = delays_module.map(_.out.bits)
+  val alu_operands_valid = delays_module.map(_.out.valid)
+  val alu_operands_ready = delays_module.map(_.out.ready)
 
   // Create operands select
   val operands_sel : IndexedSeq[UInt] = for(op_idx <- 0 until max_num_operand)
@@ -217,6 +214,28 @@ class function_unit(prop:mutable.Map[String,Any])
     delays_module(op_idx).out.config := DontCare
   }
 
+  // Arithmetic Connection
+  alu_module.opcode := opcode_select
+  for (idx <- 0 until max_num_operand) {
+    alu_module.operands(idx).bits := alu_operands(idx)
+    if(flow_control){
+      alu_module.operands(idx).valid := alu_operands_valid(idx)
+      alu_operands_ready(idx) := alu_module.operands(idx).ready
+    }else{
+      alu_module.operands(idx).valid := DontCare
+      alu_operands_ready(idx) := DontCare
+    }
+  }
+  output_result := alu_module.result.bits
+  if(flow_control){
+    output_valid := alu_module.result.valid
+    alu_module.result.ready := output_ready
+  }else{
+    output_valid := DontCare
+    alu_module.result.ready := DontCare
+  }
+
+  // When not Configured
   when(!config_enable){ // data stream
     // Config selection
     config_wire := config_slot_file(config_select_pointer)
@@ -257,7 +276,7 @@ class function_unit(prop:mutable.Map[String,Any])
             val source_idx : Int = source(1).toInt
             val valid = source_type match {
               case "in-port" =>
-                io.input_ports(source_idx).map(_.valid).reduce(_ && _)
+                VecInit(io.input_ports(source_idx).map(_.valid)).asUInt().andR()
               case "reg" =>
                 true.B
             }
@@ -272,72 +291,19 @@ class function_unit(prop:mutable.Map[String,Any])
     // back-pressure, connect ready bit
     if(flow_control){
       for(i <- 0 until num_input;j <- 0 until decomposer) {
-        io.input_ports(i)(j).ready := {
+        io.input_ports(i)(j).ready := VecInit({
           for (op_idx <- 0 until max_num_operand) yield {
             Mux(operands_sel(op_idx) === i.U,operands_ready(op_idx),true.B)
           }
-        }.reduce(_ && _)
+        }).asUInt().andR()
       }
     }
-
-    // Alu logic
-    // extract all needed bits, valid, ready
-    val alu_operands : Seq[UInt] = delays_module.map(_.out.bits)
-    val alu_operands_valid = delays_module.map(_.out.valid)
-    val alu_operands_ready = delays_module.map(_.out.ready)
 
     // get opcode
     if(num_inst > 1){
       val opcode_bit_range = getPropByKey("opcode_bit_range")
         .asInstanceOf[(Int,Int)]
       opcode_select := config_wire(opcode_bit_range._1,opcode_bit_range._2)
-    }
-
-    // fill the alu results buffer (wire)
-    for (inst <- instructions){
-      // Calculate all results
-      val inst_idx = instructions.indexOf(inst)
-      val inst_func = inst_operation(inst)
-      val result = alu_results(inst_idx)
-      result := inst_func(alu_operands)
-
-      // Optional: do something else for specific instruction
-    }
-
-    // connect to output result
-    val opcode2result : Seq[(UInt,UInt)]= instructions.map(i=>{
-      val idx = instructions.indexOf(i)
-      (idx.U, alu_results(idx))
-    })
-    output_result := MuxLookup(opcode_select, 0.U, opcode2result)
-
-    // Alu Control logic
-    if(flow_control){
-      val all_valid = alu_operands_valid.reduce(_ && _)
-      val opcode2latency = instructions.map(i=>{
-        val opcode = instructions.indexOf(i)
-        val lan = insts_prop(i).latency
-        (opcode.U,lan.U)
-      })
-      when(all_valid){
-        when(latency_countdown =/= 0.U){
-          alu_operands_ready.foreach(r=>r := false.B)
-          output_valid := false.B
-          latency_countdown := latency_countdown - 1.U
-        }.otherwise{
-          alu_operands_ready.foreach(r=>r := true.B)
-          output_valid := true.B
-          latency_countdown := Mux(output_ready,
-            MuxLookup(opcode_select,0.U,opcode2latency),0.U)
-        }
-      }.otherwise{
-        alu_operands_ready.foreach(r=>r := false.B)
-      }
-    }else{
-      output_valid := DontCare
-      output_ready := DontCare
-      alu_operands_valid.foreach(v=>v := DontCare)
-      alu_operands_ready.foreach(r=>r := DontCare)
     }
 
     // Output
@@ -490,14 +456,6 @@ object gen_fu extends App{
       val num_input = node("num_input").asInstanceOf[Int]
       val num_output = node("num_output").asInstanceOf[Int]
       node += "config_in_port_idx" -> (num_input - 1)
-      /*
-      val rand = new Random()
-      if(rand.nextBoolean() && num_output == 1){
-        node += "config_out_port_idx" -> List(0)
-      }else{
-        node += "config_out_port_idx" -> List(0, num_output - 1)
-      }
-      */
 
       chisel3.Driver.execute(args,()=>{
         val module = new function_unit(node)

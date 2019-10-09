@@ -16,11 +16,11 @@ class cgra_fabric(prop:mutable.Map[String, Any]) extends Module
   val num_input = 1
   val num_output = 1
 
-  val datawidth = 64
+  val data_width = 64
 
   val io = IO(new Bundle{
-    val input_ports = Flipped(Vec(num_input,Vec(num_input,ReqAckConf_if(datawidth))))
-    val output_ports = Vec(num_output,Vec(num_output,ReqAckConf_if(datawidth)))
+    val input_ports = Flipped(Vec(num_input,Vec(num_input,ReqAckConf_if(data_width))))
+    val output_ports = Vec(num_output,Vec(num_output,ReqAckConf_if(data_width)))
   })
 
   override def postprocess(): Unit = ???

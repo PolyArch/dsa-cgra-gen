@@ -151,10 +151,10 @@ class ssnode(nodeType:String) extends IRPrintable {
   // Postprocess
   def postprocess():Unit={
     // datapath properties
-    val datawidth = getPropByKey("datawidth").asInstanceOf[Int]
+    val data_width = getPropByKey("data_width").asInstanceOf[Int]
     val granularity = getPropByKey("granularity").asInstanceOf[Int]
-    val decomposer = datawidth / granularity;
-    require(datawidth == decomposer * granularity,"datawidth = " + datawidth +
+    val decomposer = data_width / granularity;
+    require(data_width == decomposer * granularity,"data_width = " + data_width +
       ", granularity = " + granularity + ", decomposer = " + decomposer)
     // I/O Port Properties
     val num_input = input_links.size; apply("num_input", num_input)
@@ -176,26 +176,28 @@ class ssnode(nodeType:String) extends IRPrintable {
       }
     }
     // Subnet Table Postprocess
-    if(num_input > 0 && num_output > 0){
-      val subnet_offset = getPropByKey("subnet_offset")
-        .asInstanceOf[List[Int]]
-      require(subnet_offset.forall(offset=>{
-        Math.abs(offset) <  decomposer
-      }),"offset if larger than max slot size")
-      val subnet_table = Array.ofDim[Boolean](
-        num_output*decomposer,num_input*decomposer)
-      for(op_idx <- 0 until num_output;os_idx <- 0 until decomposer;
-          ip_idx <- 0 until num_input; is_idx <- 0 until decomposer){
-        subnet_table( op_idx * decomposer + os_idx)(
-          ip_idx * decomposer + is_idx)  =
-          if(subnet_offset.contains((is_idx - os_idx) % decomposer)||
-            subnet_offset.contains((is_idx - os_idx - decomposer) % decomposer)||
-            subnet_offset.contains((is_idx - os_idx + decomposer) % decomposer))
-            true
-          else
-            false
+    if(has("subnet_offset")){
+      if(num_input > 0 && num_output > 0){
+        val subnet_offset = getPropByKey("subnet_offset")
+          .asInstanceOf[List[Int]]
+        require(subnet_offset.forall(offset=>{
+          Math.abs(offset) <  decomposer
+        }),"offset if larger than max slot size")
+        val subnet_table = Array.ofDim[Boolean](
+          num_output*decomposer,num_input*decomposer)
+        for(op_idx <- 0 until num_output;os_idx <- 0 until decomposer;
+            ip_idx <- 0 until num_input; is_idx <- 0 until decomposer){
+          subnet_table( op_idx * decomposer + os_idx)(
+            ip_idx * decomposer + is_idx)  =
+            if(subnet_offset.contains((is_idx - os_idx) % decomposer)||
+              subnet_offset.contains((is_idx - os_idx - decomposer) % decomposer)||
+              subnet_offset.contains((is_idx - os_idx + decomposer) % decomposer))
+              true
+            else
+              false
+        }
+        apply("subnet_table", subnet_table)
       }
-      apply("subnet_table", subnet_table)
     }
   }
 }
