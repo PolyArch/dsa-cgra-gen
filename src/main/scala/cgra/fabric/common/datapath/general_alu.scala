@@ -56,7 +56,7 @@ with IRPrintable {
   // Latency Logic
   val latency_countdown = RegInit(max_inst_latency.U)
   result_valid := latency_countdown === 0.U
-
+  operands_ready_for_next := latency_countdown === 0.U
 
   // Connect Arithmetic Result
   io.result.bits := alu_result
@@ -69,8 +69,6 @@ with IRPrintable {
         val inst_func = inst_operation(inst)
         when(io.opcode === inst_list.indexOf(inst).U){
           alu_result := inst_func(operands)
-          operands_ready_for_next := true.B
-          result_valid := true.B
         }
       }
     }

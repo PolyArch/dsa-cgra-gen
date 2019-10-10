@@ -65,7 +65,7 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
           curr_bit += num_bits
           (output_port_idx, output_slot_idx) -> bit_range
         }
-      }.toMap
+        }.toMap
       case "group-by-port" => {
         for(output_port_idx <- 0 until num_output;
             output_slot_idx <- 0 until decomposer)yield{
@@ -77,7 +77,7 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
           }
           (output_port_idx, output_slot_idx) -> bit_range
         }
-      }.toMap
+        }.toMap
     }
   }
 
@@ -93,12 +93,7 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
   // ------ Create Hardware ------
 
   // Initialize the I/O port
-  val io = IO(new Bundle{
-    val input_ports =
-      Flipped(Vec(num_input, DecoupledIO(UInt((data_width+1).W))))
-    val output_ports =
-      Vec(num_output, DecoupledIO(UInt((data_width+1).W)))
-  })
+  val io = IO(new VecDecoupledIO(num_input,num_output,data_width+1))
 
   // De-compose I/O ports
   // In
@@ -112,10 +107,10 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
   }
 
   // Out
-  val decomposed_out_ports = Wire(Vec(num_output, Vec(decomposer, ReqAckConf_t(granularity))))
+  val decomposed_out_ports = Reg(Vec(num_output, Vec(decomposer, ReqAckConf_t(granularity))))
   for (port_idx <- 0 until num_output){
     val config_bit_out = VecInit(decomposed_out_ports(port_idx).map(_.config))
-        .asUInt().andR()
+      .asUInt().andR()
     io.output_ports(port_idx).bits := Cat(config_bit_out,decomposed_out_ports(port_idx)
       .map(_.bits).reverse.reduce(Cat(_,_)))
     io.output_ports(port_idx).valid :=
@@ -138,148 +133,132 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
 
   // ------ Hardware Logic ------
 
-  when(!config_enable){// Stream: When switch is not being configured
+  // Multiple configurations
+  if(max_util == 1){
+    config_wire := config_slot_file(0)
+  }else{
+    // configuration counter
+    val config_pointer = RegInit(0.U(log2Ceil(max_util).W))
 
-    // Multiple configurations
-    if(max_util == 1){
-      config_wire := config_slot_file(0)
+    // select which config to enable
+    config_pointer := config_pointer + 1.U
+
+    // select it to wire
+    config_wire := config_slot_file(config_pointer)
+  }
+
+  // Mux (forward)
+  val port_slot_sel2_port_slot = mutable.Map[(Int,Int),
+    mutable.Map[Int,(Int,Int)]]()
+  for(output_port_idx <- 0 until num_output;
+      output_slot_idx <- 0 until decomposer){
+    val slot_idx = output_port_idx * decomposer + output_slot_idx
+    val slot_config_bit_range = conf_bit_range(output_port_idx,output_slot_idx)
+    val config_high_bit = slot_config_bit_range._1
+    val config_low_bit = slot_config_bit_range._2
+    require(config_high_bit >= config_low_bit)
+    val config_reg_value = config_wire(config_high_bit, config_low_bit)
+
+    // Mux port mapping: This slot connected (input_port, input_slot)
+    val connected_input : List[(Int, Int)] = subnet_table(slot_idx)
+      .zipWithIndex.filter(conn_idx => conn_idx._1
+    ).map(conn_idx => (conn_idx._2 / decomposer, conn_idx._2 % decomposer))
+
+    // Mux selection
+    val sel2port_slot = mutable.Map[Int,(Int,Int)]()
+    val portMuxLookup = for (sel <- connected_input.indices) yield {
+      val input_port_slot = connected_input(sel)
+      sel2port_slot += (sel + 1) -> (input_port_slot._1,input_port_slot._2)
+      (sel + 1).U -> // selection value = 0 is left for default
+        decomposed_in_ports(input_port_slot._1)(input_port_slot._2)
+    }
+
+    // Add Mux selection to properties
+    port_slot_sel2_port_slot += (output_port_idx, output_slot_idx) ->
+      sel2port_slot
+
+    // bit connection
+    decomposed_out_ports(output_port_idx)(output_slot_idx).bits := MuxLookup(
+      config_reg_value, 0.U, portMuxLookup.map(x=>(x._1,x._2.bits)))
+
+    // control flow connection
+    if(flow_control){
+      decomposed_out_ports(output_port_idx)(output_slot_idx).valid := MuxLookup(
+        config_reg_value, 0.U, portMuxLookup.map(x=>(x._1,x._2.valid)))
     }else{
-      // configuration counter
-      val config_pointer = RegInit(0.U(log2Ceil(max_util).W))
-
-      // select which config to enable
-      config_pointer := config_pointer + 1.U
-
-      // select it to wire
-      config_wire := config_slot_file(config_pointer)
+      decomposed_out_ports(output_port_idx)(output_slot_idx).valid := DontCare
     }
 
-    // Mux (forward)
-    val port_slot_sel2_port_slot = mutable.Map[(Int,Int),
-      mutable.Map[Int,(Int,Int)]]()
-    for(output_port_idx <- 0 until num_output;
-        output_slot_idx <- 0 until decomposer){
-      val slot_idx = output_port_idx * decomposer + output_slot_idx
-      val slot_config_bit_range = conf_bit_range(output_port_idx,output_slot_idx)
-      val config_high_bit = slot_config_bit_range._1
-      val config_low_bit = slot_config_bit_range._2
-      require(config_high_bit >= config_low_bit)
-      val config_reg_value = config_wire(config_high_bit, config_low_bit)
+    // don't care configuration when stream mode
+    decomposed_out_ports(output_port_idx)(output_slot_idx).config := DontCare
+  }
 
-      // Mux port mapping: This slot connected (input_port, input_slot)
-      val connected_input : List[(Int, Int)] = subnet_table(slot_idx)
-        .zipWithIndex.filter(conn_idx => conn_idx._1
-      ).map(conn_idx => (conn_idx._2 / decomposer, conn_idx._2 % decomposer))
+  // Add this into properties
+  val prop_port_slot_sel2_port_slot = port_slot_sel2_port_slot.toSeq
+    .map(kv => {
+      (kv._1._1 + "_" + kv._1._2) -> kv._2
+    }).toMap
+  apply("MUX_table",prop_port_slot_sel2_port_slot)
 
-      // Mux selection
-      val sel2port_slot = mutable.Map[Int,(Int,Int)]()
-      val portMuxLookup = for (sel <- connected_input.indices) yield {
-        val input_port_slot = connected_input(sel)
-        sel2port_slot += (sel + 1) -> (input_port_slot._1,input_port_slot._2)
-        (sel + 1).U -> // selection value = 0 is left for default
-          decomposed_in_ports(input_port_slot._1)(input_port_slot._2)
-      }
-
-      // Add Mux selection to properties
-      port_slot_sel2_port_slot += (output_port_idx, output_slot_idx) ->
-        sel2port_slot
-
-      // bit connection
-      decomposed_out_ports(output_port_idx)(output_slot_idx).bits := MuxLookup(
-        config_reg_value, 0.U, portMuxLookup.map(x=>(x._1,x._2.bits)))
-
-      // control flow connection
-      if(flow_control){
-        decomposed_out_ports(output_port_idx)(output_slot_idx).valid := MuxLookup(
-          config_reg_value, 0.U, portMuxLookup.map(x=>(x._1,x._2.valid)))
-      }else{
-        decomposed_out_ports(output_port_idx)(output_slot_idx).valid := DontCare
-      }
-
-      // don't care configuration when stream mode
-      decomposed_out_ports(output_port_idx)(output_slot_idx).config := DontCare
-    }
-
-    // Add this into properties
-    val prop_port_slot_sel2_port_slot = port_slot_sel2_port_slot.toSeq
-        .map(kv => {
-          (kv._1._1 + "_" + kv._1._2) -> kv._2
-        }).toMap
-    apply("MUX_table",prop_port_slot_sel2_port_slot)
-
-    // Mux (backward)
-    for(input_port_idx <- 0 until num_input;
-        input_slot_idx <- 0 until decomposer){
-      if(flow_control){
-        // Find the location of this slot
-        val slot_idx = input_port_idx * decomposer + input_slot_idx
-        // Which output slots it connected to
-        val connected_output_slot_idx = subnet_table.map(o=>o(slot_idx))
-          .zipWithIndex.filter(x=>x._1).map(x=>(x._2 / decomposer, x._2 % decomposer))
-        // Find what is the select value for each output port to select this input
-        val sel_input_value_foreach_output = connected_output_slot_idx
-          .map(x=>{
-            val sel2this_slot =
-              port_slot_sel2_port_slot(x._1,x._2)
-                .filter(sel2slot =>
-                  sel2slot._2 == (input_port_idx, input_slot_idx))
-            if(sel2this_slot.size != 1){
-              require(sel2this_slot.size == 1, "only one value can select to this slot")
-            }
-            sel2this_slot.head._1
+  // Mux (backward)
+  for(input_port_idx <- 0 until num_input;
+      input_slot_idx <- 0 until decomposer){
+    if(flow_control){
+      // Find the location of this slot
+      val slot_idx = input_port_idx * decomposer + input_slot_idx
+      // Which output slots it connected to
+      val connected_output_slot_idx = subnet_table.map(o=>o(slot_idx))
+        .zipWithIndex.filter(x=>x._1).map(x=>(x._2 / decomposer, x._2 % decomposer))
+      // Find what is the select value for each output port to select this input
+      val sel_input_value_foreach_output = connected_output_slot_idx
+        .map(x=>{
+          val sel2this_slot =
+            port_slot_sel2_port_slot(x._1,x._2)
+              .filter(sel2slot =>
+                sel2slot._2 == (input_port_idx, input_slot_idx))
+          if(sel2this_slot.size != 1){
+            require(sel2this_slot.size == 1, "only one value can select to this slot")
           }
+          sel2this_slot.head._1
+        }
         )
-        // get select register (wire) for each output slot
-        val sel_reg_foreach_output = connected_output_slot_idx
-          .map(x=>conf_bit_range(x)).map(hl=>config_wire(hl._1,hl._2))
-        require(sel_input_value_foreach_output.length ==
-          sel_reg_foreach_output.length)
-        // Only when output slot register select this input, then pass ready
-        // otherwise the downstream is always ready (true)
-        val downstream_readys = for (idx <- connected_output_slot_idx.indices)
-          yield{
-            val o_slot_idx = connected_output_slot_idx(idx)
-            val output_port_idx = o_slot_idx._1
-            val output_slot_idx = o_slot_idx._2
-            val is_select = sel_input_value_foreach_output(idx).U ===
-              sel_reg_foreach_output(idx)
-            Mux(is_select,decomposed_out_ports(output_port_idx)(output_slot_idx).ready,
-              true.B)
-          }
-        // AND all downstream ready, then pass to upstream
-        val overall_downstream_ready = downstream_readys.reduce(_ && _)
-        decomposed_in_ports(input_port_idx)(input_slot_idx).ready :=
-          overall_downstream_ready
-      }else{
-        decomposed_in_ports(input_port_idx)(input_slot_idx).ready := DontCare
-      }
-    }// End of backward ready connection
-  }.otherwise{// When it is during configuration time
+      // get select register (wire) for each output slot
+      val sel_reg_foreach_output = connected_output_slot_idx
+        .map(x=>conf_bit_range(x)).map(hl=>config_wire(hl._1,hl._2))
+      require(sel_input_value_foreach_output.length ==
+        sel_reg_foreach_output.length)
+      // Only when output slot register select this input, then pass ready
+      // otherwise the downstream is always ready (true)
+      val downstream_readys = for (idx <- connected_output_slot_idx.indices)
+        yield{
+          val o_slot_idx = connected_output_slot_idx(idx)
+          val output_port_idx = o_slot_idx._1
+          val output_slot_idx = o_slot_idx._2
+          val is_select = sel_input_value_foreach_output(idx).U ===
+            sel_reg_foreach_output(idx)
+          Mux(is_select,decomposed_out_ports(output_port_idx)(output_slot_idx).ready,
+            true.B)
+        }
+      // AND all downstream ready, then pass to upstream
+      val overall_downstream_ready = downstream_readys.reduce(_ && _)
+      decomposed_in_ports(input_port_idx)(input_slot_idx).ready :=
+        overall_downstream_ready
+    }else{
+      decomposed_in_ports(input_port_idx)(input_slot_idx).ready := DontCare
+    }
+  }// End of backward ready connection
 
-    // config wire is disable
-    config_wire := 0.U
+  when(config_enable){// Stream: When switch is not being configured{// When it is during configuration time
 
     // Get the ID field of the incoming information
     val id_bits = config_port_bits(id_field_high, id_field_low)
 
     // config this module
-    val config_this = config_enable && id_bits === id.U
+    val config_this = id_bits === id.U
 
     var useful_config_info_high = id_field_low - 1
     val useful_config_info_low = 0
     when(config_this){
-      // when connect to this module, disable all output signal
-      // disable bits and valid
-      for(output_port_idx <- 0 until num_output;
-          output_slot_idx <- 0 until decomposer){
-        decomposed_out_ports(output_port_idx)(output_slot_idx).bits := DontCare
-        decomposed_out_ports(output_port_idx)(output_slot_idx).valid := DontCare
-        decomposed_out_ports(output_port_idx)(output_slot_idx).config := DontCare
-      }
-      for(input_port_idx <- 0 until num_input;
-          input_slot_idx <- 0 until decomposer){
-        decomposed_in_ports(input_port_idx)(input_slot_idx).ready := DontCare
-      }
 
       // config register file
       if(max_util > 1){
@@ -331,7 +310,8 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
         apply("conf_bit_high", conf_bit_width - 1)
         apply("conf_bit_low", useful_config_info_low)
       }
-    }.otherwise{// configuration for other nodes, pass it to them
+    }.otherwise{
+      // configuration for other nodes, pass it to them
       // forward connection
       for(output_port_idx <- 0 until num_output;
           output_slot_idx <- 0 until decomposer){
@@ -343,16 +323,7 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
             decomposed_in_ports(config_in_port_idx)(output_slot_idx).valid
           decomposed_out_ports(output_port_idx)(output_slot_idx).config :=
             decomposed_in_ports(config_in_port_idx)(output_slot_idx).config
-        }else{
-          decomposed_out_ports(output_port_idx)(output_slot_idx).bits := DontCare
-          decomposed_out_ports(output_port_idx)(output_slot_idx).valid := DontCare
-          decomposed_out_ports(output_port_idx)(output_slot_idx).config := DontCare
         }
-      }
-      // backward connection
-      for(input_port_idx <- 0 until num_input;
-          input_slot_idx <- 0 until decomposer){
-        decomposed_in_ports(input_port_idx)(input_slot_idx).ready := DontCare
       }
     }
   }
@@ -374,20 +345,18 @@ object gen_switch extends App{
 
   for (node <- nodes){
     if(node("nodeType") == "switch"){
+
       // Add config input / output port for test
       val num_input = node("num_input").asInstanceOf[Int]
       val num_output = node("num_output").asInstanceOf[Int]
-
       node += "config_in_port_idx" -> (num_input - 1)
-
-      /*
       val rand = new Random()
       if(rand.nextBoolean() && num_output == 1){
         node += "config_out_port_idx" -> List(0)
       }else{
         node += "config_out_port_idx" -> List(0, num_output - 1)
       }
-      */
+
       chisel3.Driver.execute(args,()=>{
         val module = new switch(node)
         println(module)

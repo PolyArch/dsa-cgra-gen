@@ -1,5 +1,7 @@
 package dsl
 
+import chisel3.util.log2Ceil
+
 import scala.collection.mutable.{ListBuffer, Map, Set}
 
 
@@ -269,13 +271,14 @@ class ssfabric extends IRPrintable {
     }
 
     // Calculate the Input number and Output Node Number
+    /*
     val allVpNodes = this("nodeType")("vector port")
     // Output vector port only has input_nodes
     val num_output : Int = {for(vp <- allVpNodes)yield{
       if(vp has "input_nodes"){
         vp.getPropByKey("input_nodes")
           .asInstanceOf[Seq[ssnode]].length
-      }else{
+      }else {
         0
       }
     }}.sum
@@ -289,5 +292,6 @@ class ssfabric extends IRPrintable {
       }
     }}.sum
     apply("num_input", num_input)("num_output",num_output)
+     */
   }
 }

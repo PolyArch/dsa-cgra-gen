@@ -4,15 +4,15 @@ import cgra.IO._
 import chisel3.util._
 import chisel3._
 import dsl.IRPrintable
-
 import scala.collection.mutable
 import scala.util.Random
 import cgra.config.fullinst._
 import cgra.fabric.common.datapath.general_alu
 
+
 class function_unit(prop:mutable.Map[String,Any])
   extends Module
-  with IRPrintable{
+    with IRPrintable{
   // Assign initial properties
   apply(prop)
 
@@ -56,7 +56,7 @@ class function_unit(prop:mutable.Map[String,Any])
 
   // the total config bit width
   private val conf_bit_width : Int = log2Ceil(num_inst) + max_num_operand *
-      (log2Ceil(max_delay_fifo_depth + 1) + log2Ceil(num_register + num_input))
+    (log2Ceil(max_delay_fifo_depth + 1) + log2Ceil(num_register + num_input))
   // config width for opcode, (delay fifo + source select) for each operand
   apply("conf_bit_width", conf_bit_width)
 
@@ -106,11 +106,31 @@ class function_unit(prop:mutable.Map[String,Any])
 
   // ------ Create Hardware ------
 
-  // Create the I/O port
-  val io = IO(new Bundle{
-    val input_ports = Flipped(Vec(num_input,Vec(decomposer,ReqAckConf_if(granularity))))
-    val output_ports = Vec(num_output,Vec(decomposer,ReqAckConf_if(granularity)))
-  })
+  // Initialize the I/O port
+  val io = IO(new VecDecoupledIO(num_input,num_output,data_width+1))
+
+  // De-compose I/O ports
+  // In
+  val decomposed_in_ports = Wire(Vec(num_input, Vec(decomposer, ReqAckConf_t(granularity))))
+  for (port_idx <- 0 until num_input; slot_idx <- 0 until decomposer){
+    decomposed_in_ports(port_idx)(slot_idx).bits :=
+      io.input_ports(port_idx).bits((slot_idx+1)*granularity -1 ,slot_idx * granularity)
+    decomposed_in_ports(port_idx)(slot_idx).valid := io.input_ports(port_idx).valid
+    io.input_ports(port_idx).ready := decomposed_in_ports(port_idx)(slot_idx).ready
+    decomposed_in_ports(port_idx)(slot_idx).config := io.input_ports(port_idx).bits(data_width)
+  }
+
+  // Out
+  val decomposed_out_ports = Wire(Vec(num_output, Vec(decomposer, ReqAckConf_t(granularity))))
+  for (port_idx <- 0 until num_output){
+    val config_bit_out = VecInit(decomposed_out_ports(port_idx).map(_.config))
+      .asUInt().andR()
+    io.output_ports(port_idx).bits := Cat(config_bit_out,decomposed_out_ports(port_idx)
+      .map(_.bits).reverse.reduce(Cat(_,_)))
+    io.output_ports(port_idx).valid :=
+      VecInit(decomposed_out_ports(port_idx).map(_.valid)).asUInt().andR()
+    decomposed_out_ports(port_idx).foreach(p=>p.ready := io.output_ports(port_idx).ready)
+  }
 
   // Create register file, each fu will have at least one register (acc)
   val register_file : Vec[UInt] =
@@ -132,7 +152,7 @@ class function_unit(prop:mutable.Map[String,Any])
   }
 
   // extract the incoming config information from config in port
-  val config_port_bits : UInt = io.input_ports(config_in_port_idx).map(_.bits)
+  val config_port_bits : UInt = decomposed_in_ports(config_in_port_idx).map(_.bits)
     .reverse.reduce(Cat(_,_))
 
   // Create opcode select wire
@@ -153,7 +173,7 @@ class function_unit(prop:mutable.Map[String,Any])
   val output_ready : Bool = WireInit(true.B)
 
   // Create config enable
-  val config_enable : Bool = VecInit(io.input_ports(config_in_port_idx)
+  val config_enable : Bool = VecInit(decomposed_in_ports(config_in_port_idx)
     .map(_.config)).asUInt().andR()
 
   // Create delay pipe/fifo
@@ -171,24 +191,82 @@ class function_unit(prop:mutable.Map[String,Any])
   // Create operands select
   val operands_sel : IndexedSeq[UInt] = for(op_idx <- 0 until max_num_operand)
     yield{
-    val source_bit_range = getPropByKey("source_" + op_idx)
-      .asInstanceOf[(Int,Int)]
-    config_wire(source_bit_range._1, source_bit_range._2)
+      val source_bit_range = getPropByKey("source_" + op_idx)
+        .asInstanceOf[(Int,Int)]
+      config_wire(source_bit_range._1, source_bit_range._2)
+    }
+
+  // data stream
+  // Config selection
+  config_wire := config_slot_file(config_select_pointer)
+
+  // update the pointer
+  if(max_util > 1){
+    config_select_pointer := config_select_pointer + 1.U
   }
 
-  // ------ Logical connections ------
-  // Don't Care control protocol when not control flow
-  if(!flow_control){
-    for(i <- 0 until num_input;
-        j <- 0 until decomposer){
-      io.input_ports(i)(j).ready := DontCare
-      io.input_ports(i)(j).valid := DontCare
+  // operands selection, forward connect (bits and valid)
+  for(op_idx <- 0 until max_num_operand){
+    val source_bit_range = getPropByKey("source_" + op_idx)
+      .asInstanceOf[(Int,Int)]
+    val sel = operands_sel(op_idx)
+    // select value to data bits
+    val sel2value : Seq[(UInt,UInt)] =
+      for(sel_value <- 0 until num_input + num_register)yield{
+        val source : Array[String] = operand_select_map(sel_value).split("_")
+        val source_type : String = source(0)
+        val source_idx : Int = source(1).toInt
+        val bits = source_type match {
+          case "in-port" =>
+            decomposed_in_ports(source_idx).map(_.bits).reverse.reduce(Cat(_,_))
+          case "reg" =>
+            register_file(source_idx)
+        }
+        (sel_value.U,bits)
+      }
+    // mux incoming data bits
+    operands(op_idx) := MuxLookup(sel, 0.U, sel2value)
+    // if flow control, add valid
+    if(flow_control){
+      // mux incoming data valid
+      val sel2valid : Seq[(UInt,Bool)] =
+        for(sel_value <- 0 until num_input + num_register)yield{
+          val source : Array[String] = operand_select_map(sel_value).split("_")
+          val source_type : String = source(0)
+          val source_idx : Int = source(1).toInt
+          val valid = source_type match {
+            case "in-port" =>
+              VecInit(decomposed_in_ports(source_idx).map(_.valid)).asUInt().andR()
+            case "reg" =>
+              true.B
+          }
+          (sel_value.U,valid)
+        }
+      operands_valid(op_idx) := MuxLookup(sel,false.B,sel2valid)
+    }else{
+      operands_valid(op_idx) := true.B
     }
-    for(i <- 0 until num_output;
-        j <- 0 until decomposer){
-      io.output_ports(i)(j).ready := DontCare
-      io.output_ports(i)(j).valid := DontCare
+  }
+
+  // back-pressure, connect ready bit
+  for(i <- 0 until num_input;j <- 0 until decomposer) {
+    if(flow_control){
+      decomposed_in_ports(i)(j).ready := VecInit({
+        for (op_idx <- 0 until max_num_operand) yield {
+          Mux(operands_sel(op_idx) === i.U,operands_ready(op_idx),true.B)
+        }
+      }).asUInt().andR()
+    }else{
+      decomposed_in_ports(i)(j).ready := true.B
     }
+  }
+
+
+  // get opcode
+  if(num_inst > 1){
+    val opcode_bit_range = getPropByKey("opcode_bit_range")
+      .asInstanceOf[(Int,Int)]
+    opcode_select := config_wire(opcode_bit_range._1,opcode_bit_range._2)
   }
 
   // connect delay all the time
@@ -202,137 +280,38 @@ class function_unit(prop:mutable.Map[String,Any])
     // connect bits
     delays_module(op_idx).in.bits := operands(op_idx)
     // connect flow control logic
-    if(flow_control){
-      delays_module(op_idx).in.valid := operands_valid(op_idx)
-      operands_ready(op_idx) := delays_module(op_idx).in.ready
-    }else{
-      delays_module(op_idx).in.valid := DontCare
-      delays_module(op_idx).out.ready := DontCare
-    }
-    // Dont Care config bit
-    delays_module(op_idx).in.config := DontCare
-    delays_module(op_idx).out.config := DontCare
+    delays_module(op_idx).in.valid := operands_valid(op_idx)
+    operands_ready(op_idx) := delays_module(op_idx).in.ready
   }
 
   // Arithmetic Connection
   alu_module.opcode := opcode_select
   for (idx <- 0 until max_num_operand) {
     alu_module.operands(idx).bits := alu_operands(idx)
-    if(flow_control){
-      alu_module.operands(idx).valid := alu_operands_valid(idx)
-      alu_operands_ready(idx) := alu_module.operands(idx).ready
-    }else{
-      alu_module.operands(idx).valid := DontCare
-      alu_operands_ready(idx) := DontCare
-    }
+    alu_module.operands(idx).valid := alu_operands_valid(idx)
+    alu_operands_ready(idx) := alu_module.operands(idx).ready
   }
   output_result := alu_module.result.bits
-  if(flow_control){
-    output_valid := alu_module.result.valid
-    alu_module.result.ready := output_ready
-  }else{
-    output_valid := DontCare
-    alu_module.result.ready := DontCare
+  output_valid := alu_module.result.valid
+  alu_module.result.ready := output_ready
+
+  // Output
+  for(out_port <- 0 until num_output;
+      out_slot <- 0 until decomposer){
+    decomposed_out_ports(out_port)(out_slot).bits := output_result(
+      (out_slot + 1) * granularity - 1, out_slot * granularity
+    )
+    decomposed_out_ports(out_port)(out_slot).valid := output_valid
+    decomposed_out_ports(out_port)(out_slot).config := config_enable
   }
+  output_ready := decomposed_out_ports
+    .map(s=>s.map(_.ready).reduce(_ && _)).reduce(_ && _)
 
   // When not Configured
-  when(!config_enable){ // data stream
-    // Config selection
-    config_wire := config_slot_file(config_select_pointer)
-
-    // update the pointer
-    if(max_util > 1){
-      config_select_pointer := config_select_pointer + 1.U
-    }
-
-    // operands selection, forward connect (bits and valid)
-    for(op_idx <- 0 until max_num_operand){
-      val source_bit_range = getPropByKey("source_" + op_idx)
-          .asInstanceOf[(Int,Int)]
-      val sel = operands_sel(op_idx)
-      // select value to data bits
-      val sel2value : Seq[(UInt,UInt)] =
-        for(sel_value <- 0 until num_input + num_register)yield{
-        val source : Array[String] = operand_select_map(sel_value).split("_")
-        val source_type : String = source(0)
-        val source_idx : Int = source(1).toInt
-        val bits = source_type match {
-          case "in-port" =>
-            io.input_ports(source_idx).map(_.bits).reduce(Cat(_,_))
-          case "reg" =>
-            register_file(source_idx)
-        }
-        (sel_value.U,bits)
-      }
-      // mux incoming data bits
-      operands(op_idx) := MuxLookup(sel, 0.U, sel2value)
-      // if flow control, add valid
-      if(flow_control){
-        // mux incoming data valid
-        val sel2valid : Seq[(UInt,Bool)] =
-          for(sel_value <- 0 until num_input + num_register)yield{
-            val source : Array[String] = operand_select_map(sel_value).split("_")
-            val source_type : String = source(0)
-            val source_idx : Int = source(1).toInt
-            val valid = source_type match {
-              case "in-port" =>
-                VecInit(io.input_ports(source_idx).map(_.valid)).asUInt().andR()
-              case "reg" =>
-                true.B
-            }
-            (sel_value.U,valid)
-          }
-        operands_valid(op_idx) := MuxLookup(sel,false.B,sel2valid)
-      }else{
-        operands_valid(op_idx) := DontCare
-      }
-    }
-
-    // back-pressure, connect ready bit
-    if(flow_control){
-      for(i <- 0 until num_input;j <- 0 until decomposer) {
-        io.input_ports(i)(j).ready := VecInit({
-          for (op_idx <- 0 until max_num_operand) yield {
-            Mux(operands_sel(op_idx) === i.U,operands_ready(op_idx),true.B)
-          }
-        }).asUInt().andR()
-      }
-    }
-
-    // get opcode
-    if(num_inst > 1){
-      val opcode_bit_range = getPropByKey("opcode_bit_range")
-        .asInstanceOf[(Int,Int)]
-      opcode_select := config_wire(opcode_bit_range._1,opcode_bit_range._2)
-    }
-
-    // Output
-    for(out_port <- 0 until num_output;
-        out_slot <- 0 until decomposer){
-      io.output_ports(out_port)(out_slot).bits := output_result(
-        (out_slot + 1) * granularity - 1, out_slot * granularity
-      )
-      io.output_ports(out_port)(out_slot).valid := {
-        if(flow_control){
-          output_valid
-        }else{
-          DontCare
-        }
-      }
-      io.output_ports(out_port)(out_slot).config := DontCare
-    }
-    if(flow_control){
-      output_ready := io.output_ports
-        .map(s=>s.map(_.ready).reduce(_ && _)).reduce(_ && _)
-    }
-
-  }otherwise{
+  when(config_enable){
     // fu is being reset (reconfigured)
     // Get the ID field of the incoming information
     val id_bits = config_port_bits(id_field_high, id_field_low)
-
-    // Dont care delay downstream ready
-    delays_module.foreach(delay => delay.out.ready := DontCare)
 
     // config this module
     val config_this = id_bits === id.U
@@ -341,18 +320,6 @@ class function_unit(prop:mutable.Map[String,Any])
 
     // When actually config this module
     when(config_this){
-      // when connect to this module, disable all output signal
-      // disable bits and valid
-      for(output_port_idx <- 0 until num_output;
-          output_slot_idx <- 0 until decomposer){
-        io.output_ports(output_port_idx)(output_slot_idx).bits := DontCare
-        io.output_ports(output_port_idx)(output_slot_idx).valid := DontCare
-        io.output_ports(output_port_idx)(output_slot_idx).config := DontCare
-      }
-      for(input_port_idx <- 0 until num_input;
-          input_slot_idx <- 0 until decomposer){
-        io.input_ports(input_port_idx)(input_slot_idx).ready := DontCare
-      }
 
       // config the slot file
       if(max_util > 1){
@@ -407,32 +374,25 @@ class function_unit(prop:mutable.Map[String,Any])
         apply("conf_bit_low", useful_config_info_low)
       }
 
-    }otherwise{// configuration for other nodes, pass it to them
+    }otherwise{
+      // configuration for other nodes, pass it to them
       // forward connection
       for(output_port_idx <- 0 until num_output;
           output_slot_idx <- 0 until decomposer){
         if(config_out_port_idx.contains(output_port_idx)){
           // match slot connection
-          io.output_ports(output_port_idx)(output_slot_idx).bits :=
-            io.input_ports(config_in_port_idx)(output_slot_idx).bits
-          io.output_ports(output_port_idx)(output_slot_idx).valid :=
-            io.input_ports(config_in_port_idx)(output_slot_idx).valid
-          io.output_ports(output_port_idx)(output_slot_idx).config :=
-            io.input_ports(config_in_port_idx)(output_slot_idx).config
-        }else{
-          io.output_ports(output_port_idx)(output_slot_idx).bits := DontCare
-          io.output_ports(output_port_idx)(output_slot_idx).valid := DontCare
-          io.output_ports(output_port_idx)(output_slot_idx).config := DontCare
+          decomposed_out_ports(output_port_idx)(output_slot_idx).bits :=
+            decomposed_in_ports(config_in_port_idx)(output_slot_idx).bits
+          decomposed_out_ports(output_port_idx)(output_slot_idx).valid :=
+            decomposed_in_ports(config_in_port_idx)(output_slot_idx).valid
+          decomposed_out_ports(output_port_idx)(output_slot_idx).config :=
+            decomposed_in_ports(config_in_port_idx)(output_slot_idx).config
         }
-      }
-      // backward connection
-      for(input_port_idx <- 0 until num_input;
-          input_slot_idx <- 0 until decomposer){
-        io.input_ports(input_port_idx)(input_slot_idx).ready := DontCare
       }
     }
   }
 
+  print(this)
   // ------ Post process ------
   override def postprocess(): Unit = {
     print(this)
@@ -452,11 +412,24 @@ object gen_fu extends App{
     if(node("nodeType") == "function unit"){
 
       // Add config input / output port for test
-
       val num_input = node("num_input").asInstanceOf[Int]
       val num_output = node("num_output").asInstanceOf[Int]
       node += "config_in_port_idx" -> (num_input - 1)
+      val rand = new Random()
+      if(rand.nextBoolean() && num_output == 1){
+        node += "config_out_port_idx" -> List(0)
+      }else{
+        node += "config_out_port_idx" -> List(0, num_output - 1)
+      }
 
+      // Add random instructions for test
+      /*
+      val all_insts :List[String] = inst_operation.keys.toList
+      val random_insts : List[String] = Random.shuffle(all_insts)
+      node += "instructions" -> random_insts.slice(0,1 + Random.nextInt(all_insts.length))
+      */
+
+      // Initialize the Function Unit
       chisel3.Driver.execute(args,()=>{
         val module = new function_unit(node)
         println(module)

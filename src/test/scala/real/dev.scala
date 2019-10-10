@@ -20,7 +20,8 @@ object dev extends App{
     "max_delay_fifo_depth", 4)
 
   val fu_spc = new ssnode("function unit")
-  fu_spc("instructions",Set("Div16", "RShf4_16x4", "Abs16x4"))(
+  fu_spc(
+    "instructions",Set("Div16", "RShf4_16x4", "Abs16x4"))(
     "num_register", 16)(
     "max_delay_fifo_depth", 2)(
     "flow_control", false)
@@ -43,9 +44,16 @@ object dev extends App{
   // Build Mesh Topology
   val switchMesh = dev.buildMesh(sw_default, 5,5)
 
+  // Heterogeneous datawidth
+  for(row_idx <- 1 until 5; col_idx <- 0 until 5){
+    if(row_idx + col_idx == 3){
+      switchMesh(row_idx)(col_idx).apply("data_width",32)
+    }
+  }
+
   // Adding function units
   val fuArray = Array(
-    Array(fu_add,fu_add,fu_spc,fu_add),
+    Array(fu_spc,fu_add,fu_add,fu_add),
     Array(fu_spc,fu_add,fu_add,fu_add),
     Array(fu_add,fu_add,fu_add,another_fu),
     Array(fu_add,fu_add,another_fu,fu_add)

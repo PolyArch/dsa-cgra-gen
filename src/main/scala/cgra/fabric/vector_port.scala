@@ -3,7 +3,7 @@ package cgra.fabric
 import cgra.IO._
 import cgra.fabric.common.interconnect.{crossbar, crossbar_flow_control}
 import chisel3._
-import chisel3.util.{Cat, log2Ceil}
+import chisel3.util._
 import dsl.IRPrintable
 
 import scala.collection.mutable
@@ -28,12 +28,12 @@ class vector_port(prop:mutable.Map[String,Any])
   val config_width = num_port * log2Ceil(num_port)
 
   // Create the I/O port
-  val io = IO(new Bundle{
-    val input_ports = Flipped(Vec(num_port,ReqAckConf_if(data_width)))
-    val output_ports = Vec(num_port,ReqAckConf_if(data_width))
-    val config = Input(UInt(config_width.W))
-  })
+  val io = IO(new VecDecoupledIO_conf(
+    num_port,num_port,data_width+1,config_width
+  ))
 
+  // Create Register to Store the Config bits
+  val config_bits = RegEnable(io.config.bits,0.U,io.config.valid)
 
   prop += "in_data_width" -> Seq.fill(num_port)(data_width + 1)
   prop += "out_data_width"-> Seq.fill(num_port)(data_width + 1)
@@ -41,27 +41,19 @@ class vector_port(prop:mutable.Map[String,Any])
   // ------ Logic Connections
   if(flow_control){
     val xbar = Module(new crossbar_flow_control(prop)).io
-    xbar.config := io.config
+    xbar.config := config_bits
     for (idx <- 0 until num_port){
       // Bits & Config
-      xbar.ins(idx).bits := Cat(io.input_ports(idx).bits,io.input_ports(idx).config)
-      io.output_ports(idx).bits := xbar.outs(idx).bits(data_width,1)
-      io.output_ports(idx).config := xbar.outs(idx).bits(0)
-      // Input Control
-      io.input_ports(idx).ready := xbar.ins(idx).ready
-      xbar.ins(idx).valid := io.input_ports(idx).valid
-      // Output Control
-      io.output_ports(idx).valid := xbar.outs(idx).valid
-      xbar.outs(idx).ready := io.output_ports(idx).ready
+      xbar.ins(idx) <> io.input_ports(idx)
+      io.output_ports(idx) <> xbar.outs(idx)
     }
   }else{
     val xbar = Module(new crossbar(prop)).io
-    xbar.config := io.config
+    xbar.config := config_bits
     for (idx <- 0 until num_port){
       // Bits & Config
-      xbar.ins(idx) := Cat(io.input_ports(idx).bits,io.input_ports(idx).config)
+      xbar.ins(idx) := io.input_ports(idx).bits
       io.output_ports(idx).bits := xbar.outs(idx)(data_width,1)
-      io.output_ports(idx).config := xbar.outs(idx)(0)
       // DontCare Flow Control
       io.input_ports(idx).ready := DontCare
       io.output_ports(idx).valid := DontCare

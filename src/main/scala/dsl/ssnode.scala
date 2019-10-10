@@ -9,14 +9,16 @@ class ssnode(nodeType:String) extends IRPrintable {
   private val input_links : ListBuffer[sslink] = ListBuffer[sslink]()
 
   // Add/Delete Sink Node
-  def add_sink(sink:ssnode):Unit={
+  def add_sink(sink:ssnode) : Int ={
     var sink_info = sink.getPropByKeys(identifier.key)
     if(getPropByKey("output_nodes")!= None){
       val curr_output_nodes:ListBuffer[Any] = getPropByKey("output_nodes")
         .asInstanceOf[ListBuffer[Any]]
       apply("output_nodes", curr_output_nodes += sink_info)
+      return curr_output_nodes.length - 1
     }else{
       apply("output_nodes", ListBuffer[Any]() += sink_info)
+      return 0
     }
   }
   def add_sink(link:sslink):Unit={
@@ -47,14 +49,16 @@ class ssnode(nodeType:String) extends IRPrintable {
   }
 
   // Add/Delete Source Node
-  def add_source(source:ssnode):Unit={
+  def add_source(source:ssnode):Int={
     val source_info : Any = source.getPropByKeys(identifier.key)
     if(getPropByKey("input_nodes")!= None){
       val curr_input_nodes:ListBuffer[Any] = getPropByKey("input_nodes")
         .asInstanceOf[ListBuffer[Any]]
       this("input_nodes", curr_input_nodes += source_info)
+      return curr_input_nodes.length - 1
     }else{
       this("input_nodes", ListBuffer[Any]() += source_info)
+      return 0
     }
   }
   def add_source(link:sslink):Unit={
@@ -89,10 +93,10 @@ class ssnode(nodeType:String) extends IRPrintable {
   }
   def --> (that:ssnode): sslink ={
     val link = new sslink
-    this.add_sink(that)
-    that.add_source(this)
-    val source_info = this.getPropByKeys(identifier.key)
-    val sink_info = that.getPropByKeys(identifier.key)
+    val out_link_idx : Int = this.add_sink(that)
+    val in_link_idx : Int = that.add_source(this)
+    val source_info = this.getPropByKeys(identifier.key) :+ out_link_idx
+    val sink_info = that.getPropByKeys(identifier.key) :+ in_link_idx
     link(this,that)
     this.add_sink(link)
     that.add_source(link)

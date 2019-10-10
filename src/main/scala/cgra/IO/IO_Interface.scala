@@ -1,6 +1,6 @@
 package cgra.IO
 
-import chisel3.{Bundle, _}
+import chisel3._
 import chisel3.util._
 
 case class mmio_if(index_width:Int,word_width:Int) extends Bundle {
@@ -25,6 +25,23 @@ case class ReqAckConf_if(ww:Int) extends Bundle {
   override def cloneType: ReqAckConf_if.this.type = ReqAckConf_if(ww).asInstanceOf[this.type]
 }
 
+class VecDecoupledIO_conf(nIn:Int, nOut:Int, w:Int,conf_w:Int)
+  extends VecDecoupledIO(nIn, nOut, w){
+  val config = Flipped(ValidIO(UInt(conf_w.W)))
+
+  override def cloneType: VecDecoupledIO_conf.this.type =
+    new VecDecoupledIO_conf(nIn, nOut, w, conf_w).asInstanceOf[this.type]
+}
+
+class VecDecoupledIO(nIn:Int, nOut:Int, w:Int) extends Bundle {
+  val input_ports =
+    Flipped(Vec(nIn, DecoupledIO(UInt(w.W))))
+  val output_ports =
+    Vec(nOut, DecoupledIO(UInt(w.W)))
+
+  override def cloneType: VecDecoupledIO.this.type =
+    new VecDecoupledIO(nIn, nOut, w).asInstanceOf[this.type]
+}
 
 case class ReqAckConf_t(ww:Int) extends Bundle{
   val valid : Bool = Bool()
@@ -32,14 +49,6 @@ case class ReqAckConf_t(ww:Int) extends Bundle{
   val ready : Bool = Bool()
   val config : Bool = Bool()
   override def cloneType: ReqAckConf_t.this.type = ReqAckConf_t(ww).asInstanceOf[this.type]
-}
-
-case class ReqAckConf_wire(ww:Int) extends Bundle{
-  val valid : Bool = WireInit(false.B)
-  val bits : UInt = WireInit(0.U(ww.W))
-  val ready : Bool = WireInit(false.B)
-  val config : Bool = WireInit(false.B)
-  override def cloneType: ReqAckConf_wire.this.type = ReqAckConf_wire(ww).asInstanceOf[this.type]
 }
 
 object port_generator {

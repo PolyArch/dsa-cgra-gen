@@ -10,12 +10,10 @@ class delay(data_width:Int,
   // ------ Create Hardware ------
   // create IO
   val io = IO(new Bundle{
-    val in = Flipped(ReqAckConf_if(data_width))
-    val out = ReqAckConf_if(data_width)
+    val in = Flipped(DecoupledIO(UInt(data_width.W)))
+    val out = DecoupledIO(UInt(data_width.W))
     val delay = Input(UInt(log2Ceil(1 + max_delay).W))
   })
-  // Dont Care the config bit
-  io.in.config := DontCare;io.out.config := DontCare
 
   if(flow_control){// Delay FIFO
     // create fifo use internal lib
@@ -31,8 +29,8 @@ class delay(data_width:Int,
     io.out.ready <> queue_out.ready
   }else{// Delay Pipe
     //Don't Care control bit
-    io.in.valid := DontCare; io.out.valid := DontCare
-    io.in.ready := DontCare; io.out.ready := DontCare
+    io.out.valid := io.in.valid
+    io.in.ready := io.delay < max_delay.U
     // Create flip-flop array to store data
     val pipe = RegInit(VecInit(Seq.fill(max_delay)(0.U(data_width.W))))
     // Create head and tail pointer
