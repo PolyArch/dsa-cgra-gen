@@ -5,16 +5,26 @@ import dsl._
 object maeri extends App{
   identifier("depth")
 
-  val start_sw = new ssnode("switch")
-  val end_add = new ssnode("function unit")
-  end_add("instructions","Add")
+  val root_sw = new ssnode("switch")
+  root_sw("max_util",1)(
+    "subnet_offset", List(0))
+  val root_fu = new ssnode("function unit")
+  root_fu("max_util",1)(
+    "instructions","Add")(
+    "num_register", 1)(
+    "max_delay_fifo_depth", 2)(
+    "flow_control", true
+  )
 
   // Create MAERI
   val MAERI = new ssfabric()
+  MAERI("default_data_width", 64)(
+    "default_flow_control", true
+  )
 
   // Create distribute and reduce Network
-  val distribute_network = MAERI.buildTree(start_sw,4,true)
-  val reduce_network = MAERI.buildTree(end_add,4,false)
+  val distribute_network = MAERI.buildTree(root_sw,4,true)
+  val reduce_network = MAERI.buildTree(root_fu,4,false)
 
   // Create MAERI
   MAERI(distribute_network)(reduce_network)
@@ -28,6 +38,14 @@ object maeri extends App{
   for (i <- last_row_fu.indices){
     MAERI(last_row_switch(i) --> last_row_fu(i))
   }
+
+  // Connect to the Vector port
+  val input_port = new ssnode("vector port")
+  val output_port = new ssnode("vector port")
+  MAERI(
+    input_port --> root_sw)(
+    root_fu --> output_port
+  )
 
   // horizontal connection of the Last Row FU
   for (i <- 0 until last_row_fu.length -1){

@@ -154,12 +154,21 @@ class ssnode(nodeType:String) extends IRPrintable {
 
   // Postprocess
   def postprocess():Unit={
+
     // datapath properties
     val data_width = getPropByKey("data_width").asInstanceOf[Int]
-    val granularity = getPropByKey("granularity").asInstanceOf[Int]
+    val granularity = {
+      if(has("granularity"))
+        getPropByKey("granularity").asInstanceOf[Int]
+      else {
+        apply("granularity", data_width)
+        data_width
+      }
+    }
     val decomposer = data_width / granularity;
     require(data_width == decomposer * granularity,"data_width = " + data_width +
       ", granularity = " + granularity + ", decomposer = " + decomposer)
+
     // I/O Port Properties
     val num_input = input_links.size; apply("num_input", num_input)
     val num_output = output_links.size; apply("num_output", num_output)
@@ -171,36 +180,13 @@ class ssnode(nodeType:String) extends IRPrintable {
       val output_nodes = apply("output_nodes").asInstanceOf[ListBuffer[ssnode]]
       require(num_output == output_nodes.length)
     }
+
     // Function-Unit specific process
     if(getValue(getPropByKey("nodeType"))=="function unit"){
       val insts = getPropByKey("instructions")
       insts match {
         case single:String => apply("instructions", collection.immutable.Set(single))
         case _ =>
-      }
-    }
-    // Switch-specific subnet table process
-    if(has("subnet_offset")){
-      if(num_input > 0 && num_output > 0){
-        val subnet_offset = getPropByKey("subnet_offset")
-          .asInstanceOf[List[Int]]
-        require(subnet_offset.forall(offset=>{
-          Math.abs(offset) <  decomposer
-        }),"offset if larger than max slot size")
-        val subnet_table = Array.ofDim[Boolean](
-          num_output*decomposer,num_input*decomposer)
-        for(op_idx <- 0 until num_output;os_idx <- 0 until decomposer;
-            ip_idx <- 0 until num_input; is_idx <- 0 until decomposer){
-          subnet_table( op_idx * decomposer + os_idx)(
-            ip_idx * decomposer + is_idx)  =
-            if(subnet_offset.contains((is_idx - os_idx) % decomposer)||
-              subnet_offset.contains((is_idx - os_idx - decomposer) % decomposer)||
-              subnet_offset.contains((is_idx - os_idx + decomposer) % decomposer))
-              true
-            else
-              false
-        }
-        apply("subnet_table", subnet_table)
       }
     }
   }

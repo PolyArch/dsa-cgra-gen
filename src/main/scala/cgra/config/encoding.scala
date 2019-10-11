@@ -16,7 +16,7 @@ object encoding {
   }
 
   def get_config_range(low_bit:Int, num_conf:Int) :(Int,Int)={
-    (low_bit + log2Ceil(num_conf) - 1, low_bit)
+    (low_bit + log2Ceil(num_conf max 2) - 1, low_bit)
   }
 
   def get_config_range(start_bit:Int, num_confs:Seq[Int]):Seq[(Int,Int)]={

@@ -41,7 +41,11 @@ class vector_port(prop:mutable.Map[String,Any])
   // ------ Logic Connections
   if(flow_control){
     val xbar = Module(new crossbar_flow_control(prop)).io
-    xbar.config := config_bits
+    if(num_port > 1){
+      xbar.config := config_bits
+    }else{
+      xbar.config := DontCare
+    }
     for (idx <- 0 until num_port){
       // Bits & Config
       xbar.ins(idx) <> io.input_ports(idx)
@@ -49,7 +53,11 @@ class vector_port(prop:mutable.Map[String,Any])
     }
   }else{
     val xbar = Module(new crossbar(prop)).io
-    xbar.config := config_bits
+    if(num_port > 1){
+      xbar.config := config_bits
+    }else{
+      xbar.config := DontCare
+    }
     for (idx <- 0 until num_port){
       // Bits & Config
       xbar.ins(idx) := io.input_ports(idx).bits

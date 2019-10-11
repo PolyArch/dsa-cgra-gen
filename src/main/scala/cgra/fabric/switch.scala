@@ -25,11 +25,38 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
   private val decomposer:Int = data_width / granularity
   private val config_in_port_idx:Int = getPropByKey("config_in_port_idx")
     .asInstanceOf[Int]
-  private val config_out_port_idx:List[Int] = try{getPropByKey("config_out_port_idx")
-    .asInstanceOf[List[Int]]}catch{case _:Throwable => Nil}
-  private val subnet_table:List[List[Boolean]] =
-    getPropByKey("subnet_table").asInstanceOf[List[List[Boolean]]]
-  private val switch_mode:String = getPropByKey("switch_mode").toString
+  private val config_out_port_idx:List[Int] =
+    if(getPropByKey("config_out_port_idx") == None){Nil}
+    else{getPropByKey("config_out_port_idx").asInstanceOf[List[Int]]}
+  private val subnet_offset : List[Int] =
+    if(getPropByKey("subnet_offset")== None) List(0)
+    else getPropByKey("subnet_offset").asInstanceOf[List[Int]]
+
+  private val switch_mode:String = if(getPropByKey("switch_mode") == None){
+    "full-control"
+  }else{
+    getPropByKey("switch_mode")
+  }
+
+  // Derived Parameter
+  private val subnet_table : Array[Array[Boolean]] = Array.ofDim[Boolean](
+    num_output*decomposer,num_input*decomposer)
+  require(subnet_offset.forall(offset=>{
+    Math.abs(offset) <  decomposer
+  }),"offset if larger than max slot size")
+  for(op_idx <- 0 until num_output;os_idx <- 0 until decomposer;
+      ip_idx <- 0 until num_input; is_idx <- 0 until decomposer){
+    subnet_table( op_idx * decomposer + os_idx)(
+      ip_idx * decomposer + is_idx)  =
+      if(subnet_offset.contains((is_idx - os_idx) % decomposer)||
+        subnet_offset.contains((is_idx - os_idx - decomposer) % decomposer)||
+        subnet_offset.contains((is_idx - os_idx + decomposer) % decomposer))
+        true
+      else
+        false
+  }
+  apply("subnet_table", subnet_table)
+
 
   // Calculate the number of configuration
   private val output_slot2num_conf : Map[(Int,Int),Int] = {for (
@@ -160,7 +187,7 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
     val config_reg_value = config_wire(config_high_bit, config_low_bit)
 
     // Mux port mapping: This slot connected (input_port, input_slot)
-    val connected_input : List[(Int, Int)] = subnet_table(slot_idx)
+    val connected_input : Array[(Int, Int)] = subnet_table(slot_idx)
       .zipWithIndex.filter(conn_idx => conn_idx._1
     ).map(conn_idx => (conn_idx._2 / decomposer, conn_idx._2 % decomposer))
 

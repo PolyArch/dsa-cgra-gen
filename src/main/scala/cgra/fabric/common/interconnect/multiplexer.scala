@@ -26,10 +26,15 @@ with IRPrintable{
     val config = Input(UInt(sel_width.W))
   })
 
-  val muxLUT = for(idx <- 0 until num_input)yield{
-    (idx.U, io.in(idx))
+  if(num_input > 1){
+    val muxLUT = for(idx <- 0 until num_input)yield{
+      (idx.U, io.in(idx))
+    }
+    io.out := MuxLookup(io.config,0.U,muxLUT)
+  }else{
+    io.out <> io.in.head
   }
-  io.out := MuxLookup(io.config,0.U,muxLUT)
+
 
   override def postprocess(): Unit = ???
 }

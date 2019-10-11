@@ -158,9 +158,13 @@ object IRconfigpather {
     for (col_idx <- 0 until num_ssnode){
       val curr_node_name = ssnodeList(col_idx)._1
       println("randomize on " + curr_node_name)
-      val conn_idxs : Array[Int] = ssnodeGraphMatrix.map(_(col_idx)).zipWithIndex.filter(_._1).map(_._2)
-      val rand_conn_idx : Int = conn_idxs(rand.nextInt(conn_idxs.length))
-      ssnodeConfigPathMatrix(rand_conn_idx)(col_idx) = true
+      // Assign random config input for those which is not input node
+      if(!input_ssnodes_list.map(_._1).contains(curr_node_name)){
+        val conn_idxs : Array[Int] = ssnodeGraphMatrix.map(_(col_idx)).zipWithIndex.filter(_._1).map(_._2)
+        val rand_conn_idx : Int = conn_idxs(rand.nextInt(conn_idxs.length))
+        ssnodeConfigPathMatrix(rand_conn_idx)(col_idx) = true
+      }
+      // Make sure next node do not have any config input
       for (next <- col_idx + 1 until num_ssnode){
         val nextIn = ssnodeConfigPathMatrix.map(_(next))
         assert(!(nextIn.count(n=>n) >= 1))
@@ -313,7 +317,7 @@ object IRconfigpather {
     var bestConfigPathMatrix = ssnodeConfigPathMatrix
     val bestConfigPathMatRecord = emptyConfigMatrix()
 
-    val maxIteration = 5000
+    val maxIteration = 1000
     val scoreRecord = new Array[Double](maxIteration)
     for (i <- 0 until maxIteration){
       /*
@@ -323,11 +327,12 @@ object IRconfigpather {
       ssnodeConfigPathMatrix = bestConfigPathMatrix
       tranverseConfigPathMap()
       var currTotalStat = getConfigPathPerf()
-      var currPerPathStat = currTotalStat._1
-      var currCostVar = currTotalStat._2
+      val currPerPathStat = currTotalStat._1
+      val currCostVar = currTotalStat._2
 
       // Find the most-node path
-      val node_num_config_cycle : Map[ssnode_t,Double] = currPerPathStat.map(n=>(n._1,n._2("num_config_cycle"))).toMap
+      val node_num_config_cycle : Map[ssnode_t,Double] =
+        currPerPathStat.map(n=>(n._1,n._2("num_config_cycle"))).toMap
       val most_node_path_startNode = node_num_config_cycle.toSeq.sortWith(_._2 >_._2).head._1
       val most_node_path_numNode = node_num_config_cycle.toSeq.sortWith(_._2 >_._2).head._2
       val most_node_path : List[List[ssnode_t]] = ssnodeConfigPathMap(most_node_path_startNode)
@@ -343,8 +348,10 @@ object IRconfigpather {
         // Don't care the input node
         if(!input_ssnodes_list.contains(currNode)){
           val currNode_idx = ssnodeList.indexOf(currNode)
-          val possibleSourceNodes_idx : Array[Int] = ssnodeGraphMatrix.map(_(currNode_idx)).zipWithIndex.filter(_._1).map(_._2)
-          val possibleSourceNodes : List[ssnode_t] = possibleSourceNodes_idx.map(ssnodeList).toList
+          val possibleSourceNodes_idx : Array[Int] = ssnodeGraphMatrix
+            .map(_(currNode_idx)).zipWithIndex.filter(_._1).map(_._2)
+          val possibleSourceNodes : List[ssnode_t] =
+            possibleSourceNodes_idx.map(ssnodeList).toList
           val nodesOnOtherPath : List[ssnode_t] = possibleSourceNodes diff allnodes_onPath
           // If this node do have other source node which is on other path
           if (nodesOnOtherPath != Nil && moved_time < max_moveoutTime){
@@ -378,22 +385,23 @@ object IRconfigpather {
       currTotalStat = getConfigPathPerf()
       var currScore = calculate_cost()
       if(success){
-        if(currScore < bestScore){
+        if(currScore < bestScore || i == 1){
           bestTotalStat = currTotalStat
           bestPerPathStat = bestTotalStat._1
           bestCostVar = bestTotalStat._2
           bestScore = currScore
           bestConfigPathMatrix = ssnodeConfigPathMatrix
-          for(i <- 0 until num_ssnode;j <- 0 until num_ssnode)
+          for(i <- 0 until num_ssnode;j <- 0 until num_ssnode) {
             bestConfigPathMatRecord(i)(j) = bestConfigPathMatrix(i)(j)
-          tranverseConfigPathMap()
+          }
           printConfigPath()
         }
       }else{
         currScore = 10000
       }
       scoreRecord(i) = currScore
-      //printConfigPath()
+      if(i % 500 == 0)
+        printConfigPath()
       println("------------------ iter: " + i +
         " , curr : " + currScore.formatted("%3.2f") +
         " , best : " + bestScore.formatted("%3.2f") +

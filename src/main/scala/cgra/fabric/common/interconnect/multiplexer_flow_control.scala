@@ -28,22 +28,28 @@ class multiplexer_flow_control (prop:mutable.Map[String,Any])
     val config = Input(UInt(sel_width.W))
   })
 
-  // Mux Bits
-  private val muxBitsLUT = for(idx <- 0 until num_input)yield{
-    (idx.U, io.in(idx).bits)
-  }
-  io.out.bits := MuxLookup(io.config,0.U,muxBitsLUT)
+  if(num_input > 1){
+    // Mux Bits
+    val muxBitsLUT = for(idx <- 0 until num_input)yield{
+      (idx.U, io.in(idx).bits)
+    }
+    io.out.bits := MuxLookup(io.config,0.U,muxBitsLUT)
 
-  // Mux Valid
-  private val muxValidLUT = for(idx <- 0 until num_input)yield{
-    (idx.U, io.in(idx).valid)
-  }
-  io.out.valid := MuxLookup(io.config,false.B,muxValidLUT)
+    // Mux Valid
+    val muxValidLUT = for(idx <- 0 until num_input)yield{
+      (idx.U, io.in(idx).valid)
+    }
+    io.out.valid := MuxLookup(io.config,false.B,muxValidLUT)
 
-  // Mux Ready
-  for (idx <- 0 until num_input){
-    io.in(idx).ready := Mux(io.config === idx.U,io.out.ready,false.B)
+    // Mux Ready
+    for (idx <- 0 until num_input){
+      io.in(idx).ready := Mux(io.config === idx.U,io.out.ready,false.B)
+    }
+  }else{
+    io.out <> io.in.head
   }
+
+
 
   override def postprocess(): Unit = ???
 

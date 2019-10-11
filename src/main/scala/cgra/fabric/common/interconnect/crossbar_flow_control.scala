@@ -54,7 +54,11 @@ with IRPrintable{
     io.outs(out_idx) <> mux_module_io(out_idx).out
     // Connect Config
     val config_range = config_ranges(out_idx)
-    mux_module_io(out_idx).config := io.config(config_range._1, config_range._2)
+    if(num_input > 1){
+      mux_module_io(out_idx).config := io.config(config_range._1, config_range._2)
+    }else{
+      mux_module_io(out_idx).config := DontCare
+    }
   }
 
   // Connect the MUX IO (Backward)

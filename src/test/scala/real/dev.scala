@@ -9,7 +9,12 @@ object dev extends App{
 
   // Define Default Switch
   val sw_default = new ssnode("switch")
-  sw_default("max_util",2)("granularity",32)("subnet_offset", List(0))
+  sw_default(
+    "max_util",2)(
+    "granularity",16)(
+    "subnet_offset", List(0, 1))(
+    "switch_mode", "full-control"
+  )
 
   // Define a Adding Function Unit
   val fu_add = new ssnode("function unit")
@@ -37,9 +42,7 @@ object dev extends App{
     "default_data_width", 64)(
     "default_granularity", 32)(
     "Default_max_util", 2)(
-    "Defaultflow_control", true)(
-    "default_switch_mode", "full-control"
-  )
+    "Defaultflow_control", true)
 
   // Build Mesh Topology
   val switchMesh = dev.buildMesh(sw_default, 5,5)
@@ -47,7 +50,7 @@ object dev extends App{
   // Heterogeneous datawidth
   for(row_idx <- 1 until 5; col_idx <- 0 until 5){
     if(row_idx + col_idx == 3){
-      switchMesh(row_idx)(col_idx).apply("data_width",32)
+      switchMesh(row_idx)(col_idx).apply("data_width",128)
     }
   }
 
@@ -96,8 +99,8 @@ object dev extends App{
 
   // Change Properties of One Switch
   dev(1)(1)("switch")(
-    "subnet_offset",List(0, -1, 2)
-    )("granularity",16)
+    "subnet_offset",List(0, 1, -2)
+    )("granularity",8)
 
   // Add a extra link
   dev(

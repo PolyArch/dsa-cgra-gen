@@ -41,7 +41,9 @@ class cgra_fabric(prop:mutable.Map[String, Any]) extends Module
   // In/Output_vps (id, num_port, is_input)
   private val input_vps = id2num_port.filter(_._3)
   private val output_vps = id2num_port.filter(!_._3)
-  private val config_width : Int = 1 + id2config_range.map(_._2._1) max
+  private val config_width : Int = 1 + (id2config_range.map(_._2._1) max)
+
+  println("End Parameterize")
 
   // ------ Create Hardware ------
 

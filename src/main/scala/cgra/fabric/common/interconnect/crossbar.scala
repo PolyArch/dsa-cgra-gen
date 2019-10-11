@@ -42,7 +42,11 @@ with IRPrintable{
     for(in_idx <- 0 until num_input){
       mux_io.in(in_idx) := io.ins(in_idx)
     }
-    mux_io.config := io.config(mux_config_range._1, mux_config_range._2)
+    if(num_input>1){
+      mux_io.config := io.config(mux_config_range._1, mux_config_range._2)
+    }else{
+      mux_io.config := DontCare
+    }
   }
 
   override def postprocess(): Unit = ???
