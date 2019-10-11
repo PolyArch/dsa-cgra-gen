@@ -6,7 +6,7 @@ Add8                    8            2              1              1           1
 # 16-Bit Instructions                                                                       
 Add16                   16           2              1              1           1            
 Sub16                   16           2              1              1           1            
-Concat16                16           1              1              1           1            
+Concat16                16           2              1              1           1
 Acc16                   16           2              1              1           1            
 Mul16                   16           2              1              1           1            
 Div16                   16           2              1              1           1            
@@ -41,7 +41,7 @@ Xor32                   32           2              1              1           1
 Acc32                   32           2              1              1           1            
                                                                                             
 # 64-Bit Instructions                                                                       
-Extract16               64           1              1              1           1            
+Extract16               64           2              1              1           1
 BitsliceAcc64           64           2              1              1           1            
 Concat64                64           1              1              1           1            
 Sig16                   64           2              1              3           1            
@@ -132,7 +132,35 @@ RealSqrtInv             64           1              1              13          1
 Delay                   64           1              1              5           1            
                                                                                             
 Compare64               64           2              1              1           1            
-Accumulate64            64           1              1              1           1            
+Accumulate64            64           1              1              1           1
+
+# General Instruction (All Instructions supported by Chisel)
+Add                     64           2              1              1           1
+Sub                     64           2              1              1           1
+Mul                     64           2              1              1           1
+Div                     64           2              1              1           1
+BOr                     64           2              1              1           1
+BAnd                    64           2              1              1           1
+BXor                    64           2              1              1           1
+BNot                    64           2              1              1           1
+LNot                    64           2              1              1           1
+LAnd                    64           2              1              1           1
+LOr                     64           2              1              1           1
+ExtractB                64           2              1              1           1
+LShf                    64           2              1              1           1
+RShf                    64           2              1              1           1
+Cat                     64           2              1              1           1
+Mux                     64           3              1              1           1
+EQ                      64           2              1              1           1
+NQ                      64           2              1              1           1
+Mod                     64           2              1              1           1
+GT                      64           2              1              1           1
+GE                      64           2              1              1           1
+LT                      64           2              1              1           1
+LE                      64           2              1              1           1
+AndR                    64           2              1              1           1
+OrR                     64           2              1              1           1
+XorR                    64           2              1              1           1
                                                                                             
                                                                                             
 #Dummy Coarse  Grained Instructions                                                         

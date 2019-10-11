@@ -1,9 +1,8 @@
 package cgra.fabric
 
 import cgra.IO.port_generator.gc_port
-import cgra.IO.{ReqAckConf_if, ReqAckConf_t}
+import cgra.IO.ReqAckConf_if
 import cgra.config.system_var
-import cgra.config.system_util._
 import chisel3._
 import chisel3.util._
 

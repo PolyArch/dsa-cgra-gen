@@ -255,8 +255,8 @@ object fullinst {
       val op0 = ops.head.apply(63,0)
       val op1 = ops(1).apply(63,0)
       op0 - op1
-    })
-    /*
+    }),
+
     // ------ Data Width Insensitive Instructions ------
     "Add"      -> ((ops:Seq[UInt]) => ops.head  + ops(1)),
     "Sub"      -> ((ops:Seq[UInt]) => ops.head  - ops(1)),
@@ -284,6 +284,6 @@ object fullinst {
     "AndR"     -> ((ops:Seq[UInt]) => ops.head.andR()),
     "OrR"      -> ((ops:Seq[UInt]) => ops.head.orR()),
     "XorR"     -> ((ops:Seq[UInt]) => ops.head.xorR())
-     */
+
   )
 }

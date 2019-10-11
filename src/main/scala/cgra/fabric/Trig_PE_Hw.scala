@@ -404,7 +404,7 @@ class Trig_PE_Hw(name_p:(String,Any)) extends Module
 
 import cgra.config.system_var
 import cgra.config.system_util._
-
+import cgra.config.fullinst.inst_operation
 object tester_trig_pe extends App{
   system_var.data_word_width = 64
   val p : mutable.Map[String,Any] = mutable.Map[String,Any]()
@@ -415,7 +415,7 @@ object tester_trig_pe extends App{
   p += "architecture"-> "integer"
   p += "immediate_width"-> 32
   p += "mm_instruction_width"-> 128
-  p += "instructions"-> List("BOr")
+  p += "instructions"-> inst_operation.keys.toList // TODO: Make the Instruction definition clear
   p += "num_instructions"-> 16
   p += "num_predicates"-> 8
   p += "num_registers"-> 8

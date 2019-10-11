@@ -261,7 +261,7 @@ class ssfabric extends IRPrintable {
       for (insts <- temp_allInsts){
         insts match {
           case i:String => allInsts = allInsts :+ i
-          case is:collection.immutable.Set[String] =>
+          case is:Seq[String] =>
             allInsts = allInsts ::: is.toList
         }
       }

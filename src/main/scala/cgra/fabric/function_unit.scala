@@ -35,8 +35,10 @@ class function_unit(prop:mutable.Map[String,Any])
   private val instructions : List[String] = getPropByKey("instructions")
     .asInstanceOf[List[String]]
   private val num_inst : Int = instructions.length
-  private val num_register : Int = getPropByKey("num_register")
-    .asInstanceOf[Int]
+  private val num_register : Int =
+    if(getPropByKey("num_register") != None)
+    {getPropByKey("num_register").asInstanceOf[Int]}
+    else {1}
   private val max_delay_fifo_depth : Int = getPropByKey("max_delay_fifo_depth")
     .asInstanceOf[Int]
 
