@@ -28,18 +28,19 @@ class delay(data_width:Int,
     io.out.valid := queue_out.valid
     io.out.ready <> queue_out.ready
   }else{// Delay Pipe
-    //Don't Care control bit
-    io.out.valid := io.in.valid
     io.in.ready := io.delay < max_delay.U
     // Create flip-flop array to store data
-    val pipe = RegInit(VecInit(Seq.fill(max_delay)(0.U(data_width.W))))
+    val pipe = RegInit(VecInit(Seq.fill(max_delay)(0.U((data_width + 1).W))))
     // Create head and tail pointer
     val head_ptr = RegInit(0.U(log2Ceil(max_delay).W))
     val tail_ptr = RegInit(0.U(log2Ceil(max_delay).W))
     // ------ Logic connections ------
     // read and write
-    io.out.bits := pipe(head_ptr)
-    pipe(tail_ptr) := io.in.bits
+    // Out
+    io.out.bits := pipe(head_ptr)(data_width-1,0)
+    io.out.valid := pipe(head_ptr)(data_width)
+    // In
+    pipe(tail_ptr) := Cat(io.in.valid,io.in.bits)
     // update the pointer
     head_ptr := head_ptr + 1.U
     tail_ptr := head_ptr + 1.U + io.delay

@@ -15,7 +15,7 @@ object spu extends App{
   // Define General Function Unit
   val fu_general = new ssnode("function unit")
   fu_general(
-    "instructions", cgra.config.fullinst.inst_operation.keys.toList)(
+    "instructions", List("Add", "Sub", "Mul", "Div", "FAdd64", "FMul64"))(
     "max_delay_fifo_depth", 4)
 
   // Define SPU

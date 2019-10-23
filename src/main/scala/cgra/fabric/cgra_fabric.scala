@@ -25,23 +25,17 @@ class cgra_fabric(prop:mutable.Map[String, Any]) extends Module
   // Calculate config width for Nodes who need config input
   private val allVpNodes = nodes
     .filter(node => node("nodeType") == "vector port")
-  private val id2num_port = for (vp <- allVpNodes) yield {
+  private val id2vp_info = for (vp <- allVpNodes) yield {
     val id = vp("id").asInstanceOf[Int]
     val num_inport = vp("num_input").asInstanceOf[Int]
     val num_outport = vp("num_output").asInstanceOf[Int]
-    (id, num_inport max num_outport, num_inport < num_outport)
-  }
-  private val id2config_range = {
-    val ids = id2num_port.map(_._1)
-    val conf_range = get_config_range(
-      id2num_port.map(id2num => id2num._2 * id2num._2)
-    )
-    ids.zip(conf_range)
+    val num_port = num_inport max num_outport
+    (id, num_port, num_inport < num_outport, num_port * log2Ceil(num_port))
   }
   // In/Output_vps (id, num_port, is_input)
-  private val input_vps = id2num_port.filter(_._3)
-  private val output_vps = id2num_port.filter(!_._3)
-  private val config_width : Int = 1 + (id2config_range.map(_._2._1) max)
+  private val input_vps = id2vp_info.filter(_._3)
+  private val output_vps = id2vp_info.filter(!_._3)
+  private val vps_config_width : List[Int] = id2vp_info.map(_._4)
 
   println("End Parameterize")
 
@@ -55,7 +49,7 @@ class cgra_fabric(prop:mutable.Map[String, Any]) extends Module
     val output_ports = MixedVec(output_vps.map(vp=>{
       DecoupledIO(UInt( (vp._2 * data_width).W ))
     }))
-    val config = Flipped(ValidIO(UInt(config_width.W)))
+    val config = MixedVec(vps_config_width.map(w=>Flipped(ValidIO(UInt(w.W)))))
   })
 
   // Create the Module
@@ -76,18 +70,34 @@ class cgra_fabric(prop:mutable.Map[String, Any]) extends Module
     val sink_id = link("sink").head.asInstanceOf[Int]
     val source_port_idx = link("source").last.asInstanceOf[Int]
     val sink_port_idx = link("sink").last.asInstanceOf[Int]
-    nodes_module(sink_id).input_ports(sink_port_idx) <>
-      nodes_module(source_id).output_ports(source_port_idx)
+
+    val sink_bw = nodes_module(sink_id).input_ports(sink_port_idx).bits.getWidth
+    val source_bw = nodes_module(source_id).output_ports(source_port_idx).bits.getWidth
+
+    if(source_bw <= sink_bw){
+      nodes_module(sink_id).input_ports(sink_port_idx) <>
+        nodes_module(source_id).output_ports(source_port_idx)
+    }else {
+      // Valid & Ready
+      nodes_module(sink_id).input_ports(sink_port_idx).valid :=
+        nodes_module(source_id).output_ports(source_port_idx).valid
+      nodes_module(source_id).output_ports(source_port_idx).ready :=
+        nodes_module(sink_id).input_ports(sink_port_idx).ready
+      // Bits
+      val source_bits = nodes_module(source_id).output_ports(source_port_idx).bits
+      val source_config_bits = source_bits(source_bw - 1)
+      val source_info_bits = source_bits(sink_bw - 2, 0)
+      nodes_module(sink_id).input_ports(sink_port_idx).bits :=
+        Cat(source_config_bits, source_info_bits)
+    }
   }
 
   // Connect the Config Port
-  for(id2conf <- id2config_range){
+  for(id2conf <- id2vp_info){
     val id = id2conf._1
-    val high_bit = id2conf._2._1
-    val low_bit = id2conf._2._2
+    val vp_idx = id2vp_info.indexOf(id2conf)
     val vector_port = nodes_module(id).asInstanceOf[VecDecoupledIO_conf]
-    vector_port.config.bits := io.config.bits(high_bit,low_bit)
-    vector_port.config.valid := io.config.valid
+    vector_port.config <> io.config(vp_idx)
   }
 
   // Connect the IO

@@ -39,7 +39,7 @@ class vector_port(prop:mutable.Map[String,Any])
   prop += "out_data_width"-> Seq.fill(num_port)(data_width + 1)
 
   // ------ Logic Connections
-  if(flow_control){
+  if(true){ // vector port need to be flow controlled all the time
     val xbar = Module(new crossbar_flow_control(prop)).io
     if(num_port > 1){
       xbar.config := config_bits

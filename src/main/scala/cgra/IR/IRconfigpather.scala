@@ -314,17 +314,15 @@ object IRconfigpather {
     var bestPerPathStat = bestTotalStat._1
     var bestCostVar = bestTotalStat._2
     var bestScore = calculate_cost()
-    var bestConfigPathMatrix = ssnodeConfigPathMatrix
     val bestConfigPathMatRecord = emptyConfigMatrix()
 
-    val maxIteration = 1000
+    val maxIteration = 500
     val scoreRecord = new Array[Double](maxIteration)
     for (i <- 0 until maxIteration){
       /*
        Strategy 1 : Move the node of most-node path to other path
        */
       // Use the Best Design for Current Iteration
-      ssnodeConfigPathMatrix = bestConfigPathMatrix
       tranverseConfigPathMap()
       var currTotalStat = getConfigPathPerf()
       val currPerPathStat = currTotalStat._1
@@ -390,9 +388,8 @@ object IRconfigpather {
           bestPerPathStat = bestTotalStat._1
           bestCostVar = bestTotalStat._2
           bestScore = currScore
-          bestConfigPathMatrix = ssnodeConfigPathMatrix
           for(i <- 0 until num_ssnode;j <- 0 until num_ssnode) {
-            bestConfigPathMatRecord(i)(j) = bestConfigPathMatrix(i)(j)
+            bestConfigPathMatRecord(i)(j) = ssnodeConfigPathMatrix(i)(j)
           }
           printConfigPath()
         }

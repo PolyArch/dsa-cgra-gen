@@ -209,15 +209,11 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
       config_reg_value, 0.U, portMuxLookup.map(x=>(x._1,x._2.bits)))
 
     // control flow connection
-    if(flow_control){
-      decomposed_out_ports(output_port_idx)(output_slot_idx).valid := MuxLookup(
-        config_reg_value, 0.U, portMuxLookup.map(x=>(x._1,x._2.valid)))
-    }else{
-      decomposed_out_ports(output_port_idx)(output_slot_idx).valid := DontCare
-    }
+    decomposed_out_ports(output_port_idx)(output_slot_idx).valid := MuxLookup(
+      config_reg_value, 0.U, portMuxLookup.map(x=>(x._1,x._2.valid)))
 
-    // don't care configuration when stream mode
-    decomposed_out_ports(output_port_idx)(output_slot_idx).config := DontCare
+    // connect config bit
+    decomposed_out_ports(output_port_idx)(output_slot_idx).config := config_enable
   }
 
   // Add this into properties
@@ -271,7 +267,8 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
       decomposed_in_ports(input_port_idx)(input_slot_idx).ready :=
         overall_downstream_ready
     }else{
-      decomposed_in_ports(input_port_idx)(input_slot_idx).ready := DontCare
+      // No back-pressure means downstream always ready
+      decomposed_in_ports(input_port_idx)(input_slot_idx).ready := true.B
     }
   }// End of backward ready connection
 

@@ -6,15 +6,12 @@ object maeri extends App{
   identifier("depth")
 
   val root_sw = new ssnode("switch")
-  root_sw("max_util",1)(
-    "subnet_offset", List(0))
+  root_sw("max_util",1)("subnet_offset", List(0,1))("granularity",8)
   val root_fu = new ssnode("function unit")
   root_fu("max_util",1)(
     "instructions","Add")(
     "num_register", 1)(
-    "max_delay_fifo_depth", 2)(
-    "flow_control", true
-  )
+    "max_delay_fifo_depth", 2)
 
   // Create MAERI
   val MAERI = new ssfabric()
@@ -28,6 +25,14 @@ object maeri extends App{
 
   // Create MAERI
   MAERI(distribute_network)(reduce_network)
+
+  // TODO: Assign Different Data Width
+  /*
+  for (depth <- 0 until 5){
+    val nodes = MAERI("depth")(depth)
+    nodes.foreach(node => node("data_width", (8 * Math.pow(2,depth)).toInt))
+  }
+   */
 
   // Change the last row function of reduce graph to Multiplication
   val last_row_fu = MAERI("nodeType","depth")("function unit",0)
@@ -52,7 +57,7 @@ object maeri extends App{
     MAERI(last_row_fu(i) --> last_row_fu(i+1))
   }
 
-  // Four intra-tree connection
+  // TODO: Four intra-tree connection
 
 
   // Print MAERI

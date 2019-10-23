@@ -192,7 +192,7 @@ links:
 default_flow_control: true
 nodes:
 - num_output: 1
-  subnet_offset: [0]
+  subnet_offset: [0, 1]
   flow_control: true
   max_util: 1
   num_input: 1
@@ -201,15 +201,13 @@ nodes:
   id: 0
   data_width: 64
   nodeType: switch
-  granularity: 64
+  granularity: 8
   max_id: 63
   depth: 0
-  subnet_table:
-  - [true]
   input_nodes:
   - [2, switch, 1]
 - num_output: 1
-  subnet_offset: [0]
+  subnet_offset: [0, 1]
   flow_control: true
   max_util: 1
   num_input: 1
@@ -218,15 +216,13 @@ nodes:
   id: 1
   data_width: 64
   nodeType: switch
-  granularity: 64
+  granularity: 8
   max_id: 63
   depth: 0
-  subnet_table:
-  - [true]
   input_nodes:
   - [2, switch, 1]
 - num_output: 2
-  subnet_offset: [0]
+  subnet_offset: [0, 1]
   flow_control: true
   max_util: 1
   num_input: 1
@@ -236,16 +232,13 @@ nodes:
   id: 2
   data_width: 64
   nodeType: switch
-  granularity: 64
+  granularity: 8
   max_id: 63
   depth: 1
-  subnet_table:
-  - [true]
-  - [true]
   input_nodes:
   - [6, switch, 2]
 - num_output: 1
-  subnet_offset: [0]
+  subnet_offset: [0, 1]
   flow_control: true
   max_util: 1
   num_input: 1
@@ -254,15 +247,13 @@ nodes:
   id: 3
   data_width: 64
   nodeType: switch
-  granularity: 64
+  granularity: 8
   max_id: 63
   depth: 0
-  subnet_table:
-  - [true]
   input_nodes:
   - [5, switch, 1]
 - num_output: 1
-  subnet_offset: [0]
+  subnet_offset: [0, 1]
   flow_control: true
   max_util: 1
   num_input: 1
@@ -271,15 +262,13 @@ nodes:
   id: 4
   data_width: 64
   nodeType: switch
-  granularity: 64
+  granularity: 8
   max_id: 63
   depth: 0
-  subnet_table:
-  - [true]
   input_nodes:
   - [5, switch, 1]
 - num_output: 2
-  subnet_offset: [0]
+  subnet_offset: [0, 1]
   flow_control: true
   max_util: 1
   num_input: 1
@@ -289,16 +278,13 @@ nodes:
   id: 5
   data_width: 64
   nodeType: switch
-  granularity: 64
+  granularity: 8
   max_id: 63
   depth: 1
-  subnet_table:
-  - [true]
-  - [true]
   input_nodes:
   - [6, switch, 2]
 - num_output: 2
-  subnet_offset: [0]
+  subnet_offset: [0, 1]
   flow_control: true
   max_util: 1
   num_input: 1
@@ -308,16 +294,13 @@ nodes:
   id: 6
   data_width: 64
   nodeType: switch
-  granularity: 64
+  granularity: 8
   max_id: 63
   depth: 2
-  subnet_table:
-  - [true]
-  - [true]
   input_nodes:
   - [14, switch, 3]
 - num_output: 1
-  subnet_offset: [0]
+  subnet_offset: [0, 1]
   flow_control: true
   max_util: 1
   num_input: 1
@@ -326,15 +309,13 @@ nodes:
   id: 7
   data_width: 64
   nodeType: switch
-  granularity: 64
+  granularity: 8
   max_id: 63
   depth: 0
-  subnet_table:
-  - [true]
   input_nodes:
   - [9, switch, 1]
 - num_output: 1
-  subnet_offset: [0]
+  subnet_offset: [0, 1]
   flow_control: true
   max_util: 1
   num_input: 1
@@ -343,15 +324,13 @@ nodes:
   id: 8
   data_width: 64
   nodeType: switch
-  granularity: 64
+  granularity: 8
   max_id: 63
   depth: 0
-  subnet_table:
-  - [true]
   input_nodes:
   - [9, switch, 1]
 - num_output: 2
-  subnet_offset: [0]
+  subnet_offset: [0, 1]
   flow_control: true
   max_util: 1
   num_input: 1
@@ -361,16 +340,13 @@ nodes:
   id: 9
   data_width: 64
   nodeType: switch
-  granularity: 64
+  granularity: 8
   max_id: 63
   depth: 1
-  subnet_table:
-  - [true]
-  - [true]
   input_nodes:
   - [13, switch, 2]
 - num_output: 1
-  subnet_offset: [0]
+  subnet_offset: [0, 1]
   flow_control: true
   max_util: 1
   num_input: 1
@@ -379,15 +355,13 @@ nodes:
   id: 10
   data_width: 64
   nodeType: switch
-  granularity: 64
+  granularity: 8
   max_id: 63
   depth: 0
-  subnet_table:
-  - [true]
   input_nodes:
   - [12, switch, 1]
 - num_output: 1
-  subnet_offset: [0]
+  subnet_offset: [0, 1]
   flow_control: true
   max_util: 1
   num_input: 1
@@ -396,15 +370,13 @@ nodes:
   id: 11
   data_width: 64
   nodeType: switch
-  granularity: 64
+  granularity: 8
   max_id: 63
   depth: 0
-  subnet_table:
-  - [true]
   input_nodes:
   - [12, switch, 1]
 - num_output: 2
-  subnet_offset: [0]
+  subnet_offset: [0, 1]
   flow_control: true
   max_util: 1
   num_input: 1
@@ -414,16 +386,13 @@ nodes:
   id: 12
   data_width: 64
   nodeType: switch
-  granularity: 64
+  granularity: 8
   max_id: 63
   depth: 1
-  subnet_table:
-  - [true]
-  - [true]
   input_nodes:
   - [13, switch, 2]
 - num_output: 2
-  subnet_offset: [0]
+  subnet_offset: [0, 1]
   flow_control: true
   max_util: 1
   num_input: 1
@@ -433,16 +402,13 @@ nodes:
   id: 13
   data_width: 64
   nodeType: switch
-  granularity: 64
+  granularity: 8
   max_id: 63
   depth: 2
-  subnet_table:
-  - [true]
-  - [true]
   input_nodes:
   - [14, switch, 3]
 - num_output: 2
-  subnet_offset: [0]
+  subnet_offset: [0, 1]
   flow_control: true
   max_util: 1
   num_input: 1
@@ -452,16 +418,13 @@ nodes:
   id: 14
   data_width: 64
   nodeType: switch
-  granularity: 64
+  granularity: 8
   max_id: 63
   depth: 3
-  subnet_table:
-  - [true]
-  - [true]
   input_nodes:
   - [30, switch, 4]
 - num_output: 1
-  subnet_offset: [0]
+  subnet_offset: [0, 1]
   flow_control: true
   max_util: 1
   num_input: 1
@@ -470,15 +433,13 @@ nodes:
   id: 15
   data_width: 64
   nodeType: switch
-  granularity: 64
+  granularity: 8
   max_id: 63
   depth: 0
-  subnet_table:
-  - [true]
   input_nodes:
   - [17, switch, 1]
 - num_output: 1
-  subnet_offset: [0]
+  subnet_offset: [0, 1]
   flow_control: true
   max_util: 1
   num_input: 1
@@ -487,15 +448,13 @@ nodes:
   id: 16
   data_width: 64
   nodeType: switch
-  granularity: 64
+  granularity: 8
   max_id: 63
   depth: 0
-  subnet_table:
-  - [true]
   input_nodes:
   - [17, switch, 1]
 - num_output: 2
-  subnet_offset: [0]
+  subnet_offset: [0, 1]
   flow_control: true
   max_util: 1
   num_input: 1
@@ -505,16 +464,13 @@ nodes:
   id: 17
   data_width: 64
   nodeType: switch
-  granularity: 64
+  granularity: 8
   max_id: 63
   depth: 1
-  subnet_table:
-  - [true]
-  - [true]
   input_nodes:
   - [21, switch, 2]
 - num_output: 1
-  subnet_offset: [0]
+  subnet_offset: [0, 1]
   flow_control: true
   max_util: 1
   num_input: 1
@@ -523,15 +479,13 @@ nodes:
   id: 18
   data_width: 64
   nodeType: switch
-  granularity: 64
+  granularity: 8
   max_id: 63
   depth: 0
-  subnet_table:
-  - [true]
   input_nodes:
   - [20, switch, 1]
 - num_output: 1
-  subnet_offset: [0]
+  subnet_offset: [0, 1]
   flow_control: true
   max_util: 1
   num_input: 1
@@ -540,15 +494,13 @@ nodes:
   id: 19
   data_width: 64
   nodeType: switch
-  granularity: 64
+  granularity: 8
   max_id: 63
   depth: 0
-  subnet_table:
-  - [true]
   input_nodes:
   - [20, switch, 1]
 - num_output: 2
-  subnet_offset: [0]
+  subnet_offset: [0, 1]
   flow_control: true
   max_util: 1
   num_input: 1
@@ -558,16 +510,13 @@ nodes:
   id: 20
   data_width: 64
   nodeType: switch
-  granularity: 64
+  granularity: 8
   max_id: 63
   depth: 1
-  subnet_table:
-  - [true]
-  - [true]
   input_nodes:
   - [21, switch, 2]
 - num_output: 2
-  subnet_offset: [0]
+  subnet_offset: [0, 1]
   flow_control: true
   max_util: 1
   num_input: 1
@@ -577,16 +526,13 @@ nodes:
   id: 21
   data_width: 64
   nodeType: switch
-  granularity: 64
+  granularity: 8
   max_id: 63
   depth: 2
-  subnet_table:
-  - [true]
-  - [true]
   input_nodes:
   - [29, switch, 3]
 - num_output: 1
-  subnet_offset: [0]
+  subnet_offset: [0, 1]
   flow_control: true
   max_util: 1
   num_input: 1
@@ -595,15 +541,13 @@ nodes:
   id: 22
   data_width: 64
   nodeType: switch
-  granularity: 64
+  granularity: 8
   max_id: 63
   depth: 0
-  subnet_table:
-  - [true]
   input_nodes:
   - [24, switch, 1]
 - num_output: 1
-  subnet_offset: [0]
+  subnet_offset: [0, 1]
   flow_control: true
   max_util: 1
   num_input: 1
@@ -612,15 +556,13 @@ nodes:
   id: 23
   data_width: 64
   nodeType: switch
-  granularity: 64
+  granularity: 8
   max_id: 63
   depth: 0
-  subnet_table:
-  - [true]
   input_nodes:
   - [24, switch, 1]
 - num_output: 2
-  subnet_offset: [0]
+  subnet_offset: [0, 1]
   flow_control: true
   max_util: 1
   num_input: 1
@@ -630,16 +572,13 @@ nodes:
   id: 24
   data_width: 64
   nodeType: switch
-  granularity: 64
+  granularity: 8
   max_id: 63
   depth: 1
-  subnet_table:
-  - [true]
-  - [true]
   input_nodes:
   - [28, switch, 2]
 - num_output: 1
-  subnet_offset: [0]
+  subnet_offset: [0, 1]
   flow_control: true
   max_util: 1
   num_input: 1
@@ -648,15 +587,13 @@ nodes:
   id: 25
   data_width: 64
   nodeType: switch
-  granularity: 64
+  granularity: 8
   max_id: 63
   depth: 0
-  subnet_table:
-  - [true]
   input_nodes:
   - [27, switch, 1]
 - num_output: 1
-  subnet_offset: [0]
+  subnet_offset: [0, 1]
   flow_control: true
   max_util: 1
   num_input: 1
@@ -665,15 +602,13 @@ nodes:
   id: 26
   data_width: 64
   nodeType: switch
-  granularity: 64
+  granularity: 8
   max_id: 63
   depth: 0
-  subnet_table:
-  - [true]
   input_nodes:
   - [27, switch, 1]
 - num_output: 2
-  subnet_offset: [0]
+  subnet_offset: [0, 1]
   flow_control: true
   max_util: 1
   num_input: 1
@@ -683,16 +618,13 @@ nodes:
   id: 27
   data_width: 64
   nodeType: switch
-  granularity: 64
+  granularity: 8
   max_id: 63
   depth: 1
-  subnet_table:
-  - [true]
-  - [true]
   input_nodes:
   - [28, switch, 2]
 - num_output: 2
-  subnet_offset: [0]
+  subnet_offset: [0, 1]
   flow_control: true
   max_util: 1
   num_input: 1
@@ -702,16 +634,13 @@ nodes:
   id: 28
   data_width: 64
   nodeType: switch
-  granularity: 64
+  granularity: 8
   max_id: 63
   depth: 2
-  subnet_table:
-  - [true]
-  - [true]
   input_nodes:
   - [29, switch, 3]
 - num_output: 2
-  subnet_offset: [0]
+  subnet_offset: [0, 1]
   flow_control: true
   max_util: 1
   num_input: 1
@@ -721,16 +650,13 @@ nodes:
   id: 29
   data_width: 64
   nodeType: switch
-  granularity: 64
+  granularity: 8
   max_id: 63
   depth: 3
-  subnet_table:
-  - [true]
-  - [true]
   input_nodes:
   - [30, switch, 4]
 - num_output: 2
-  subnet_offset: [0]
+  subnet_offset: [0, 1]
   flow_control: true
   max_util: 1
   num_input: 1
@@ -740,12 +666,9 @@ nodes:
   id: 30
   data_width: 64
   nodeType: switch
-  granularity: 64
+  granularity: 8
   max_id: 63
   depth: 4
-  subnet_table:
-  - [true]
-  - [true]
   input_nodes:
   - [62, vector port, N/A]
 - max_delay_fifo_depth: 2

@@ -229,25 +229,23 @@ class function_unit(prop:mutable.Map[String,Any])
     // mux incoming data bits
     operands(op_idx) := MuxLookup(sel, 0.U, sel2value)
     // if flow control, add valid
-    if(flow_control){
-      // mux incoming data valid
-      val sel2valid : Seq[(UInt,Bool)] =
-        for(sel_value <- 0 until num_input + num_register)yield{
-          val source : Array[String] = operand_select_map(sel_value).split("_")
-          val source_type : String = source(0)
-          val source_idx : Int = source(1).toInt
-          val valid = source_type match {
-            case "in-port" =>
-              VecInit(decomposed_in_ports(source_idx).map(_.valid)).asUInt().andR()
-            case "reg" =>
-              true.B
-          }
-          (sel_value.U,valid)
+
+    // mux incoming data valid
+    val sel2valid : Seq[(UInt,Bool)] =
+      for(sel_value <- 0 until num_input + num_register)yield{
+        val source : Array[String] = operand_select_map(sel_value).split("_")
+        val source_type : String = source(0)
+        val source_idx : Int = source(1).toInt
+        val valid = source_type match {
+          case "in-port" =>
+            VecInit(decomposed_in_ports(source_idx).map(_.valid)).asUInt().andR()
+          case "reg" =>
+            true.B
         }
-      operands_valid(op_idx) := MuxLookup(sel,false.B,sel2valid)
-    }else{
-      operands_valid(op_idx) := true.B
-    }
+        (sel_value.U,valid)
+      }
+    operands_valid(op_idx) := MuxLookup(sel,false.B,sel2valid)
+
   }
 
   // back-pressure, connect ready bit
@@ -357,7 +355,7 @@ class function_unit(prop:mutable.Map[String,Any])
       }else{
         // The needed config bit range need to be smaller than useful config
         val useful_config_width = useful_config_info_high - useful_config_info_low + 1
-        require(useful_config_width >= conf_bit_width)
+        // require(useful_config_width >= conf_bit_width)
 
         // Print Warning if available configuration bit is smaller than needed
         if(useful_config_width < conf_bit_width){
