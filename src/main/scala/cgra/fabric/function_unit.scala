@@ -41,6 +41,8 @@ class function_unit(prop:mutable.Map[String,Any])
     else {1}
   private val max_delay_fifo_depth : Int = getPropByKey("max_delay_fifo_depth")
     .asInstanceOf[Int]
+  private val is_clt_control : Boolean = try{getPropByKey("clt_control")
+    .asInstanceOf[Boolean]}catch{case _ : Throwable => false}
 
   // ------ Intermediate Variable ------
   // Calculate the ID field in incoming config bits
@@ -261,6 +263,19 @@ class function_unit(prop:mutable.Map[String,Any])
     }
   }
 
+  private val clt_enable = WireInit(false.B)
+  // Adding CLT to complete merge and join
+  if(flow_control && is_clt_control){
+    if(instructions.exists(is_clt_stream_instruction)){
+      // Determine whether the current is a stream-merge / Join command
+      clt_enable := VecInit(instructions.filter(is_clt_stream_instruction).map(
+        inst => {opcode_select === instructions.indexOf(inst).U}
+      )).asUInt().orR()
+    }
+  }else{
+    clt_enable := DontCare
+  }
+
 
   // get opcode
   if(num_inst > 1){
@@ -289,7 +304,13 @@ class function_unit(prop:mutable.Map[String,Any])
   for (idx <- 0 until max_num_operand) {
     alu_module.operands(idx).bits := alu_operands(idx)
     alu_module.operands(idx).valid := alu_operands_valid(idx)
-    alu_operands_ready(idx) := alu_module.operands(idx).ready
+    alu_operands_ready(idx) := Mux(clt_enable,
+      if(idx == 0){
+        alu_operands(0) <= alu_operands(1)
+      }else{
+        alu_operands(1) <= alu_operands(0)
+      },
+      alu_module.operands(idx).ready)
   }
   output_result := alu_module.result.bits
   output_valid := alu_module.result.valid
@@ -397,6 +418,17 @@ class function_unit(prop:mutable.Map[String,Any])
   override def postprocess(): Unit = {
     print(this)
   }
+
+  // ------ Util ------
+  private def is_clt_stream_instruction(i:String): Boolean = {
+    // Determine whether instruction is need by
+    // Stream-Merge and Join
+    i.contains("Eq") | i.contains("EQ") | i.contains("eq") |
+      i.contains("NE") | i.contains("Ne") | i.contains("ne") |
+      i.contains("Ge") | i.contains("GE") | i.contains("ge") |
+      i.contains("Le") | i.contains("LE") | i.contains("le") |
+      i.contains("Cmp")
+  }
 }
 
 import cgra.IR.IRreader._
@@ -428,6 +460,11 @@ object gen_fu extends App{
       val random_insts : List[String] = Random.shuffle(all_insts)
       node += "instructions" -> random_insts.slice(0,1 + Random.nextInt(all_insts.length))
       */
+
+      // Test for CLT
+      node += "clt_control" -> true
+      node += "flow_control" -> true
+      node += "instructions" -> List("ICmp32" ,"GE")
 
       // Initialize the Function Unit
       chisel3.Driver.execute(args,()=>{
