@@ -4,7 +4,7 @@ import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import IRpreprocessor._
 
-object IRconfigpather {
+class IRconfigpather{
   type ssnode_t = (String, mutable.Map[String, Any])
 
   var num_ssnode : Int = 0
@@ -29,12 +29,13 @@ object IRconfigpather {
   var max_config_cycle : Double= 0.0
   var vari_config_cycle : Double= 0.0
 
-  def tranverse_config_path(ir:mutable.Map[String,Any]) = {
+  def build_config_path(ir:mutable.Map[String,Any]):Double = {
     ssnodeList ++= ssnodeGroup2List(ir("nodes"))
     sslinks2connection(ir("links"))
     buildGraph()
     buildConfigPath()
     add_config_port_idx(ir("nodes"))
+    return max_config_cycle
   }
 
   def add_config_port_idx(g:Any):Unit={
@@ -90,8 +91,7 @@ object IRconfigpather {
       val source : List[Any] = link("source").asInstanceOf[List[Any]]
       val sink : List[Any] = link("sink").asInstanceOf[List[Any]]
 
-      if(!(source(1).toString.contains("vector port") ||
-        sink(1).toString.contains("vector port"))){
+      if(!(source.contains("vector port") || sink.contains("vector port"))){
         val source_id = source.head.toString
         val sink_id = sink.head.toString
         val source_node = ssnodeMap(source_id)
@@ -246,18 +246,18 @@ object IRconfigpather {
     vari_config_cycle = variance(config_cycle_per_path.values.toSeq).get
     (stat_num_config_outport_per_path,
       Map(
-      "aver_num_config_out" -> aver_num_config_out,
-      "max_num_config_out" -> max_num_config_out,
-      "vari_num_config_out" -> vari_num_config_out,
-      "aver_config_cycle" -> aver_config_cycle,
-      "max_config_cycle" -> max_config_cycle,
-      "vari_config_cycle" -> vari_config_cycle
-    ))
+        "aver_num_config_out" -> aver_num_config_out,
+        "max_num_config_out" -> max_num_config_out,
+        "vari_num_config_out" -> vari_num_config_out,
+        "aver_config_cycle" -> aver_config_cycle,
+        "max_config_cycle" -> max_config_cycle,
+        "vari_config_cycle" -> vari_config_cycle
+      ))
   }
 
   def calculate_cost() = {
-    10 * aver_num_config_out + 10 * max_num_config_out + 100 * vari_num_config_out +
-      aver_config_cycle + max_config_cycle + vari_config_cycle
+    10 * aver_num_config_out + 10 * max_num_config_out + 10 * vari_num_config_out +
+      aver_config_cycle + 1000*max_config_cycle + vari_config_cycle
   }
 
   def printConfigPath() = {
@@ -298,8 +298,11 @@ object IRconfigpather {
 
         for (node <- node_value("output_nodes").asInstanceOf[List[List[Any]]]){
           val innode_id = node.head.toString
-          val innode = ssnodeMap(innode_id)
-          input_ssnodes_list = input_ssnodes_list :+ (innode_id, innode)
+          // there could be case that input vector port is connected directly to output port
+          if(node(1) != "vector port"){
+            val innode = ssnodeMap(innode_id)
+            input_ssnodes_list = input_ssnodes_list :+ (innode_id, innode)
+          }
         }
       }
     }
@@ -403,6 +406,7 @@ object IRconfigpather {
         " , curr : " + currScore.formatted("%3.2f") +
         " , best : " + bestScore.formatted("%3.2f") +
         " , succ : " + success +
+        " , max stage : " + max_config_cycle +
         " -------------")
     }// End Iteration
 
@@ -410,11 +414,11 @@ object IRconfigpather {
     ssnodeConfigPathMatrix = bestConfigPathMatRecord
     tranverseConfigPathMap()
     getConfigPathPerf()
-    println("Score = " + calculate_cost())
+    println("Score = " + calculate_cost() + ", stage = " + max_config_cycle)
 
     // Show Optimization Procedure
     printConfigPath()
-    println("------------------ score : " + bestScore + "  -------------")
+    println("------------------ score : " + bestScore + ", stage = " + max_config_cycle + "  -------------")
     println("Optimized")
   }
 
@@ -425,6 +429,10 @@ object IRconfigpather {
   def mean(xs: Seq[Double]): Option[Double] =
     if (xs.isEmpty) None
     else Some(xs.sum / xs.length)
+}
+
+object IRconfigpather {
+
 }
 
 

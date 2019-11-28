@@ -27,6 +27,9 @@ object IRreader {
     s_cgra += "config_filename" -> filename.replace("yaml","xml")
 
     //preprocess(s_cgra)
+    if(!s_cgra.isDefinedAt("module_type")){
+      s_cgra += "module_type" -> "cgra.fabric.cgra_fabric"
+    }
     s_cgra
   }
 }

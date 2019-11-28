@@ -10,7 +10,7 @@ class ssnode(nodeType:String) extends IRPrintable {
 
   // Add/Delete Sink Node
   def add_sink(sink:ssnode) : Int ={
-    var sink_info = sink.getPropByKeys(identifier.key)
+    var sink_info = sink.getPropByKeys(identifier.keys.toList)
     if(getPropByKey("output_nodes")!= None){
       val curr_output_nodes:ListBuffer[Any] = getPropByKey("output_nodes")
         .asInstanceOf[ListBuffer[Any]]
@@ -25,7 +25,7 @@ class ssnode(nodeType:String) extends IRPrintable {
     output_links += link
   }
   def delete_sink(sink:ssnode):Unit={
-    var sink_info = sink.getPropByKeys(identifier.key)
+    var sink_info = sink.getPropByKeys(identifier.keys.toList)
     if(getPropByKey("output_nodes")!= None){
       val curr_output_nodes:ListBuffer[Any] = getPropByKey("output_nodes")
         .asInstanceOf[ListBuffer[Any]]
@@ -50,7 +50,7 @@ class ssnode(nodeType:String) extends IRPrintable {
 
   // Add/Delete Source Node
   def add_source(source:ssnode):Int={
-    val source_info : Any = source.getPropByKeys(identifier.key)
+    val source_info : Any = source.getPropByKeys(identifier.keys.toList)
     if(getPropByKey("input_nodes")!= None){
       val curr_input_nodes:ListBuffer[Any] = getPropByKey("input_nodes")
         .asInstanceOf[ListBuffer[Any]]
@@ -65,7 +65,7 @@ class ssnode(nodeType:String) extends IRPrintable {
     input_links += link
   }
   def delete_source(source:ssnode):Unit={
-    val source_info : Any = source.getPropByKeys(identifier.key)
+    val source_info : Any = source.getPropByKeys(identifier.keys.toList)
     if(getPropByKey("input_nodes")!= None){
       val curr_input_nodes:ListBuffer[Any] = getPropByKey("input_nodes")
         .asInstanceOf[ListBuffer[Any]]
@@ -95,8 +95,8 @@ class ssnode(nodeType:String) extends IRPrintable {
     val link = new sslink
     val out_link_idx : Int = this.add_sink(that)
     val in_link_idx : Int = that.add_source(this)
-    val source_info = this.getPropByKeys(identifier.key) :+ out_link_idx
-    val sink_info = that.getPropByKeys(identifier.key) :+ in_link_idx
+    val source_info = this.getPropByKeys(identifier.keys.toList) :+ out_link_idx
+    val sink_info = that.getPropByKeys(identifier.keys.toSeq) :+ in_link_idx
     link(this,that)
     this.add_sink(link)
     that.add_source(link)
@@ -138,7 +138,7 @@ class ssnode(nodeType:String) extends IRPrintable {
     val node = new ssnode(currNodeType)
     val temp_cloned_prop = this.getProps
     var cloned_prop = temp_cloned_prop
-    for (id <- identifier.key) {
+    for (id <- identifier.keys) {
       cloned_prop = cloned_prop - id
     }
     node("nodeType", currNodeType)

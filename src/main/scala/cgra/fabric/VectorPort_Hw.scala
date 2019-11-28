@@ -1,6 +1,7 @@
 package cgra.fabric
 
 import java.lang.Throwable
+import java.nio.file.{Files, Paths, StandardCopyOption}
 
 import cgra.IO.{ReqAckConf_if, ReqAckConf_t}
 import cgra.config.system_var
@@ -252,4 +253,50 @@ object initialize_vp extends App{
   p += "output_ports" -> List("v1","v2","v3")
   p += "channel_buffer" ->3
   chisel3.Driver.execute(args,()=>{new VectorPort_Hw("test_vp",p)})
+}
+
+object loop_for_vport extends App{
+
+  system_var.data_word_width = 32
+  val p: mutable.Map[String,Any] = mutable.Map[String,Any]()
+
+  def moveRenameFile(source: String, destination: String): Unit = {
+    Files.move(
+      Paths.get(source),
+      Paths.get(destination),
+      StandardCopyOption.REPLACE_EXISTING
+    )
+  }
+
+  val loop_for_vport = List(
+    List("A"),
+    List("A","B"),
+    List("A","B","C"),
+    List("A","B","C","D","E"),
+    List("A","B","C","D","E","F","G"),
+    List("A","B","C","D","E","F","G","H","I")
+  )
+  val loop_for_buffer_length = List(1,3,5,7,9,11)
+
+  // Loop for Input Vport
+  for (vp <- loop_for_vport;
+       buf <- loop_for_buffer_length){
+    p += "input_ports" -> List("A")
+    p += "output_ports" -> vp
+    p += "channel_buffer" -> buf
+    chisel3.Driver.execute(args,()=>{new VectorPort_Hw("test_vp",p)})
+    moveRenameFile("VectorPort_Hw.v",
+      "VectorPort_Hw_i_" + 1 + "_o_" + vp.length + "_b_" + buf + ".v")
+  }
+
+  // Loop for Input Vport
+  for (vp <- loop_for_vport;
+       buf <- loop_for_buffer_length){
+    p += "input_ports" -> vp
+    p += "output_ports" -> List("A")
+    p += "channel_buffer" -> buf
+    chisel3.Driver.execute(args,()=>{new VectorPort_Hw("test_vp",p)})
+    moveRenameFile("VectorPort_Hw.v",
+      "VectorPort_Hw_i_" + vp.length + "_o_" + 1 + "_b_" + buf + ".v")
+  }
 }

@@ -7,7 +7,7 @@ import scala.collection.mutable.{ListBuffer, Map, Set}
 
 class ssfabric extends IRPrintable {
   //pre-processs
-  apply("identifier", identifier.key)
+  apply("identifier", identifier.keys)
   addProp("module_type", "cgra.fabric.cgra_fabric")
 
   // nodes and links

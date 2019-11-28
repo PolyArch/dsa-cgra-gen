@@ -12,19 +12,21 @@ import scala.collection.mutable.Set
 import cgra.IR.IRconvertor._
 import chisel3.{Bundle, Vec}
 
+import scala.collection.mutable
+
 // Singleton identifier
 object identifier {
-  var key : List[String] = List("id", "nodeType")
-  def apply(keys:String*) = {
-    for(k <- keys){
-      key = key :+ k
+  var keys : mutable.Set[String] = mutable.Set("id", "nodeType")
+  def apply(add_keys:String*) = {
+    for(k <- add_keys){
+      keys += k
     }
     this
   }
-  def delete(keys:String*) = {
-    for(k <- keys){
+  def delete(del_keys:String*) = {
+    for(k <- del_keys){
       if(k != "id" && k!="nodeType"){
-        key = key.filter(_ != k)
+        keys -= k
       }
     }
     this
@@ -82,7 +84,7 @@ trait IRPrintable {
     this
   }
   def apply(key:String, value:Any):IRPrintable={
-    if(identifier.key.contains(key)){
+    if(identifier.keys.contains(key)){
       if (!properties.isDefinedAt(key)) {
         // Initial
         val init_id = new identifier(value)

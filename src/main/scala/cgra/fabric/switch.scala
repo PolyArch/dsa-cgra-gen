@@ -18,8 +18,8 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
   private val max_id = getPropByKey("max_id").asInstanceOf[Int]
   private val data_width:Int = getPropByKey("data_width").asInstanceOf[Int]
   private val granularity = getPropByKey("granularity").asInstanceOf[Int]
-  private val num_input:Int = getPropByKey("num_input").asInstanceOf[Int]
-  private val num_output:Int = getPropByKey("num_output").asInstanceOf[Int]
+  private var num_input:Int = getPropByKey("num_input").asInstanceOf[Int]
+  private var num_output:Int = getPropByKey("num_output").asInstanceOf[Int]
   private val flow_control:Boolean = getPropByKey("flow_control").asInstanceOf[Boolean]
   private val max_util:Int = getPropByKey("max_util").asInstanceOf[Int]
   private val decomposer:Int = data_width / granularity
@@ -36,6 +36,14 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
     "full-control"
   }else{
     getPropByKey("switch_mode")
+  }
+  private val input_nodes = getPropByKey("input_nodes").asInstanceOf[Seq[Any]]
+  private val output_nodes = getPropByKey("output_nodes").asInstanceOf[Seq[Any]]
+  if(input_nodes.length < num_input){
+    num_input = input_nodes.length
+  }
+  if(output_nodes.length < num_output){
+    num_output = output_nodes.length
   }
 
   // Derived Parameter
@@ -316,7 +324,7 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
       }else{
         // The needed config bit range need to be smaller than useful config
         val useful_config_width = useful_config_info_high - useful_config_info_low + 1
-        require(useful_config_width >= conf_bit_width)
+        //TODO: require(useful_config_width >= conf_bit_width)
 
         // Print Warning if available configuration bit is smaller than needed
         if(useful_config_width < conf_bit_width){

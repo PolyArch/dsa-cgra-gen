@@ -1,5 +1,7 @@
 package cgra.fabric
 
+import java.nio.file.{Files, Paths, StandardCopyOption}
+
 import cgra.IO._
 import chisel3.util._
 import cgra.config.system_var
@@ -8,6 +10,7 @@ import chisel3._
 import cgra.IO.port_generator._
 import cgra.config.encoding.{config_module_id_high, config_module_id_low}
 import cgra.fabric.common.datapath.Multiplexer
+
 import scala.collection.mutable
 import scala.xml.Elem
 
@@ -330,17 +333,73 @@ object tester_router extends App{
     get_new_id
   }
 
-
-  p += "output_ports" -> List("A","B","C")
-  p += "config_output_port" -> List("A","B")
-
+  p += "output_ports" -> List("A","B")
+  p += "output_ports" -> List("A","B")
   p += "protocol" -> "DataValidReady"
-  p += "back_pressure_fifo_depth" -> 2
-  p += "isDecomposed" -> true
   p += "decomposer" -> 2
+
+  p += "config_output_port" -> List("A")
+  p += "isDecomposed" -> true
+  p += "back_pressure_fifo_depth" -> 2
   p += "isShared" -> false
-  p += "shared_slot_size" -> 32
+  p += "shared_slot_size" -> 2
   //p += "inter_subnet_connection" -> List("south_1 <-> north_0","northwest_0 <-> east _1")
   update
   chisel3.Driver.execute(args,()=>{new Router_Hw("test",p)})
+}
+
+object build_power_area_model_for_dedicated_router extends App {
+  // Knob Parameters
+  system_var.data_word_width = 64
+  val p : mutable.Map[String,Any] = mutable.Map[String,Any]()
+  p += "module_name" -> "Router_Test"
+  p += "module_id" -> {
+    for(i <- 0 until 60)
+      get_new_id
+    get_new_id
+  }
+
+  p += "config_output_port" -> List("A")
+  p += "isDecomposed" -> true
+  p += "back_pressure_fifo_depth" -> 2
+  p += "isShared" -> false
+  p += "shared_slot_size" -> 2
+
+  val loop_for_input_ports = List(
+    List("A")
+    //List("A","B"), List("A","B","C","D"),List("A","B","C","D","E","F"),
+    //List("A","B","C","D","E","F","G","H"),
+    //List("A","B","C","D","E","F","G","H","I","J")
+  )
+  val loop_for_output_ports = List(
+    List("A"),
+    List("A","B"), List("A","B","C","D"),List("A","B","C","D","E","F"),
+    List("A","B","C","D","E","F","G","H"),
+    List("A","B","C","D","E","F","G","H","I","J")
+  )
+  val loop_protocol = List("DataValidReady","Data")
+
+  val loop_decomposer = List(1,2,4,8)
+
+  for(ip <- loop_for_input_ports;
+      op <- loop_for_output_ports;
+      protocol <- loop_protocol;
+      decomposer <- loop_decomposer){
+    p += "input_ports" -> ip
+    p += "output_ports" -> op
+    p += "protocol" -> protocol
+    p += "decomposer" -> decomposer
+    update
+    chisel3.Driver.execute(args,()=>{new Router_Hw("test",p)})
+    moveRenameFile("Router_Hw.v",
+      "Router_Hw_i_" + ip.length + "_o_" + op.length +
+    "_d_" + decomposer + "_f_" + (protocol == "DataValidReady") + ".v")
+  }
+  def moveRenameFile(source: String, destination: String): Unit = {
+    Files.move(
+      Paths.get(source),
+      Paths.get(destination),
+      StandardCopyOption.REPLACE_EXISTING
+    )
+  }
 }

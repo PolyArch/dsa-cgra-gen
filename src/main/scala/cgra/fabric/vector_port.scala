@@ -18,11 +18,19 @@ class vector_port(prop:mutable.Map[String,Any])
 
   // Initialize the properties of switch (hardware)
   private val data_width:Int = getPropByKey("data_width").asInstanceOf[Int]
-  private val num_input:Int = getPropByKey("num_input").asInstanceOf[Int]
-  private val num_output:Int = getPropByKey("num_output").asInstanceOf[Int]
+  private var num_input:Int = getPropByKey("num_input").asInstanceOf[Int]
+  private var num_output:Int = getPropByKey("num_output").asInstanceOf[Int]
   private val num_port = num_input max num_output
   private val flow_control : Boolean = getPropByKey("flow_control")
     .asInstanceOf[Boolean]
+  private val input_nodes = getPropByKey("input_nodes").asInstanceOf[Seq[Any]]
+  private val output_nodes = getPropByKey("output_nodes").asInstanceOf[Seq[Any]]
+  if(input_nodes.length < num_input){
+    num_input = input_nodes.length
+  }
+  if(output_nodes.length < num_output){
+    num_output = output_nodes.length
+  }
 
   // Derived Parameter
   val config_width = num_port * log2Ceil(num_port)

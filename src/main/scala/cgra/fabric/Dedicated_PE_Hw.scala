@@ -482,3 +482,22 @@ object tester_pe extends App{
 
   chisel3.Driver.execute(args,()=>{new Dedicated_PE_Hw("test",p)})
 }
+
+object loop_for_dedi_pe extends App{
+  system_var.data_word_width = 64
+  val p : mutable.Map[String,Any] = mutable.Map[String,Any]()
+  p += "module_name" -> "PE_Test"
+  p += "module_id" -> {get_new_id;get_new_id;get_new_id;get_new_id;get_new_id;}
+  p += "config_input_port" -> List("A")
+  p += "config_output_port" -> List("A")
+
+  val io_ports = List(
+    List("A"),List("A","B"),
+    List("A","B","C","D"),
+    List("A","B","C","D","E","F"),
+    List("A","B","C","D","E","F","G","H"),
+    List("A","B","C","D","E","F","G","H","I","J"),
+  )
+  val protocol = List("Data","DataValidReady")
+  val decomposer = List(1, 2, 4, 8)
+}
