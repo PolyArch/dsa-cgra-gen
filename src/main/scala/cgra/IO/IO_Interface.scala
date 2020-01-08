@@ -33,6 +33,21 @@ class VecDecoupledIO_conf(nIn:Int, nOut:Int, w:Int,conf_w:Int)
     new VecDecoupledIO_conf(nIn, nOut, w, conf_w).asInstanceOf[this.type]
 }
 
+class EnabledVecDecoupledIO(nIn:Int, nOut:Int, w:Int) extends Bundle {
+  val en = Input(Bool()) // Enable
+
+  // Input
+  val input_ports =
+    Flipped(Vec(nIn, DecoupledIO(UInt(w.W))))
+
+  // Output
+  val output_ports =
+    Vec(nOut, DecoupledIO(UInt(w.W)))
+
+  override def cloneType: EnabledVecDecoupledIO.this.type =
+    new EnabledVecDecoupledIO(nIn, nOut, w).asInstanceOf[this.type]
+}
+
 class VecDecoupledIO(nIn:Int, nOut:Int, w:Int) extends Bundle {
   val input_ports =
     Flipped(Vec(nIn, DecoupledIO(UInt(w.W))))
