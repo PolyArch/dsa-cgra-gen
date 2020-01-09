@@ -6,12 +6,13 @@ import chisel3.util._
 class UMUL_composed(data_width: Int, finest_width : Int ) extends Module{
 
   private val decomposer : Int = data_width / finest_width
+  private val num_ctrl : Int = log2Ceil(decomposer) + 1
 
   val io = IO(new Bundle{
     val a = Input(UInt(data_width.W))
     val b = Input(UInt(data_width.W))
     val result = Output(UInt((data_width * 2).W))
-    val ctrl = Input(UInt(log2Ceil(log2Ceil(decomposer) + 1).W)) // 0 -> 64, 1 -> 32x2, 2 -> 16x4, 3 -> 8x8
+    val ctrl = Input(UInt(log2Ceil(num_ctrl).W)) // 0 -> 64, 1 -> 32x2, 2 -> 16x4, 3 -> 8x8
   })
 
   // Fine Bit Width
@@ -40,9 +41,10 @@ class UMUL_composed(data_width: Int, finest_width : Int ) extends Module{
   // Concat result from different decomposability level
   val mul_result = for (idx <- reduce_results.indices) yield {
     val partial_product = reduce_results(idx)._1
+    val decomp_width = reduce_results(idx)._2
     val size = partial_product.length
     val result : UInt = (for (diag_idx <- 0 until size) yield {
-      partial_product(diag_idx)(diag_idx)
+      partial_product(diag_idx)(diag_idx)(decomp_width * 2 - 1, 0)
     }).reverse.reduce(Cat(_,_))
     (idx.U,result)
   }
@@ -54,6 +56,7 @@ class UMUL_composed(data_width: Int, finest_width : Int ) extends Module{
   (IndexedSeq[IndexedSeq[UInt]], Int) = {
     val size_a = partial_product.length
     val size_b = partial_product.head.length
+    val partial_result_width = partial_product.flatten.map(_.getWidth).distinct
     require(size_a == size_b)
     require(size_a % 2 == 0)
 
@@ -61,12 +64,13 @@ class UMUL_composed(data_width: Int, finest_width : Int ) extends Module{
     val partial_product_array = for
       (idx_a <- 0 until new_size;
        idx_b <- 0 until new_size) yield {
-      partial_product(idx_a * 2)(idx_b * 2) +
-        (partial_product(idx_a * 2 + 1)(idx_b * 2) << offset_bitwidth).asUInt() +
-        (partial_product(idx_a * 2)(idx_b * 2 + 1) << offset_bitwidth).asUInt() +
+      partial_product(idx_a * 2)(idx_b * 2) +&
+        (partial_product(idx_a * 2 + 1)(idx_b * 2) << offset_bitwidth).asUInt() +&
+        (partial_product(idx_a * 2)(idx_b * 2 + 1) << offset_bitwidth).asUInt() +&
         (partial_product(idx_a * 2 + 1)(idx_b * 2 + 1) << 2 * offset_bitwidth).asUInt()
     }
-    println("Old Size = " + size_a + ", new size = " + new_size)
+    println("Partial Width = " + partial_result_width
+      + "Old Size = " + size_a + ", new size = " + new_size)
     (partial_product_array.grouped(new_size).toIndexedSeq, offset_bitwidth * 2)
   }
 

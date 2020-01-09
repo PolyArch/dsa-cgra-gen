@@ -18,13 +18,15 @@ class UADD(data_width : Int) extends Module{
 class UADD_composed(data_width : Int, finest_width : Int) extends Module{
 
   private val decomposer : Int = data_width / finest_width
+  private val num_ctrl : Int = log2Ceil(decomposer) + 1
 
   val io = IO(
     new Bundle{
       val a = Input(UInt(data_width.W))
       val b = Input(UInt(data_width.W))
       val result = Output(UInt(data_width.W))
-      val ctrl = Input(UInt(log2Ceil(log2Ceil(decomposer) + 1).W)) // 0 -> 64, 1 -> 32x2, 2 -> 16x4, 3 -> 8x8
+      val ctrl = Input(UInt(log2Ceil(num_ctrl).W))
+      // 0 -> 64, 1 -> 32x2, 2 -> 16x4, 3 -> 8x8
     }
   )
 
@@ -38,7 +40,7 @@ class UADD_composed(data_width : Int, finest_width : Int) extends Module{
 
   // Partial Product (each partial product is double-wide of finest width)
   private val Ai_add_Bi : IndexedSeq[UInt] = for(idx <- 0 until decomposer) yield {
-    Ai(idx) + Bi(idx)
+    Ai(idx) +& Bi(idx)
   }
 
   // Reduce the partial result for different decomposability level
@@ -55,13 +57,19 @@ class UADD_composed(data_width : Int, finest_width : Int) extends Module{
   // Concat result from different decomposability level
   val mul_result = for (idx <- reduce_results.indices) yield {
     val partial_sum = reduce_results(idx)._1
+    val decomp_width = reduce_results(idx)._2
     val size = partial_sum.length
     val result : UInt = (for (diag_idx <- 0 until size) yield {
       val curr_result = partial_sum(diag_idx)
-      val width = curr_result.getWidth
-      partial_sum(diag_idx)(width - 1,0)
+      printf(p"width of decomp result = $decomp_width\n")
+      curr_result(decomp_width - 1,0)
     }).reverse.reduce(Cat(_,_))
     (idx.U,result)
+  }
+
+  for(idx <- 0 until decomposer){
+    printf(p"A($idx) = ${Ai(idx)}, B($idx) = ${Bi(idx)}, ")
+    printf(p"A($idx) + B($idx) = ${Ai_add_Bi(idx)}\n")
   }
 
   io.result := MuxLookup(io.ctrl, 0.U, mul_result)
@@ -69,13 +77,15 @@ class UADD_composed(data_width : Int, finest_width : Int) extends Module{
   def reducePartialSum(partial_sum : IndexedSeq[UInt], offset_bitwidth : Int) :
   (IndexedSeq[UInt], Int) = {
     val size = partial_sum.length
+    val partial_result_width = partial_sum.map(_.getWidth).distinct
     require(size % 2 == 0)
     val new_size = size / 2
     val reduced_partial_sum = for
       (idx <- 0 until new_size) yield {
         partial_sum(idx * 2) + (partial_sum(idx * 2 + 1) << offset_bitwidth).asUInt
       }
-    println("Old Size = " + size + ", new size = " + new_size)
+    println("Partial Width = " + partial_result_width +
+      ", Old Size = " + size + ", new size = " + new_size)
     (reduced_partial_sum, offset_bitwidth * 2)
   }
 
@@ -84,7 +94,7 @@ class UADD_composed(data_width : Int, finest_width : Int) extends Module{
 
 object gen_UADD extends App{
   chisel3.Driver.execute(args,()=>{
-    val module = new UADD(8)
+    val module = new UADD(64)
     println(module)
     module
   })
@@ -93,7 +103,6 @@ object gen_UADD extends App{
 object gen_UADD_composed extends App{
   chisel3.Driver.execute(args,()=>{
     val module = new UADD_composed(64, 8)
-    println(module)
     module
   })
 }
