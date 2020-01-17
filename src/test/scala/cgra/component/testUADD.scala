@@ -3,7 +3,7 @@ package cgra.component
 import scala.math._
 
 import chisel3.util._
-import TestUtil.Random._
+import TestUtil.CgraTestUtil._
 import chisel3.iotesters.{ChiselFlatSpec, Driver, PeekPokeTester}
 object testUADD extends App{
 
@@ -50,11 +50,11 @@ object testUADD extends App{
           val peekB = peek(dut.io.b)
           val peekS = peek(dut.io.result)
 
-          val binaryA = LeadZeros(peekA.toString(2),data_width)
+          val binaryA = fixLength(peekA.toString(2),data_width)
           println("A = b'" + binaryA + ", " + peekA)
-          val binaryB = LeadZeros(peekB.toString(2),data_width)
+          val binaryB = fixLength(peekB.toString(2),data_width)
           println("B = b'" + binaryB + ", " + peekB)
-          val binaryS = LeadZeros(peekS.toString(2),data_width)
+          val binaryS = fixLength(peekS.toString(2),data_width)
           println("S = b'" + binaryS + ", " + peekS)
 
           val subnet_results = for (subnet_idx <- 0 until curr_num_subnet)
@@ -98,7 +98,7 @@ object testUADD extends App{
             realS
           }
           val real_result = BigInt(subnet_results.reverse.
-            flatMap(x=>LeadZeros(x.toString(2),curr_decomp_width)) mkString,2)
+            flatMap(x=>fixLength(x.toString(2),curr_decomp_width)) mkString,2)
           expect(dut.io.result,real_result,"Failed")
         }
       }

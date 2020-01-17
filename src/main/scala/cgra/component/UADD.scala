@@ -82,7 +82,13 @@ class UADD_composed(data_width : Int, finest_width : Int) extends Module{
     val new_size = size / 2
     val reduced_partial_sum = for
       (idx <- 0 until new_size) yield {
-        partial_sum(idx * 2) + (partial_sum(idx * 2 + 1) << offset_bitwidth).asUInt
+
+        Cat(
+          partial_sum(idx * 2 + 1) + partial_sum(idx * 2)(offset_bitwidth),
+          partial_sum(idx * 2)(offset_bitwidth - 1,0)
+        )
+
+        //partial_sum(idx * 2) + (partial_sum(idx * 2 + 1) << offset_bitwidth).asUInt
       }
     println("Partial Width = " + partial_result_width +
       ", Old Size = " + size + ", new size = " + new_size)
