@@ -6,6 +6,7 @@ import chisel3._
 import dsl.IRPrintable
 import scala.collection.mutable
 import scala.util.Random
+import wrapper._
 
 class complex_switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
   // Assign initial properties
@@ -48,7 +49,7 @@ class complex_switch(prop:mutable.Map[String,Any]) extends Module with IRPrintab
   private val nxt_config_info = nxt_switch_config_info_wrapper(
     id, max_id,
     num_input, num_output, decomposer,
-    num_config_bit, data_width,
+    max_util, data_width,
     nxt_config_info_bits, nxt_config_info_valid)
 
   // Update the configuration information when reconfigured
@@ -84,7 +85,7 @@ class complex_switch(prop:mutable.Map[String,Any]) extends Module with IRPrintab
     }
   }
 
-  private val curr_config = stored_config_info_wrapper(
+  private val curr_config = switch_stored_config_info_wrapper(
     num_input, num_output, decomposer,
     config_file(config_pointer))
 
@@ -186,97 +187,16 @@ class complex_switch(prop:mutable.Map[String,Any]) extends Module with IRPrintab
   //  ----- Debug -----
   when(reconfig_this){
     printf(nxt_config_info.toPrintable)
+    print_config_file
   }
 
-
-}
-
-case class stored_config_info_wrapper(num_input: Int, num_output: Int,
-                                      decomposer: Int,
-                                      curr_config_info: UInt){
-  private var curr_high_bit : Int = curr_config_info.getWidth - 1
-  private val high_bit : Int = curr_high_bit
-
-  // Sources Info
-  private val num_source_sel_bit : Int = log2Ceil(num_input + 1)
-  // Add default ground input when select value is zero
-  val sources_select : IndexedSeq[UInt] =
-    for(_ <- 0 until num_output) yield{
-      val info = curr_config_info(curr_high_bit, curr_high_bit - num_source_sel_bit + 1)
-      curr_high_bit -= num_source_sel_bit
-      info
+  def print_config_file = {
+    printf(" ---- config file ---- \n")
+    for(idx <- 0 until max_util){
+      printf(p"$idx : ${config_file(idx)}\n")
     }
-
-  // Offset Info
-  val num_offset_bit : Int = log2Ceil(decomposer)
-  val offset_select : IndexedSeq[UInt] =
-    for(_ <- 0 until num_output) yield{
-      if(decomposer > 1){
-        val info = curr_config_info(curr_high_bit, curr_high_bit - num_offset_bit + 1)
-        curr_high_bit -= num_offset_bit
-        info
-      }else{
-        0.U
-      }
-    }
-
-  // Used Bit
-  val num_conf_reg_bit : Int = high_bit - curr_high_bit
-  val config_reg_info : UInt = curr_config_info(high_bit, curr_high_bit + 1)
-
-  implicit def toPrintable: Printable = {
-    val out_off_sel_print = for(out_idx <- 0 until num_output) yield {
-      p"Out $out_idx src = ${sources_select(out_idx)}, " +
-        p"off = ${offset_select(out_idx)} "
-    }
-    out_off_sel_print.reduceLeft(_ + p"\n" + _) + p"\n"
   }
-}
 
-case class nxt_switch_config_info_wrapper(id: Int, num_node: Int,
-                                          num_input: Int, num_output: Int,
-                                          decomposer: Int,
-                                          num_config_bit: Int,
-                                          data_width: Int,
-                                          config_info: UInt, config_valid: Bool){
-  private var curr_high_bit : Int = data_width + num_config_bit - 1
-
-  // ------ Identifier Information ------
-
-  // Configuration Status
-  val config_type : UInt =
-    config_info(curr_high_bit, curr_high_bit - num_config_bit + 1)
-  curr_high_bit -= num_config_bit
-
-  val curr_num_util : UInt =
-    config_info(curr_high_bit, curr_high_bit - num_config_bit + 1)
-  curr_high_bit -= num_config_bit
-
-  // Node ID
-  require(num_node > 1)
-  private val num_id_bit : Int = log2Ceil(num_node)
-  val node_id : UInt = config_info(curr_high_bit, curr_high_bit - num_id_bit + 1)
-  val config_enable : Bool = (config_type =/= 0.U) && config_valid
-  val config_this : Bool = config_enable && node_id === id.U
-  curr_high_bit -= num_id_bit
-
-  // ------ Stored Information ------
-  private val stored_high_bit : Int = curr_high_bit
-
-  private val stored_config_info = stored_config_info_wrapper(
-    num_input,num_output,decomposer, config_info(stored_high_bit,0))
-
-  // Total config bit info
-  val num_conf_reg_bit : Int = stored_config_info.num_conf_reg_bit
-  val config_reg_info : UInt = stored_config_info.config_reg_info
-  println("num conf reg bit = " + num_conf_reg_bit)
-  println("stored config info width = " + config_reg_info.getWidth)
-  require(config_reg_info.getWidth == num_conf_reg_bit)
-
-  implicit def toPrintable : Printable ={
-    p"switch $id: config type = $config_type, curr_num_util = $curr_num_util, " +
-      p"id_field = $node_id\n" + stored_config_info.toPrintable
-  }
 }
 
 object gen_comp_switch extends App{
