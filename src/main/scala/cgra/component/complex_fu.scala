@@ -1,10 +1,11 @@
 package cgra.component
 
 import cgra.IO.EnabledVecDecoupledIO
-import chisel3.util.log2Ceil
+import chisel3.util._
 import chisel3._
 import dsl.IRPrintable
 import wrapper._
+import cgra.config.fullinst._
 import scala.collection.mutable
 
 class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
@@ -32,6 +33,7 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
 
   // Internal Defined Parameter
   private val num_instruction : Int = instructions.distinct.length
+  private val num_operand : Int = instructions.map(insts_prop(_).numOperands) max
   private val num_config_bit : Int = log2Ceil(max_util + 1) // + 1 means at
   // least one type is needed for non-config mode (dataflow mode)
 
@@ -57,10 +59,45 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
 
   // Update the configuration information when reconfigured
   val config_file = RegInit(VecInit(Seq.fill(max_util)(0.U(nxt_config_info.num_conf_reg_bit.W))))
-  val reconfig_detected : Bool =  nxt_config_info.config_enable
-  val reconfig_this : Bool = nxt_config_info.config_this
+  val reconfig_detected : Bool =  enable && nxt_config_info.config_enable
+  val reconfig_this : Bool = enable && nxt_config_info.config_this
   val dataflow_mode : Bool = enable && !reconfig_detected
   val reconfig_mode : Bool = enable && reconfig_detected
+  when(reconfig_this){
+    // Use the config type to indicate which config to write
+    // because config type == 1 means write to 0 config
+    //         config type == 2 means write to 1 config
+    //         config type == 0 means not a config mode
+    // so we need to -1.U
+    config_file(nxt_config_info.config_type - 1.U) :=
+      nxt_config_info.config_reg_info
+  }
+  val num_curr_util : UInt =
+    RegEnable(nxt_config_info.curr_num_util, 0.U, reconfig_this)
+
+  // Select the current configuration by Round-Robin
+  // create pointer
+  val config_pointer : UInt = if(max_util > 1) {
+    RegInit(0.U(log2Ceil(max_util).W))
+  }else{
+    0.U(1.W)
+  }
+  // increase pointer
+  if (max_util > 1){
+    when(dataflow_mode){
+      config_pointer :=
+        Mux(config_pointer === num_curr_util,0.U,config_pointer + 1.U)
+    }.elsewhen(reconfig_this){
+      config_pointer := 0.U
+    }
+  }
+  // select and parse the current config
+  private val curr_config = fu_stored_config_info_wrapper(
+    num_input, num_output, decomposer,
+    instructions,
+    config_file(config_pointer))
+
+
 
   // Post process
   def postprocess(): Unit = {

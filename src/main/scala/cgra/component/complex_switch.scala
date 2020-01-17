@@ -54,8 +54,8 @@ class complex_switch(prop:mutable.Map[String,Any]) extends Module with IRPrintab
 
   // Update the configuration information when reconfigured
   val config_file = RegInit(VecInit(Seq.fill(max_util)(0.U(nxt_config_info.num_conf_reg_bit.W))))
-  val reconfig_detected : Bool =  nxt_config_info.config_enable
-  val reconfig_this : Bool = nxt_config_info.config_this
+  val reconfig_detected : Bool =  enable && nxt_config_info.config_enable
+  val reconfig_this : Bool = enable && nxt_config_info.config_this
   val dataflow_mode : Bool = enable && !reconfig_detected
   val reconfig_mode : Bool = enable && reconfig_detected
   when(reconfig_this){

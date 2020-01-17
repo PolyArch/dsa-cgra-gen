@@ -38,6 +38,11 @@ object wrapper {
     val num_conf_reg_bit : Int = high_bit - curr_high_bit
     val config_reg_info : UInt = curr_config_info(high_bit, curr_high_bit + 1)
 
+    if(num_conf_reg_bit < curr_config_info.getWidth){
+      printf(p"config info bit : $num_conf_reg_bit used, " +
+        p"${curr_config_info.getWidth - num_conf_reg_bit} not used\n")
+    }
+
     implicit def toPrintable: Printable = {
       val out_off_sel_print = for(out_idx <- 0 until num_output) yield {
         p"Out $out_idx src = ${sources_select(out_idx)}, " +
@@ -99,6 +104,66 @@ object wrapper {
     }
   }
 
+  case class fu_stored_config_info_wrapper (num_input: Int,
+                                            num_output: Int,
+                                            decomposer: Int,
+                                            instructions : List[String],
+                                            curr_config_info: UInt){
+    private var curr_high_bit : Int = curr_config_info.getWidth - 1
+    private val num_opcode : Int = instructions.distinct.length
+    private val high_bit : Int = curr_high_bit
+    private val max_num_operand : Int =
+      instructions.map(insts_prop(_).numOperands) max
+
+    // Operands select
+    private val num_operand_sel_bit : Int = log2Ceil(num_input + 1)
+    // Add default ground input when select value is zero
+    val operand_select : IndexedSeq[UInt] =
+      for(_ <- 0 until max_num_operand) yield {
+        val info = curr_config_info(curr_high_bit,
+          curr_high_bit - num_operand_sel_bit + 1)
+        curr_high_bit -= num_operand_sel_bit
+        info
+      }
+
+    // Opcode select
+    private val num_opcode_bit : Int = log2Ceil(num_opcode + 1)
+    // One more operation added for doing nothing
+    val opcode : UInt = curr_config_info(curr_high_bit,
+      curr_high_bit - num_opcode_bit + 1)
+    curr_high_bit -= num_opcode_bit
+
+    // Output select
+    private val num_output_bit : Int = log2Ceil(num_output + 1)
+    // One more output direction (broadcast to all output port)
+    val output_select : UInt = curr_config_info(
+      curr_high_bit,curr_high_bit - num_output_bit + 1)
+    curr_high_bit -= num_output_bit
+
+    // Offset select
+    private val num_offset_bit : Int = log2Ceil(decomposer)
+    val offset_select : UInt = curr_config_info(
+      curr_high_bit, curr_high_bit - num_offset_bit + 1)
+    curr_high_bit -= num_offset_bit
+
+    // Used Bit
+    val num_conf_reg_bit : Int = high_bit - curr_high_bit
+    val config_reg_info : UInt = curr_config_info(high_bit, curr_high_bit + 1)
+
+    if(num_conf_reg_bit < curr_config_info.getWidth){
+      printf(p"config info bit : $num_conf_reg_bit used, " +
+        p"${curr_config_info.getWidth - num_conf_reg_bit} not used\n")
+    }
+
+    implicit def toPrintable: Printable = {
+      val operand_sel_print = for(oper_idx <- 0 until max_num_operand) yield {
+        p"op$oper_idx = ${operand_select(oper_idx)}"
+      }
+      operand_sel_print.reduceLeft(_ + p", " + _) + p", "
+      p"opcode = $opcode, output = $output_select, offset = $offset_select\n"
+    }
+  }
+
   case class nxt_fu_config_info_wrapper(id: Int, num_node: Int,
                                         num_input: Int, num_output: Int,
                                         decomposer: Int,
@@ -141,60 +206,13 @@ object wrapper {
       num_input,num_output,decomposer,instructions,
       config_info(stored_high_bit,0)
     )
-  }
 
-  case class fu_stored_config_info_wrapper(num_input: Int, num_output: Int,
-                                           decomposer: Int,
-                                           instructions : List[String],
-                                           curr_config_info: UInt){
-    private var curr_high_bit : Int = curr_config_info.getWidth - 1
-    private val num_opcode : Int = instructions.distinct.length
-    private val high_bit : Int = curr_high_bit
-    private val max_num_operand : Int =
-      instructions.map(insts_prop(_).numOperands) max
-
-    // Operands select
-    private val num_operand_sel_bit : Int = log2Ceil(num_input + 1)
-    // Add default ground input when select value is zero
-    val operand_select : IndexedSeq[UInt] =
-      for(_ <- 0 until max_num_operand) yield {
-        val info = curr_config_info(curr_high_bit,
-          curr_high_bit - num_operand_sel_bit + 1)
-        curr_high_bit -= num_operand_sel_bit
-        info
-      }
-
-    // Opcode select
-    private val num_opcode_bit : Int = log2Ceil(num_opcode + 1)
-    // One more operation added for doing nothing
-    val opcode : UInt = curr_config_info(curr_high_bit,
-      curr_high_bit - num_opcode_bit + 1)
-    curr_high_bit -= num_opcode_bit
-
-    // Output select
-    private val num_output_bit : Int = log2Ceil(num_output + 1)
-    // One more output direction (broadcast to all output port)
-    val output_select : UInt = curr_config_info(
-      curr_high_bit,curr_high_bit - num_output_bit + 1)
-    curr_high_bit -= num_output_bit
-
-    // Offset select
-    private val num_offset_bit : Int = log2Ceil(decomposer)
-    val offset_select : UInt = curr_config_info(
-      curr_high_bit, curr_high_bit - num_offset_bit + 1)
-    curr_high_bit -= num_offset_bit
-
-    // Used Bit
-    val num_conf_reg_bit : Int = high_bit - curr_high_bit
-    val config_reg_info : UInt = curr_config_info(high_bit, curr_high_bit + 1)
-
-    implicit def toPrintable: Printable = {
-      val operand_sel_print = for(oper_idx <- 0 until max_num_operand) yield {
-        p"op$oper_idx = ${operand_select(oper_idx)}"
-      }
-      operand_sel_print.reduceLeft(_ + p", " + _) + p", "
-        p"opcode = $opcode, output = $output_select, offset = $offset_select\n"
-    }
+    // Total config bit info
+    val num_conf_reg_bit : Int = stored_config_info.num_conf_reg_bit
+    val config_reg_info : UInt = stored_config_info.config_reg_info
+    println("num conf reg bit = " + num_conf_reg_bit)
+    println("stored config info width = " + config_reg_info.getWidth)
+    require(config_reg_info.getWidth == num_conf_reg_bit)
   }
 
 }

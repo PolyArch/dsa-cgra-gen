@@ -86,5 +86,4 @@ class Delay_FIFO_Hw(p:Delay_FIFO) extends Module{
     if(p.protocol.contains("Ready"))
       io.out.ready <> io.in.ready
   }
-
 }

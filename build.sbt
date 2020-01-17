@@ -30,7 +30,7 @@ mainClass in (Compile, run) := Some("CgraGen")
 
 version := "0.0.1"
 
-scalaVersion := "2.12.8"
+scalaVersion := "2.13.1"
 
 mainClass in assembly := Some("cgra.driver.CgraGen")
 
