@@ -31,7 +31,7 @@ class duplicatorN (num_output: Int,data_width:Int)
   // When all downstream are ready (AND)
   // then tell upstream that ready
   io.input_port.ready := Mux(enable,
-    io.output_ports.map(_.ready).reduce(_ && _), false.B)
+    io.output_ports.map(_.ready).reduce(_ || _), false.B)
 }
 
 object gen_dupN extends App{

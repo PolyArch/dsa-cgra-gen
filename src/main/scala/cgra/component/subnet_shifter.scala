@@ -42,6 +42,9 @@ class subnet_shifter (decomposer:Int,granularity:Int)
       io.output_data := 0.U
     }
   }
+
+  // ---- Debug ----
+  printf(p"before : ${io.input_data}, shift by ${io.offset} = ${io.output_data}\n")
 }
 
 object gen_subnet_shift extends App{

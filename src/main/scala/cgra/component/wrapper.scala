@@ -107,6 +107,7 @@ object wrapper {
   case class fu_stored_config_info_wrapper (num_input: Int,
                                             num_output: Int,
                                             decomposer: Int,
+                                            max_delay: Int,
                                             instructions : List[String],
                                             curr_config_info: UInt){
     private var curr_high_bit : Int = curr_config_info.getWidth - 1
@@ -126,6 +127,17 @@ object wrapper {
         info
       }
 
+    // Delay per operands select
+    private val num_delay_sel_bit : Int = log2Ceil(max_delay + 1)
+    // support zero delay
+    val delay_select : IndexedSeq[UInt] =
+      for(_ <- 0 until max_num_operand) yield {
+        val info = curr_config_info(curr_high_bit,
+          curr_high_bit - num_operand_sel_bit + 1)
+        curr_high_bit -= num_operand_sel_bit
+        info
+      }
+
     // Opcode select
     private val num_opcode_bit : Int = log2Ceil(num_opcode + 1)
     // One more operation added for doing nothing
@@ -133,18 +145,18 @@ object wrapper {
       curr_high_bit - num_opcode_bit + 1)
     curr_high_bit -= num_opcode_bit
 
+    // Offset select
+    private val num_offset_bit : Int = log2Ceil(decomposer)
+    val offset_select : UInt = curr_config_info(
+      curr_high_bit, curr_high_bit - num_offset_bit + 1)
+    curr_high_bit -= num_offset_bit
+
     // Output select
     private val num_output_bit : Int = log2Ceil(num_output + 1)
     // One more output direction (broadcast to all output port)
     val output_select : UInt = curr_config_info(
       curr_high_bit,curr_high_bit - num_output_bit + 1)
     curr_high_bit -= num_output_bit
-
-    // Offset select
-    private val num_offset_bit : Int = log2Ceil(decomposer)
-    val offset_select : UInt = curr_config_info(
-      curr_high_bit, curr_high_bit - num_offset_bit + 1)
-    curr_high_bit -= num_offset_bit
 
     // Used Bit
     val num_conf_reg_bit : Int = high_bit - curr_high_bit
@@ -168,6 +180,7 @@ object wrapper {
                                         num_input: Int, num_output: Int,
                                         decomposer: Int,
                                         max_util: Int,
+                                        max_delay: Int,
                                         data_width: Int,
                                         instructions : List[String],
                                         config_info: UInt, config_valid: Bool){
@@ -203,7 +216,8 @@ object wrapper {
     private val stored_high_bit : Int = curr_high_bit
 
     private val stored_config_info = fu_stored_config_info_wrapper(
-      num_input,num_output,decomposer,instructions,
+      num_input,num_output,decomposer,max_delay,
+      instructions,
       config_info(stored_high_bit,0)
     )
 

@@ -1,9 +1,11 @@
 package cgra.component
 
 import cgra.IO._
+import cgra.fabric.delay
 import chisel3.util._
 import chisel3._
 import dsl.IRPrintable
+
 import scala.collection.mutable
 import scala.util.Random
 import wrapper._
@@ -32,6 +34,11 @@ class complex_switch(prop:mutable.Map[String,Any]) extends Module with IRPrintab
   // Internal Defined Parameter
   private val num_config_bit : Int = log2Ceil(max_util + 1) // + 1 means at
   // least one type is needed for non-config mode (dataflow mode)
+  private val max_delay : Int = if(flow_control){
+    getPropByKey("max_delay").asInstanceOf[Int]
+  }else{
+    1
+  }
 
   // ------ Create Hardware ------
 
@@ -91,7 +98,7 @@ class complex_switch(prop:mutable.Map[String,Any]) extends Module with IRPrintab
 
   // Duplicate the Incoming data (for broadcast to downstream)
   private val sources_dup = for(input_idx <- 0 until num_input)yield{
-    val dup = Module(new duplicatorN(num_output, num_config_bit + data_width)).io
+    val dup = Module(new duplicatorN(num_output, data_width)).io
     dup.en := dataflow_mode
     dup.input_port.bits := io.input_ports(input_idx).bits
     dup.input_port.valid := io.input_ports(input_idx).valid
@@ -105,6 +112,14 @@ class complex_switch(prop:mutable.Map[String,Any]) extends Module with IRPrintab
     dup
   }
 
+  // Add buffer for output
+  private val buffers = for(_ <- 0 until num_output) yield {
+    val buff = Module(new delay(data_width, max_delay, flow_control)).io
+    buff.en := dataflow_mode
+    buff.delay := 1.U(1.W)
+    buff
+  }
+
   // Shift the output for subnet connection
   private val subnet_shifter = for(output_idx <- 0 until num_output)yield{
     val sub_shift = Module(new subnet_shifter(decomposer, granularity)).io
@@ -116,54 +131,56 @@ class complex_switch(prop:mutable.Map[String,Any]) extends Module with IRPrintab
   // Route the Ready
   for(input_idx <- 0 until num_input;
       output_idx <- 0 until num_output){
+    val source_select = curr_config.sources_select(output_idx)
     // If the output port do receive value from this input port,
     // then pass the ready otherwise, it is just ready (true)
     when(dataflow_mode){
       sources_dup(input_idx).output_ports(output_idx).ready :=
-        Mux(curr_config.sources_select(output_idx) === input_idx.U,
-          io.output_ports(output_idx).ready, true.B)
+        Mux(source_select === (input_idx + 1).U,
+          buffers(output_idx).in.ready,
+          //io.output_ports(output_idx).ready,
+          false.B)
     }otherwise{
       sources_dup(input_idx).output_ports(output_idx).ready := true.B
     }
+  }
+  // Ready
+  for (output_idx <- 0 until num_output){
+    buffers(output_idx).out.ready := io.output_ports(output_idx).ready
   }
 
   // Route the Valid, Data Bits and Config Bits
   for(output_idx <- 0 until num_output){
     // select -> (valid, data bits, config bits)
-    val lookup = (0 to num_input).map(x=>{
+    val lookup : Seq[(UInt, (Bool, UInt))]= (0 to num_input).map(x=>{
       if(x == 0){
         // Connect to Ground when zero
-        x.U -> (false.B, 0.U, 0.U)
+        x.U -> (false.B, 0.U)
       }else{
         x.U -> (
           // valid bit
           sources_dup(x-1).output_ports(output_idx).valid,
           // data info
-          sources_dup(x-1).output_ports(output_idx).bits(data_width - 1, 0),
-          // config info
-          sources_dup(x-1).output_ports(output_idx).bits(data_width + num_config_bit - 1, data_width)
+          sources_dup(x-1).output_ports(output_idx).bits(data_width - 1, 0)
         )
       }
     })
-    // subnet shift
-    subnet_shifter(output_idx).input_data :=
+    // buffer
+    buffers(output_idx).in.valid :=
+      MuxLookup(curr_config.sources_select(output_idx),false.B,
+        lookup.map(x=>x._1 -> x._2._1))
+    buffers(output_idx).in.bits :=
       MuxLookup(curr_config.sources_select(output_idx),0.U,
         lookup.map(x=>x._1 -> x._2._2))
-    // extract config bit
-    val config_bits = MuxLookup(curr_config.offset_select(output_idx),0.U,
-      lookup.map(x=>x._1 -> x._2._3))
+    // subnet shift
+    subnet_shifter(output_idx).input_data := buffers(output_idx).out.bits
 
     // State Machine
     when(dataflow_mode){
       // Valid
-      io.output_ports(output_idx).valid := RegNext(
-        MuxLookup(curr_config.offset_select(output_idx),false.B,
-          lookup.map(x=>x._1 -> x._2._1))
-      )
+      io.output_ports(output_idx).valid := buffers(output_idx).out.valid
       // Bits
-      io.output_ports(output_idx).bits := RegNext(
-        Cat(config_bits, subnet_shifter(output_idx).output_data)
-      )
+      io.output_ports(output_idx).bits := subnet_shifter(output_idx).output_data
     }.elsewhen(reconfig_mode){
       // pass value to downstream
       if(config_out_port_idx.contains(output_idx)){
@@ -201,26 +218,30 @@ class complex_switch(prop:mutable.Map[String,Any]) extends Module with IRPrintab
 
 object gen_comp_switch extends App{
 
+  // Config switch
   val node = mutable.Map[String, Any]()
-  node("id") = 13
-  node("max_id") = 59
-  node("data_width") = 64
-  node("granularity") = 16
-  node("num_input") = 4
-  node("num_output") = 5
-  node("flow_control") = true
-  node("max_util") = 3
+  val id : Int = 13
+  val max_id : Int = 59
+  val data_width : Int = 64
+  val granularity : Int = 16
+  val decomposer = data_width / granularity
+  val num_input : Int = 3
+  val num_output : Int = 2
+  val flow_control : Boolean = true
+  val max_util : Int = 3
+  val max_delay : Int = 4
 
-  // Add config input / output port for test
-  val num_input = node("num_input").asInstanceOf[Int]
-  val num_output = node("num_output").asInstanceOf[Int]
-  node += "config_in_port_idx" -> (num_input - 1)
-  val rand = new Random()
-  if(rand.nextBoolean() && num_output == 1){
-    node += "config_out_port_idx" -> List(0)
-  }else{
-    node += "config_out_port_idx" -> List(0, num_output - 1)
-  }
+  node("id") = id
+  node("max_id") = max_id
+  node("data_width") = data_width
+  node("granularity") = granularity
+  node("num_input") = num_input
+  node("num_output") = num_output
+  node("flow_control") = flow_control
+  node("max_util") = max_util
+  node("max_delay") = max_delay
+  node("config_in_port_idx") = 0
+  node("config_out_port_idx") = List(0)
 
   chisel3.Driver.execute(args,()=>{
     val module = new complex_switch(node)
