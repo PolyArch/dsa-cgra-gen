@@ -20,22 +20,25 @@ class complex_alu(
 
       val opcode = Input(UInt({log2Ceil(num_operand + 1) max 1}.W))
 
+      // Operand
       val operands = Input(Vec(num_operand, UInt(data_width.W)))
       val operand_valid = Input(Bool())
       val operand_ready = Output(Bool())
 
-
+      // Result
       val result = Output(UInt(data_width.W))
       val result_valid = Output(Bool())
       val result_ready = Input(Bool())
     }
   )
+  // Opcode
+  private val opcode : UInt = RegEnable(io.opcode, 0.U, io.en)
 
   // Operand
-  private val operand_valid : Bool = RegEnable(io.operand_valid,false.B,io.en)
   private val operands : IndexedSeq[UInt] =
     io.operands.map(op => RegEnable(op,0.U,io.en))
-  private val opcode : UInt = RegEnable(io.opcode, 0.U, io.en)
+  private val operand_valid : Bool = RegEnable(io.operand_valid,false.B,io.en)
+
 
   // Detect whether input changed
   private val input_changed : Bool =

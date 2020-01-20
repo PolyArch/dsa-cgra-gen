@@ -83,16 +83,18 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
     instructions,
     config_file(config_pointer))
 
-  // Create Operands Register
+  // Create Operands Register (and its control protocol)
   private val operands : Vec[UInt] = RegInit(VecInit(
     Seq.fill(num_operand)(0.U(data_width.W))
   ))
   private val operand_valid : Bool = RegInit(Bool(), false.B)
-  private val result_valid : Bool = RegInit(Bool(), false.B)
+  private val operand_ready : Bool = RegInit(Bool(), true.B)
 
   // Create Result Register and shift it
   private val result : UInt = RegInit(0.U(data_width.W))
   private val shifted_result: UInt = WireInit(0.U(data_width.W))
+  private val result_valid : Bool = RegInit(Bool(), false.B)
+  private val result_ready : Bool = RegInit(Bool(), true.B)
 
   // ---------- Module create and connection ----------
 
@@ -109,11 +111,14 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
   complex_alu.io.en := dataflow_mode
   complex_alu.io.opcode := curr_config.opcode
   val opcode2info = complex_alu.opcode2info
-  complex_alu.io.operand_valid := operand_valid
+  // Operand -> ALU operand
   for(op_idx <- 0 until num_operand){
     complex_alu.io.operands(op_idx) := operands(op_idx)
   }
-
+  // Operand Valid -> ALU valid
+  complex_alu.io.operand_valid := operand_valid
+  // Result Ready -> ALU Ready
+  complex_alu.io.result_ready := result_ready
 
   // Delay Pipe
   private val delay_pipes = for(op_idx <- 0 until num_operand) yield {
@@ -121,6 +126,7 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
     val pipe = Module(new delay(data_width, max_delay, false)).io
     pipe.en := dataflow_mode
     pipe.delay := curr_config.delay_select(op_idx)
+    pipe.out.ready := operand_ready
     pipe
   }
 
@@ -165,8 +171,16 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
   }
 
   // Delay Pipe --> Operand
-  private val opcode2num = opcode2info.map(p=>p._1 -> p._2._3).toMap
-  private val curr_num_operand : Int = opcode2num(curr_config.opcode)
+  private val opcode2num = opcode2info.map(p=>p._1 -> p._2._3)
+  private val opcode2valid = opcode2num.map(op2num => {
+    val op = op2num._1
+    val num_operand = op2num._2
+    val valids : IndexedSeq[Bool] =
+      for (valid_op_idx <- 0 until num_operand) yield {
+      delay_pipes(valid_op_idx).out.valid
+    }
+    op -> valids.reduce(_ && _)
+  })
 
   // ----------- FSM ----------
 
@@ -193,30 +207,38 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
 
   when(dataflow_mode){
 
-    // Operand Valid
-    operand_valid :=(
-      for(op_idx <- 0 until curr_num_operand) yield
-        {
-          val valid = delay_pipes(op_idx).out.valid
-          val bits = delay_pipes(op_idx).out.bits
-          // Operands
-          operands(op_idx) := Mux(valid,bits,operands(op_idx))
-          valid
-        }
-      ).reduce(_ && _)
+    // ----------- Delay Pipe ------------
+    val nxt_operand_valid : Bool = MuxLookup(curr_config.opcode,false.B,opcode2valid)
+    // Delay Pipe -> Operands
+    for(op_idx <- 0 until num_operand){
+      val bits = delay_pipes(op_idx).out.bits
+      when(nxt_operand_valid){
+        operands(op_idx) := bits
+      }
+    }
+    // Delay Pipe Valid -> Operand Valid
+    operand_valid := nxt_operand_valid
 
-    // Result
-    result_valid := complex_alu.io.result_valid
-    when(complex_alu.io.result_valid){
+    // ----------- ALU ----------------
+    // ALU ready -> Operand ready
+    operand_ready := complex_alu.io.operand_ready
+    // ALU -> Result
+    val nxt_alu_result_valid = complex_alu.io.result_valid
+    when(nxt_alu_result_valid){
       result := complex_alu.io.result
     }
+    // ALU Valid -> Result Valid
+    result_valid := nxt_alu_result_valid
 
-    // Output
-    val result_ready = (for(out_idx <- 0 until num_output)yield{
+    // ----------- Output -------------
+    // Output Ready -> Result Ready
+    result_ready := (for(out_idx <- 0 until num_output)yield{
       val is_broadcast = curr_config.output_select === 0.U
       val is_this = curr_config.output_select === (out_idx + 1).U
+      // Result bits -> Output bits
       io.output_ports(out_idx).bits :=
         Mux(is_broadcast || is_this, shifted_result, 0.U)
+      // Result valid -> Output valid
       io.output_ports(out_idx).valid :=
         Mux(is_broadcast || is_this, true.B, false.B)
       Mux(is_broadcast || is_this, io.output_ports(out_idx).ready, false.B)
@@ -246,6 +268,10 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
     print(this)
   }
 
+  // ------- Debug --------
+
+
+
 }
 
 object gen_comp_fu extends App{
@@ -262,7 +288,7 @@ object gen_comp_fu extends App{
   val flow_control : Boolean = true
   val max_util : Int = 3
   val max_delay : Int = 4
-  val instructions : List[String] = inst_operation.keys.toList
+  val instructions : List[String] = List("Add","Mul")
 
   node("id") = id
   node("max_id") = max_id
