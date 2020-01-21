@@ -55,7 +55,7 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
   private val nxt_config_info_valid : Bool= io.input_ports(config_in_port_idx).valid
   private val nxt_config_info = nxt_fu_config_info_wrapper(
     id, max_id,
-    num_input, num_output, decomposer,
+    num_input, num_output, decomposer,flow_control,
     max_util, max_delay, data_width,
     instructions,
     nxt_config_info_bits, nxt_config_info_valid)
@@ -66,8 +66,7 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
   private val reconfig_this : Bool = enable && nxt_config_info.config_this
   private val dataflow_mode : Bool = enable && !reconfig_detected
   private val reconfig_mode : Bool = enable && reconfig_detected
-  private val num_curr_util : UInt =
-    RegEnable(nxt_config_info.curr_num_util, 0.U, reconfig_this)
+  private val num_curr_util : UInt = nxt_config_info.curr_num_util
 
   // Select the current configuration by Round-Robin
   // create pointer
@@ -79,22 +78,22 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
 
   // select and parse the current config
   private val curr_config = fu_stored_config_info_wrapper(
-    num_input, num_output, decomposer,max_delay,
+    num_input, num_output, decomposer,flow_control,max_delay,
     instructions,
     config_file(config_pointer))
 
   // Create Operands Register (and its control protocol)
-  private val operands : Vec[UInt] = RegInit(VecInit(
+  private val operands : Vec[UInt] = WireInit(VecInit(
     Seq.fill(num_operand)(0.U(data_width.W))
   ))
-  private val operand_valid : Bool = RegInit(Bool(), false.B)
-  private val operand_ready : Bool = RegInit(Bool(), true.B)
+  private val operand_valid : Bool = WireInit(Bool(), false.B)
+  private val operand_ready : Bool = WireInit(Bool(), true.B)
 
   // Create Result Register and shift it
-  private val result : UInt = RegInit(0.U(data_width.W))
+  private val result : UInt = WireInit(0.U(data_width.W))
   private val shifted_result: UInt = WireInit(0.U(data_width.W))
-  private val result_valid : Bool = RegInit(Bool(), false.B)
-  private val result_ready : Bool = RegInit(Bool(), true.B)
+  private val result_valid : Bool = WireInit(Bool(), false.B)
+  private val result_ready : Bool = WireInit(Bool(), true.B)
 
   // ---------- Module create and connection ----------
 
@@ -123,10 +122,14 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
   // Delay Pipe
   private val delay_pipes = for(op_idx <- 0 until num_operand) yield {
     // such delay is an explicit delay
-    val pipe = Module(new delay(data_width, max_delay, false)).io
-    pipe.en := dataflow_mode
-    pipe.delay := curr_config.delay_select(op_idx)
-    pipe.out.ready := operand_ready
+    val pipe = Module(new delay(data_width, max_delay, flow_control))
+    pipe.io.en := dataflow_mode
+    pipe.io.delay := (if(!flow_control){
+      curr_config.delay_select(op_idx)
+    }else{
+      DontCare
+    })
+    pipe.io.out.ready := operand_ready && operand_valid
     pipe
   }
 
@@ -160,13 +163,13 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
     })
     val pipe = delay_pipes(op_idx)
     // Route Bits
-    pipe.in.bits := MuxLookup(op_select, 0.U, lookup.map(p=>p._1 -> p._2._1))
+    pipe.io.in.bits := MuxLookup(op_select, 0.U, lookup.map(p=>p._1 -> p._2._1))
     // Route Valid
-    pipe.in.valid := MuxLookup(op_select, false.B, lookup.map(p=>p._1 -> p._2._2))
+    pipe.io.in.valid := MuxLookup(op_select, false.B, lookup.map(p=>p._1 -> p._2._2))
     // Route Ready
     for (input_idx <- 0 until num_input){
       sources_dup(input_idx).output_ports(op_idx).ready :=
-        Mux(op_select === (input_idx+1).U,pipe.in.ready, false.B)
+        Mux(op_select === (input_idx+1).U,pipe.io.in.ready, false.B)
     }
   }
 
@@ -177,7 +180,7 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
     val num_operand = op2num._2
     val valids : IndexedSeq[Bool] =
       for (valid_op_idx <- 0 until num_operand) yield {
-      delay_pipes(valid_op_idx).out.valid
+      delay_pipes(valid_op_idx).io.out.valid
     }
     op -> valids.reduce(_ && _)
   })
@@ -211,7 +214,7 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
     val nxt_operand_valid : Bool = MuxLookup(curr_config.opcode,false.B,opcode2valid)
     // Delay Pipe -> Operands
     for(op_idx <- 0 until num_operand){
-      val bits = delay_pipes(op_idx).out.bits
+      val bits = delay_pipes(op_idx).io.out.bits
       when(nxt_operand_valid){
         operands(op_idx) := bits
       }
@@ -232,27 +235,29 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
 
     // ----------- Output -------------
     // Output Ready -> Result Ready
-    result_ready := (for(out_idx <- 0 until num_output)yield{
-      val is_broadcast = curr_config.output_select === 0.U
+    val is_broadcast = curr_config.output_select === 0.U // Broadcast to all output
+    val temp_result_ready : Bool = (for(out_idx <- 0 until num_output)yield{
       val is_this = curr_config.output_select === (out_idx + 1).U
+      val this_output_port_used : Bool = is_broadcast || is_this
       // Result bits -> Output bits
       io.output_ports(out_idx).bits :=
-        Mux(is_broadcast || is_this, shifted_result, 0.U)
+        RegNext(Mux(this_output_port_used, shifted_result, 0.U))
       // Result valid -> Output valid
       io.output_ports(out_idx).valid :=
-        Mux(is_broadcast || is_this, true.B, false.B)
-      Mux(is_broadcast || is_this, io.output_ports(out_idx).ready, false.B)
+        RegNext(Mux(this_output_port_used, result_valid, false.B))
+      Mux(this_output_port_used, io.output_ports(out_idx).ready, false.B)
     }).reduce(_||_)
+    result_ready := temp_result_ready
 
   }.elsewhen(reconfig_mode){
     // pass config info to downstream
     for(output_idx <- 0 until num_output){
       if(config_out_port_idx.contains(output_idx)){
-        io.output_ports(output_idx).valid := true.B
-        io.output_ports(output_idx).bits := nxt_config_info_bits
+        io.output_ports(output_idx).valid := RegNext(true.B)
+        io.output_ports(output_idx).bits := RegNext(nxt_config_info_bits)
       }else{
-        io.output_ports(output_idx).valid := false.B
-        io.output_ports(output_idx).bits := 0.U
+        io.output_ports(output_idx).valid := RegNext(false.B)
+        io.output_ports(output_idx).bits := RegNext(0.U)
       }
     }
 
@@ -269,7 +274,32 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
   }
 
   // ------- Debug --------
+  when(reconfig_this){
+    printf("----- RECONFIGURED MODE -----\n")
+    printf(nxt_config_info.toPrintable)
+    print_config_file
+  }.elsewhen(reconfig_mode){
+    printf("----- RECONFIGURED MESSAGE PASS -----\n")
+    printf("reconfigured detected, but not this module\n")
+  }.elsewhen(dataflow_mode){
+    printf("----- DATAFLOW MODE -----\n")
+    printf(p"config pointer = $config_pointer, config = ${curr_config.config_reg_info}\n")
+    printf(p"-----curr config-----\n")
+    printf(curr_config.toPrintable)
+    printf(p"-----curr alu reg----\n")
+    for(op_idx <- 0 until num_operand){
+      printf(p"operand($op_idx) = ${operands(op_idx)}, ")
+    }
+    printf(p"operand valid = ${operand_valid}, operand ready = ${operand_ready}\n")
+    printf(p"shif_result = $shifted_result, result = $result, result valid = $result_valid, result ready = $result_ready\n")
+  }
 
+  def print_config_file = {
+    printf("---- config file ----\n")
+    for(idx <- 0 until max_util){
+      printf(p"$idx : ${config_file(idx)}\n")
+    }
+  }
 
 
 }
@@ -286,7 +316,7 @@ object gen_comp_fu extends App{
   val num_input : Int = 3
   val num_output : Int = 2
   val flow_control : Boolean = true
-  val max_util : Int = 3
+  val max_util : Int = 1
   val max_delay : Int = 4
   val instructions : List[String] = List("Add","Mul")
 

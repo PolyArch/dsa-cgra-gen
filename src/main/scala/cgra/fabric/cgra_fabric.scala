@@ -1,8 +1,10 @@
 package cgra.fabric
 
 import cgra.IO._
+import cgra.component.{complex_fu, complex_switch}
 import dsl.IRPrintable
 import chisel3._
+
 import scala.collection.mutable
 import cgra.config.encoding._
 import chisel3.util._
@@ -54,12 +56,12 @@ class cgra_fabric(prop:mutable.Map[String, Any]) extends Module
   })
 
   // Create the Module
-  val nodes_module : Map[Int,VecDecoupledIO]= nodes.map(node => {
+  val nodes_module : Map[Int,EnabledVecDecoupledIO]= nodes.map(node => {
     val node_id = node("id").asInstanceOf[Int]
     val nodeType = node("nodeType").toString
     node_id -> (nodeType match {
-      case "switch" => Module(new switch(node)).io
-      case "function unit" => Module(new function_unit(node)).io
+      case "switch" => Module(new complex_switch(node)).io
+      case "function unit" => Module(new complex_fu(node)).io
       case "vector port" => Module(new vector_port(node)).io
     })
   }).toMap

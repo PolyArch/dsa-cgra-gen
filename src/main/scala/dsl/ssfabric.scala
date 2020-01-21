@@ -271,29 +271,5 @@ class ssfabric extends IRPrintable {
         yield allInsts(i) -> (i + start_encoding))
       apply("Instruction Set", InstsWithEnc)
     }
-
-    // Calculate the Input number and Output Node Number
-    /*
-    val allVpNodes = this("nodeType")("vector port")
-    // Output vector port only has input_nodes
-    val num_output : Int = {for(vp <- allVpNodes)yield{
-      if(vp has "input_nodes"){
-        vp.getPropByKey("input_nodes")
-          .asInstanceOf[Seq[ssnode]].length
-      }else {
-        0
-      }
-    }}.sum
-    // Input vector port only has output_nodes
-    val num_input : Int = {for(vp <- allVpNodes)yield{
-      if(vp has "output_nodes"){
-        vp.getPropByKey("output_nodes")
-          .asInstanceOf[Seq[ssnode]].length
-      }else{
-        0
-      }
-    }}.sum
-    apply("num_input", num_input)("num_output",num_output)
-     */
   }
 }

@@ -69,7 +69,7 @@ class complex_switch(prop:mutable.Map[String,Any]) extends Module with IRPrintab
     // Use the config type to indicate which config to write
     // because config type == 1 means write to 0 config
     //         config type == 2 means write to 1 config
-    //         config type == 0 means not a config mode
+    //         config type == 0 means not a config mode (could be datamode)
     // so we need to -1.U
     config_file(nxt_config_info.config_type - 1.U) :=
       nxt_config_info.config_reg_info

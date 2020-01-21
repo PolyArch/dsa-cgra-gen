@@ -1,0 +1,19 @@
+package cgra.component
+
+import cgra.IO.EnabledVecDecoupledIO
+import chisel3.util._
+import chisel3._
+import dsl.IRPrintable
+import wrapper._
+import cgra.config.fullinst._
+import cgra.fabric.delay
+import scala.collection.mutable
+
+class complex_vp(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
+  // Assign initial properties
+  apply(prop)
+
+  // Initialize the I/O port
+  val io = IO(new EnabledVecDecoupledIO(num_input, num_output,
+    num_config_bit + data_width))
+}

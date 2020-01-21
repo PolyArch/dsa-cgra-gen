@@ -16,8 +16,10 @@ class complex_alu(
 
   val io = IO(
     new Bundle{
+      // Enable
       val en = Input(Bool())
 
+      // Opcode
       val opcode = Input(UInt({log2Ceil(num_operand + 1) max 1}.W))
 
       // Operand
@@ -47,7 +49,7 @@ class complex_alu(
       (opcode =/= io.opcode)
 
   // Latency count down
-  private val latency_counter : UInt = RegInit(1.U({log2Ceil(max_latency) max 1}.W))
+  private val latency_counter : UInt = RegInit(0.U({log2Ceil(max_latency) max 1}.W))
 
   // detect when is done
   private val finished : Bool = latency_counter === 0.U
@@ -57,11 +59,10 @@ class complex_alu(
     (!input_changed) && (!finished)
 
   // Computed
-  private val computed : Bool = io.en && operand_valid &&
-    (!input_changed) && finished
+  private val computed : Bool = !computing
 
   // Result
-  private val result : UInt = RegInit(0.U(data_width.W))
+  private val result : UInt = WireInit(0.U(data_width.W))
   io.result := result
   io.result_valid := computed
 
@@ -105,12 +106,16 @@ class complex_alu(
     // restart computing
     latency_counter := MuxLookup(opcode, 0.U, opcode2lat)
   }
+
+  // Debug
+  printf(p"ALU status : computing ? ${computing}, countdown = $latency_counter, " +
+    p"Opcode = $opcode, Result = $result\n")
 }
 
 object gen_complex_alu extends App{
   chisel3.Driver.execute(args,()=>{
     val module = new complex_alu(64,
-      inst_operation.keys.toList)
+      List("Add","Mul"))
     println(module)
     module
   })

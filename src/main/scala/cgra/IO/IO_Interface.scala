@@ -26,7 +26,7 @@ case class ReqAckConf_if(ww:Int) extends Bundle {
 }
 
 class VecDecoupledIO_conf(nIn:Int, nOut:Int, w:Int,conf_w:Int)
-  extends VecDecoupledIO(nIn, nOut, w){
+  extends EnabledVecDecoupledIO(nIn, nOut, w){
   val config = Flipped(ValidIO(UInt(conf_w.W)))
 
   override def cloneType: VecDecoupledIO_conf.this.type =

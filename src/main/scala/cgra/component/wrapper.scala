@@ -107,6 +107,7 @@ object wrapper {
   case class fu_stored_config_info_wrapper (num_input: Int,
                                             num_output: Int,
                                             decomposer: Int,
+                                            flow_control : Boolean,
                                             max_delay: Int,
                                             instructions : List[String],
                                             curr_config_info: UInt){
@@ -128,15 +129,21 @@ object wrapper {
       }
 
     // Delay per operands select
+
     private val num_delay_sel_bit : Int = log2Ceil(max_delay + 1)
     // support zero delay
     val delay_select : IndexedSeq[UInt] =
-      for(_ <- 0 until max_num_operand) yield {
-        val info = curr_config_info(curr_high_bit,
-          curr_high_bit - num_operand_sel_bit + 1)
-        curr_high_bit -= num_operand_sel_bit
-        info
+      if(!flow_control){
+        for(_ <- 0 until max_num_operand) yield {
+          val info = curr_config_info(curr_high_bit,
+            curr_high_bit - num_delay_sel_bit + 1)
+          curr_high_bit -= num_delay_sel_bit
+          info
+        }
+      }else{
+        for(_ <- 0 until 1) yield {0.U}
       }
+
 
     // Opcode select
     private val num_opcode_bit : Int = log2Ceil(num_opcode + 1)
@@ -168,17 +175,26 @@ object wrapper {
     }
 
     implicit def toPrintable: Printable = {
-      val operand_sel_print = for(oper_idx <- 0 until max_num_operand) yield {
-        p"op$oper_idx = ${operand_select(oper_idx)}"
+      val opcode2instruction = for(opcode_idx <- 0 until num_opcode) yield {
+        p"${instructions(opcode_idx)}\'opcode = ${opcode_idx + 1}"
       }
-      operand_sel_print.reduceLeft(_ + p", " + _) + p", "
-      p"opcode = $opcode, output = $output_select, offset = $offset_select\n"
+      val operand_sel_del_print = for(oper_idx <- 0 until max_num_operand) yield {
+        p"op$oper_idx : src = ${operand_select(oper_idx)}, " +
+          (if(!flow_control){p"delay = ${delay_select(oper_idx)}"}
+          else{p"dynamic (no delay)"})
+      }
+      p"---\nconfig reg info bits = ${config_reg_info}\n" +
+        operand_sel_del_print.reduceLeft(_ + p", \n" + _) + p"\n---\n" +
+        "Pass\'opcode = 0, " +
+        opcode2instruction.reduceLeft(_ + p", " + _) + p"\n" +
+        p"opcode = $opcode, output = $output_select, offset = $offset_select\n"
     }
   }
 
   case class nxt_fu_config_info_wrapper(id: Int, num_node: Int,
                                         num_input: Int, num_output: Int,
                                         decomposer: Int,
+                                        flow_control : Boolean,
                                         max_util: Int,
                                         max_delay: Int,
                                         data_width: Int,
@@ -216,7 +232,7 @@ object wrapper {
     private val stored_high_bit : Int = curr_high_bit
 
     private val stored_config_info = fu_stored_config_info_wrapper(
-      num_input,num_output,decomposer,max_delay,
+      num_input,num_output,decomposer,flow_control,max_delay,
       instructions,
       config_info(stored_high_bit,0)
     )
@@ -227,6 +243,13 @@ object wrapper {
     println("num conf reg bit = " + num_conf_reg_bit)
     println("stored config info width = " + config_reg_info.getWidth)
     require(config_reg_info.getWidth == num_conf_reg_bit)
+
+    // Debug
+    implicit def toPrintable : Printable ={
+      p"fu $id: config type = $config_type, curr_num_util = $curr_num_util, " +
+        p"id_field = $node_id\n" + "-----saved----\n"+
+        stored_config_info.toPrintable + "-----saved end----\n"
+    }
   }
 
 }

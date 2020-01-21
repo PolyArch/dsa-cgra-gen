@@ -63,8 +63,38 @@ object CgraTestUtil {
       }
       decompose(decomposer,dBitLength)
     }
-    def ||| (lower_value : BigInt, bitLength: Int) : BigInt ={
-      Bi(num.Bi + lower_value.Bi(bitLength))
+    def ||| (str: String, bitLength: Int) : BigInt = {
+      if(str.length < bitLength){
+        num ||| (str + str, bitLength)
+      }else{
+        Bi(num.Bi + str.reverse.substring(0,bitLength).reverse)
+      }
+
+    }
+    def ||| (str : String) : BigInt = {
+      Bi(num.Bi + str)
+    }
+    def ||| (lower_value : BigInt, bitLength: Int) : BigInt = {
+      if (bitLength > 0) {
+        Bi(num.Bi + lower_value.Bi(bitLength))
+      } else if (bitLength == 0) {
+        num
+      } else {
+        assert(false,"append a negative length value??")
+        num
+      }
+    }
+    def |*| (rnd_max : Int, duplicate_time : Int, bitLength: Int, isRandom : Boolean):BigInt = {
+      if(duplicate_time < 1){
+        num
+      }else{
+        if(isRandom) {
+          val rnt_int = scala.util.Random.nextInt(rnd_max)
+          (num ||| (rnt_int, bitLength)) |*| (rnd_max, duplicate_time - 1, bitLength,isRandom)
+        } else {
+          (num ||| (rnd_max, bitLength)) |*| (rnd_max, duplicate_time - 1, bitLength,isRandom)
+        }
+      }
     }
   }
 }
