@@ -25,7 +25,7 @@ class UADD_composed(data_width : Int, finest_width : Int) extends Module{
       val a = Input(UInt(data_width.W))
       val b = Input(UInt(data_width.W))
       val result = Output(UInt(data_width.W))
-      val ctrl = Input(UInt(log2Ceil(num_ctrl).W))
+      val ctrl = Input(UInt({log2Ceil(num_ctrl) max 1}.W))
       // 0 -> 64, 1 -> 32x2, 2 -> 16x4, 3 -> 8x8
     }
   )
@@ -97,7 +97,7 @@ class UADD_composed(data_width : Int, finest_width : Int) extends Module{
 
 }
 
-
+import GenUtil.GenUtil._
 object gen_UADD extends App{
   chisel3.Driver.execute(args,()=>{
     val module = new UADD(64)
@@ -107,8 +107,16 @@ object gen_UADD extends App{
 }
 
 object gen_UADD_composed extends App{
-  chisel3.Driver.execute(args,()=>{
-    val module = new UADD_composed(64, 8)
-    module
-  })
+
+  val data_widths = List(16,32,64)
+  val granularities = List(8,16,32,64)
+
+  for(dw<- data_widths; gr <- granularities){
+    if(gr <= dw){
+      chisel3.Driver.execute(args,()=>{
+        val module = new UADD_composed(dw, gr)
+        module
+      })
+    }
+  }
 }

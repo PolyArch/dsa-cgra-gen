@@ -3,7 +3,7 @@
 
 ### Synthesis
 syn
-
+ucli.key
 ### IR
 IR/*.xml
 IR/*.yaml

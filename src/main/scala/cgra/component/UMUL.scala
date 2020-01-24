@@ -86,19 +86,28 @@ class UMUL(data_width : Int) extends Module{
   io.p := io.a * io.b
 
 }
-
-object gen_UMUL_composed extends App{
-  chisel3.Driver.execute(args,()=>{
-    val module = new UMUL_composed(64, 16)
-    println(module)
-    module
-  })
-}
-
-object gen_UMUL extends App {
+import GenUtil.GenUtil._
+object gen_UMUL extends App{
   chisel3.Driver.execute(args,()=>{
     val module = new UMUL(64)
     println(module)
     module
   })
+}
+
+object gen_UMUL_composed extends App {
+
+  val data_widths = List(8)
+  val granularities = List(8,16,32,64)
+
+  for(dw<- data_widths; gr <- granularities){
+    if(gr <= dw) {
+      chisel3.Driver.execute(args, () => {
+        val module = new UMUL_composed(dw, gr)
+        println(module)
+        module
+      })
+      moveRenameFile("UMUL_composed.v", s"UMUL_composed_${dw}_$gr.v")
+    }
+  }
 }

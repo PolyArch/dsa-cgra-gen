@@ -14,6 +14,11 @@ class complex_vp(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
   apply(prop)
 
   // Initialize the I/O port
-  val io = IO(new EnabledVecDecoupledIO(num_input, num_output,
-    num_config_bit + data_width))
+  val io = IO(new EnabledVecDecoupledIO(4, 4,
+    1 + 64))
+
+  // Post process
+  def postprocess(): Unit = {
+    print(this)
+  }
 }
