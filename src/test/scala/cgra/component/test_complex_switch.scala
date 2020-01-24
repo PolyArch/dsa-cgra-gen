@@ -3,8 +3,7 @@ package cgra.component
 import scala.math._
 import chisel3.util._
 import TestUtil.CgraTestUtil._
-import chisel3.iotesters.{ChiselFlatSpec, Driver, PeekPokeTester}
-
+import chisel3.iotesters.{PeekPokeTester, Driver}
 import scala.collection.mutable
 
 object test_complex_switch extends App{
@@ -45,8 +44,7 @@ object test_complex_switch extends App{
     num_output * (num_source_sel_bit + num_offset_bit)
 
 
-  val testResult : Boolean= Driver(() =>
-  new complex_switch(prop = node)){
+  val testResult : Boolean = Driver.execute(args, () => new complex_switch(prop = node)){
     dut => new PeekPokeTester[complex_switch](dut) {
       var cycle : Int = 0;
       var config_message : BigInt = 0;
@@ -77,10 +75,7 @@ object test_complex_switch extends App{
       poke(dut.io.input_ports(0).valid, true)
       poke(dut.io.input_ports(0).bits, config_message)
 
-      move
-
-      // ----- dataflow mode -----
-      move(10)
+      move(100)
 
       def feed_random_values : Boolean = {
         val input_values = for(_ <- 0 until num_input) yield {
@@ -134,6 +129,4 @@ object test_complex_switch extends App{
     }
   }
   assert(testResult)
-
-
 }
