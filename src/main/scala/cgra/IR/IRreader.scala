@@ -12,7 +12,6 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable.{ListBuffer, Map, Set}
-import scala.util.parsing.json.JSONObject
 import scala.collection.JavaConversions._
 import scala.collection.JavaConverters.{asScalaBuffer, mapAsScalaMap}
 import scala.collection.mutable

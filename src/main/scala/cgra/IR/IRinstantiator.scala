@@ -1,6 +1,6 @@
 package cgra.IR
 
-import chisel3.experimental.RawModule
+import chisel3.RawModule
 
 import scala.collection.mutable
 

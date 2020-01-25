@@ -5,6 +5,7 @@ import scala.math._
 import chisel3.util._
 import TestUtil.CgraTestUtil._
 import chisel3.iotesters.{ChiselFlatSpec, Driver, PeekPokeTester}
+
 object testUADD extends App{
 
   val data_widths = List(64)
@@ -29,11 +30,8 @@ object testUADD extends App{
     val decomposer = data_width / finest_width
     val ctrl_num = 1 + log2Ceil(decomposer)
 
-    val testResult = Driver.execute(args ++
-      Array("--more-vcs-flags",
-        s"-vpd_file ./syn/vcd/UADD/UADD_${dw}_$gr.vpd -full64 -LDFLAGS -Wl,--no-as-needed -debug_acc+pp+dmptf -debug_region+cell+encrypt"),
-      () =>
-      new UADD_composed(data_width,finest_width)){
+    val testResult = Driver.execute(args,
+      () => new UADD_composed(data_width,finest_width)){
       dut => new PeekPokeTester[UADD_composed](dut) {
         for(repeat_idx <- 0 until 20){
           // Create Test Input
@@ -46,9 +44,8 @@ object testUADD extends App{
           // Test Every Ctrl Mode
           for(ctrl <- 0 until ctrl_num){
             // Feed Data into Port
-            if(ctrl_num > 1){
-              poke(dut.io.ctrl, ctrl)
-            }
+            if(ctrl_num > 1)
+              poke(dut.io.ctrl, BigInt(ctrl))
             poke(dut.io.a, testA)
             poke(dut.io.b, testB)
             step(1) // This is not necessary, just used for print the internal stuff
