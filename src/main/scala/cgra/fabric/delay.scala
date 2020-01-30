@@ -23,12 +23,7 @@ class delay(data_width:Int,
   }else {
     RegInit(VecInit(Seq.fill(max_delay)(0.U((data_width + 1).W))))
   }
-  val head_ptr = if(flow_control) {
-    RegInit(0.U(1.W))
-  }else {
-    RegInit(0.U({log2Ceil(max_delay) max 1}.W))
-  }
-  val tail_ptr = if(flow_control) {
+  val head_ptr, tail_ptr = if(flow_control) {
     RegInit(0.U(1.W))
   }else {
     RegInit(0.U({log2Ceil(max_delay) max 1}.W))

@@ -58,20 +58,24 @@ object wrapper {
                                             max_util: Int,
                                             data_width: Int,
                                             config_info: UInt, config_valid: Bool){
-    private val num_config_bit : Int = log2Ceil(max_util + 1)
-    private var curr_high_bit : Int = data_width + num_config_bit - 1
+    private val num_config_type_bit : Int = log2Ceil(max_util + 1)
+    private var curr_high_bit : Int = data_width - 1
 
     // ------ Identifier Information ------
 
+    // Is Config Information
+    val is_config : Bool = config_info(data_width)
+
+
     // Configuration Status
-    val config_type : UInt =
-      config_info(curr_high_bit, curr_high_bit - num_config_bit + 1)
-    curr_high_bit -= num_config_bit
+    val config_idx : UInt =
+      config_info(curr_high_bit, curr_high_bit - num_config_type_bit + 1)
+    curr_high_bit -= num_config_type_bit
 
     val curr_num_util : UInt =
       if (max_util > 1){
-        val curr_util = config_info(curr_high_bit, curr_high_bit - num_config_bit + 1)
-        curr_high_bit -= num_config_bit
+        val curr_util = config_info(curr_high_bit, curr_high_bit - num_config_type_bit + 1)
+        curr_high_bit -= num_config_type_bit
         curr_util
       }else{
         0.U(1.W)
@@ -81,7 +85,7 @@ object wrapper {
     require(num_node > 1)
     private val num_id_bit : Int = log2Ceil(num_node)
     val node_id : UInt = config_info(curr_high_bit, curr_high_bit - num_id_bit + 1)
-    val config_enable : Bool = (config_type =/= 0.U) && config_valid
+    val config_enable : Bool = is_config && config_valid
     val config_this : Bool = config_enable && node_id === id.U
     curr_high_bit -= num_id_bit
 
@@ -99,7 +103,7 @@ object wrapper {
     require(config_reg_info.getWidth == num_conf_reg_bit)
 
     implicit def toPrintable : Printable ={
-      p"switch $id: config type = $config_type, curr_num_util = $curr_num_util, " +
+      p"switch $id: config type = $config_idx, curr_num_util = $curr_num_util, " +
         p"id_field = $node_id\n" + stored_config_info.toPrintable
     }
   }
@@ -202,12 +206,15 @@ object wrapper {
                                         config_info: UInt, config_valid: Bool){
     private val num_instruction : Int = instructions.distinct.length
     private val num_config_bit : Int = log2Ceil(max_util + 1)
-    private var curr_high_bit : Int = data_width + num_config_bit - 1
+    private var curr_high_bit : Int = data_width - 1
 
     // ------ Identifier Information ------
 
+    // Is Config
+    val is_config : Bool = config_info(data_width)
+
     // Configuration Status
-    val config_type : UInt =
+    val config_idx : UInt =
       config_info(curr_high_bit, curr_high_bit - num_config_bit + 1)
     curr_high_bit -= num_config_bit
 
@@ -224,7 +231,7 @@ object wrapper {
     require(num_node > 1)
     private val num_id_bit : Int = log2Ceil(num_node)
     val node_id : UInt = config_info(curr_high_bit, curr_high_bit - num_id_bit + 1)
-    val config_enable : Bool = (config_type =/= 0.U) && config_valid
+    val config_enable : Bool = is_config && config_valid
     val config_this : Bool = config_enable && node_id === id.U
     curr_high_bit -= num_id_bit
 
@@ -246,7 +253,7 @@ object wrapper {
 
     // Debug
     implicit def toPrintable : Printable ={
-      p"fu $id: config type = $config_type, curr_num_util = $curr_num_util, " +
+      p"fu $id: config type = $config_idx, curr_num_util = $curr_num_util, " +
         p"id_field = $node_id\n" + "-----saved----\n"+
         stored_config_info.toPrintable + "-----saved end----\n"
     }

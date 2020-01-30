@@ -43,8 +43,8 @@ class complex_switch(prop:mutable.Map[String,Any]) extends Module with IRPrintab
   // ------ Create Hardware ------
 
   // Initialize the I/O port
-  val io = IO(new EnabledVecDecoupledIO(num_input, num_output,
-    num_config_bit + data_width))
+  val io = IO(new EnabledVecDecoupledIO(num_input, num_output, 1 + data_width))
+  // one more for control bit
 
   // --- Internal Logic ---
   // Enable
@@ -67,11 +67,7 @@ class complex_switch(prop:mutable.Map[String,Any]) extends Module with IRPrintab
   val reconfig_mode : Bool = enable && reconfig_detected
   when(reconfig_this){
     // Use the config type to indicate which config to write
-    // because config type == 1 means write to 0 config
-    //         config type == 2 means write to 1 config
-    //         config type == 0 means not a config mode (could be datamode)
-    // so we need to -1.U
-    config_file(nxt_config_info.config_type - 1.U) :=
+    config_file(nxt_config_info.config_idx) :=
       nxt_config_info.config_reg_info
   }
   val num_curr_util : UInt =

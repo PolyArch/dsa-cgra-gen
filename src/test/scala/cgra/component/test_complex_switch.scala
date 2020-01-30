@@ -5,6 +5,7 @@ import chisel3.util._
 import TestUtil.CgraTestUtil._
 import chisel3.iotesters.{PeekPokeTester, Driver}
 import scala.collection.mutable
+import scala.util.Random._
 
 object test_complex_switch extends App{
 
@@ -17,9 +18,10 @@ object test_complex_switch extends App{
   val decomposer = data_width / granularity
   val num_input : Int = 3
   val num_output : Int = 2
-  val flow_control : Boolean = true
+  val flow_control : Boolean = false
   val max_util : Int = 3
-  val max_delay : Int = 4
+  val max_delay : Int = 0
+  val config_input_port = nextInt(num_input)
 
   node("id") = id
   node("max_id") = max_id
@@ -30,59 +32,72 @@ object test_complex_switch extends App{
   node("flow_control") = flow_control
   node("max_util") = max_util
   node("max_delay") = max_delay
-  node("config_in_port_idx") = 0
-  node("config_out_port_idx") = List(0)
+  node("config_in_port_idx") = config_input_port
+  node("config_out_port_idx") = List(config_input_port)
 
   // Calculate the internal parameter
-  private val num_config_bit = log2Ceil(max_util + 1)
-  private val num_bits = data_width + num_config_bit
+  private val num_bits = data_width + 1
+  private val num_config_bit = log2Ceil(max_util)
   private val num_id_bit = log2Ceil(max_id)
   private val num_source_sel_bit = log2Ceil(num_input + 1)
   private val num_offset_bit = log2Ceil(decomposer)
-  private val num_tail_zero = num_bits -
+  private val num_tail_zero = num_bits - 1 -
     2 * num_config_bit - num_id_bit -
     num_output * (num_source_sel_bit + num_offset_bit)
-
 
   val testResult : Boolean = Driver.execute(args, () => new complex_switch(prop = node)){
     dut => new PeekPokeTester[complex_switch](dut) {
       var cycle : Int = 0;
-      var config_message : BigInt = 0;
       // Enable this module
       poke(dut.io.en, true)
 
       // Construct config message
-      config_message =
-        BigInt(2) ||| (1,num_config_bit) ||| (id, num_id_bit) |||
+      val init_config_message =
+        BigInt(1) |||
+          (0,num_config_bit) ||| (1,num_config_bit) ||| (id, num_id_bit) |||
           (2,num_source_sel_bit) ||| (2,num_source_sel_bit) |||
           (0,num_offset_bit) ||| (0, num_offset_bit) |||
-          (982318734, num_tail_zero)
+          ("1111111111111111111111111111111111111111", num_tail_zero)
 
       // Test config switch
       poke(dut.io.input_ports(0).valid, true)
-      poke(dut.io.input_ports(0).bits, config_message)
+      poke(dut.io.input_ports(0).bits, init_config_message)
 
-      move
+      move(5000)
 
-      // Construct config message
-      config_message =
-        BigInt(1) ||| (1,num_config_bit) ||| (id, num_id_bit) |||
-          (1,num_source_sel_bit) ||| (3,num_source_sel_bit) |||
-          (0,num_offset_bit) ||| (0, num_offset_bit) |||
-          (124124, num_tail_zero)
-
-      // Test config switch
-      poke(dut.io.input_ports(0).valid, true)
-      poke(dut.io.input_ports(0).bits, config_message)
-
-      move(100)
+      def generate_random_config_message = {
+        // Construct config message
+        val config_message = {
+          // config_type(config location), curr_util, id
+          val config_idx = nextInt(max_util)
+          val curr_util = nextInt(max_util)
+          val curr_id = nextInt(max_id)
+          BigInt(1) |||
+            (config_idx, num_config_bit) ||| (curr_util,num_config_bit) |||
+            (curr_id, num_id_bit) |*|
+            (num_input, num_output, num_source_sel_bit, true) |*|
+            (decomposer, num_output, num_offset_bit, true) |||
+            ("1111111111111111111111111111111111111111", num_tail_zero)
+        }
+        println("config message = " + config_message + ", b\'" +
+          fixLength(config_message.toString(2), num_bits))
+        config_message
+      }
 
       def feed_random_values : Boolean = {
-        val input_values = for(_ <- 0 until num_input) yield {
-          BigInt(0) ||| (BigInt(data_width, scala.util.Random),data_width)
+        val input_values = for(input_idx <- 0 until num_input) yield {
+          if(cycle % 10 == 0 && input_idx == config_input_port){
+            generate_random_config_message
+          }else{
+            BigInt(0) ||| (BigInt(data_width, scala.util.Random),data_width)
+          }
         }
-        val input_valids = for(_ <- 0 until num_input) yield {
-          scala.util.Random.nextBoolean()
+        val input_valids = for(input_idx <- 0 until num_input) yield {
+          if(cycle % 10 == 0 && input_idx == config_input_port){
+            true
+          }else{
+            scala.util.Random.nextBoolean()
+          }
         }
         val output_readys = for(_ <- 0 until num_output) yield {
           scala.util.Random.nextBoolean()
@@ -118,9 +133,10 @@ object test_complex_switch extends App{
           s" ------------------------ ")
         step(1); cycle = cycle + 1
         // something that did every cycle
-        print_switch_io
-        feed_random_values
+        assert(print_switch_io)
+        assert(feed_random_values)
       }
+
       def move(step: Int) :Unit = {
         for(_ <- 0 until step){
           move

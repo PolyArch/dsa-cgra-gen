@@ -146,7 +146,7 @@ object test_complex_fu extends App{
     // Construct config message
     val config_message = {
       // config_type(config location), curr_util, id
-      val config_type = nextInt(max_util) + 1
+      val config_type = nextInt(max_util)
       val curr_util = nextInt(max_util)
       val random_id_offset = nextInt(5) - 3
       val random_opcode = nextInt(num_opcode + 1)
@@ -155,7 +155,7 @@ object test_complex_fu extends App{
 
       BigInt(config_type) ||| (curr_util,num_curr_util_bit) |||
         (id, num_id_bit) |*|
-        (2, max_num_operand, num_operand_sel_bit, false) |*| //
+        (max_num_operand, max_num_operand, num_operand_sel_bit, false) |*| //
         (max_delay + 1, max_num_operand, num_delay_sel_bit, true) |||
         (1, num_opcode_bit) |||
         (0, num_offset_bit) |||
