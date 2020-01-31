@@ -37,47 +37,49 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
   // Internal Defined Parameter
   private val num_opcode : Int = instructions.distinct.length + 1 // Default Pass
   private val num_operand : Int = instructions.map(insts_prop(_).numOperands) max
-  private val num_config_bit : Int = log2Ceil(max_util + 1) // + 1 means at
+  private val num_config_bit : Int = log2Ceil(max_util) // + 1 means at
   // least one type is needed for non-config mode (dataflow mode)
 
   // ------ Create Hardware ------
 
   // Initialize the I/O port
-  val io = IO(new EnabledVecDecoupledIO(num_input, num_output,
-    num_config_bit + data_width))
+  val io = IO(new EnabledVecDecoupledIO(num_input, num_output, 1 + data_width))
 
   // --- Internal Logic (Wire and Register) ---
   // Enable
   private val enable = io.en
 
   // Decode the next configuration information
-  private val nxt_config_info_bits : UInt = io.input_ports(config_in_port_idx).bits
-  private val nxt_config_info_valid : Bool= io.input_ports(config_in_port_idx).valid
-  private val nxt_config_info = nxt_fu_config_info_wrapper(
+  val nxt_config_info_bits : UInt = io.input_ports(config_in_port_idx).bits
+  val nxt_config_info_valid : Bool= io.input_ports(config_in_port_idx).valid
+  val nxt_config_info = nxt_fu_config_info_wrapper(
     id, max_id,
     num_input, num_output, decomposer,flow_control,
     max_util, max_delay, data_width,
     instructions,
-    nxt_config_info_bits, nxt_config_info_valid)
+    RegNext(nxt_config_info_bits).suggestName("nxt_config_info_bits"),
+    RegNext(nxt_config_info_valid).suggestName("nxt_config_info_valid"))
 
   // Update the configuration information when reconfigured
-  private val config_file = RegInit(VecInit(Seq.fill(max_util)(0.U(nxt_config_info.num_conf_reg_bit.W))))
-  private val reconfig_detected : Bool =  enable && nxt_config_info.config_enable
-  private val reconfig_this : Bool = enable && nxt_config_info.config_this
-  private val dataflow_mode : Bool = enable && !reconfig_detected
-  private val reconfig_mode : Bool = enable && reconfig_detected
-  private val num_curr_util : UInt = nxt_config_info.curr_num_util
+  val config_file = RegInit(VecInit(Seq.fill(max_util)(0.U(nxt_config_info.num_conf_reg_bit.W))))
+  val reconfig_detected : Bool =  enable && nxt_config_info.config_enable
+  val reconfig_this : Bool = enable && nxt_config_info.config_this
+  val dataflow_mode : Bool = enable && !reconfig_detected
+  val reconfig_mode : Bool = enable && reconfig_detected
+  private val curr_config_util : UInt =
+    RegEnable(nxt_config_info.curr_num_util, 0.U, reconfig_this)
+      .suggestName("curr_util")
 
   // Select the current configuration by Round-Robin
   // create pointer
-  private val config_pointer : UInt = if(max_util > 1) {
+  val config_pointer : UInt = if(max_util > 1) {
     RegInit(0.U(log2Ceil(max_util).W))
   }else{
     0.U(1.W)
   }
 
   // select and parse the current config
-  private val curr_config = fu_stored_config_info_wrapper(
+  val curr_config = fu_stored_config_info_wrapper(
     num_input, num_output, decomposer,flow_control,max_delay,
     instructions,
     config_file(config_pointer))
@@ -191,7 +193,7 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
   if (max_util > 1){
     when(dataflow_mode){
       config_pointer :=
-        Mux(config_pointer === num_curr_util,0.U,config_pointer + 1.U)
+        Mux(config_pointer === curr_util,0.U,config_pointer + 1.U)
     }.elsewhen(reconfig_this){
       config_pointer := 0.U
     }
@@ -270,6 +272,7 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
   }
 
   // ------- Debug --------
+  /*
   when(reconfig_this){
     printf("----- RECONFIGURED MODE -----\n")
     printf(nxt_config_info.toPrintable)
@@ -296,6 +299,7 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
       printf(p"$idx : ${config_file(idx)}\n")
     }
   }
+  */
 
 
 }

@@ -108,8 +108,8 @@ class complex_alu(
   }
 
   // Debug
-  printf(p"ALU status : computing ? ${computing}, countdown = $latency_counter, " +
-    p"Opcode = $opcode, Result = $result\n")
+  // printf(p"ALU status : computing ? ${computing}, countdown = $latency_counter, " +
+  //  p"Opcode = $opcode, Result = $result\n")
 }
 
 object gen_complex_alu extends App{

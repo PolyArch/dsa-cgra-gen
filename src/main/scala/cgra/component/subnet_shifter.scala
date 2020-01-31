@@ -19,18 +19,20 @@ class subnet_shifter (decomposer:Int,granularity:Int)
     }
   )
 
+
+
   if(decomposer > 1){
     when(io.en){
       when(io.offset === 0.U){
         io.output_data := io.input_data
       }.otherwise{
         val mux_cycle_shift = for(offset <- 1 until decomposer) yield {
-          offset.U -> Cat(
+          offset.U -> Cat(// Notice that this is a left cyclic shift
             io.input_data(datawidth - 1 - offset * granularity,0),
             io.input_data(datawidth - 1,datawidth - offset * granularity)
           )
         }
-        io.output_data := MuxLookup(io.offset,0.U,mux_cycle_shift)
+        io.output_data := MuxLookup(io.offset,io.input_data,mux_cycle_shift)
       }
     }.otherwise{
       io.output_data := 0.U

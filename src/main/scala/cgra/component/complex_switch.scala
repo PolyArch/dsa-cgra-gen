@@ -57,7 +57,7 @@ class complex_switch(prop:mutable.Map[String,Any]) extends Module with IRPrintab
     id, max_id,
     num_input, num_output, decomposer,
     max_util, data_width,
-    nxt_config_info_bits, nxt_config_info_valid)
+    RegNext(nxt_config_info_bits), RegNext(nxt_config_info_valid))
 
   // Update the configuration information when reconfigured
   val config_file = RegInit(VecInit(Seq.fill(max_util)(0.U(nxt_config_info.num_conf_reg_bit.W))))
@@ -70,8 +70,9 @@ class complex_switch(prop:mutable.Map[String,Any]) extends Module with IRPrintab
     config_file(nxt_config_info.config_idx) :=
       nxt_config_info.config_reg_info
   }
-  val num_curr_util : UInt =
+  val curr_util : UInt =
     RegEnable(nxt_config_info.curr_num_util, 0.U, reconfig_this)
+  curr_util.suggestName("curr_util")
 
   // Select the configuration by Round-Robin
   val config_pointer : UInt = if(max_util > 1) {
@@ -82,7 +83,7 @@ class complex_switch(prop:mutable.Map[String,Any]) extends Module with IRPrintab
   if (max_util > 1){
     when(dataflow_mode){
       config_pointer :=
-        Mux(config_pointer === num_curr_util,0.U,config_pointer + 1.U)
+        Mux(config_pointer === curr_util,0.U,config_pointer + 1.U)
     }.elsewhen(reconfig_this){
       config_pointer := 0.U
     }
@@ -120,7 +121,7 @@ class complex_switch(prop:mutable.Map[String,Any]) extends Module with IRPrintab
   private val subnet_shifter = for(output_idx <- 0 until num_output)yield{
     val sub_shift = Module(new subnet_shifter(decomposer, granularity)).io
     sub_shift.en := dataflow_mode
-    sub_shift.offset := curr_config.offset_select(output_idx)
+    sub_shift.offset := RegNext(curr_config.offset_select(output_idx))
     sub_shift
   }
 
@@ -187,8 +188,8 @@ class complex_switch(prop:mutable.Map[String,Any]) extends Module with IRPrintab
         io.output_ports(output_idx).bits := 0.U
       }
     }.otherwise{
-      io.output_ports(output_idx).valid := RegNext(false.B)
-      io.output_ports(output_idx).bits := RegNext(0.U)
+      io.output_ports(output_idx).valid := false.B
+      io.output_ports(output_idx).bits := 0.U
     }
   }
 
@@ -199,8 +200,8 @@ class complex_switch(prop:mutable.Map[String,Any]) extends Module with IRPrintab
 
   //  ----- Debug -----
   when(reconfig_this){
-    printf(nxt_config_info.toPrintable)
-    print_config_file
+    //printf(nxt_config_info.toPrintable)
+    //print_config_file
   }
 
   def print_config_file = {

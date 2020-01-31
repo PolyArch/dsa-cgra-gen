@@ -38,10 +38,9 @@ object wrapper {
     val num_conf_reg_bit : Int = high_bit - curr_high_bit
     val config_reg_info : UInt = curr_config_info(high_bit, curr_high_bit + 1)
 
-    if(num_conf_reg_bit < curr_config_info.getWidth){
-      printf(p"config info bit : $num_conf_reg_bit used, " +
-        p"${curr_config_info.getWidth - num_conf_reg_bit} not used\n")
-    }
+    require(num_conf_reg_bit <= curr_config_info.getWidth,
+      s"You need $num_conf_reg_bit store the information of configuration, " +
+        s"but the space in one data packet is just ${curr_config_info.getWidth}")
 
     implicit def toPrintable: Printable = {
       val out_off_sel_print = for(out_idx <- 0 until num_output) yield {
@@ -125,11 +124,11 @@ object wrapper {
     private val num_operand_sel_bit : Int = log2Ceil(num_input + 1)
     // Add default ground input when select value is zero
     val operand_select : IndexedSeq[UInt] =
-      for(_ <- 0 until max_num_operand) yield {
+      for(op_idx <- 0 until max_num_operand) yield {
         val info = curr_config_info(curr_high_bit,
           curr_high_bit - num_operand_sel_bit + 1)
         curr_high_bit -= num_operand_sel_bit
-        info
+        info.suggestName(s"operand${op_idx}_source")
       }
 
     // Delay per operands select
@@ -173,10 +172,9 @@ object wrapper {
     val num_conf_reg_bit : Int = high_bit - curr_high_bit
     val config_reg_info : UInt = curr_config_info(high_bit, curr_high_bit + 1)
 
-    if(num_conf_reg_bit < curr_config_info.getWidth){
-      printf(p"config info bit : $num_conf_reg_bit used, " +
-        p"${curr_config_info.getWidth - num_conf_reg_bit} not used\n")
-    }
+    require(num_conf_reg_bit <= curr_config_info.getWidth,
+      s"You need $num_conf_reg_bit store the information of configuration, " +
+        s"but the space in one data packet is just ${curr_config_info.getWidth}")
 
     implicit def toPrintable: Printable = {
       val opcode2instruction = for(opcode_idx <- 0 until num_opcode) yield {
@@ -205,7 +203,7 @@ object wrapper {
                                         instructions : List[String],
                                         config_info: UInt, config_valid: Bool){
     private val num_instruction : Int = instructions.distinct.length
-    private val num_config_bit : Int = log2Ceil(max_util + 1)
+    private val num_config_bit : Int = log2Ceil(max_util)
     private var curr_high_bit : Int = data_width - 1
 
     // ------ Identifier Information ------
@@ -230,9 +228,9 @@ object wrapper {
     // Node ID
     require(num_node > 1)
     private val num_id_bit : Int = log2Ceil(num_node)
-    val node_id : UInt = config_info(curr_high_bit, curr_high_bit - num_id_bit + 1)
-    val config_enable : Bool = is_config && config_valid
-    val config_this : Bool = config_enable && node_id === id.U
+    val node_id : UInt = config_info(curr_high_bit, curr_high_bit - num_id_bit + 1).suggestName("node_id")
+    val config_enable : Bool = (is_config && config_valid).suggestName("config_enable")
+    val config_this : Bool = (config_enable && node_id === id.U).suggestName("config_this")
     curr_high_bit -= num_id_bit
 
     // ------ Stored Information ------

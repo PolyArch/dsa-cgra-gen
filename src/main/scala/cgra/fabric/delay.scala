@@ -47,7 +47,7 @@ class delay(data_width:Int,
         p"OUT: bits = ${io.out.bits}, valid = ${io.out.valid}, ready = ${io.out.ready}\n" +
         p"IN : bits = ${io.in.bits}, valid = ${io.in.valid}, ready = ${io.in.ready}\n" +
         p"enable = ${io.en}" +
-        p"---- queue ----\n"
+        p"---- polyar ----\n"
     }
   }else{// Delay Pipe
     io.in.ready := io.delay < max_delay.U
@@ -86,8 +86,10 @@ class delay(data_width:Int,
           p"---- pipe ----\n"
     }
   }
+
+  // Debug
   when(io.en){
-    printf(printable_message)
+    //printf(printable_message)
   }
 }
 
