@@ -47,11 +47,12 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
 
   // --- Internal Logic (Wire and Register) ---
   // Enable
-  private val enable = io.en
+  private val enable = RegNext(io.en)
 
   // Decode the next configuration information
   val nxt_config_info_bits : UInt = io.input_ports(config_in_port_idx).bits
   val nxt_config_info_valid : Bool= io.input_ports(config_in_port_idx).valid
+
   val nxt_config_info = nxt_fu_config_info_wrapper(
     id, max_id,
     num_input, num_output, decomposer,flow_control,
@@ -62,13 +63,12 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
 
   // Update the configuration information when reconfigured
   val config_file = RegInit(VecInit(Seq.fill(max_util)(0.U(nxt_config_info.num_conf_reg_bit.W))))
-  val reconfig_detected : Bool =  enable && nxt_config_info.config_enable
-  val reconfig_this : Bool = enable && nxt_config_info.config_this
-  val dataflow_mode : Bool = enable && !reconfig_detected
-  val reconfig_mode : Bool = enable && reconfig_detected
+  val reconfig_mode : Bool =  enable && nxt_config_info.config_enable
+  val reconfig_this : Bool = reconfig_mode && nxt_config_info.config_this
+  val dataflow_mode : Bool = enable && !reconfig_mode
   private val curr_config_util : UInt =
     RegEnable(nxt_config_info.curr_num_util, 0.U, reconfig_this)
-      .suggestName("curr_util")
+      .suggestName("curr_config_util")
 
   // Select the current configuration by Round-Robin
   // create pointer
@@ -85,30 +85,38 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
     config_file(config_pointer))
 
   // Create Operands Register (and its control protocol)
-  private val operands : Vec[UInt] = WireInit(VecInit(
+  val operands : Vec[UInt] = WireInit(VecInit(
     Seq.fill(num_operand)(0.U(data_width.W))
-  ))
-  private val operand_valid : Bool = WireInit(Bool(), false.B)
-  private val operand_ready : Bool = WireInit(Bool(), true.B)
+  )).suggestName("operands")
+  val operand_valid : Bool = WireInit(Bool(), false.B)
+    .suggestName("operand_valid")
+  val operand_ready : Bool = WireInit(Bool(), true.B)
+    .suggestName("operand_ready")
 
   // Create Result Register and shift it
-  private val result : UInt = WireInit(0.U(data_width.W))
-  private val shifted_result: UInt = WireInit(0.U(data_width.W))
-  private val result_valid : Bool = WireInit(Bool(), false.B)
-  private val result_ready : Bool = WireInit(Bool(), true.B)
+  val result : UInt = WireInit(0.U(data_width.W))
+    .suggestName("result")
+  val shifted_result: UInt = WireInit(0.U(data_width.W))
+    .suggestName("shifted_result")
+  val result_valid : Bool = WireInit(Bool(), false.B)
+    .suggestName("result_valid")
+  val result_ready : Bool = WireInit(Bool(), true.B)
+    .suggestName("result_ready")
 
   // ---------- Module create and connection ----------
 
   // Subnet Shifter
-  private val subnet_shifter = Module(new subnet_shifter(decomposer, granularity)).io
-  subnet_shifter.en := dataflow_mode
-  subnet_shifter.input_data := result
-  subnet_shifter.offset := curr_config.offset_select
+  private val subnet_shifter =
+      Module(new subnet_shifter(decomposer, granularity))
+  subnet_shifter.io.en := dataflow_mode
+  subnet_shifter.io.input_data := result
+  subnet_shifter.io.offset := curr_config.offset_select
   // Shifted Result
-  shifted_result := subnet_shifter.output_data
+  shifted_result := subnet_shifter.io.output_data
 
   // ALU
-  private val complex_alu = Module(new complex_alu(data_width, instructions))
+  private val complex_alu =
+    Module(new complex_alu(data_width, instructions))
   complex_alu.io.en := dataflow_mode
   complex_alu.io.opcode := curr_config.opcode
   val opcode2info = complex_alu.opcode2info
@@ -154,13 +162,17 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
     val op_select = curr_config.operand_select(op_idx)
     val lookup = (0 to num_input).map(src_idx => {
       val bits =
+        // The reason that we need `RegNext` here is source select is based on
+        // current config, which is register based
         if(src_idx > 0)
-          sources_dup(src_idx - 1).output_ports(op_idx).bits(data_width - 1, 0)
+          RegNext(sources_dup(src_idx - 1).output_ports(op_idx).bits(data_width - 1, 0))
         else
           0.U(data_width.W)
       val valid =
-        if(src_idx > 0) sources_dup(src_idx - 1).output_ports(op_idx).valid
-        else true.B // Ground Input is valid input
+        if(src_idx > 0)
+          RegNext(sources_dup(src_idx - 1).output_ports(op_idx).valid)
+        else
+          true.B // Ground Input is valid input
       src_idx.U -> (bits, valid)
     })
     val pipe = delay_pipes(op_idx)
@@ -193,7 +205,7 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
   if (max_util > 1){
     when(dataflow_mode){
       config_pointer :=
-        Mux(config_pointer === curr_util,0.U,config_pointer + 1.U)
+        Mux(config_pointer === curr_config_util,0.U,config_pointer + 1.U)
     }.elsewhen(reconfig_this){
       config_pointer := 0.U
     }

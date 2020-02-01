@@ -137,11 +137,11 @@ object wrapper {
     // support zero delay
     val delay_select : IndexedSeq[UInt] =
       if(!flow_control){
-        for(_ <- 0 until max_num_operand) yield {
+        for(op_idx <- 0 until max_num_operand) yield {
           val info = curr_config_info(curr_high_bit,
             curr_high_bit - num_delay_sel_bit + 1)
           curr_high_bit -= num_delay_sel_bit
-          info
+          info.suggestName(s"operand${op_idx}_delay")
         }
       }else{
         for(_ <- 0 until 1) yield {0.U}
@@ -153,12 +153,14 @@ object wrapper {
     // One more operation added for doing nothing
     val opcode : UInt = curr_config_info(curr_high_bit,
       curr_high_bit - num_opcode_bit + 1)
+      .suggestName("opcode")
     curr_high_bit -= num_opcode_bit
 
     // Offset select
     private val num_offset_bit : Int = log2Ceil(decomposer)
     val offset_select : UInt = curr_config_info(
       curr_high_bit, curr_high_bit - num_offset_bit + 1)
+      .suggestName("output_offset")
     curr_high_bit -= num_offset_bit
 
     // Output select
@@ -166,6 +168,7 @@ object wrapper {
     // One more output direction (broadcast to all output port)
     val output_select : UInt = curr_config_info(
       curr_high_bit,curr_high_bit - num_output_bit + 1)
+        .suggestName("output_select")
     curr_high_bit -= num_output_bit
 
     // Used Bit
@@ -214,6 +217,7 @@ object wrapper {
     // Configuration Status
     val config_idx : UInt =
       config_info(curr_high_bit, curr_high_bit - num_config_bit + 1)
+          .suggestName("config_index")
     curr_high_bit -= num_config_bit
 
     val curr_num_util : UInt =

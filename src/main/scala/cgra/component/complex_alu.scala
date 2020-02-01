@@ -20,7 +20,7 @@ class complex_alu(
       val en = Input(Bool())
 
       // Opcode
-      val opcode = Input(UInt({log2Ceil(num_operand + 1) max 1}.W))
+      val opcode = Input(UInt({log2Ceil(num_opcode + 1) max 1}.W))
 
       // Operand
       val operands = Input(Vec(num_operand, UInt(data_width.W)))
@@ -49,14 +49,18 @@ class complex_alu(
       (opcode =/= io.opcode)
 
   // Latency count down
-  private val latency_counter : UInt = RegInit(0.U({log2Ceil(max_latency) max 1}.W))
+  private val latency_counter : UInt =
+    RegInit(0.U({log2Ceil(max_latency) max 1}.W))
+      .suggestName("latency_countdown")
 
   // detect when is done
-  private val finished : Bool = latency_counter === 0.U
+  private val finished : Bool = (latency_counter === 0.U)
+    .suggestName("finished")
 
   // Computing
-  private val computing : Bool = io.en && operand_valid &&
-    (!input_changed) && (!finished)
+  private val computing : Bool = (io.en && operand_valid &&
+    (!input_changed) && (!finished))
+    .suggestName("computing")
 
   // Computed
   private val computed : Bool = !computing
@@ -81,7 +85,7 @@ class complex_alu(
         if(opcode > 0){
           val func = inst_operation(instruction)
           func(operands)
-        }else operands.head}
+        }else operands.head}.suggestName(s"alu_res_${instruction}")
 
       // Pass latency is 1
       val lat : UInt =
@@ -97,6 +101,7 @@ class complex_alu(
   val opcode2res = opcode2info.map(p=>p._1 -> p._2._1)
   val opcode2lat = opcode2info.map(p=>p._1 -> p._2._2)
   result := Mux(computed, MuxLookup(opcode, 0.U, opcode2res), 0.U)
+      .suggestName("alu_result")
 
   // FSM
   when(computing){

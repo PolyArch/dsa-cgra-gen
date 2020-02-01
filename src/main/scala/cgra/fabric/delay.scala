@@ -21,13 +21,21 @@ class delay(data_width:Int,
   val pipe : Vec[UInt]= if(flow_control) {
     RegInit(VecInit(Seq.fill(1)(0.U(1.W))))
   }else {
-    RegInit(VecInit(Seq.fill(max_delay)(0.U((data_width + 1).W))))
+    RegInit(VecInit(Seq.fill(max_delay + 1)(0.U((data_width + 1).W))))
   }
-  val head_ptr, tail_ptr = if(flow_control) {
+  // Head should be Register
+  val head_ptr = if(flow_control) {
     RegInit(0.U(1.W))
   }else {
-    RegInit(0.U({log2Ceil(max_delay) max 1}.W))
+    RegInit(0.U({log2Ceil(max_delay + 1) max 1}.W))
   }
+  // Tail is just a offset of head, so it should be wire
+  val tail_ptr = if(flow_control) {
+    WireInit(0.U(1.W))
+  }else {
+    WireInit(0.U({log2Ceil(max_delay + 1) max 1}.W))
+  }
+
 
   if(flow_control){// Delay FIFO
     // create fifo use internal lib
@@ -52,24 +60,25 @@ class delay(data_width:Int,
   }else{// Delay Pipe
     io.in.ready := io.delay < max_delay.U
     // ------ Logic connections ------
-    // read
-    io.out.bits := pipe(head_ptr)(data_width-1,0)
-    io.out.valid := pipe(head_ptr)(data_width)
+    // Bypass
+    val is_bypass : Bool = io.delay === 0.U
+    // read from tail
+    io.out.bits := Mux(is_bypass, io.in.bits, pipe(head_ptr)(data_width-1,0))
+    io.out.valid := Mux(is_bypass, io.in.valid, pipe(head_ptr)(data_width))
     when(io.en){ // Move forward
-
       // In
       pipe(tail_ptr) := Cat(io.in.valid,io.in.bits)
       // update the pointer
       val nxt_head_ptr = head_ptr + 1.U
-      val nxt_tail_ptr = head_ptr + 1.U + io.delay
-      head_ptr := Mux(head_ptr === (max_delay - 1).U,0.U,nxt_head_ptr)
-      tail_ptr := Mux(nxt_tail_ptr > (max_delay - 1).U,nxt_tail_ptr-max_delay.U,nxt_tail_ptr)
+      val nxt_tail_ptr = head_ptr + io.delay
+      head_ptr := Mux(head_ptr === max_delay.U,0.U,nxt_head_ptr)
+      tail_ptr := Mux(nxt_tail_ptr > max_delay.U,nxt_tail_ptr-(max_delay+1).U,nxt_tail_ptr)
     }.otherwise{ // flush the pipe when not enable (clean pipe when reconfigured)
       for(loc <- 0 until max_delay){
         pipe(loc) := 0.U
       }
       head_ptr := 0.U
-      tail_ptr := 0.U
+      tail_ptr := io.delay
     }
 
     printable_message = {

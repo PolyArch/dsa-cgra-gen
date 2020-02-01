@@ -20,7 +20,7 @@ object test_complex_fu extends App{
   val decomposer = data_width / granularity
   val num_input : Int = 3
   val num_output : Int = 2
-  val flow_control : Boolean = true
+  val flow_control : Boolean = false
   val max_util : Int = 4
   val max_delay : Int = 4
   val instructions : List[String] =
@@ -73,14 +73,19 @@ object test_complex_fu extends App{
     new complex_fu(prop = node)){
     dut => new PeekPokeTester[complex_fu](dut) {
       var cycle : Int = 0
-      val total_cycle = 10000
+      val total_cycle = 500
       var config_message : BigInt = 0;
-      // Enable this module
-      poke(dut.io.en, true)
 
       move(total_cycle)
 
       def feed_random_values : Boolean = {
+        // Turn off Module
+        if(cycle % 100 == 0)
+          poke(dut.io.en, false)
+        else
+          poke(dut.io.en, true)
+
+        // Generate Random Bits
         val input_values = for(input_idx <- 0 until num_input) yield {
           if(cycle % reconfig_every_num_cycle == 0 &&
             input_idx == config_in_port_idx)
@@ -98,6 +103,8 @@ object test_complex_fu extends App{
         val output_readys = for(_ <- 0 until num_output) yield {
             nextBoolean()
         }
+
+        // Invoke them @ Input ports
         for (input_idx <- 0 until num_input){
           poke(dut.io.input_ports(input_idx).valid,input_valids(input_idx))
           poke(dut.io.input_ports(input_idx).bits,input_values(input_idx))
@@ -129,6 +136,7 @@ object test_complex_fu extends App{
         // something that did every cycle
         // print_io
         feed_random_values
+
         if(cycle % (total_cycle / 50) == 0)
           println(s"Simulation Progress = ${100 * cycle / total_cycle.toDouble}%")
       }
@@ -167,8 +175,6 @@ object test_complex_fu extends App{
         (random_output, num_output_bit) |||
         ("1111111111111111111111111111111", num_tail_zero)
     }
-    //println("config message = " + config_message + ", b\'" +
-    //  fixLength(config_message.toString(2), num_bits))
     config_message
   }
 }
