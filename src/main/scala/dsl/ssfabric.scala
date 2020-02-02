@@ -243,7 +243,7 @@ class ssfabric extends IRPrintable {
         }
         apply(true_key, default_value)
       }
-      node("max_id", nodes.length - 1)
+      node("num_node", nodes.length - 1)
     }
     // final post process
     nodes.foreach(_.postprocess())

@@ -9,9 +9,8 @@ import scala.collection.mutable
 
 object CgraGen extends App{
   val readFile    : String = args(0) // "/home/sihao/ss-cgra-gen/IR/cgra_5x5_revel.yaml"
-  val output_dir  : String = args(1) // "verilog-output"
-  val is_build_configpath : Boolean = args(2).toBoolean // true
-  val is_gen : Boolean = args(3).toBoolean // false
+  val is_build_configpath : Boolean = args(1).toBoolean // true
+  val is_gen : Boolean = args(2).toBoolean // false
   // read IR
   val cgra : mutable.Map[String,Any] = readIR(readFile)
   // Pre-process
@@ -20,8 +19,8 @@ object CgraGen extends App{
   }
   // Generate CGRA
   if(is_gen){
-    instantiateCgra(output_dir,cgra)
+    instantiateCgra(args,cgra)
     val className = cgra("module_type").toString().split("\\.").reverse.head
-    mergeIRwithCgra(readFile,output_dir + "/" + className + ".v")
+    //mergeIRwithCgra(readFile,output_dir + "/" + className + ".v")
   }
 }

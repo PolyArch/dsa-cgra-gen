@@ -10,13 +10,14 @@ import scala.collection.mutable
 import scala.util.Random
 import wrapper._
 
-class complex_switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
+class complex_switch(prop:mutable.Map[String,Any]) extends Module
+  with IRPrintable{
   // Assign initial properties
   apply(prop)
 
   // Derived Parameters
   private val id = getValue(getPropByKey("id")).asInstanceOf[Int]
-  private val max_id = getPropByKey("max_id").asInstanceOf[Int]
+  private val num_node = getPropByKey("num_node").asInstanceOf[Int]
   private val data_width:Int = getPropByKey("data_width").asInstanceOf[Int]
   private val granularity = getPropByKey("granularity").asInstanceOf[Int]
   private val num_input:Int = getPropByKey("num_input").asInstanceOf[Int]
@@ -40,6 +41,8 @@ class complex_switch(prop:mutable.Map[String,Any]) extends Module with IRPrintab
     1
   }
 
+  this.suggestName(s"switch_id_${id}")
+
   // ------ Create Hardware ------
 
   // Initialize the I/O port
@@ -54,7 +57,7 @@ class complex_switch(prop:mutable.Map[String,Any]) extends Module with IRPrintab
   private val nxt_config_info_bits : UInt = io.input_ports(config_in_port_idx).bits
   private val nxt_config_info_valid : Bool= io.input_ports(config_in_port_idx).valid
   private val nxt_config_info = nxt_switch_config_info_wrapper(
-    id, max_id,
+    id, num_node,
     num_input, num_output, decomposer,
     max_util, data_width,
     RegNext(nxt_config_info_bits), RegNext(nxt_config_info_valid))
@@ -112,7 +115,11 @@ class complex_switch(prop:mutable.Map[String,Any]) extends Module with IRPrintab
   private val buffers = for(_ <- 0 until num_output) yield {
     val buff = Module(new delay(data_width, max_delay, flow_control)).io
     buff.en := dataflow_mode
-    buff.delay := 1.U(1.W)
+    if(flow_control){
+      buff.delay := DontCare
+    }else{
+      buff.delay := 0.U
+    }
     buff
   }
 
@@ -174,9 +181,11 @@ class complex_switch(prop:mutable.Map[String,Any]) extends Module with IRPrintab
     // State Machine
     when(dataflow_mode){
       // Valid
-      io.output_ports(output_idx).valid := buffers(output_idx).out.valid
+      io.output_ports(output_idx).valid :=
+        RegNext(buffers(output_idx).out.valid)
       // Bits
-      io.output_ports(output_idx).bits := subnet_shifter(output_idx).output_data
+      io.output_ports(output_idx).bits :=
+        RegNext(subnet_shifter(output_idx).output_data)
     }.elsewhen(reconfig_mode){
       // pass value to downstream
       if(config_out_port_idx.contains(output_idx)){
@@ -217,7 +226,7 @@ object gen_comp_switch extends App{
   // Config switch
   val node = mutable.Map[String, Any]()
   val id : Int = 13
-  val max_id : Int = 59
+  val num_node : Int = 59
   val data_width : Int = 64
   val granularity : Int = 16
   val decomposer = data_width / granularity
@@ -228,7 +237,7 @@ object gen_comp_switch extends App{
   val max_delay : Int = 4
 
   node("id") = id
-  node("max_id") = max_id
+  node("num_node") = num_node
   node("data_width") = data_width
   node("granularity") = granularity
   node("num_input") = num_input

@@ -17,7 +17,7 @@ class cgra_fabric(prop:mutable.Map[String, Any]) extends Module
   // Extract External Parameter
   private val data_width = 1 + 64//getPropByKey("data_width").asInstanceOf[Int]
   private val nodes = getPropByKey("nodes").asInstanceOf[List[mutable.Map[String,Any]]]
-  private val links = getPropByKey("links").asInstanceOf[List[mutable.Map[String,List[Any]]]]
+  private val links = getPropByKey("links").asInstanceOf[List[mutable.Map[String,Any]]]
 
   // Derived Parameter
   // Calculate config width for Nodes who need config input
@@ -39,13 +39,14 @@ class cgra_fabric(prop:mutable.Map[String, Any]) extends Module
 
   // ------ Pre-process ------
   for (node <- nodes){
-    node += "max_id" -> nodes.size
+    node += "num_node" -> nodes.size
   }
 
   // ------ Create Hardware ------
 
   // Create the I/O port
   val io = IO(new Bundle{
+    val cgra_enable = Input(Bool())
     val input_ports = MixedVec(input_vps.map(vp=>{
       Flipped(DecoupledIO(UInt( (vp._2 * data_width).W )))
     }))
@@ -59,11 +60,15 @@ class cgra_fabric(prop:mutable.Map[String, Any]) extends Module
   val nodes_module : Map[Int,EnabledVecDecoupledIO]= nodes.map(node => {
     val node_id = node("id").asInstanceOf[Int]
     val nodeType = node("nodeType").toString
-    node_id -> (nodeType match {
-      case "switch" => Module(new complex_switch(node)).io
-      case "function unit" => Module(new complex_fu(node)).io
-      case "vector port" => Module(new vector_port(node)).io
-    })
+    node_id -> {
+      val node_module = nodeType match {
+        case "switch" => Module(new complex_switch(node)).io
+        case "function unit" => Module(new complex_fu(node)).io
+        case "vector port" => Module(new vector_port(node)).io
+      }
+      node_module.en := io.cgra_enable
+      node_module
+    }
   }).toMap
 
   // Connect Everything Up
@@ -71,64 +76,13 @@ class cgra_fabric(prop:mutable.Map[String, Any]) extends Module
   var sink_port_idx : Int = -1
   for (link <- links){
     println(link)
-    val source_id = link("source").head.asInstanceOf[Int]
-    val sink_id = link("sink").head.asInstanceOf[Int]
-    var source_port_idx_seq : Seq[Seq[Any]] = null
-    var sink_port_idx_seq : Seq[Seq[Any]]= null
-    // find the source port index
-    for (node <- nodes){
-      if(node("id") == source_id){
-        for(node_sink <- nodes){
-          if(node_sink("id") == sink_id){
-            val source_output_nodes = node("output_nodes").asInstanceOf[Seq[Seq[Any]]]
-            val sink_input_nodes = node_sink("input_nodes").asInstanceOf[Seq[Seq[Any]]]
+    val source_id = link("source").asInstanceOf[List[Int]].head
+    val sink_id = link("sink").asInstanceOf[List[Int]].head
+    val source_out_idx : Int = link("source_out_idx").asInstanceOf[Int]
+    val sink_in_idx : Int = link("sink_in_idx").asInstanceOf[Int]
 
-            source_port_idx_seq = source_output_nodes.filter(x=>{x.head.toString.toInt == sink_id})
-            sink_port_idx_seq = sink_input_nodes.filter(y=>{y.head.toString.toInt == source_id})
-            source_port_idx = source_output_nodes.indexWhere(x=>{x.head.toString.toInt == sink_id})
-            sink_port_idx = sink_input_nodes.indexWhere(y=>{y.head.toString.toInt == source_id})
-            if(source_port_idx_seq.length > 1){
-              println(source_port_idx_seq)
-              require(false)
-              println("same nodes double link here")
-            }
-            if(sink_port_idx_seq.length > 1){
-              println(sink_port_idx_seq)
-              require(false)
-              println("same nodes double link here")
-            }
-            println("source port index = " + source_port_idx)
-            println("sink port index = " + sink_port_idx)
-          }
-        }
-      }
-    }
-
-    require(source_port_idx_seq.length == sink_port_idx_seq.length)
-
-    for ( idx <- 0 until source_port_idx_seq.length){
-      val source_port_idx = source_port_idx_seq(idx).head.toString.toInt
-      val sink_port_idx = sink_port_idx_seq(idx).head.toString.toInt
-      val sink_bw = nodes_module(sink_id).input_ports(sink_port_idx).bits.getWidth
-      val source_bw = nodes_module(source_id).output_ports(source_port_idx).bits.getWidth
-
-      if(source_bw <= sink_bw){
-        nodes_module(sink_id).input_ports(sink_port_idx) <>
-          nodes_module(source_id).output_ports(source_port_idx)
-      }else {
-        // Valid & Ready
-        nodes_module(sink_id).input_ports(sink_port_idx).valid :=
-          nodes_module(source_id).output_ports(source_port_idx).valid
-        nodes_module(source_id).output_ports(source_port_idx).ready :=
-          nodes_module(sink_id).input_ports(sink_port_idx).ready
-        // Bits
-        val source_bits = nodes_module(source_id).output_ports(source_port_idx).bits
-        val source_config_bits = source_bits(source_bw - 1)
-        val source_info_bits = source_bits(sink_bw - 2, 0)
-        nodes_module(sink_id).input_ports(sink_port_idx).bits :=
-          Cat(source_config_bits, source_info_bits)
-      }
-    }
+    nodes_module(sink_id).input_ports(sink_in_idx) <>
+      nodes_module(source_id).output_ports(source_out_idx)
   }
 
   // Connect the Config Port

@@ -57,7 +57,7 @@ object wrapper {
                                             max_util: Int,
                                             data_width: Int,
                                             config_info: UInt, config_valid: Bool){
-    private val num_config_type_bit : Int = log2Ceil(max_util + 1)
+    private val num_config_index_bit : Int = log2Ceil(max_util)
     private var curr_high_bit : Int = data_width - 1
 
     // ------ Identifier Information ------
@@ -65,17 +65,20 @@ object wrapper {
     // Is Config Information
     val is_config : Bool = config_info(data_width)
 
-
-    // Configuration Status
+    // Configuration Index
     val config_idx : UInt =
-      config_info(curr_high_bit, curr_high_bit - num_config_type_bit + 1)
-    curr_high_bit -= num_config_type_bit
+      if(max_util > 1) {
+        curr_high_bit -= num_config_index_bit
+        config_info(curr_high_bit, curr_high_bit - num_config_index_bit + 1)
+          .suggestName("config_index")
+      }else{
+        0.U(1.W)
+      }
 
     val curr_num_util : UInt =
       if (max_util > 1){
-        val curr_util = config_info(curr_high_bit, curr_high_bit - num_config_type_bit + 1)
-        curr_high_bit -= num_config_type_bit
-        curr_util
+        curr_high_bit -= num_config_index_bit
+        config_info(curr_high_bit, curr_high_bit - num_config_index_bit + 1)
       }else{
         0.U(1.W)
       }
@@ -158,10 +161,14 @@ object wrapper {
 
     // Offset select
     private val num_offset_bit : Int = log2Ceil(decomposer)
-    val offset_select : UInt = curr_config_info(
-      curr_high_bit, curr_high_bit - num_offset_bit + 1)
-      .suggestName("output_offset")
-    curr_high_bit -= num_offset_bit
+    val offset_select : UInt =
+      if(decomposer > 1){
+        curr_high_bit -= num_offset_bit
+        curr_config_info(curr_high_bit, curr_high_bit - num_offset_bit + 1)
+          .suggestName("output_offset")
+      }else{
+        0.U(1.W)
+      }
 
     // Output select
     private val num_output_bit : Int = log2Ceil(num_output + 1)
@@ -205,8 +212,7 @@ object wrapper {
                                         data_width: Int,
                                         instructions : List[String],
                                         config_info: UInt, config_valid: Bool){
-    private val num_instruction : Int = instructions.distinct.length
-    private val num_config_bit : Int = log2Ceil(max_util)
+    private val num_config_index_bit : Int = log2Ceil(max_util)
     private var curr_high_bit : Int = data_width - 1
 
     // ------ Identifier Information ------
@@ -214,17 +220,21 @@ object wrapper {
     // Is Config
     val is_config : Bool = config_info(data_width)
 
-    // Configuration Status
+    // Configuration Index
     val config_idx : UInt =
-      config_info(curr_high_bit, curr_high_bit - num_config_bit + 1)
+      if(max_util > 1) {
+        curr_high_bit -= num_config_index_bit
+        config_info(curr_high_bit, curr_high_bit - num_config_index_bit + 1)
           .suggestName("config_index")
-    curr_high_bit -= num_config_bit
+      }else{
+        0.U(1.W)
+      }
 
     val curr_num_util : UInt =
       if (max_util > 1){
-        val info = config_info(curr_high_bit, curr_high_bit - num_config_bit + 1)
-        curr_high_bit -= num_config_bit
-        info
+        curr_high_bit -= num_config_index_bit
+        config_info(curr_high_bit, curr_high_bit - num_config_index_bit + 1)
+          .suggestName("curr_util")
       }else{
         0.U(1.W)
       }

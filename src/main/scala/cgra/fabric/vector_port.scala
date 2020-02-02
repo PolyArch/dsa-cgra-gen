@@ -23,6 +23,7 @@ class vector_port(prop:mutable.Map[String,Any])
   private val num_port = num_input max num_output
   private val flow_control : Boolean = getPropByKey("flow_control")
     .asInstanceOf[Boolean]
+  /*
   private val input_nodes = getPropByKey("input_nodes").asInstanceOf[Seq[Any]]
   private val output_nodes = getPropByKey("output_nodes").asInstanceOf[Seq[Any]]
   if(input_nodes.length < num_input){
@@ -31,6 +32,7 @@ class vector_port(prop:mutable.Map[String,Any])
   if(output_nodes.length < num_output){
     num_output = output_nodes.length
   }
+   */
 
   // Derived Parameter
   val config_width = num_port * log2Ceil(num_port)
@@ -47,7 +49,7 @@ class vector_port(prop:mutable.Map[String,Any])
   prop += "out_data_width"-> Seq.fill(num_port)(data_width + 1)
 
   // ------ Logic Connections
-  if(true){ // vector port need to be flow controlled all the time
+  if(flow_control){ // vector port need to be flow controlled all the time
     val xbar = Module(new crossbar_flow_control(prop)).io
     if(num_port > 1){
       xbar.config := config_bits
@@ -59,7 +61,7 @@ class vector_port(prop:mutable.Map[String,Any])
       xbar.ins(idx) <> io.input_ports(idx)
       io.output_ports(idx) <> xbar.outs(idx)
     }
-  }else{
+  }else if(!flow_control){
     val xbar = Module(new crossbar(prop)).io
     if(num_port > 1){
       xbar.config := config_bits

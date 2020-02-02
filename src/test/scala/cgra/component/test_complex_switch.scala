@@ -12,7 +12,7 @@ object test_complex_switch extends App{
   // Config switch
   val node = mutable.Map[String, Any]()
   val id : Int = nextInt(100)
-  val max_id : Int = 100
+  val num_node : Int = 100
   val data_width : Int = 64
   val granularity : Int = 16
   val decomposer = data_width / granularity
@@ -24,7 +24,7 @@ object test_complex_switch extends App{
   val config_input_port = nextInt(num_input)
 
   node("id") = id
-  node("max_id") = max_id
+  node("num_node") = num_node
   node("data_width") = data_width
   node("granularity") = granularity
   node("num_input") = num_input
@@ -41,7 +41,7 @@ object test_complex_switch extends App{
   // Calculate the internal parameter
   private val num_bits = data_width + 1
   private val num_config_bit = log2Ceil(max_util)
-  private val num_id_bit = log2Ceil(max_id)
+  private val num_id_bit = log2Ceil(num_node)
   private val num_source_sel_bit = log2Ceil(num_input + 1)
   private val num_offset_bit = log2Ceil(decomposer)
   private val num_tail_zero = num_bits - 1 -
@@ -76,7 +76,7 @@ object test_complex_switch extends App{
           // config_type(config location), curr_util, id
           val config_idx = nextInt(max_util)
           val curr_util = nextInt(max_util)
-          val curr_id = nextInt(max_id)
+          val curr_id = nextInt(num_node)
           BigInt(1) |||
             (config_idx, num_config_bit) ||| (curr_util,num_config_bit) |||
             (id, num_id_bit) |*|

@@ -58,7 +58,7 @@ class delay(data_width:Int,
         p"---- polyar ----\n"
     }
   }else{// Delay Pipe
-    io.in.ready := io.delay < max_delay.U
+    io.in.ready := true.B
     // ------ Logic connections ------
     // Bypass
     val is_bypass : Bool = io.delay === 0.U

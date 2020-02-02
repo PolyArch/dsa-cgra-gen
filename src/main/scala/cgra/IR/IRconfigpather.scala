@@ -64,9 +64,19 @@ class IRconfigpather{
           temp_conf_out += output_conf_port_idx
           // Add input conf id -> port idx
           val input_conf_port_idx = ssnodeMap(output_id)("input_nodes")
-            .asInstanceOf[List[List[Any]]].indexWhere(ids=>ids.head.toString == node_id)
+            .asInstanceOf[List[List[Any]]]
+            .indexWhere(ids=>ids.head.toString == node_id)
           ssnodeMap(output_id) += "config_in_port_idx" -> input_conf_port_idx
         }
+        // Add config port index to those module that connect to vector port
+        val input_nodes = node_prop("input_nodes")
+            .asInstanceOf[List[List[Any]]]
+        if(input_nodes.exists(ids=>ids.contains("vector port"))){
+          val config_in_port_idx : Int =
+            input_nodes.indexWhere(ids => ids.contains("vector port"))
+          node_prop += "config_in_port_idx" -> config_in_port_idx
+        }
+
         node_prop += "config_out_port_idx" -> temp_conf_out.toList
       }
     }

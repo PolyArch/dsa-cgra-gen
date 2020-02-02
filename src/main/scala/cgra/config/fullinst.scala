@@ -260,7 +260,10 @@ object fullinst {
     // ------ Data Width Insensitive Instructions ------
     "Add"      -> ((ops:Seq[UInt]) => ops.head  + ops(1)),
     "Sub"      -> ((ops:Seq[UInt]) => ops.head  - ops(1)),
-    "Mul"      -> ((ops:Seq[UInt]) => ops.head  * ops(1)),
+    "Mul"      -> ((ops:Seq[UInt]) => {
+      val mul = (ops.head  * ops(1)).suggestName("INST_MUL")
+      mul
+    }),
     "Div"      -> ((ops:Seq[UInt]) => ops.head  / ops(1)),
     "BOr"      -> ((ops:Seq[UInt]) => ops.head  | ops(1)),
     "BAnd"     -> ((ops:Seq[UInt]) => ops.head  & ops(1)),

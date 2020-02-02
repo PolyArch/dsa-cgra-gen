@@ -214,8 +214,8 @@ DupHigh32               64           1              1              1           1
 ConcatLow32             64           1              1              1           1            
                                                                                             
                                                                                             
-FAdd64                  64           2              1              1           1            
-FSub64                  64           2              1              1           1            
+FAdd64                  64           2              1              5           1
+FSub64                  64           2              1              6           1
 FMul64                  64           2              1              2           1            
 FDiv64                  64           2              1              12          1            
 Sqrt64                  64           1              1              12          1            

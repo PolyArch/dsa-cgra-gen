@@ -16,7 +16,7 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
 
   // Derived Parameters
   private val id = getValue(getPropByKey("id")).asInstanceOf[Int]
-  private val max_id = getPropByKey("max_id").asInstanceOf[Int]
+  private val num_node = getPropByKey("num_node").asInstanceOf[Int]
   private val data_width:Int = getPropByKey("data_width").asInstanceOf[Int]
   private val granularity = getPropByKey("granularity").asInstanceOf[Int]
   private val num_input:Int = getPropByKey("num_input").asInstanceOf[Int]
@@ -24,7 +24,7 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
   private val flow_control:Boolean = getPropByKey("flow_control").asInstanceOf[Boolean]
   private val max_delay : Int = getPropByKey("max_delay").asInstanceOf[Int]
   private val max_util:Int = getPropByKey("max_util").asInstanceOf[Int]
-  require(max_util > 0, "Switch must have utility greater than zero")
+  require(max_util > 0, "FU must have utility greater than zero")
   private val decomposer:Int = data_width / granularity
   private val config_in_port_idx:Int = getPropByKey("config_in_port_idx")
     .asInstanceOf[Int]
@@ -33,6 +33,8 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
     else{getPropByKey("config_out_port_idx").asInstanceOf[List[Int]]}
   private val instructions : List[String] =
     getPropByKey("instructions").asInstanceOf[List[String]]
+
+  this.suggestName(s"function_unit_id_${id}")
 
   // Internal Defined Parameter
   private val num_opcode : Int = instructions.distinct.length + 1 // Default Pass
@@ -54,7 +56,7 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
   val nxt_config_info_valid : Bool= io.input_ports(config_in_port_idx).valid
 
   val nxt_config_info = nxt_fu_config_info_wrapper(
-    id, max_id,
+    id, num_node,
     num_input, num_output, decomposer,flow_control,
     max_util, max_delay, data_width,
     instructions,
@@ -139,7 +141,7 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
     }else{
       DontCare
     })
-    pipe.io.out.ready := operand_ready && operand_valid
+    pipe.io.out.ready := operand_ready
     pipe
   }
 
@@ -321,7 +323,7 @@ object gen_comp_fu extends App{
   // Config switch
   val node = mutable.Map[String, Any]()
   val id : Int = 13
-  val max_id : Int = 59
+  val num_node : Int = 59
   val data_width : Int = 64
   val granularity : Int = 16
   val decomposer = data_width / granularity
@@ -333,7 +335,7 @@ object gen_comp_fu extends App{
   val instructions : List[String] = List("Add","Mul")
 
   node("id") = id
-  node("max_id") = max_id
+  node("num_node") = num_node
   node("data_width") = data_width
   node("granularity") = granularity
   node("num_input") = num_input

@@ -15,7 +15,7 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
 
   // Initialize the properties of switch (hardware)
   private val id = getValue(getPropByKey("id")).asInstanceOf[Int]
-  private val max_id = getPropByKey("max_id").asInstanceOf[Int]
+  private val num_node = getPropByKey("num_node").asInstanceOf[Int]
   private val data_width:Int = getPropByKey("data_width").asInstanceOf[Int]
   private val granularity = getPropByKey("granularity").asInstanceOf[Int]
   private var num_input:Int = getPropByKey("num_input").asInstanceOf[Int]
@@ -82,7 +82,7 @@ class switch(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
   // Calculate the ID field in incoming config bits
   private val id_field_high = data_width - 1
   apply("id_field_high", id_field_high)
-  private val id_field_low = id_field_high - log2Ceil(max_id + 1) + 1
+  private val id_field_low = id_field_high - log2Ceil(num_node + 1) + 1
   apply("id_field_low", id_field_low)
 
   // Calculate the bit range of configuration

@@ -5,8 +5,7 @@ import chisel3.RawModule
 import scala.collection.mutable
 
 object IRinstantiator {
-  def instantiateCgra (outputDir:String,cgra:mutable.Map[String,Any])={
-    val args = Array("--target-dir",outputDir)
+  def instantiateCgra (args:Array[String],cgra:mutable.Map[String,Any])={
     val module_type = cgra("module_type").toString
     chisel3.Driver.execute(args,()=>{
       val c = Class.forName(module_type)

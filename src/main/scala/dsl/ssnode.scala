@@ -95,12 +95,15 @@ class ssnode(nodeType:String) extends IRPrintable {
     val link = new sslink
     val out_link_idx : Int = this.add_sink(that)
     val in_link_idx : Int = that.add_source(this)
-    val source_info = this.getPropByKeys(identifier.keys.toList) :+ out_link_idx
-    val sink_info = that.getPropByKeys(identifier.keys.toSeq) :+ in_link_idx
+    val source_info = this.getPropByKeys(identifier.keys.toList)
+    val sink_info = that.getPropByKeys(identifier.keys.toSeq)
     link(this,that)
     this.add_sink(link)
     that.add_source(link)
-    link("source",source_info)("sink",sink_info)
+    link("source",source_info)(
+      "sink",sink_info)(
+      "source_out_idx", out_link_idx)(
+      "sink_in_idx", in_link_idx)
     link
   }
   def --> (that:ssnode, kvpairs:(String,Any)*):sslink = {

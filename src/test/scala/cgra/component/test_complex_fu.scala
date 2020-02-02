@@ -14,7 +14,7 @@ object test_complex_fu extends App{
   // Config fu
   val node = mutable.Map[String, Any]()
   val id : Int = 13
-  val max_id : Int = 59
+  val num_node : Int = 59
   val data_width : Int = 64
   val granularity : Int = 16
   val decomposer = data_width / granularity
@@ -31,7 +31,7 @@ object test_complex_fu extends App{
   val config_out_port_idx = List(0)
 
   node("id") = id
-  node("max_id") = max_id
+  node("num_node") = num_node
   node("data_width") = data_width
   node("granularity") = granularity
   node("num_input") = num_input
@@ -50,7 +50,7 @@ object test_complex_fu extends App{
   private val num_bits = data_width + 1 // One more for config control bit
   private val num_config_index_bit = log2Ceil(max_util)
   private val num_curr_util_bit = log2Ceil(max_util)
-  private val num_id_bit = log2Ceil(max_id)
+  private val num_id_bit = log2Ceil(num_node)
   private val num_opcode : Int = instructions.distinct.length
   private val max_num_operand : Int =
     instructions.map(insts_prop(_).numOperands) max
@@ -73,7 +73,7 @@ object test_complex_fu extends App{
     new complex_fu(prop = node)){
     dut => new PeekPokeTester[complex_fu](dut) {
       var cycle : Int = 0
-      val total_cycle = 500
+      val total_cycle = 5000
       var config_message : BigInt = 0;
 
       move(total_cycle)
@@ -135,7 +135,8 @@ object test_complex_fu extends App{
         step(1); cycle = cycle + 1
         // something that did every cycle
         // print_io
-        feed_random_values
+        if(cycle % 15 == 0)
+          feed_random_values
 
         if(cycle % (total_cycle / 50) == 0)
           println(s"Simulation Progress = ${100 * cycle / total_cycle.toDouble}%")
@@ -158,10 +159,10 @@ object test_complex_fu extends App{
   def generate_random_config_message = {
     // Construct config message
     val config_message = {
-      val curr_util = nextInt(max_util)
-      val config_index = nextInt(curr_util + 1)
+      val curr_util = 0//nextInt(max_util)
+      val config_index = 0//nextInt(curr_util + 1)
       val random_id_offset = nextInt(5) - 3
-      val random_opcode = nextInt(num_opcode + 1)
+      val random_opcode = 10// nextInt(num_opcode + 1)
       val random_decomposer = nextInt(decomposer)
       val random_output = nextInt(num_output + 1)
 

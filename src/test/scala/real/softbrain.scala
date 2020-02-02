@@ -8,15 +8,14 @@ object softbrain extends App {
 
   // Define Default Switch
   val sw_default = new ssnode("switch")
-  sw_default(
-    "subnet_offset", List(0))(
-    "switch_mode", "group-by-port")
 
   // Define General Function Unit
   val fu_general = new ssnode("function unit")
   fu_general(
-    "instructions", List("Add", "Sub", "Mul"))(
-    "max_delay_fifo_depth", 4)
+    "instructions", List("Add", "Sub", "Mul", "Div",
+      "BOr", "BAnd", "BXor", "BNot",
+      "FMul64", "FAdd64"))(
+    "max_delay", 4)
 
   // Define SPU
   val softbrain = new ssfabric
