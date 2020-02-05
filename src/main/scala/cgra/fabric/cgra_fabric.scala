@@ -15,7 +15,7 @@ class cgra_fabric(prop:mutable.Map[String, Any]) extends Module
   apply(prop)
 
   // Extract External Parameter
-  private val data_width = 1 + 64//getPropByKey("data_width").asInstanceOf[Int]
+  private val data_width = 1 + getPropByKey("default_data_width").asInstanceOf[Int]
   private val nodes = getPropByKey("nodes").asInstanceOf[List[mutable.Map[String,Any]]]
   private val links = getPropByKey("links").asInstanceOf[List[mutable.Map[String,Any]]]
 
@@ -53,7 +53,7 @@ class cgra_fabric(prop:mutable.Map[String, Any]) extends Module
     val output_ports = MixedVec(output_vps.map(vp=>{
       DecoupledIO(UInt( (vp._2 * data_width).W ))
     }))
-    val config = MixedVec(vps_config_width.map(w=>Flipped(ValidIO(UInt(w.W)))))
+    val vp_config = MixedVec(vps_config_width.map(w=>Flipped(ValidIO(UInt(w.W)))))
   })
 
   // Create the Module
@@ -90,7 +90,7 @@ class cgra_fabric(prop:mutable.Map[String, Any]) extends Module
     val id = id2conf._1
     val vp_idx = id2vp_info.indexOf(id2conf)
     val vector_port = nodes_module(id).asInstanceOf[VecDecoupledIO_conf]
-    vector_port.config <> io.config(vp_idx)
+    vector_port.config <> io.vp_config(vp_idx)
   }
 
   // Connect the IO
@@ -129,9 +129,7 @@ class cgra_fabric(prop:mutable.Map[String, Any]) extends Module
     io.output_ports(vec_idx).valid :=
       VecInit(vp_module.output_ports.map(_.valid)).asUInt().orR()
   }
-
-
-  override def postprocess(): Unit = print(this)
+  override def postprocess(): Unit = {}
 }
 
 import cgra.IR.IRreader.readIR

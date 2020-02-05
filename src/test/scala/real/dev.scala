@@ -76,15 +76,15 @@ object dev extends App{
   }
 
   // Specify the Input Node and Output Node (in Grid)
-  val first_row_switch = dev("row_idx","nodeType")(0,"switch")
-  val last_row_switch = dev("row_idx","nodeType")(4,"switch")
-  val left_column_switch = dev("col_idx","nodeType")(0,"switch")
-  val right_column_switch = dev("col_idx","nodeType")(4,"switch")
+  val first_row_switch = dev.filter("row_idx","nodeType")(0,"switch")
+  val last_row_switch = dev.filter("row_idx","nodeType")(4,"switch")
+  val left_column_switch = dev.filter("col_idx","nodeType")(0,"switch")
+  val right_column_switch = dev.filter("col_idx","nodeType")(4,"switch")
 
   // Make switches have different flow control
   right_column_switch.foreach(s=>s("flow_control", false)("switch_mode","group-by-port"))
 
-  val third_row_switch = dev("row_idx","nodeType")(2,"switch")
+  val third_row_switch = dev.filter("row_idx","nodeType")(2,"switch")
   third_row_switch.foreach(s=>s("max_util", 5)("switch_mode","group-by-port"))
 
   // Connect the Vector Port

@@ -123,6 +123,8 @@ trait IRPrintable {
     }
   }
   // to File
+  def printfile() : Unit =
+    printfile("IR/" + getPropByKey("name").toString)
   def printfile(filename:String):Unit=
     printfile(filename,"json","yaml")
   def printfile(filename:String,formats:String*):Unit={
@@ -143,15 +145,3 @@ trait IRPrintable {
     }
   }
 }
-
-abstract class GeneralNodePorts extends Bundle{
-  val input_ports : Vec[ReqAckConf_if]
-  val output_ports : Vec[ReqAckConf_if]
-}
-
-/*
-class GeneralPort extends GeneralNodePorts{
-  override val input_ports: Vec[ReqAckConf_if] =
-}
-
- */

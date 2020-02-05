@@ -48,8 +48,8 @@ object spu extends App{
   val out_vport = new ssnode("vector port")
 
   // Connect IO
-  spu(in_vport |=> spu("row_idx","nodeType")(0,"switch"))
-  spu(out_vport <=| spu("row_idx","nodeType")(5,"switch"))
+  spu(in_vport |=> spu.filter("row_idx","nodeType")(0,"switch"))
+  spu(out_vport <=| spu.filter("row_idx","nodeType")(5,"switch"))
 
   // Print
   spu.printfile("IR/spu")

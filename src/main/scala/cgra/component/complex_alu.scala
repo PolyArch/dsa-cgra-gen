@@ -20,7 +20,7 @@ class complex_alu(
       val en = Input(Bool())
 
       // Opcode
-      val opcode = Input(UInt({log2Ceil(num_opcode + 1) max 1}.W))
+      val opcode = Input(UInt({log2Ceil(num_opcode) max 1}.W))
 
       // Operand
       val operands = Input(Vec(num_operand, UInt(data_width.W)))
@@ -78,24 +78,19 @@ class complex_alu(
 
   // Opcode
   val opcode2info : IndexedSeq[(UInt,(UInt,UInt,Int))] =
-    (0 to num_opcode).map(opcode => {
+    (0 until num_opcode).map(opcode => {
       // Select instruction
       val instruction : String =
-        if(opcode > 0) instructions(opcode - 1) else{"Pass"}
+        instructions(opcode)
 
       // opcode zero is left for pass
-      val res : UInt = {
-        if(opcode > 0){
-          val func = inst_operation(instruction)
-          func(operands)
-        }else operands.head}.suggestName(s"alu_res_${instruction}")
+      val res : UInt = inst_operation(instruction)(operands)
+        .suggestName(s"alu_res_${instruction}")
 
       // Pass latency is 1
-      val lat : UInt =
-        if(opcode > 0) insts_prop(instruction).latency.U else 1.U
+      val lat : UInt = insts_prop(instruction).latency.U
 
-      val num : Int =
-        if (opcode > 0) insts_prop(instruction).numOperands else 1
+      val num : Int = insts_prop(instruction).numOperands
 
       opcode.U -> (res(data_width - 1, 0), lat, num)
     })

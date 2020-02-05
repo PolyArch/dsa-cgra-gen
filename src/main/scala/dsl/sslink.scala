@@ -8,16 +8,8 @@ class sslink extends IRPrintable{
   def * (duplicate_time:Int) = {
     for (i <- 0 until duplicate_time) yield source_node --> sink_node
   }
-  def postprocess():Unit={}
-  /*
-  def == (that:sslink): Boolean = {
-    val thisSourceInfo = getPropByKey("source")
-    val thisSinkInfo = getPropByKey("sink")
-    val thatSourceInfo = that.getPropByKey("source")
-    val thatSinkInfo = that.getPropByKey("sink")
-    thisSourceInfo == thatSourceInfo && thisSinkInfo == thatSinkInfo
-  }
-  */
+  def postprocess():Unit = {}
+
   def reverse():Unit={
     val thisSourceInfo = getPropByKey("source")
     val thisSinkInfo = getPropByKey("sink")
@@ -30,10 +22,12 @@ class sslink extends IRPrintable{
     apply("source",thisSinkInfo)
     apply("sink",thisSourceInfo)
   }
+
   def apply(source:ssnode, sink:ssnode)={
     source_node = source
     sink_node = sink
   }
+
   def delete:Unit={
     source_node.delete_sink(sink_node)
     sink_node.delete_source(source_node)

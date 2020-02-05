@@ -285,7 +285,7 @@ ICmpSGT                 64           2              1              1           1
 ICmpSGE                 64           2              1              1           1            
 ICmpSLT                 64           2              1              1           1            
 ICmpSLE                 64           2              1              1           1            
-                                                                                            
+Pass                    64           1              1              1           1
 FCmpOEQ                 64           2              1              3           1            
 FCmpONE                 64           2              1              3           1            
 FCmpOGT                 64           2              1              3           1            

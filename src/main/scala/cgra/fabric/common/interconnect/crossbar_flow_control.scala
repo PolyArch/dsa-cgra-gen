@@ -9,26 +9,27 @@ import cgra.config.encoding._
 import scala.collection.mutable
 
 class crossbar_flow_control(prop:mutable.Map[String,Any])extends Module
-with IRPrintable{
+  with IRPrintable{
   // Add initial property
   apply(prop)
 
   // External Parameter
-  val in_data_width : List[Int] = getPropByKey("in_data_width")
+  val in_data_width : List[Int] = getPropByKey("input_data_widths")
     .asInstanceOf[List[Int]]
-  val out_data_width : List[Int] = getPropByKey("out_data_width")
+  val out_data_width : List[Int] = getPropByKey("output_data_widths")
     .asInstanceOf[List[Int]]
 
   // Derived Parameter
-  val num_input = in_data_width.length
-  val num_output = out_data_width.length
-  val config_width = num_output * log2Ceil(num_input)
-  val config_ranges = get_config_range(Seq.fill(num_output)(num_input))
+  val num_input : Int = in_data_width.length
+  val num_output : Int = out_data_width.length
+  val config_width : Int = num_output * log2Ceil(num_input)
+  val config_ranges : Seq[(Int,Int)] = get_config_range(Seq.fill(num_output)(num_input))
+
   apply("mux_config_range", config_ranges)
 
   val io = IO(new Bundle{
-    val ins = MixedVec(in_data_width.map(w=>Flipped(DecoupledIO(UInt(w.W)))))
-    val outs = MixedVec(out_data_width.map(w=>DecoupledIO(UInt(w.W))))
+    val input_ports = MixedVec(in_data_width.map(w=>Flipped(DecoupledIO(UInt(w.W)))))
+    val output_ports = MixedVec(out_data_width.map(w=>DecoupledIO(UInt(w.W))))
     val config = Input(UInt(config_width.W))
   })
 
@@ -46,12 +47,12 @@ with IRPrintable{
     // Connect Input
     for (in_idx <- 0 until num_input){
       // Bits
-      mux_module_io(out_idx).in(in_idx).bits := io.ins(in_idx).bits
+      mux_module_io(out_idx).in(in_idx).bits := io.input_ports(in_idx).bits
       // Valid
-      mux_module_io(out_idx).in(in_idx).valid := io.ins(in_idx).valid
+      mux_module_io(out_idx).in(in_idx).valid := io.input_ports(in_idx).valid
     }
     // Connect Output
-    io.outs(out_idx) <> mux_module_io(out_idx).out
+    io.output_ports(out_idx) <> mux_module_io(out_idx).out
     // Connect Config
     val config_range = config_ranges(out_idx)
     if(num_input > 1){
@@ -64,7 +65,7 @@ with IRPrintable{
   // Connect the MUX IO (Backward)
   for (in_idx <- 0 until num_input){
     // If any one downstream is ready then ready for upstream
-    io.ins(in_idx).ready := mux_module_io
+    io.input_ports(in_idx).ready := mux_module_io
       .map(m=>m.in(in_idx).ready).reduce(_ || _)
   }
 

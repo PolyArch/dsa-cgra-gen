@@ -140,7 +140,7 @@ class ssnode(nodeType:String) extends IRPrintable {
     val currNodeType:String = this.getPropByKey("nodeType")
     val node = new ssnode(currNodeType)
     val temp_cloned_prop = this.getProps
-    var cloned_prop = temp_cloned_prop
+    var cloned_prop = this.getProps.clone
     for (id <- identifier.keys) {
       cloned_prop = cloned_prop - id
     }
@@ -158,21 +158,15 @@ class ssnode(nodeType:String) extends IRPrintable {
   // Postprocess
   def postprocess():Unit={
 
-    // datapath properties
+    // datapath / granularity properties
     val data_width = getPropByKey("data_width").asInstanceOf[Int]
-    val granularity = {
-      if(has("granularity"))
-        getPropByKey("granularity").asInstanceOf[Int]
-      else {
-        apply("granularity", data_width)
-        data_width
-      }
+    if(has("granularity"))
+      getPropByKey("granularity").asInstanceOf[Int]
+    else {
+      apply("granularity", data_width)
     }
-    val decomposer = data_width / granularity;
-    require(data_width == decomposer * granularity,"data_width = " + data_width +
-      ", granularity = " + granularity + ", decomposer = " + decomposer)
 
-    // I/O Port Properties
+    // Check the number of I/O ports is equal the number of I/O nodes
     val num_input = input_links.size; apply("num_input", num_input)
     val num_output = output_links.size; apply("num_output", num_output)
     if(num_input > 0){
@@ -184,12 +178,12 @@ class ssnode(nodeType:String) extends IRPrintable {
       require(num_output == output_nodes.length)
     }
 
-    // Function-Unit specific process
+    // Function Unit specific process (Change Single Instruction to Set)
     if(getValue(getPropByKey("nodeType"))=="function unit"){
       val insts = getPropByKey("instructions")
       insts match {
-        case single:String => apply("instructions", collection.immutable.Set(single))
-        case _ =>
+        case single:String => apply("instructions", "Pass" +: Seq(single))
+        case list:Seq[String] => apply("instructions", "Pass" +: list)
       }
     }
   }

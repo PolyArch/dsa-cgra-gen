@@ -35,8 +35,8 @@ object maeri extends App{
    */
 
   // Change the last row function of reduce graph to Multiplication
-  val last_row_fu = MAERI("nodeType","depth")("function unit",0)
-  val last_row_switch = MAERI("nodeType","depth")("switch",0)
+  val last_row_fu = MAERI.filter("nodeType","depth")("function unit",0)
+  val last_row_switch = MAERI.filter("nodeType","depth")("switch",0)
   last_row_fu.foreach(fu=>fu("instructions","Mul"))
 
   // Connect the distribute and reduce Network

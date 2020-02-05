@@ -49,9 +49,9 @@ object config_path extends App{
   val out_vport = new ssnode("vector port")
 
   // Connect IO
-  val fisrt_row_sw = config_path_network("row_idx","nodeType")(0,"switch")
+  val fisrt_row_sw = config_path_network.filter("row_idx","nodeType")(0,"switch")
   config_path_network(in_vport |=> fisrt_row_sw)
-  val last_row_sw = config_path_network("row_idx","nodeType")(num_row - 1,"switch")
+  val last_row_sw = config_path_network.filter("row_idx","nodeType")(num_row - 1,"switch")
   config_path_network(out_vport <=| last_row_sw)
 
   // Print
@@ -102,9 +102,9 @@ class config_path(num_row:Int, num_col: Int){
   val out_vport = new ssnode("vector port")
 
   // Connect IO
-  val fisrt_row_sw = config_path_network("row_idx","nodeType")(0,"switch")
+  val fisrt_row_sw = config_path_network.filter("row_idx","nodeType")(0,"switch")
   config_path_network(in_vport |=> fisrt_row_sw)
-  val last_row_sw = config_path_network("row_idx","nodeType")(num_row - 1,"switch")
+  val last_row_sw = config_path_network.filter("row_idx","nodeType")(num_row - 1,"switch")
   config_path_network(out_vport <=| last_row_sw)
 
   // Print

@@ -27,6 +27,10 @@ object fullinst {
   }
 
   val inst_operation : Map[String,Seq[UInt] => UInt]= Map(
+    // Default Pass
+    "Pass"      -> ((ops:Seq[UInt]) => {
+      ops.head
+    }),
     // 8-Bit Instructions
     "Add8"      -> ((ops:Seq[UInt]) => {
       ops.head.apply(7,0)  + ops(1).apply(7,0)

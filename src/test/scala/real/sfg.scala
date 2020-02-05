@@ -20,7 +20,7 @@ object sfg extends App{
   // Build tri-array topology
   sfg(top)
   for (row <- 0 until depth){
-    val currRowNodes : Seq[ssnode] = sfg("row")(row)
+    val currRowNodes : Seq[ssnode] = sfg.filter("row")(row)
     for (currNode <- currRowNodes){
       val col = currNode("col").asInstanceOf[identifier].id.asInstanceOf[Int]
       // Get bottom node

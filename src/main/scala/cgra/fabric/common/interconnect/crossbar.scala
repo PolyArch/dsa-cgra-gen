@@ -12,9 +12,9 @@ with IRPrintable{
   apply(prop)
 
   // External Parameter
-  val in_data_width : List[Int] = getPropByKey("in_data_width")
+  val in_data_width : List[Int] = getPropByKey("input_data_widths")
     .asInstanceOf[List[Int]]
-  val out_data_width : List[Int] = getPropByKey("out_data_width")
+  val out_data_width : List[Int] = getPropByKey("output_data_widths")
     .asInstanceOf[List[Int]]
 
   // Derived Parameter

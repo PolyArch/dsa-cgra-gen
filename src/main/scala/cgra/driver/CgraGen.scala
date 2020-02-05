@@ -8,7 +8,7 @@ import cgra.IR.IRconfigpather
 import scala.collection.mutable
 
 object CgraGen extends App{
-  val readFile    : String = args(0) // "/home/sihao/ss-cgra-gen/IR/cgra_5x5_revel.yaml"
+  val readFile : String = args(0) // "/home/sihao/ss-cgra-gen/IR/cgra_5x5_revel.yaml"
   val is_build_configpath : Boolean = args(1).toBoolean // true
   val is_gen : Boolean = args(2).toBoolean // false
   // read IR

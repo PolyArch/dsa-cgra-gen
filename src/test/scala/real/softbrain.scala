@@ -19,7 +19,9 @@ object softbrain extends App {
 
   // Define SPU
   val softbrain = new ssfabric
-  softbrain("default_data_width", 64)(
+  softbrain.apply("name", "softbrain")
+  softbrain(
+    "default_data_width", 64)(
     "default_flow_control", false)(
     "default_granularity", 64)(
     "default_max_util", 1)
@@ -47,9 +49,9 @@ object softbrain extends App {
   val out_vport = new ssnode("vector port")
 
   // Connect IO
-  softbrain(in_vport |=> softbrain("row_idx","nodeType")(0,"switch"))
-  softbrain(out_vport <=| softbrain("row_idx","nodeType")(4,"switch"))
+  softbrain(in_vport |=> softbrain.filter("row_idx","nodeType")(0,"switch"))
+  softbrain(out_vport <=| softbrain.filter("row_idx","nodeType")(4,"switch"))
 
   // Print
-  softbrain.printfile("IR/softbrain")
+  softbrain.printfile
 }

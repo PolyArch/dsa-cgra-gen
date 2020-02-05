@@ -23,19 +23,9 @@ class vector_port(prop:mutable.Map[String,Any])
   private val num_port = num_input max num_output
   private val flow_control : Boolean = getPropByKey("flow_control")
     .asInstanceOf[Boolean]
-  /*
-  private val input_nodes = getPropByKey("input_nodes").asInstanceOf[Seq[Any]]
-  private val output_nodes = getPropByKey("output_nodes").asInstanceOf[Seq[Any]]
-  if(input_nodes.length < num_input){
-    num_input = input_nodes.length
-  }
-  if(output_nodes.length < num_output){
-    num_output = output_nodes.length
-  }
-   */
 
   // Derived Parameter
-  val config_width = num_port * log2Ceil(num_port)
+  val config_width : Int = num_port * log2Ceil(num_port)
 
   // Create the I/O port
   val io = IO(new VecDecoupledIO_conf(
@@ -43,10 +33,15 @@ class vector_port(prop:mutable.Map[String,Any])
   ))
 
   // Create Register to Store the Config bits
-  val config_bits = RegEnable(io.config.bits,0.U,io.config.valid)
+  val config_bits : UInt = RegEnable(io.config.bits,0.U,io.config.valid)
 
-  prop += "in_data_width" -> Seq.fill(num_port)(data_width + 1)
-  prop += "out_data_width"-> Seq.fill(num_port)(data_width + 1)
+  // Vector Port is able to deal with Mixed Datawidth
+  val input_data_widths : Seq[Int] = Seq.fill(num_port)(data_width + 1)
+  val output_data_widths : Seq[Int] = Seq.fill(num_port)(data_width + 1)
+
+
+  prop += "input_data_widths" -> input_data_widths
+  prop += "output_data_widths"-> output_data_widths
 
   // ------ Logic Connections
   if(flow_control){ // vector port need to be flow controlled all the time
@@ -58,8 +53,8 @@ class vector_port(prop:mutable.Map[String,Any])
     }
     for (idx <- 0 until num_port){
       // Bits & Config
-      xbar.ins(idx) <> io.input_ports(idx)
-      io.output_ports(idx) <> xbar.outs(idx)
+      xbar.input_ports(idx) <> io.input_ports(idx)
+      io.output_ports(idx) <> xbar.output_ports(idx)
     }
   }else if(!flow_control){
     val xbar = Module(new crossbar(prop)).io
@@ -77,8 +72,6 @@ class vector_port(prop:mutable.Map[String,Any])
       io.output_ports(idx).valid := DontCare
     }
   }
-
-
 
   // Post process
   def postprocess(): Unit = {

@@ -129,7 +129,7 @@ class ssfabric extends IRPrintable {
     })})
   }
   // Pick node with key value pair
-  def apply(keys: String*)(values: Any*):Seq[ssnode] = {
+  def filter(keys: String*)(values: Any*):Seq[ssnode] = {
     if(getPropByKey("nodes")!=None){
       val currNodes = getPropByKey("nodes").asInstanceOf[ListBuffer[ssnode]]
       findNodeByKey(currNodes, keys,values).toSeq
@@ -230,6 +230,7 @@ class ssfabric extends IRPrintable {
   def postprocess():Unit={
     nodes = nodes.distinct
     links = links.distinct
+
     // Nodes post process - assign default
     val default_keys = this.getAllKeys.filter(key=>{
       key.startsWith("Default") || key.startsWith("default")})
@@ -241,35 +242,14 @@ class ssfabric extends IRPrintable {
         if(!node.has(true_key)){
           node(true_key,default_value)
         }
-        apply(true_key, default_value)
       }
-      node("num_node", nodes.length - 1)
+      node("num_node", nodes.length)
     }
+
     // final post process
     nodes.foreach(_.postprocess())
 
     // Links post process
     links.foreach(_.postprocess()) // final post process
-
-    // Gather the ISA and Encode them
-    val start_encoding = 2 //0 is saved for NOP, 1 is saved for copy
-    val allFuNodes = this("nodeType")("function unit")
-    if (allFuNodes.nonEmpty){
-      val temp_allInsts = allFuNodes.map(n=>n.getPropByKey("instructions"))
-        .distinct
-      var allInsts : List[String] = Nil
-      for (insts <- temp_allInsts){
-        insts match {
-          case i:String => allInsts = allInsts :+ i
-          case is:collection.immutable.Set[String] =>
-            allInsts = allInsts ::: is.toList
-          case is:Seq[String] =>
-            allInsts = allInsts ::: is.toList
-        }
-      }
-      val InstsWithEnc = Map[String, Int]() ++= (for (i <- allInsts.indices)
-        yield allInsts(i) -> (i + start_encoding))
-      apply("Instruction Set", InstsWithEnc)
-    }
   }
 }
