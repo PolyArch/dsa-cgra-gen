@@ -12,8 +12,7 @@ object softbrain extends App {
   // Define General Function Unit
   val fu_general = new ssnode("function unit")
   fu_general(
-    "instructions", List("Add", "Sub", "Mul", "Div",
-      "BOr", "BAnd", "BXor", "BNot",
+    "instructions", List("Add", "Sub", "Mul",
       "FMul64", "FAdd64"))(
     "max_delay", 4)
 
@@ -45,11 +44,13 @@ object softbrain extends App {
   }
 
   // Connect the Vector port
-  val in_vport = new ssnode("vector port")
+  val in_vport1 = new ssnode("vector port")
+  val in_vport2 = new ssnode("vector port")
   val out_vport = new ssnode("vector port")
 
   // Connect IO
-  softbrain(in_vport |=> softbrain.filter("row_idx","nodeType")(0,"switch"))
+  softbrain(in_vport1 |=> softbrain.filter("row_idx","nodeType")(0,"switch"))
+  softbrain(in_vport2 |=> softbrain.filter("col_idx","nodeType")(0,"switch"))
   softbrain(out_vport <=| softbrain.filter("row_idx","nodeType")(4,"switch"))
 
   // Print

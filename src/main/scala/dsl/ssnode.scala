@@ -182,8 +182,8 @@ class ssnode(nodeType:String) extends IRPrintable {
     if(getValue(getPropByKey("nodeType"))=="function unit"){
       val insts = getPropByKey("instructions")
       insts match {
-        case single:String => apply("instructions", "Pass" +: Seq(single))
-        case list:Seq[String] => apply("instructions", "Pass" +: list)
+        case single:String => apply("instructions", Seq(single))
+        case list:Seq[String] => apply("instructions", list)
       }
     }
   }

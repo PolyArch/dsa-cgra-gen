@@ -1,5 +1,0 @@
-package dfg
-
-object FirstDFG {
-
-}

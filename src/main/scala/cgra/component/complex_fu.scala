@@ -29,8 +29,15 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
   private val config_in_port_idx:Int = getPropByKey("config_in_port_idx")
     .asInstanceOf[Int]
   private val config_out_port_idx:List[Int] =
-    if(getPropByKey("config_out_port_idx") == None){Nil}
-    else{getPropByKey("config_out_port_idx").asInstanceOf[List[Int]]}
+    getPropByKey("config_out_port_idx") match {
+      case None => Nil
+      case list : List[Int] => list
+    }
+  private val register_file_size:Int =
+    getPropByKey("register_file_size") match {
+      case None => 0
+      case x : Int => x
+    }
   private val instructions : List[String] =
     getPropByKey("instructions").asInstanceOf[List[String]]
 
@@ -57,7 +64,9 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
 
   val nxt_config_info = nxt_fu_config_info_wrapper(
     id, num_node,
-    num_input, num_output, decomposer,flow_control,
+    num_input + register_file_size,
+    num_output + register_file_size,
+    decomposer,flow_control,
     max_util, max_delay, data_width,
     instructions,
     RegNext(nxt_config_info_bits).suggestName("nxt_config_info_bits"),
@@ -80,9 +89,19 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
     0.U(1.W)
   }
 
+  // Register File
+  val register_file : Vec[UInt] = RegInit(
+    if(register_file_size > 0){
+      VecInit(Seq.fill(register_file_size)(0.U(data_width.W)))
+    }else{
+      VecInit(Seq.fill(1)(0.U(1.W)))
+    }).suggestName("register_file")
+
   // select and parse the current config
   val curr_config = fu_stored_config_info_wrapper(
-    num_input, num_output, decomposer,flow_control,max_delay,
+    num_input + register_file_size,
+    num_output + register_file_size,
+    decomposer,flow_control,max_delay,
     instructions,
     config_file(config_pointer))
 
@@ -109,7 +128,7 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
 
   // Subnet Shifter
   private val subnet_shifter =
-      Module(new subnet_shifter(decomposer, granularity))
+    Module(new subnet_shifter(decomposer, granularity))
   subnet_shifter.io.en := dataflow_mode
   subnet_shifter.io.input_data := result
   subnet_shifter.io.offset := curr_config.offset_select
@@ -162,16 +181,23 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
   // Connect Dup --> Mux --> Delay Pipe
   for(op_idx <- 0 until num_operand){
     val op_select = curr_config.operand_select(op_idx)
-    val lookup = (0 to num_input).map(src_idx => {
+    val lookup = (0 to (num_input+register_file_size)).map(src_idx => {
       val bits =
-        // The reason that we need `RegNext` here is source select is based on
-        // current config, which is register based
-        if(src_idx > 0)
+      // The reason that we need `RegNext` here is source select is based on
+      // current config, which is register based
+        if(src_idx > num_input)
+          // read from register
+          register_file(src_idx - (num_input + 1))
+        else if(src_idx > 0)
+          // read from input ports
           RegNext(sources_dup(src_idx - 1).output_ports(op_idx).bits(data_width - 1, 0))
         else
           0.U(data_width.W)
       val valid =
-        if(src_idx > 0)
+        if(src_idx > num_input)
+          // register File is valid input
+          true.B
+        else if(src_idx > 0)
           RegNext(sources_dup(src_idx - 1).output_ports(op_idx).valid)
         else
           true.B // Ground Input is valid input
@@ -196,8 +222,8 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
     val num_operand = op2num._2
     val valids : IndexedSeq[Bool] =
       for (valid_op_idx <- 0 until num_operand) yield {
-      delay_pipes(valid_op_idx).io.out.valid
-    }
+        delay_pipes(valid_op_idx).io.out.valid
+      }
     op -> valids.reduce(_ && _)
   })
 
@@ -261,6 +287,17 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
     }).reduce(_||_)
     result_ready := temp_result_ready
 
+    // Write to Register
+    if(register_file_size > 0){
+      val is_write_reg : Bool = (curr_config.output_select > num_output.U)
+        .suggestName("is_write_reg")
+      val write_reg_idx : UInt = (curr_config.output_select - (num_output + 1).U)
+        .suggestName("write_reg_idx")
+      when(result_valid && is_write_reg){
+        register_file(write_reg_idx) := shifted_result
+      }
+    }
+
   }.elsewhen(reconfig_mode){
     // pass config info to downstream
     for(output_idx <- 0 until num_output){
@@ -284,38 +321,6 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
   def postprocess(): Unit = {
     print(this)
   }
-
-  // ------- Debug --------
-  /*
-  when(reconfig_this){
-    printf("----- RECONFIGURED MODE -----\n")
-    printf(nxt_config_info.toPrintable)
-    print_config_file
-  }.elsewhen(reconfig_mode){
-    printf("----- RECONFIGURED MESSAGE PASS -----\n")
-    printf("reconfigured detected, but not this module\n")
-  }.elsewhen(dataflow_mode){
-    printf("----- DATAFLOW MODE -----\n")
-    printf(p"config pointer = $config_pointer, config = ${curr_config.config_reg_info}\n")
-    printf(p"-----curr config-----\n")
-    printf(curr_config.toPrintable)
-    printf(p"-----curr alu reg----\n")
-    for(op_idx <- 0 until num_operand){
-      printf(p"operand($op_idx) = ${operands(op_idx)}, ")
-    }
-    printf(p"operand valid = ${operand_valid}, operand ready = ${operand_ready}\n")
-    printf(p"shif_result = $shifted_result, result = $result, result valid = $result_valid, result ready = $result_ready\n")
-  }
-
-  def print_config_file = {
-    printf("---- config file ----\n")
-    for(idx <- 0 until max_util){
-      printf(p"$idx : ${config_file(idx)}\n")
-    }
-  }
-  */
-
-
 }
 
 object gen_comp_fu extends App{
@@ -332,6 +337,7 @@ object gen_comp_fu extends App{
   val flow_control : Boolean = true
   val max_util : Int = 1
   val max_delay : Int = 4
+  val reg_file_size : Int = 16
   val instructions : List[String] = List("Add","Mul")
 
   node("id") = id
@@ -346,6 +352,7 @@ object gen_comp_fu extends App{
   node("config_in_port_idx") = 0
   node("config_out_port_idx") = List(0)
   node("instructions") = instructions
+  node("register_file_size") = reg_file_size
 
   chisel3.Driver.execute(args,()=>{
     val module = new complex_fu(node)

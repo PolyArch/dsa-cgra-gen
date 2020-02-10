@@ -96,5 +96,12 @@ object CgraTestUtil {
         }
       }
     }
+    def |*| (duplicate_time : Int, bitLength : Int):BigInt = {
+      if(duplicate_time < 2){
+        num
+      }else{
+        num ||| (num, bitLength) |*| (duplicate_time - 1, bitLength)
+      }
+    }
   }
 }

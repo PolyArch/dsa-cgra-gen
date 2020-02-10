@@ -15,7 +15,7 @@ class cgra_fabric(prop:mutable.Map[String, Any]) extends Module
   apply(prop)
 
   // Extract External Parameter
-  private val data_width = 1 + getPropByKey("default_data_width").asInstanceOf[Int]
+  val data_width = 1 + getPropByKey("default_data_width").asInstanceOf[Int]
   private val nodes = getPropByKey("nodes").asInstanceOf[List[mutable.Map[String,Any]]]
   private val links = getPropByKey("links").asInstanceOf[List[mutable.Map[String,Any]]]
 
