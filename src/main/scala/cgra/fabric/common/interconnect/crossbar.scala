@@ -7,7 +7,7 @@ import cgra.config.encoding._
 import scala.collection.mutable
 
 class crossbar(prop:mutable.Map[String,Any]) extends Module
-with IRPrintable{
+  with IRPrintable{
   // Add initial property
   apply(prop)
 

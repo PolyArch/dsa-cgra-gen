@@ -219,22 +219,23 @@ class complex_switch(prop:mutable.Map[String,Any]) extends Module
     }
   }
 
+  // println(prop)
+
 }
 
 object gen_comp_switch extends App{
 
   // Config switch
   val node = mutable.Map[String, Any]()
-  val id : Int = 13
-  val num_node : Int = 59
+  val id : Int = 0
+  val num_node : Int = 44
   val data_width : Int = 64
-  val granularity : Int = 16
-  val decomposer = data_width / granularity
-  val num_input : Int = 3
-  val num_output : Int = 2
-  val flow_control : Boolean = true
-  val max_util : Int = 3
-  val max_delay : Int = 4
+  val granularity : Int = 64
+  val num_input : Int = 4
+  val num_output : Int = 3
+  val flow_control : Boolean = false
+  val max_util : Int = 1
+  val max_delay : Int = 1
 
   node("id") = id
   node("num_node") = num_node

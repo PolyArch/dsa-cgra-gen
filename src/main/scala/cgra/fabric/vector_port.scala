@@ -27,6 +27,12 @@ class vector_port(prop:mutable.Map[String,Any])
   // Derived Parameter
   val config_width : Int = num_port * log2Ceil(num_port)
 
+  if(num_output > num_input){
+    this.suggestName("input_vector_port")
+  }else{
+    this.suggestName("output_vector_port")
+  }
+
   // Create the I/O port
   val io = IO(new VecDecoupledIO_conf(
     num_port,num_port,data_width+1,config_width
@@ -66,10 +72,10 @@ class vector_port(prop:mutable.Map[String,Any])
     for (idx <- 0 until num_port){
       // Bits & Config
       xbar.ins(idx) := io.input_ports(idx).bits
-      io.output_ports(idx).bits := xbar.outs(idx)(data_width,1)
+      io.output_ports(idx).bits := xbar.outs(idx)
       // DontCare Flow Control
-      io.input_ports(idx).ready := DontCare
-      io.output_ports(idx).valid := DontCare
+      io.input_ports(idx).ready := true.B
+      io.output_ports(idx).valid := true.B
     }
   }
 

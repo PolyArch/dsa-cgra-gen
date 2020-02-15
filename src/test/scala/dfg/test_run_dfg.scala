@@ -30,8 +30,11 @@ object test_run_dfg extends App {
     new cgra_fabric(cgra)){
     dut => new PeekPokeTester[cgra_fabric](dut) {
       var cycle : Int = 0
-      val total_cycle = 50000
+      val total_cycle = 10000
       val data_width : Int = dut.data_width
+
+      // Turn the CGRA
+      poke(dut.io.cgra_enable, true)
 
       // Start configuration
       for(config_bit <- config_bits){
@@ -59,7 +62,7 @@ object test_run_dfg extends App {
       // TODO: expect result needed from gem5
       def move:Unit = {
         for(input_port <- dut.io.input_ports){
-          val random_value = BigInt(data_width, scala.util.Random)
+          val random_value = BigInt(0) ||| (BigInt(data_width - 1, scala.util.Random), data_width - 1)
           val vport_width : Int = input_port.bits.getWidth / data_width
           val wide_random_value : BigInt =
             random_value |*| (vport_width, data_width)

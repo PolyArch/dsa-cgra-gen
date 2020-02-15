@@ -14,6 +14,7 @@ object fullinst {
 
   val ssinst_conf : List[Array[String]] =
     Source.fromResource(full_inst_file).getLines
+      .filter(!_.trim.startsWith("#"))
       .toList.map(_.split(" +")).filter(_.length == 6)
 
   def insts_prop(inst:String) : inst_prop ={
