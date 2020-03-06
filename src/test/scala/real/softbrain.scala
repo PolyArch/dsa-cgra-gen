@@ -12,11 +12,12 @@ object softbrain extends App {
   // Define General Function Unit
   val fu_general = new ssnode("function unit")
   fu_general(
-    "instructions", List("Add", "Sub", "Mul",
-      "FMul64", "FAdd64"))(
+    "instructions", List("Add", "Sub", "Mul", "FMul64", "FAdd64") )(
     "max_delay", 4)
 
-  // Define SPU
+  sw_default <-> fu_general
+
+  // Define Softbrain
   val softbrain = new ssfabric
   softbrain.apply("name", "softbrain")
   softbrain(
@@ -52,6 +53,8 @@ object softbrain extends App {
   softbrain(in_vport1 |=> softbrain.filter("row_idx","nodeType")(0,"switch"))
   softbrain(in_vport2 |=> softbrain.filter("col_idx","nodeType")(0,"switch"))
   softbrain(out_vport <=| softbrain.filter("row_idx","nodeType")(4,"switch"))
+
+  in_vport1 |=> List(sw_default, sw_default, sw_default)
 
   // Print
   softbrain.printfile

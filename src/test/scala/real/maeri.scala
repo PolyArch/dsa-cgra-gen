@@ -15,9 +15,10 @@ object maeri extends App{
 
   // Create MAERI
   val MAERI = new ssfabric()
-  MAERI("default_data_width", 64)(
-    "default_flow_control", true
-  )
+  MAERI(
+    "default_data_width", 64)(
+    "default_flow_control", true)(
+    "name", "MAERI")
 
   // Create distribute and reduce Network
   val distribute_network = MAERI.buildTree(root_sw,4,true)
@@ -62,4 +63,7 @@ object maeri extends App{
 
   // Print MAERI
   MAERI.printfile("IR/maeri")
+
+  // Print Verilog
+  MAERI.givemeverilog("syn/rtl_source/maeri")
 }

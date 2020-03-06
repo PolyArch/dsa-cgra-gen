@@ -226,6 +226,11 @@ class ssfabric extends IRPrintable {
     }
   }
 
+  // Get Verilog
+  def givemeverilog(dir:String):Unit={
+
+  }
+
   // Post-Process
   def postprocess():Unit={
     nodes = nodes.distinct
