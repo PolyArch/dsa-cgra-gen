@@ -8,7 +8,7 @@ import dsl.IRPrintable
 
 import scala.collection.mutable
 import scala.util.Random
-import wrapper._
+import common.wrapper._
 
 class complex_switch(prop:mutable.Map[String,Any]) extends Module
   with IRPrintable{

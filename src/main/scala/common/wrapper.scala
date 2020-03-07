@@ -1,8 +1,8 @@
-package cgra.component
+package common
 
+import cgra.config.fullinst.insts_prop
 import chisel3.util._
 import chisel3._
-import cgra.config.fullinst._
 
 object wrapper {
   case class switch_stored_config_info_wrapper(num_input: Int, num_output: Int,
@@ -269,6 +269,17 @@ object wrapper {
         p"id_field = $node_id\n" + "-----saved----\n"+
         stored_config_info.toPrintable + "-----saved end----\n"
     }
+  }
+
+  def decode(data:UInt, num_bits : Int*) : List[UInt] = {
+    val width : Int = data.getWidth
+    require(width >= num_bits.sum)
+    var curr_high_bit = width - 1
+    (for(num_bit <- num_bits) yield {
+      val dec = data(curr_high_bit, curr_high_bit - num_bit + 1)
+      curr_high_bit -= num_bit
+      dec
+    }).toList
   }
 
 }

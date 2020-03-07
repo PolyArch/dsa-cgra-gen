@@ -36,6 +36,9 @@ mainClass in assembly := Some("cgra.driver.CgraGen")
 
 crossScalaVersions := Seq("2.11.12", "2.12.4","2.12.8")
 
+// Not using online package
+updateOptions := updateOptions.value.withLatestSnapshots(false)
+
 resolvers ++= Seq(
   Resolver.sonatypeRepo("snapshots"),
   Resolver.sonatypeRepo("master")
@@ -59,6 +62,7 @@ libraryDependencies ++= Seq(
   "com.fasterxml.jackson.core" % "jackson-databind" % "2.1.1",
   "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % "2.1.1"
 )
+
 
 
 scalacOptions ++= scalacOptionsVersion(scalaVersion.value)

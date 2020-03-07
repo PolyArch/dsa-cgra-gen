@@ -4,7 +4,7 @@ import cgra.IO.EnabledVecDecoupledIO
 import chisel3.util._
 import chisel3._
 import dsl.IRPrintable
-import wrapper._
+import common.wrapper._
 import cgra.config.fullinst._
 import cgra.fabric.delay
 
