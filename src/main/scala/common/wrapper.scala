@@ -274,6 +274,8 @@ object wrapper {
   def decode(data:UInt, num_bits : Int*) : List[UInt] = {
     val width : Int = data.getWidth
     require(width >= num_bits.sum)
+    if(width > num_bits.sum)
+      println(s"${width - num_bits.sum} bit not decoded")
     var curr_high_bit = width - 1
     (for(num_bit <- num_bits) yield {
       val dec = data(curr_high_bit, curr_high_bit - num_bit + 1)
