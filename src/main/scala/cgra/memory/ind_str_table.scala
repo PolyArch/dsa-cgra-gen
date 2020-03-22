@@ -5,7 +5,8 @@ import chisel3.util._
 import common.mem_operation
 import common.wrapper._
 
-class ind_str_table(num_str : Int, // number of stream support
+class ind_str_table(data_width : Int, // general data width (64 bit)
+                    num_str : Int, // number of stream support
                     memory_size : Int, // Memory size in Byte
                     max_num_access : Int, // Maximum number of access for one stream
                     data_types : Set[Int], // Set of data type supported
@@ -15,6 +16,7 @@ class ind_str_table(num_str : Int, // number of stream support
                    )
   extends Module{
   // Parameter Requirement
+  require(isPow2(data_width))
   require(isPow2(memory_size))
   require(data_types.forall(isPow2(_)), "data type need to be power of two")
   require(idx_types.forall(isPow2(_)), "data type need to be power of two")
@@ -35,18 +37,10 @@ class ind_str_table(num_str : Int, // number of stream support
 
   val io = IO(new Bundle{
     // New Entry of Stream Table
-    val in_start_addr : UInt = Input(UInt(num_addr_bit.W))
-    val in_num_access : UInt= Input(UInt(num_access_bit.W))
-    val in_data_type : UInt = Input(UInt(num_data_type_bit.W))
-    val in_idx_type : UInt = Input(UInt(num_idx_type_bit.W))
-    val in_oper_type : UInt = Input(UInt(num_oper_bit.W))
+    val new_entry : UInt = Input(UInt((num_total_bit + num_access_bit).W))
 
-    // Output Entry of Stream Table
-    val out_start_addr : UInt = Output(UInt(num_addr_bit.W))
-    val out_num_access : UInt= Output(UInt(num_access_bit.W))
-    val out_data_type : UInt = Output(UInt(num_data_type_bit.W))
-    val out_idx_type : UInt = Output(UInt(num_idx_type_bit.W))
-    val out_oper_type : UInt = Input(UInt(num_oper_bit.W))
+    // Selected Entry of Stream Table
+    val select_entry : UInt = Output(UInt((num_total_bit + num_access_bit).W))
 
     // Output Control
     val isFull : Bool = Output(Bool())
@@ -56,11 +50,25 @@ class ind_str_table(num_str : Int, // number of stream support
   val str_table = SyncReadMem(num_str, UInt(num_total_bit.W))
   val str_count_table = SyncReadMem(num_str, UInt(num_access_bit.W))
 
-  // Pointer that select the target stream
+  // Pointer that select the next target stream
   val str_ptr = RegInit(0.U(num_max_stream_bit.W))
 
-  val start_addr :: data_typ :: idx_typ :: oper_typ :: Nil =
-    decode(str_table.read(str_ptr),
-      num_addr_bit, num_data_type_bit, num_idx_type_bit, num_oper_bit)
 
+
+  // Decode the new entry
+  val new_start_addr :: new_data_typ :: new_idx_typ :: new_oper_typ ::
+    new_num_access :: Nil = decode(io.new_entry,
+    num_addr_bit, num_data_type_bit, num_idx_type_bit, num_oper_bit, num_access_bit)
+
+  // Read the target entry
+  val nxt_start_addr :: nxt_data_typ :: nxt_idx_typ :: nxt_oper_typ ::
+    Nil = decode(str_table.read(str_ptr),
+    num_addr_bit, num_data_type_bit, num_idx_type_bit, num_oper_bit)
+
+  // Read the target remaining number of access
+  val nxt_num_access : UInt = str_count_table.read(str_ptr)
+
+  // Output the target entry
+  io.select_entry := Cat(nxt_start_addr, nxt_data_typ,
+    nxt_idx_typ, nxt_oper_typ, nxt_num_access)
 }
