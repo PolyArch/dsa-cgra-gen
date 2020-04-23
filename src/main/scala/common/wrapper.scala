@@ -271,7 +271,7 @@ object wrapper {
     }
   }
 
-  def decode(data:UInt, num_bits : Int*) : List[UInt] = {
+  def bit_decode(data:UInt, num_bits : Int*) : List[UInt] = {
     val width : Int = data.getWidth
     require(width >= num_bits.sum)
     if(width > num_bits.sum)

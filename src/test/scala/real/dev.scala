@@ -10,7 +10,7 @@ object dev extends App{
   // Define Default Switch
   val sw_default = new ssnode("switch")
   sw_default(
-    "max_util",2)(
+    "max_util",1)(
     "granularity",16)(
     "subnet_offset", List(0, 1))(
     "switch_mode", "full-control"
@@ -19,20 +19,20 @@ object dev extends App{
   // Define a Adding Function Unit
   val fu_add = new ssnode("function unit")
   fu_add(
-    "instructions","Add64")(
+    "instructions",Seq("Add", "Sub"))(
     "granularity", 32)(
     "num_register", 1)(
     "max_delay_fifo_depth", 4)
 
   val fu_spc = new ssnode("function unit")
   fu_spc(
-    "instructions",Set("Div16", "RShf4_16x4", "Abs16x4"))(
+    "instructions",Seq("FAdd64", "FMul64"))(
     "num_register", 16)(
     "max_delay_fifo_depth", 2)(
     "flow_control", false)
 
   val another_fu = fu_spc.clone()
-  another_fu("instructions",Set("Acc16", "Or16"))(
+  another_fu("instructions","Mul")(
     "num_register", 4)(
     "max_delay_fifo_depth", 4)
 
@@ -41,7 +41,7 @@ object dev extends App{
   dev(
     "default_data_width", 64)(
     "default_granularity", 32)(
-    "Default_max_util", 2)(
+    "Default_max_util", 1)(
     "Defaultflow_control", true)
 
   // Build Mesh Topology
