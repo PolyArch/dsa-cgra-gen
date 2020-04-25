@@ -13,7 +13,7 @@ IR/*.yaml
 IR
 IR/old
 IR/*.json
-
+*.dfg
 ### Analytical Model
 src/analytical_model/resource/*
 
