@@ -1,25 +1,22 @@
 package real
 
 import dsl._
-import amir_random._
-object amir_grid extends App{
 
+object drbe extends App {
   // Keys that differ nodes
   identifier("row_idx","col_idx")
 
   // Define Default Switch
   val sw_default = new ssnode("switch")
-  sw_default("max_util",1)("granularity",16)("switch_mode", "full-control")
+  sw_default("max_util",1)("granularity",64)("switch_mode", "full-control")
 
   // Define a Adding Function Unit
   val fu_full = new ssnode("function unit")
-  fu_full("instructions",get_inst_list("b64.ssinst"))(
-    "granularity", 64)(
-    "num_register", 1)(
-    "max_delay_fifo_depth", 16)
+  fu_full("instructions","PPU")("granularity", 64)("num_register", 1)("max_delay_fifo_depth", 16)
+
 
   // Build Mesh Topology
-  for(num_row <- 4 to 16; num_col <- 4 to num_row){
+  for(num_row <- 4 to 32 by 2; num_col <- 4 to num_row by 2){
     // Create a ssfabric
     val dev = new ssfabric
     dev("default_data_width", 64)(
@@ -63,18 +60,6 @@ object amir_grid extends App{
     }
 
     // Print
-    dev.printfile(s"IR/dev_row${num_row}_col$num_col","json")
+    dev.printfile(s"IR/drbe/drbe_row${num_row}_col$num_col","json")
   }
-}
-
-import java.io._
-
-object command_gen extends App{
-  val pw = new PrintWriter(new File(s"./command_large_v6.sh"))
-  for(num_row <- 8 to 16; num_col <- 8 to num_row; dfg_idx <- 1 until 1000){
-    val hw_name = s"dev_row${num_row}_col${num_col}"
-    val sw_name = s"dfg$dfg_idx"
-    pw.write(s"ss_sched ${"./configs/amir_configs_large/"+hw_name+".json"} ${"./dfgs/amir_dfgs_large/"+sw_name+".dfg"} -v -h ${"./amir_large/hw/"+hw_name+".json"} -s ${"./amir_large/sw/"+sw_name+".json"} -a ${"./amir_large/mapping/"+sw_name+"+"+hw_name+".json"} -u\n")
-  }
-  pw.close()
 }
