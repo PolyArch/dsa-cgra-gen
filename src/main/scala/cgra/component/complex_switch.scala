@@ -22,8 +22,13 @@ class complex_switch(prop:mutable.Map[String,Any]) extends Module
   private val granularity = getPropByKey("granularity").asInstanceOf[Int]
   private val num_input:Int = getPropByKey("num_input").asInstanceOf[Int]
   private val num_output:Int = getPropByKey("num_output").asInstanceOf[Int]
-  private val flow_control:Boolean = getPropByKey("flow_control").asInstanceOf[Boolean]
-  private val max_util:Int = getPropByKey("max_util").asInstanceOf[Int]
+  private val flow_control:Boolean = {
+    if(getPropByKey("flow_control") == None) true
+    else getPropByKey("flow_control").asInstanceOf[Boolean]
+  }
+  private val max_util:Int =
+    if(getPropByKey("flow_control") == None) 1
+    else getPropByKey("max_util").asInstanceOf[Int]
   require(max_util > 0, "Switch must have utility greater than zero")
   private val decomposer:Int = data_width / granularity
   private val config_in_port_idx:Int = getPropByKey("config_in_port_idx")
@@ -36,7 +41,8 @@ class complex_switch(prop:mutable.Map[String,Any]) extends Module
   private val num_config_bit : Int = log2Ceil(max_util + 1) // + 1 means at
   // least one type is needed for non-config mode (dataflow mode)
   private val max_delay : Int = if(flow_control){
-    getPropByKey("max_delay").asInstanceOf[Int]
+    if(getPropByKey("max_delay")== None) 2
+    else getPropByKey("max_delay").asInstanceOf[Int]
   }else{
     1
   }

@@ -14,7 +14,7 @@ object dfg_gen extends App{
   for(idx <- dfg_start_index until dfg_start_index+num_dfg){
     val num_input = 2 + nextInt(3)
     val num_output = 1 + nextInt(4)
-    val pw = new PrintWriter(new File(s"./DFG/dfg$idx.dfg"))
+    val pw = new PrintWriter(new File(s"./DFG_2/dfg$idx.dfg"))
 
     // Buffer of node
     var app_nodes = new ListBuffer[String]()

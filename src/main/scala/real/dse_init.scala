@@ -35,6 +35,6 @@ object dse_init extends App{
     is_input = is_input + 1
   }
 
-  dse_init.printfile("IR/dse_init")
+  dse_init.printIR("IR/dse_init")
 
 }

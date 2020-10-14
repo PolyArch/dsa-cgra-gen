@@ -55,7 +55,7 @@ object config_path extends App{
   config_path_network(out_vport <=| last_row_sw)
 
   // Print
-  config_path_network.printfile("IR/config_net" +
+  config_path_network.printIR("IR/config_net" +
     "_row_" + num_row + "_col_" + num_col)
 }
 
@@ -110,7 +110,7 @@ class config_path(num_row:Int, num_col: Int){
   // Print
   val filename = "IR/config_net" +
     "_row_" + num_row + "_col_" + num_col
-  config_path_network.printfile(filename)
+  config_path_network.printIR(filename)
 
 
 }
