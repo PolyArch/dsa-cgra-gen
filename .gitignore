@@ -10,13 +10,14 @@ ucli.key
 ### IR
 IR/*.xml
 IR/*.yaml
+*.json
 IR
 IR/old
 IR/*.json
 *.dfg
 ### Analytical Model
 src/analytical_model/resource/*
-
+src/analytival_model/*
 ### For Hardware Synthesizing and backup
 verilog-output/*
 *.tar.gz

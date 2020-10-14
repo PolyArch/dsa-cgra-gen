@@ -28,5 +28,5 @@ object test extends App {
 
   node1("nodeType","fu")
 
-  test.printfile("IR/test")
+  test.printIR("IR/test")
 }

@@ -63,7 +63,7 @@ class cgra_fabric(prop:mutable.Map[String, Any]) extends Module
     node_id -> {
       val node_module = nodeType match {
         case "switch" => Module(new complex_switch(node)).io
-        case "function unit" => Module(new complex_fu(node)).io
+        case "processing element" => Module(new complex_fu(node)).io
         case "vector port" => Module(new vector_port(node)).io
       }
       node_module.en := io.cgra_enable

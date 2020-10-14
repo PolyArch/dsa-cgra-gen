@@ -52,6 +52,6 @@ object spu extends App{
   spu(out_vport <=| spu.filter("row_idx","nodeType")(5,"switch"))
 
   // Print
-  spu.printfile("IR/spu")
+  spu.printIR("IR/spu")
 
 }

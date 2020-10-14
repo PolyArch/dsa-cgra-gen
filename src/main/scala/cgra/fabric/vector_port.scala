@@ -21,9 +21,10 @@ class vector_port(prop:mutable.Map[String,Any])
   private var num_input:Int = getPropByKey("num_input").asInstanceOf[Int]
   private var num_output:Int = getPropByKey("num_output").asInstanceOf[Int]
   private val num_port = num_input max num_output
-  private val flow_control : Boolean = getPropByKey("flow_control")
-    .asInstanceOf[Boolean]
-
+  private val flow_control:Boolean = {
+    if(getPropByKey("flow_control") == None) true
+    else getPropByKey("flow_control").asInstanceOf[Boolean]
+  }
   // Derived Parameter
   val config_width : Int = num_port * log2Ceil(num_port)
 

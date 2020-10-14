@@ -56,7 +56,7 @@ object amir_random extends App{
   */
 
   // Print
-  dev.printfile("IR/amir")
+  dev.printIR("IR/amir")
 
   def get_random_fu() : (ssnode, Seq[String]) = {
     val fu = new ssnode("function unit")

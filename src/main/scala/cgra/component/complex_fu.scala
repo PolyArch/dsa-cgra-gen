@@ -21,9 +21,19 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
   private val granularity = getPropByKey("granularity").asInstanceOf[Int]
   private val num_input:Int = getPropByKey("num_input").asInstanceOf[Int]
   private val num_output:Int = getPropByKey("num_output").asInstanceOf[Int]
-  private val flow_control:Boolean = getPropByKey("flow_control").asInstanceOf[Boolean]
-  private val max_delay : Int = getPropByKey("max_delay").asInstanceOf[Int]
-  private val max_util:Int = getPropByKey("max_util").asInstanceOf[Int]
+  private val flow_control:Boolean = {
+    if(getPropByKey("flow_control") == None) true
+    else getPropByKey("flow_control").asInstanceOf[Boolean]
+  }
+  private val max_delay : Int = if(flow_control){
+    if(getPropByKey("max_delay")== None) 2
+    else getPropByKey("max_delay").asInstanceOf[Int]
+  }else{
+    1
+  }
+  private val max_util:Int =
+    if(getPropByKey("flow_control") == None) 1
+    else getPropByKey("max_util").asInstanceOf[Int]
   require(max_util > 0, "FU must have utility greater than zero")
   private val decomposer:Int = data_width / granularity
   private val config_in_port_idx:Int = getPropByKey("config_in_port_idx")
@@ -38,8 +48,16 @@ class complex_fu(prop:mutable.Map[String,Any]) extends Module with IRPrintable{
       case None => 0
       case x : Int => x
     }
-  private val instructions : List[String] =
-    getPropByKey("instructions").asInstanceOf[List[String]]
+  private val instructions : List[String] = {
+    if(getPropByKey("instruction") != None){
+      getPropByKey("instruction").asInstanceOf[List[String]]
+    }else if(getPropByKey("instructions") != None){
+      getPropByKey("instructions").asInstanceOf[List[String]]
+    }else{
+      require(false, "insstructions not defined")
+      List("")
+    }
+  }
 
   this.suggestName(s"function_unit_id_${id}")
 
