@@ -123,11 +123,11 @@ trait IRPrintable {
     }
   }
   // to File
-  def printfile() : Unit =
-    printfile("IR/" + getPropByKey("name").toString)
-  def printfile(filename:String):Unit=
-    printfile(filename,"json","yaml")
-  def printfile(filename:String,formats:String*):Unit={
+  def printIR() : Unit =
+    printIR("IR/" + getPropByKey("name").toString)
+  def printIR(filename:String):Unit=
+    printIR(filename,"json","yaml")
+  def printIR(filename:String, formats:String*):Unit={
     postprocess()
     // Create File Name
     // Timestamp

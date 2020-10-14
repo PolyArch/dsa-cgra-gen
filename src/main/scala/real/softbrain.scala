@@ -57,5 +57,5 @@ object softbrain extends App {
   in_vport1 |=> List(sw_default, sw_default, sw_default)
 
   // Print
-  softbrain.printfile
+  softbrain.printIR
 }

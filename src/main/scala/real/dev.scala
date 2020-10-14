@@ -13,39 +13,64 @@ object dev extends App{
     "max_util",1)(
     "granularity",16)(
     "subnet_offset", List(0, 1))(
-    "switch_mode", "full-control"
+    "switch_mode", "pell-control"
   )
 
-  // Define a Adding Function Unit
-  val fu_add = new ssnode("function unit")
-  fu_add(
-    "instructions",Seq("Add", "Sub"))(
+  // Define Shared Decomposable Dynamic Switch
+  val my_switch = new ssnode("switch")
+  my_switch(
+    "data_width", 64)(
+    "granularity",16)(
+    "subnet_offset", Seq(0, 1, 2))(
+    "flow_control", true)(
+    "max_util", 4)(
+    "max_delay_fifo_depth", 4
+  )
+
+  // Define Your own Data-dependent Controlled
+  // Processing Elements with GE / LE and Add
+  val my_pe = new ssnode("processing element")
+  my_pe(
+    "instructions",Seq("SelfCtrlGE", "SelfCtrlLE", "InputCtrlAdd"))(
+    "data_width", 64)(
+    "granularity", 64)(
+    "num_register", 8)(
+    "max_util", 2)(
+    "flow_control", 4)(
+    "max_delay_fifo_depth", 4)
+
+  // Define a Adding processing element
+  val pe_add = new ssnode("processing element")
+  pe_add(
+    "instructions",Seq("Add", "Sub", "Mul"))(
     "granularity", 32)(
     "num_register", 1)(
     "max_delay_fifo_depth", 4)
 
-  val fu_spc = new ssnode("function unit")
-  fu_spc(
+  val pe_spc = new ssnode("processing element")
+  pe_spc(
     "instructions",Seq("FAdd64", "FMul64"))(
     "num_register", 16)(
     "max_delay_fifo_depth", 2)(
-    "flow_control", false)
+    "flow_control", false)(
+    "control_flow", "self-control"
+  )
 
-  val another_fu = fu_spc.clone()
-  another_fu("instructions","Mul")(
+  val another_pe = pe_spc.clone()
+  another_pe("instructions","Mul")(
     "num_register", 4)(
     "max_delay_fifo_depth", 4)
 
-  // Create a ssfabric
+  // Create a Computing Fabric
   val dev = new ssfabric
   dev(
     "default_data_width", 64)(
     "default_granularity", 32)(
-    "Default_max_util", 1)(
-    "Defaultflow_control", true)
+    "default_max_util", 1)(
+    "default_flow_control", true)
 
   // Build Mesh Topology
-  val switchMesh = dev.buildMesh(sw_default, 5,5)
+  val switchMesh = dev.buildMesh(sw_default, row = 5, col = 5)
 
   // Heterogeneous datawidth
   for(row_idx <- 1 until 5; col_idx <- 0 until 5){
@@ -54,18 +79,18 @@ object dev extends App{
     }
   }
 
-  // Adding function units
-  val fuArray = Array(
-    Array(fu_spc,fu_add,fu_add,fu_add),
-    Array(fu_spc,fu_add,fu_add,fu_add),
-    Array(fu_add,fu_add,fu_add,another_fu),
-    Array(fu_add,fu_add,another_fu,fu_add)
+  // Adding processing elements
+  val peArray = Array(
+    Array(pe_spc,pe_add,pe_add,pe_add),
+    Array(pe_spc,pe_add,pe_add,pe_add),
+    Array(pe_add,pe_add,pe_add,another_pe),
+    Array(pe_add,pe_add,another_pe,pe_add)
   )
   for(row_idx <- 0 until 4;col_idx <- 0 until 4){
-    val temp_node = fuArray(row_idx)(col_idx).clone
+    val temp_node = peArray(row_idx)(col_idx).clone
     temp_node("row_idx",row_idx)("col_idx",col_idx)
     dev(
-      dev(row_idx)(col_idx)("switch") --> temp_node
+      dev(row_idx)(col_idx)("switch") -->  temp_node
     )(
       dev(row_idx+1)(col_idx)("switch") --> temp_node
     )(
@@ -92,6 +117,13 @@ object dev extends App{
   val second_in_vport = new ssnode ("vector port")
   val out_vport = new ssnode("vector port")
 
+
+  in_vport --> first_row_switch.head
+  in_vport --> first_row_switch(1)
+  in_vport --> first_row_switch(2)
+  in_vport --> first_row_switch(3)
+
+
   dev(
     in_vport)(in_vport |=> (first_row_switch union left_column_switch).distinct)(
     out_vport)(out_vport <=| (last_row_switch union right_column_switch).distinct)(
@@ -104,13 +136,13 @@ object dev extends App{
 
   // Add a extra link
   dev(
-    dev(2)(3)("function unit") <->
+    dev(2)(3)("processing element") <->
       dev(1)(0)("switch")
   )(
-    dev(2)(3)("function unit") <->
+    dev(2)(3)("processing element") <->
       dev(1)(0)("switch")
   )
 
-  // Print
-  dev.printfile("IR/dev")
+  // Print JSON
+  dev.printIR(filename = "IR/dev")
 }

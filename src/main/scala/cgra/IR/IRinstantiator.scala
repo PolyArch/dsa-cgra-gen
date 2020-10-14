@@ -12,7 +12,7 @@ object IRinstantiator {
       val dut = Class.forName(module_type)
         .getConstructor(classOf[mutable.Map[String,Any]])
         .newInstance(cgra).asInstanceOf[RawModule]
-      dut.asInstanceOf[IRPrintable].printfile
+      dut.asInstanceOf[IRPrintable].printIR
       dut
     }
     )

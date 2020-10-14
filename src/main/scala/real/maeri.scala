@@ -62,7 +62,7 @@ object maeri extends App{
 
 
   // Print MAERI
-  MAERI.printfile("IR/maeri")
+  MAERI.printIR("IR/maeri")
 
   // Print Verilog
   MAERI.givemeverilog("syn/rtl_source/maeri")

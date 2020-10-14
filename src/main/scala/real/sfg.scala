@@ -41,5 +41,5 @@ object sfg extends App{
   }
 
   // Print
-  sfg.printfile("IR/sfg")
+  sfg.printIR("IR/sfg")
 }

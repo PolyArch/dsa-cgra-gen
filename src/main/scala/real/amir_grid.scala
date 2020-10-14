@@ -63,7 +63,7 @@ object amir_grid extends App{
     }
 
     // Print
-    dev.printfile(s"IR/dev_row${num_row}_col$num_col","json")
+    dev.printIR(s"IR/dev_row${num_row}_col$num_col","json")
   }
 }
 

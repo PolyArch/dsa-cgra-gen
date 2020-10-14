@@ -60,6 +60,6 @@ object drbe extends App {
     }
 
     // Print
-    dev.printfile(s"IR/drbe/drbe_row${num_row}_col$num_col","json")
+    dev.printIR(s"IR/drbe/drbe_row${num_row}_col$num_col","json")
   }
 }
