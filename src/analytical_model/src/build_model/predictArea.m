@@ -1,2 +1,0 @@
-function area = predictArea
-end

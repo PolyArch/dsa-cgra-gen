@@ -8,6 +8,7 @@ demo
 syn
 ucli.key
 ### IR
+*.yaml
 IR/*.xml
 IR/*.yaml
 *.json

@@ -70,8 +70,8 @@ object test_complex_fu extends App{
     num_opcode_bit - num_offset_bit - num_output_bit
 
   val testResult : Boolean= Driver.execute(args, () =>
-    new complex_fu(prop = node)){
-    dut => new PeekPokeTester[complex_fu](dut) {
+    new complex_pe(prop = node)){
+    dut => new PeekPokeTester[complex_pe](dut) {
       var cycle : Int = 0
       val total_cycle = 5000
       var config_message : BigInt = 0;

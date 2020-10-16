@@ -3,11 +3,14 @@ package dsl
 class sslink extends IRPrintable{
   private var sink_node:ssnode = _
   private var source_node:ssnode = _
+
   def get_source = source_node
   def get_sink = sink_node
+
   def * (duplicate_time:Int) = {
     for (i <- 0 until duplicate_time) yield source_node --> sink_node
   }
+
   def postprocess():Unit = {}
 
   def reverse():Unit={

@@ -1,7 +1,7 @@
 package cgra.fabric
 
 import cgra.IO._
-import cgra.component.{complex_fu, complex_switch}
+import cgra.component.{complex_pe, complex_switch}
 import dsl.IRPrintable
 import chisel3._
 
@@ -63,7 +63,7 @@ class cgra_fabric(prop:mutable.Map[String, Any]) extends Module
     node_id -> {
       val node_module = nodeType match {
         case "switch" => Module(new complex_switch(node)).io
-        case "processing element" => Module(new complex_fu(node)).io
+        case "processing element" => Module(new complex_pe(node)).io
         case "vector port" => Module(new vector_port(node)).io
       }
       node_module.en := io.cgra_enable

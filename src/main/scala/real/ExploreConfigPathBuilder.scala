@@ -17,7 +17,7 @@ object ExploreConfigPathBuilder extends App{
     var max_stage = 10000.0;
     // build config path multiple time
     for(iter <- 0 until 5){
-      val config_net = new config_path(num_row,num_col)
+      val config_net = new config_path_demo(num_row,num_col)
       val temp_max_stage : Double = (new IRconfigpather).build_config_path(readIR(config_net.filename + ".json"))
       println("build finished")
       if(temp_max_stage < max_stage){
