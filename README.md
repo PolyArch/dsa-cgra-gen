@@ -1,6 +1,6 @@
 # Stream Specialization CGRA Generator
 
-As a submodule of [ss-stack](https://github.com/PolyArch/ss-stack), *ss-cgra-gen* use *JSON* to describe CGRA, see example IR in *sample-IR* directory.
+As a submodule of [dsa-framework](https://github.com/PolyArch/dsa-framework), *dsa-cgra-gen* use *JSON* to describe CGRA, see example IR in *IR* directory.
 
 ## Getting Started
 
