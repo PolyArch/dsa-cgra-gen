@@ -24,7 +24,7 @@ def javacOptionsVersion(scalaVersion: String): Seq[String] = {
   }
 }
 
-name := "ss-cgra-gen"
+name := "dsa-cgra-gen"
 
 mainClass in (Compile, run) := Some("CgraGen")
 
