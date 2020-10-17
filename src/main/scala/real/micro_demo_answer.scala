@@ -38,11 +38,12 @@ object micro_demo_answer extends App{
     sw4 <-> pe
   )
 
+  /* ------ Answer ------
   // Add a new vector port
   val vport_i3 = new ssnode("vector port")
 
   // Add a new switch
-  val new_sw = sw1.clone()
+  val new_sw = new ssnode("switch")
 
   // Add a new processing element
   val pe_div = new ssnode("processing element")
@@ -53,6 +54,9 @@ object micro_demo_answer extends App{
     sw1 --> pe_div)(
     new_sw --> pe_div)(
     pe_div --> sw3)
+  */
+
+  // Put your code here
 
   // print IR
   my_cgra.printIR(filename = "my_cgra_div")
