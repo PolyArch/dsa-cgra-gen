@@ -46,7 +46,7 @@ object micro_demo_answer extends App{
 
   // Add a new processing element
   val pe_div = new ssnode("processing element")
-  pe_div("instructions", "Div")
+  pe_div("instructions", Seq("Div"))
 
   // Add connections to fabric
   my_cgra(vport_i3 --> new_sw)(
