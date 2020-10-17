@@ -18,6 +18,7 @@ object micro_demo extends App{
   // define processing element that can do Add and Mul
   val pe = new ssnode("processing element")
   pe("instructions", Seq("Add", "Mul"))
+  pe("max_delay_fifo_depth", 8)
 
   // define the CGRA fabric
   val my_cgra = new ssfabric
