@@ -18,7 +18,6 @@ object micro_demo extends App{
   // define processing element that can do Add and Mul
   val pe = new ssnode("processing element")
   pe("instructions", Seq("Add", "Mul"))
-  pe("max_delay_fifo_depth", 1000)
 
   // define the CGRA fabric
   val my_cgra = new ssfabric
@@ -40,5 +39,5 @@ object micro_demo extends App{
   )
 
   // print IR
-  my_cgra.printIR(filename = "my_cgra_delay_depth_1000")
+  my_cgra.printIR(filename = "my_cgra")
 }
