@@ -220,7 +220,6 @@ Switch                  64           8              1              1           1
 Add                     64           2              1              1           1
 Sub                     64           2              1              1           1
 Mul                     64           2              1              1           1
-Div                     64           2              1              1           1
 UDiv                    64           2              1              1           1
 SDiv                    64           2              1              1           1
 URem                    64           2              1              1           1
