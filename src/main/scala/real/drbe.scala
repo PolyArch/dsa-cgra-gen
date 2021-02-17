@@ -35,7 +35,9 @@ object drbe extends App {
 
   val ppu_agg_mesh = Array.ofDim[ssnode](nrc, ntx)
   for (i <- 0 until nrc; j <- 0 until ntx) {
-    ppu_agg_mesh(i)(j) = ppu.clone()
+    val temp_ppu = ppu.clone()
+    temp_ppu("row_idx",i)("col_idx",j)
+    ppu_agg_mesh(i)(j) = temp_ppu
   }
 
   val iports = Array.ofDim[ssnode](ntx)
@@ -69,15 +71,16 @@ object drbe extends App {
 
   // Connect Inport[col] to this column PE
   for(i <- 0 until ntx){
+    val iport : ssnode = iports(i)
     val this_col_pe : Seq[ssnode] = dev.filter("col_idx","nodeType")(i,"function unit")
-    dev(iports(i) |=> this_col_pe)
+    dev(iport)(iport |=> this_col_pe)
   }
 
   // Connect the left most switch to output port
   for(j <- 0 until nrc){
     val oport : ssnode = oports(j)
     val left_most_sw : ssnode = dev(0)(j)("switch")
-    dev(left_most_sw --> oport)
+    dev(oport)(left_most_sw --> oport)
   }
 
 
