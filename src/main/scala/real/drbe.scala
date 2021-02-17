@@ -22,7 +22,7 @@ object drbe extends App {
   // Define a Adding Function Unit
   val ppu = new ssnode("function unit")
   ppu(
-    "instructions", List("Object", "Body")
+    "instructions", List("Object", "Body", "Aggregate")
   )(
     "fu count", List(80, 20)
   )(
@@ -33,9 +33,9 @@ object drbe extends App {
     "max_delay_fifo_depth", 128
   )
 
-  val pe_mesh = Array.ofDim[ssnode](nrc, ntx)
+  val ppu_agg_mesh = Array.ofDim[ssnode](nrc, ntx)
   for (i <- 0 until nrc; j <- 0 until ntx) {
-    pe_mesh(i)(j) = ppu.clone()
+    ppu_agg_mesh(i)(j) = ppu.clone()
   }
 
   val iports = Array.ofDim[ssnode](ntx)
@@ -48,19 +48,6 @@ object drbe extends App {
     oports(i) = new ssnode("vector port")
   }
 
-  val agg = new ssnode("function unit")
-  agg(
-    "instructions", List("Aggregate")
-  )(
-    "fu count", List(1)
-  )(
-    "granularity", 64
-  )(
-    "num_register", 1
-  )(
-    "max_delay_fifo_depth", 16
-  )
-
   val dev = new ssfabric
   dev(
     "default_data_width", 64
@@ -71,20 +58,28 @@ object drbe extends App {
   )(
     "default_max_util", 1
   )
-  val sw_mesh = dev.buildMesh(sw, ntx, nrc)
+  val sw_mesh = dev.buildMesh(sw, nrc, ntx)
 
   for (i <- 0 until ntx) {
     for (j <- 0 until nrc) {
-      val tmp = agg.clone
-      for (k <- 0 until 32) {
-        dev(dev(i)(j)("switch") <-> tmp)
-        dev(pe_mesh(j)(i) <-> dev(i)(j)("switch"))
-      }
-      dev(iports(i) |=> Seq(pe_mesh(j)(i)))
-      dev(oports(j) <=| Seq(pe_mesh(j)(i)))
+      dev(ppu_agg_mesh(j)(i) <-> dev(i)(j)("switch"))
     }
     println(i)
   }
+
+  // Connect Inport[col] to this column PE
+  for(i <- 0 until ntx){
+    val this_col_pe : Seq[ssnode] = dev.filter("col_idx","nodeType")(i,"function unit")
+    dev(iports(i) |=> this_col_pe)
+  }
+
+  // Connect the left most switch to output port
+  for(j <- 0 until nrc){
+    val oport : ssnode = oports(j)
+    val left_most_sw : ssnode = dev(0)(j)("switch")
+    dev(left_most_sw --> oport)
+  }
+
 
   dev.printIR(s"IR/drbe-${ntx}-${nrc}", "json")
 }
