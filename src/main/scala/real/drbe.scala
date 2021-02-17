@@ -24,7 +24,7 @@ object drbe extends App {
   ppu(
     "instructions", List("Object", "Body", "Aggregate")
   )(
-    "fu count", List(80, 20)
+    "fu count", List(80, 20, 1)
   )(
     "granularity", 64
   )(
@@ -58,7 +58,7 @@ object drbe extends App {
   )(
     "default_granularity", 64
   )(
-    "default_max_util", 1
+    "default_max_util", 32
   )
   val sw_mesh = dev.buildMesh(sw, nrc, ntx)
 
