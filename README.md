@@ -1,3 +1,5 @@
+# This is a deprecated repo of implementation of CGRA generator, most of work are done > 2 years ago. The lastest version will be released within two months.
+
 # Stream Specialization CGRA Generator
 
 As a submodule of [dsa-framework](https://github.com/PolyArch/dsa-framework), *dsa-cgra-gen* use *JSON* to describe CGRA, see example IR in *IR* directory.
