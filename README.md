@@ -1,4 +1,6 @@
-# This is a deprecated repo of implementation of CGRA generator, most of work are done > 2 years ago. The lastest version will be released within two months.
+# This is a deprecated repository of the DSA CGRA generator, most of work are done > 2 years ago. 
+
+# A lastest version (Linux-acceleratable, FPGA runnable SoC) will be released within two months (by May 2021).
 
 # Stream Specialization CGRA Generator
 
