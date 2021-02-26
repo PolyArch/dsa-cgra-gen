@@ -12,7 +12,7 @@ object drbe extends App {
   // Define Default Switch
   val sw = new ssnode("switch")
   sw(
-    "max_util", 1
+    "max_util", 32
   )(
     "granularity",64
   )(
@@ -24,13 +24,13 @@ object drbe extends App {
   ppu(
     "instructions", List("Object", "Body", "Aggregate")
   )(
-    "fu count", List(80, 20, 1)
+    "fu count", List(660, 220, 40)
   )(
     "granularity", 64
   )(
     "num_register", 1
   )(
-    "max_delay_fifo_depth", 128
+    "max_delay_fifo_depth", 65536
   )
 
   val ppu_agg_mesh = Array.ofDim[ssnode](nrc, ntx)
