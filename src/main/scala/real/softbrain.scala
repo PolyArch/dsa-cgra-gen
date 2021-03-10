@@ -10,7 +10,7 @@ object softbrain extends App {
   val sw_default = new ssnode("switch")
 
   // Define General Function Unit
-  val fu_general = new ssnode("function unit")
+  val fu_general = new ssnode("processing element")
   fu_general(
     "instructions", List("Add", "Sub", "Mul", "FMul64", "FAdd64") )(
     "max_delay", 4)
@@ -54,7 +54,7 @@ object softbrain extends App {
   softbrain(in_vport2 |=> softbrain.filter("col_idx","nodeType")(0,"switch"))
   softbrain(out_vport <=| softbrain.filter("row_idx","nodeType")(4,"switch"))
 
-  in_vport1 |=> List(sw_default, sw_default, sw_default)
+  //in_vport1 |=> List(sw_default, sw_default, sw_default)
 
   // Print
   softbrain.printIR

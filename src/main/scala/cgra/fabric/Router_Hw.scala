@@ -63,7 +63,7 @@ class Router_Hw(pp:(String,Any)) extends Module
   for(in<-input_ports;out<-output_ports;subnet<-0 until decomposer){
     val in_port_subnet : String = in + "_" + subnet;val col = input_ports_subnet.indexOf(in_port_subnet)
     val out_port_subnet : String = out + "_" + subnet;val row = output_ports_subnet.indexOf(out_port_subnet)
-    IO_LookUpTable(row)(col) = true
+    IO_LookUpTable(row)(col) = false
   }
   // Add Intersubnet Connection
   for (conn <- inter_subnet_connection){
